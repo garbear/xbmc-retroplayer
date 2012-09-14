@@ -10003,7 +10003,11 @@ msgctxt "#24023"
 msgid "Add-on disabled"
 msgstr ""
 
-#empty strings from id 24024 to 24026
+msgctxt "#24024"
+msgid "Emulators"
+msgstr ""
+
+#empty strings from id 24025 to 24026
 
 msgctxt "#24027"
 msgid "Weather"

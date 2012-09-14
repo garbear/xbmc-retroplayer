@@ -25,6 +25,7 @@
 #include "XBDateTime.h"
 #include "addons/Service.h"
 #include "dbwrappers/dataset.h"
+#include "games/GameManager.h"
 
 using namespace ADDON;
 using namespace std;
@@ -580,6 +581,9 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
             service->Stop();
         }
 
+        // If the addon isn't a game client, UnregisterAddon() will still do the right thing
+        CGameManager::Get().UnregisterAddon(addonID);
+
         return true;
       }
       return false; // already disabled or failed query
@@ -598,6 +602,9 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
           service->Start();
       }
 
+      // If the addon is a game client, register it
+      if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_GAMEDLL, false) && addon)
+        CGameManager::Get().RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
     }
     return true;
   }
