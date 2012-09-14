@@ -271,6 +271,9 @@
     <Filter Include="games">
       <UniqueIdentifier>{c083ff38-c5f5-4997-b2c3-4deda753320e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\tags">
+      <UniqueIdentifier>{f8ab840e-9400-4a7f-ac25-79ec806bd76c}</UniqueIdentifier>
+    </Filter>
     <Filter Include="games\libretro">
       <UniqueIdentifier>{d117ceda-5fb0-4206-aca8-ef4f98aa4bd0}</UniqueIdentifier>
     </Filter>
@@ -2840,6 +2843,15 @@
     <ClCompile Include="..\..\xbmc\utils\test\Testfft.cpp">
       <Filter>utils\test</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GBATag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameboyTag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\games\GameClient.cpp">
       <Filter>games</Filter>
     </ClCompile>
@@ -2986,6 +2998,9 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp">
       <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp">
+      <Filter>games\tags</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5773,6 +5788,18 @@
     <ClInclude Include="..\..\xbmc\test\TestUtils.h">
       <Filter>test</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GBATag.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\Tag.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameboyTag.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameClient.h">
       <Filter>games</Filter>
     </ClInclude>
@@ -5796,6 +5823,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameManager.h">
       <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h">
+      <Filter>games\tags</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
