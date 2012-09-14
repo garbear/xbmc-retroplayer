@@ -106,6 +106,13 @@ bool CGameClient::Init()
     return false;
   }
 
+  CLog::Log(LOGERROR, "GameClient: ------------------------------------");
+  CLog::Log(LOGERROR, "GameClient: Loaded DLL for %s", ID().c_str());
+  CLog::Log(LOGERROR, "GameClient: Client: %s at version %s", m_clientName.c_str(), m_clientVersion.c_str());
+  CLog::Log(LOGERROR, "GameClient: Valid extensions: %s", m_validExtensions.c_str());
+  CLog::Log(LOGERROR, "GameClient: Allow VFS: %s, require zip: %s", m_bAllowVFS ? "yes" : "no", m_bRequireZip ? "yes" : "no");
+  CLog::Log(LOGERROR, "GameClient: ------------------------------------");
+
   return true;
 }
 
