@@ -31,6 +31,7 @@
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "cores/AudioEngine/AEFactory.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
+#include "cores/RetroPlayer/RetroPlayerInput.h"
 #include "PlayListPlayer.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -493,6 +494,8 @@ bool CApplication::OnEvent(XBMC_Event& newEvent)
       g_application.OnKey(g_Keyboard.ProcessKeyDown(newEvent.key.keysym));
       break;
     case XBMC_KEYUP:
+      if (g_application.IsPlayingGame() || (g_application.IsPaused() && g_application.m_eCurrentPlayer == EPC_RETROPLAYER))
+        CRetroPlayerInput::OnKeyUp(newEvent);
       g_Keyboard.ProcessKeyUp();
       break;
     case XBMC_MOUSEBUTTONDOWN:
@@ -2480,6 +2483,11 @@ bool CApplication::OnKey(const CKey& key)
       // if player is in some sort of menu, (ie DVDMENU) map buttons differently
       action = CButtonTranslator::GetInstance().GetAction(WINDOW_VIDEO_MENU, key);
     }
+    else if (IsPlayingGame() || (IsPaused() && m_eCurrentPlayer == EPC_RETROPLAYER))
+    {
+      // Fetch action from <FullscreenGame> tag instead of <FullscreenVideo>
+      action = CButtonTranslator::GetInstance().GetAction(WINDOW_FULLSCREEN_GAME, key);
+    }
     else
     {
       // no then use the fullscreen window section of keymap.xml to map key->action
@@ -2939,6 +2947,12 @@ bool CApplication::OnAction(const CAction &action)
     else if (iPlaylist == PLAYLIST_MUSIC)
       g_windowManager.ActivateWindow(WINDOW_MUSIC_PLAYLIST);
     return true;
+  }
+  if (ACTION_GAME_CONTROL_START <= action.GetID() && action.GetID() <= ACTION_GAME_CONTROL_END)
+  {
+    // Allow RetroPlayer to process input
+    if (IsPlayingGame() || (IsPaused() && m_eCurrentPlayer == EPC_RETROPLAYER))
+      return m_pPlayer->OnAction(action);
   }
   return false;
 }
@@ -4573,6 +4587,15 @@ bool CApplication::IsPlayingVideo() const
     return true;
 
   return false;
+}
+
+bool CApplication::IsPlayingGame() const
+{
+  if (!m_pPlayer)
+    return false;
+  if (!m_pPlayer->IsPlaying())
+    return false;
+  return m_eCurrentPlayer == EPC_RETROPLAYER;
 }
 
 bool CApplication::IsPlayingFullScreenVideo() const

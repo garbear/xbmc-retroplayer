@@ -277,6 +277,9 @@
     <Filter Include="games\libretro">
       <UniqueIdentifier>{d117ceda-5fb0-4206-aca8-ef4f98aa4bd0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cores\RetroPlayer">
+      <UniqueIdentifier>{1e0b8ea8-c63a-446d-91c0-df1415cf4066}</UniqueIdentifier>
+    </Filter>
     <Filter Include="filesystem\test">
       <UniqueIdentifier>{6a33362b-e68d-45ec-8bcc-057d8caf5de6}</UniqueIdentifier>
     </Filter>
@@ -2854,6 +2857,18 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\GameClient.cpp">
       <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.cpp">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerAudio.cpp">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerInput.cpp">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.cpp">
+      <Filter>cores\RetroPlayer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\test\TestFileOperationJob.cpp">
       <Filter>utils\test</Filter>
@@ -5808,6 +5823,18 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\libretro\libretro.h">
       <Filter>games\libretro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.h">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerAudio.h">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerInput.h">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.h">
+      <Filter>cores\RetroPlayer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\network\upnp\UPnP.h">
       <Filter>network\upnp</Filter>

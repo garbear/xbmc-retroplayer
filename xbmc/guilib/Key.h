@@ -309,6 +309,52 @@
 #define ACTION_SUBTITLE_VSHIFT_DOWN   231 // shift down subtitles in DVDPlayer
 #define ACTION_SUBTITLE_ALIGN         232 // toggle vertical alignment of subtitles
 
+
+// The Joypad is essentially a Super Nintendo controller, but with additional
+// L2/R2/L3/R3 buttons, similar to a PS1 DualShock
+#define ACTION_GAME_CONTROL_START     300
+#define ACTION_JOYBAD_B               300
+#define ACTION_JOYPAD_Y               301
+#define ACTION_JOYPAD_SELECT          302
+#define ACTION_JOYPAD_START           303
+#define ACTION_JOYPAD_UP              304
+#define ACTION_JOYPAD_DOWN            305
+#define ACTION_JOYPAD_LEFT            306
+#define ACTION_JOYPAD_RIGHT           307
+#define ACTION_JOYBAD_A               308
+#define ACTION_JOYPAD_X               309
+#define ACTION_JOYPAD_L               310
+#define ACTION_JOYPAD_R               311
+#define ACTION_JOYPAD_L2              312
+#define ACTION_JOYPAD_R2              313
+#define ACTION_JOYPAD_L3              314
+#define ACTION_JOYPAD_R3              315
+#define ACTION_JOYPAD_CONTROL_END     315
+
+// ID values for an analog device
+#define ACTION_ANALOG_CONTROLLER_LEFT  316
+#define ACTION_ANALOG_CONTROLLER_RIGHT 317
+#define ACTION_ANALOG_CONTROLLER_X     318
+#define ACTION_ANALOG_CONTROLLER_Y     319
+
+// The mouse is a simple mouse, similar to Super Nintendo's mouse. X and Y
+// coordinates are reported relative to the previous poll.
+#define ACTION_MOUSE_CONTROLLER_X     320
+#define ACTION_MOUSE_CONTROLLER_Y     321
+#define ACTION_MOUSE_CONTROLLER_LEFT  322
+#define ACTION_MOUSE_CONTROLLER_RIGHT 323
+
+// ID values for Lightgun devices
+#define ACTION_LIGHTGUN_X             324
+#define ACTION_LIGHTGUN_Y             325
+#define ACTION_LIGHTGUN_TRIGGER       326
+#define ACTION_LIGHTGUN_CURSOR        327
+#define ACTION_LIGHTGUN_TURBO         328
+#define ACTION_LIGHTGUN_PAUSE         329
+#define ACTION_LIGHTGUN_START         330
+#define ACTION_GAME_CONTROL_END       331
+
+
 // Window ID defines to make the code a bit more readable
 #define WINDOW_INVALID                     9999
 #define WINDOW_HOME                       10000
@@ -424,6 +470,7 @@
 #define WINDOW_SLIDESHOW                  12007
 #define WINDOW_DIALOG_FILESTACKING        12008
 #define WINDOW_KARAOKELYRICS              12009
+#define WINDOW_FULLSCREEN_GAME            12010 // alias for WINDOW_FULLSCREEN_VIDEO to receive tailored keypresses
 #define WINDOW_WEATHER                    12600
 #define WINDOW_SCREENSAVER                12900
 #define WINDOW_DIALOG_VIDEO_OSD           12901

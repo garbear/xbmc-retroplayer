@@ -220,6 +220,40 @@ static const ActionMapping actions[] =
         {"mousedrag"         , ACTION_MOUSE_DRAG},
         {"mousemove"         , ACTION_MOUSE_MOVE},
 
+        // Game controls, defined in the same order as key.h and libretro.h
+        {"joypadb"           , ACTION_JOYBAD_B},
+        {"joypady"           , ACTION_JOYPAD_Y},
+        {"joypadselect"      , ACTION_JOYPAD_SELECT},
+        {"joypadstart"       , ACTION_JOYPAD_START},
+        {"joypadup"          , ACTION_JOYPAD_UP},
+        {"joypaddown"        , ACTION_JOYPAD_DOWN},
+        {"joypadleft"        , ACTION_JOYPAD_LEFT},
+        {"joypadright"       , ACTION_JOYPAD_RIGHT},
+        {"joypada"           , ACTION_JOYBAD_A},
+        {"joypadx"           , ACTION_JOYPAD_X},
+        {"joypadl"           , ACTION_JOYPAD_L},
+        {"joypadr"           , ACTION_JOYPAD_R},
+        {"joypadl2"          , ACTION_JOYPAD_L2},
+        {"joypadr2"          , ACTION_JOYPAD_R2},
+        {"joypadl3"          , ACTION_JOYPAD_L3},
+        {"joypadr3"          , ACTION_JOYPAD_R3},
+
+        {"analogstickleft"   , ACTION_ANALOG_CONTROLLER_LEFT},
+        {"analogstickright"  , ACTION_ANALOG_CONTROLLER_RIGHT},
+        {"analogstickx"      , ACTION_ANALOG_CONTROLLER_X},
+        {"analogsticky"      , ACTION_ANALOG_CONTROLLER_Y},
+        {"mousecontrollerx"  , ACTION_MOUSE_CONTROLLER_X},
+        {"mousecontrollery"  , ACTION_MOUSE_CONTROLLER_Y},
+        {"mousecontrollerleft" , ACTION_MOUSE_CONTROLLER_LEFT},
+        {"mousecontrollerright" , ACTION_MOUSE_CONTROLLER_RIGHT},
+        {"lightgunx"         , ACTION_LIGHTGUN_X},
+        {"lightguny"         , ACTION_LIGHTGUN_Y},
+        {"lightguntrigger"   , ACTION_LIGHTGUN_TRIGGER},
+        {"lightguncursor"    , ACTION_LIGHTGUN_CURSOR},
+        {"lightgunturbo"     , ACTION_LIGHTGUN_TURBO},
+        {"lightgunpause"     , ACTION_LIGHTGUN_PAUSE},
+        {"lightgunstart"     , ACTION_LIGHTGUN_START},
+
         // Do nothing action
         { "noop"             , ACTION_NOOP}
 };
@@ -329,6 +363,7 @@ static const ActionMapping windows[] =
         {"movieinformation"         , WINDOW_DIALOG_VIDEO_INFO},
         {"textviewer"               , WINDOW_DIALOG_TEXT_VIEWER},
         {"fullscreenvideo"          , WINDOW_FULLSCREEN_VIDEO},
+        {"fullscreengame"           , WINDOW_FULLSCREEN_GAME},
         {"visualisation"            , WINDOW_VISUALISATION},
         {"slideshow"                , WINDOW_SLIDESHOW},
         {"filestackingdialog"       , WINDOW_DIALOG_FILESTACKING},
