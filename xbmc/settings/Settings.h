@@ -238,12 +238,14 @@ public:
   VECSOURCES m_fileSources;
   VECSOURCES m_musicSources;
   VECSOURCES m_videoSources;
+  VECSOURCES m_gameSources;
 
   CStdString m_defaultProgramSource;
   CStdString m_defaultMusicSource;
   CStdString m_defaultPictureSource;
   CStdString m_defaultFileSource;
   CStdString m_defaultMusicLibSource;
+  CStdString m_defaultGameSource;
 
   CStdString m_UPnPUUIDServer;
   int        m_UPnPPortServer;

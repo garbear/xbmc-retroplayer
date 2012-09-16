@@ -1029,6 +1029,17 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
     XMLUtils::GetString(pDatabase, "name", m_databaseEpg.name);
   }
 
+  pDatabase = pRootElement->FirstChildElement("gamedatabase");
+  if (pDatabase)
+  {
+    XMLUtils::GetString(pDatabase, "type", m_databaseGames.type);
+    XMLUtils::GetString(pDatabase, "host", m_databaseGames.host);
+    XMLUtils::GetString(pDatabase, "port", m_databaseGames.port);
+    XMLUtils::GetString(pDatabase, "user", m_databaseGames.user);
+    XMLUtils::GetString(pDatabase, "pass", m_databaseGames.pass);
+    XMLUtils::GetString(pDatabase, "name", m_databaseGames.name);
+  }
+
   pElement = pRootElement->FirstChildElement("enablemultimediakeys");
   if (pElement)
   {

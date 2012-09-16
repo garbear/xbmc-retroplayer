@@ -286,6 +286,9 @@
     <Filter Include="network\upnp">
       <UniqueIdentifier>{89c1ccdb-5d9b-447c-91e9-7c61e5cee042}</UniqueIdentifier>
     </Filter>
+    <Filter Include="filesystem\GameDatabaseDirectory">
+      <UniqueIdentifier>{5a551f80-dfef-4ec7-b96b-d8da10ce6f6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3016,6 +3019,42 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp">
       <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePublisher.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeRoot.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeYear.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\QueryParams.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNode.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeCollection.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGame.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGenre.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePlatform.cpp">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameDbUrl.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameDatabase.cpp">
+      <Filter>games</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5853,6 +5892,42 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h">
       <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory.h">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePlatform.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePublisher.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeRoot.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeYear.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\QueryParams.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNode.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeCollection.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGame.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGenre.h">
+      <Filter>filesystem\GameDatabaseDirectory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameDatabase.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameDbUrl.h">
+      <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -729,6 +729,8 @@ void CGUIDialogContextMenu::SetDefault(const CStdString &strType, const CStdStri
     g_settings.m_defaultMusicSource = strDefault;
   else if (strType == "pictures")
     g_settings.m_defaultPictureSource = strDefault;
+  else if (strType == "games")
+    g_settings.m_defaultGameSource = strDefault;
   g_settings.SaveSources();
 }
 

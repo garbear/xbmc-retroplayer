@@ -3196,7 +3196,25 @@ msgctxt "#1273"
 msgid "AirPlay"
 msgstr ""
 
-#empty strings from id 1274 to 1299
+#empty strings from id 1274 to 1279
+
+msgctxt "#1280"
+msgid "Platform"
+msgstr ""
+
+msgctxt "#1281"
+msgid "Collections"
+msgstr ""
+
+msgctxt "#1282"
+msgid "Publisher"
+msgstr ""
+
+msgctxt "#1283"
+msgid "Game Add-ons"
+msgstr ""
+
+#empty strings from id 1284 to 1299
 
 msgctxt "#1300"
 msgid "Custom audio device"

@@ -151,6 +151,7 @@ public:
   bool IsMultiPath() const;
   bool IsMusicDb() const;
   bool IsVideoDb() const;
+  bool IsGameDb() const;
   bool IsEPG() const;
   bool IsPVRChannel() const;
   bool IsPVRRecording() const;

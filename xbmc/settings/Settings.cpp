@@ -200,6 +200,8 @@ VECSOURCES *CSettings::GetSourcesFromType(const CStdString &type)
     return &m_videoSources;
   else if (type == "pictures")
     return &m_pictureSources;
+  else if (type == "games")
+    return &m_gameSources;
 
   return NULL;
 }
@@ -215,6 +217,8 @@ CStdString CSettings::GetDefaultSourceFromType(const CStdString &type)
     defaultShare = m_defaultMusicSource;
   else if (type == "pictures")
     defaultShare = m_defaultPictureSource;
+  else if (type == "games")
+    defaultShare = m_defaultGameSource;
   return defaultShare;
 }
 
@@ -1347,6 +1351,7 @@ bool CSettings::SaveSources()
   SetSources(pRoot, "music", m_musicSources, m_defaultMusicSource);
   SetSources(pRoot, "pictures", m_pictureSources, m_defaultPictureSource);
   SetSources(pRoot, "files", m_fileSources, m_defaultFileSource);
+  SetSources(pRoot, "games", m_gameSources, m_defaultGameSource);
 
   return doc.SaveFile(GetSourcesFile());
 }
@@ -1393,6 +1398,7 @@ void CSettings::LoadSources()
   m_pictureSources.clear();
   m_programSources.clear();
   m_videoSources.clear();
+  m_gameSources.clear();
 
   CStdString strSourcesFile = GetSourcesFile();
   CLog::Log(LOGNOTICE, "Loading media sources from %s", strSourcesFile.c_str());
@@ -1418,6 +1424,7 @@ void CSettings::LoadSources()
     GetSources(pRootElement, "files", m_fileSources, m_defaultFileSource);
     GetSources(pRootElement, "music", m_musicSources, m_defaultMusicSource);
     GetSources(pRootElement, "video", m_videoSources, dummy);
+    GetSources(pRootElement, "games", m_gameSources, m_defaultGameSource);
   }
 }
 
@@ -1487,6 +1494,7 @@ void CSettings::Clear()
   m_fileSources.clear();
   m_musicSources.clear();
   m_videoSources.clear();
+  m_gameSources.clear();
 //  m_vecIcons.clear();
   m_vecProfiles.clear();
   m_mapRssUrls.clear();

@@ -464,6 +464,46 @@
     <ClCompile Include="..\..\xbmc\filesystem\FileReaderFile.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\FTPDirectory.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\FTPParse.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNode.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug Testsuite|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeCollection.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGame.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGenre.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug Testsuite|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePlatform.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePublisher.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeRoot.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug Testsuite|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeYear.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug Testsuite|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\GameDatabaseDirectory\QueryParams.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug Testsuite|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\filesystem\HDDirectory.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\HDFile.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\HDHomeRunDirectory.cpp" />
@@ -573,6 +613,8 @@
     <ClCompile Include="..\..\xbmc\filesystem\ZipFile.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\ZipManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameClient.cpp" />
+    <ClCompile Include="..\..\xbmc\games\GameDatabase.cpp" />
+    <ClCompile Include="..\..\xbmc\games\GameDbUrl.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameboyTag.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp" />
@@ -1112,12 +1154,24 @@
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.h" />
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogKeyboardGeneric.h" />
     <ClInclude Include="..\..\xbmc\DbUrl.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNode.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeCollection.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGame.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeGenre.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePlatform.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodePublisher.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeRoot.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\DirectoryNodeYear.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\GameDatabaseDirectory\QueryParams.h" />
     <ClInclude Include="..\..\xbmc\filesystem\ImageFile.h" />
     <ClInclude Include="..\..\xbmc\filesystem\VideoDatabaseDirectory\DirectoryNodeTags.h" />
     <ClInclude Include="..\..\xbmc\filesystem\windows\WINFileSMB.h" />
     <ClInclude Include="..\..\xbmc\filesystem\windows\WINSMBDirectory.h" />
     <ClInclude Include="..\..\xbmc\games\GameClient.h" />
     <ClInclude Include="..\..\xbmc\games\GameClientDLL.h" />
+    <ClInclude Include="..\..\xbmc\games\GameDatabase.h" />
+    <ClInclude Include="..\..\xbmc\games\GameDbUrl.h" />
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />
     <ClInclude Include="..\..\xbmc\games\libretro\libretro.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameboyTag.h" />
