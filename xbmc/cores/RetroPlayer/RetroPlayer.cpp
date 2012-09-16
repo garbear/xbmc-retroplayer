@@ -80,8 +80,8 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
     CLog::Log(LOGDEBUG, "RetroPlayer: Game tag loaded");
     CLog::Log(LOGDEBUG, "RetroPlayer: URL: %s", tag->GetURL().c_str());
     CLog::Log(LOGDEBUG, "RetroPlayer: Platform: %s", tag->GetPlatform().c_str());
-    CLog::Log(LOGDEBUG, "RetroPlayer: Name: %s", tag->GetName().c_str());
-    CLog::Log(LOGDEBUG, "RetroPlayer: Game Code: %s", tag->GetID().c_str());
+    CLog::Log(LOGDEBUG, "RetroPlayer: Internal Title: %s", tag->GetInternalTitle().c_str());
+    CLog::Log(LOGDEBUG, "RetroPlayer: Game Code: %s", tag->GetCode().c_str());
     CLog::Log(LOGDEBUG, "RetroPlayer: Region: %s", tag->GetRegion().c_str());
     CLog::Log(LOGDEBUG, "RetroPlayer: Publisher: %s", tag->GetPublisher().c_str());
     CLog::Log(LOGDEBUG, "RetroPlayer: Format: %s", tag->GetFormat().c_str());
@@ -94,6 +94,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   m_PlayerOptions = options;
 
   m_gameClient = CGameManager::Get().GetGameClient(m_file.GetPath());
+  // shared_ptr can be implicitly converted to a bool to check for null-ness
   if (!m_gameClient)
   {
     CLog::Log(LOGERROR, "RetroPlayer: Error: no suitable game clients");

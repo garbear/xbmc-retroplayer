@@ -70,10 +70,10 @@ bool CGBATag::Read(const CStdString& strFile)
   }
 
   // Name: $a0, 12 bytes
-  m_gameInfoTag.SetName(std::string(data + 0xa0, 12));
+  m_gameInfoTag.SetInternalTitle(std::string(data + 0xa0, 12));
 
   // ID: $ac, 4 bytes
-  m_gameInfoTag.SetID(std::string(data + 0xac, 4));
+  m_gameInfoTag.SetCode(std::string(data + 0xac, 4));
 
   // Publisher: $b0, 2 bytes
   m_gameInfoTag.SetPublisher(CGameboyTag::TranslatePublisher(data + 0xb0));

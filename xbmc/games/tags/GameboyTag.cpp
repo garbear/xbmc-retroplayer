@@ -63,7 +63,7 @@ bool CGameboyTag::Read(const CStdString& strFile)
       return false;
     }
   }
-  m_gameInfoTag.SetName(CStdString(std::string(data + 0x134, 15)).Trim());
+  m_gameInfoTag.SetInternalTitle(CStdString(std::string(data + 0x134, 15)).Trim());
 
   // Publisher: $144, 2 bytes
   m_gameInfoTag.SetPublisher(CGameboyTag::TranslatePublisher(data + 0x144));
