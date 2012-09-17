@@ -46,6 +46,7 @@ void CGameInfoTag::Reset()
   m_strAlternateTitle.Empty();
   m_strCode.Empty();
   m_strRegion.Empty();
+  m_strLanguage.Empty();
   m_strPublisher.Empty();
   m_strDeveloper.Empty();
   m_strReviewer.Empty();
@@ -62,6 +63,8 @@ void CGameInfoTag::Reset()
   m_iPlayers = 0;
   m_bFavorite = false;
   m_iPlayTime = 0;
+  m_genres.clear();
+  m_collections.clear();
 }
 
 
@@ -78,6 +81,7 @@ const CGameInfoTag &CGameInfoTag::operator=(const CGameInfoTag &tag)
     m_strAlternateTitle = tag.m_strAlternateTitle;
     m_strCode           = tag.m_strCode;
     m_strRegion         = tag.m_strRegion;
+    m_strLanguage       = tag.m_strLanguage;
     m_strPublisher      = tag.m_strPublisher;
     m_strDeveloper      = tag.m_strDeveloper;
     m_strReviewer       = tag.m_strReviewer;
@@ -94,6 +98,8 @@ const CGameInfoTag &CGameInfoTag::operator=(const CGameInfoTag &tag)
     m_bFavorite         = tag.m_bFavorite;
     m_iPlayers          = tag.m_iPlayers;
     m_iPlayTime         = tag.m_iPlayTime;
+    m_genres            = tag.m_genres;
+    m_collections       = tag.m_collections;
   }
   return *this;
 }
@@ -112,6 +118,7 @@ bool CGameInfoTag::operator!=(const CGameInfoTag &tag) const
     if (m_strAlternateTitle != tag.m_strAlternateTitle) return true;
     if (m_strCode != tag.m_strCode) return true;
     if (m_strRegion != tag.m_strRegion) return true;
+    if (m_strLanguage != tag.m_strLanguage) return true;
     if (m_strPublisher != tag.m_strPublisher) return true;
     if (m_strDeveloper != tag.m_strDeveloper) return true;
     if (m_strReviewer != tag.m_strReviewer) return true;
@@ -128,6 +135,12 @@ bool CGameInfoTag::operator!=(const CGameInfoTag &tag) const
     if (m_iPlayers != tag.m_iPlayers) return true;
     if (m_bFavorite != tag.m_bFavorite) return true;
     if (m_iPlayTime != tag.m_iPlayTime) return true;
+    for (unsigned int i = 0; i < m_genres.size(); i++)
+      if (m_genres.at(i).compare(tag.m_genres.at(i)) != 0)
+        return true;
+    for (unsigned int i = 0; i < m_collections.size(); i++)
+      if (m_collections.at(i).compare(tag.m_collections.at(i)) != 0)
+        return true;
   }
   return false;
 }
@@ -145,6 +158,7 @@ void CGameInfoTag::Archive(CArchive &ar)
     ar << m_strAlternateTitle;
     ar << m_strCode;
     ar << m_strRegion;
+    ar << m_strLanguage;
     ar << m_strPublisher;
     ar << m_strDeveloper;
     ar << m_strReviewer;
@@ -161,6 +175,8 @@ void CGameInfoTag::Archive(CArchive &ar)
     ar << m_iPlayers;
     ar << m_bFavorite;
     ar << m_iPlayTime;
+    ar << m_genres;
+    ar << m_collections;
   }
   else
   {
@@ -174,6 +190,7 @@ void CGameInfoTag::Archive(CArchive &ar)
     ar >> m_strAlternateTitle;
     ar >> m_strCode;
     ar >> m_strRegion;
+    ar >> m_strLanguage;
     ar >> m_strPublisher;
     ar >> m_strDeveloper;
     ar >> m_strReviewer;
@@ -191,6 +208,8 @@ void CGameInfoTag::Archive(CArchive &ar)
     ar >> m_iPlayers;
     ar >> m_bFavorite;
     ar >> m_iPlayTime;
+    ar >> m_genres;
+    ar >> m_collections;
   }
 }
 
@@ -205,6 +224,7 @@ void CGameInfoTag::Serialize(CVariant &value)
   value["alternatetitle"] = m_strAlternateTitle;
   value["id"]             = m_strCode;
   value["region"]         = m_strRegion;
+  value["language"]       = m_strLanguage;
   value["publisher"]      = m_strPublisher;
   value["developer"]      = m_strDeveloper;
   value["reviewer"]       = m_strReviewer;
@@ -221,6 +241,8 @@ void CGameInfoTag::Serialize(CVariant &value)
   value["players"]        = m_iPlayers;
   value["favorite"]       = m_bFavorite;
   value["playtime"]       = m_iPlayTime;
+  value["genres"]         = m_genres;
+  value["collections"]    = m_collections;
 }
 
 void CGameInfoTag::ToSortable(SortItem &sortable)

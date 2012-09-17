@@ -53,7 +53,7 @@ namespace GAME_INFO
     // Platform
     const CStdString& GetPlatform() const { return m_strPlatform; }
     void SetPlatform(const CStdString& strPlatform) { m_strPlatform = strPlatform; }
-    
+
     // Title
     const CStdString& GetTitle() const { return m_strTitle; }
     void SetTitle(const CStdString& strTitle) { m_strTitle = strTitle; }
@@ -77,7 +77,11 @@ namespace GAME_INFO
     // Region (Country or multiple e.g. USA & Canada)
     const CStdString& GetRegion() const { return m_strRegion; }
     void SetRegion(const CStdString& strRegion) { m_strRegion = strRegion; }
-    
+
+    // Language
+    const CStdString& GetLanguage() const { return m_strLanguage; }
+    void SetLanguage(const CStdString& strLanguage) { m_strLanguage = strLanguage; }
+
     // Publisher / Licensee
     const CStdString& GetPublisher() const { return m_strPublisher; }
     void SetPublisher(const CStdString& strPublisher) { m_strPublisher = strPublisher; }
@@ -97,52 +101,68 @@ namespace GAME_INFO
     // Cartridge Type, e.g. ROM+MBC5+RAM+BATT
     const CStdString& GetCartridgeType() const { return m_strCartridgeType; }
     void SetCartridgeType(const CStdString& strCartridgeType) { m_strCartridgeType = strCartridgeType; }
-    
+
     // Game Database ID
-    long GetDatabaseID() { return m_iDbId; }
+    long GetDatabaseID() const { return m_iDbId; }
     void SetDatabaseID(long dbId) { m_iDbId = dbId; }
 
     // Year
-    int GetYear() { return m_iYear; }
+    int GetYear() const { return m_iYear; }
     void SetYear(int year) { m_iYear = year; }
-    
+
     // Description
     const CStdString& GetDescription() const { return m_strDescription; }
     void SetDescription(const CStdString& strDescription) { m_strDescription = strDescription; }
-    
+
     // Version
     const CStdString& GetVersion() const { return m_strVersion; }
     void SetVersion(const CStdString& strVersion) { m_strVersion = strVersion; }
-    
+
     // Media
     const CStdString& GetMedia() const { return m_strMedia; }
     void SetMedia(const CStdString& strMedia) { m_strMedia = strMedia; }
-    
+
     // Perspective
     const CStdString& GetPerspective() const { return m_strPerspective; }
     void SetPerspective(const CStdString& strPerspective) { m_strPerspective = strPerspective; }
-    
+
     // Controller Type
     const CStdString& GetControllerType() const { return m_strControllerType; }
     void SetControllerType(const CStdString& strControllerType) { m_strControllerType = strControllerType; }
-    
+
     // Rating
     const CStdString& GetRating() const { return m_strRating; }
     void SetRating(const CStdString& strRating) { m_strRating = strRating; }
-    
+
     // Players
-    int GetPlayers() { return m_iPlayers; }
+    int GetPlayers() const { return m_iPlayers; }
     void SetPlayers(int players) { m_iPlayers = players; }
-    
+
     // Favorite
-    bool IsFavorite() { return m_bFavorite; }
+    bool IsFavorite() const { return m_bFavorite; }
     void SetFavorite(bool favorite) { m_bFavorite = favorite; }
     void SetFavorite(int favorite) { m_bFavorite = favorite != 0; }
-    
+
     // Play Time (in seconds)
-    int GetPlayTime() { return m_iPlayTime; }
+    int GetPlayTime() const { return m_iPlayTime; }
     void SetPlayTime(int playTime) { m_iPlayTime = playTime; }
-    
+
+    // Last Played
+    const CDateTime &GetLastPlayed() const { return m_lastPlayed; }
+    void SetLastPlayed(const CDateTime &lastPlayed) { m_lastPlayed = lastPlayed; }
+
+    // Fan Art
+    const CFanart &GetFanart() const { return m_fanart; }
+    void SetFanart(const CFanart &fanart) { m_fanart = fanart; }
+
+    // Genres
+    const std::vector<std::string> &GetGenres() const { return m_genres; }
+    void SetFanart(const std::vector<std::string> &genres) { m_genres = genres; }
+
+    // Collections
+    const std::vector<std::string> &GetCollections() const { return m_collections; }
+    void SetCollections(const std::vector<std::string> &collections) { m_collections = collections; }
+
     virtual void Archive(CArchive &ar);
     virtual void Serialize(CVariant &value);
     virtual void ToSortable(SortItem &sortable);
@@ -157,6 +177,7 @@ namespace GAME_INFO
     CStdString m_strAlternateTitle;
     CStdString m_strCode;
     CStdString m_strRegion;
+    CStdString m_strLanguage;
     CStdString m_strPublisher;
     CStdString m_strDeveloper;
     CStdString m_strReviewer;
@@ -174,10 +195,8 @@ namespace GAME_INFO
     bool       m_bFavorite;
     int        m_iPlayTime; // seconds
     CDateTime  m_lastPlayed;
-    CDateTime  m_dateAdded;
     CFanart    m_fanart;
-
-    std::vector<std::string> m_genres; // TODO
-    std::vector<std::string> m_collections; // TODO
+    std::vector<std::string> m_genres;
+    std::vector<std::string> m_collections;
   };
 }
