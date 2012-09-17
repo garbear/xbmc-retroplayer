@@ -54,6 +54,7 @@
 #include "utils/URIUtils.h"
 #include "Util.h"
 #include "URL.h"
+#include "games/GameDatabase.h"
 
 #include "filesystem/PluginDirectory.h"
 #ifdef HAS_FILESYSTEM_RAR
@@ -213,6 +214,7 @@ const BUILT_IN commands[] = {
 #endif
   { "VideoLibrary.Search",        false,  "Brings up a search dialog which will search the library" },
   { "ToggleDebug",                false,  "Enables/disables debug mode" },
+  { "GameDatabase",               false,  "Testing the game database" }, 
 };
 
 bool CBuiltins::HasCommand(const CStdString& execString)
@@ -1619,6 +1621,13 @@ int CBuiltins::Execute(const CStdString& execString)
     bool debug = g_guiSettings.GetBool("debug.showloginfo");
     g_guiSettings.SetBool("debug.showloginfo", !debug);
     g_advancedSettings.SetDebugMode(!debug);
+  }
+  else if (execute.Equals("gamedatabase"))
+  {
+    CLog::Log(LOGDEBUG, "GameDatabase Builtin: executing");
+    CGameDatabase gameDatabase;
+    gameDatabase.Open();
+    CLog::Log(LOGDEBUG, "GameDatabase Builtin: finished");
   }
   else
     return -1;

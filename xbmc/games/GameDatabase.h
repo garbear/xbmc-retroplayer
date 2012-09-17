@@ -20,6 +20,7 @@
  */
 #pragma once
 
+#include "Game.h"
 #include "dbwrappers/Database.h"
 #include "FileItem.h"
 
@@ -69,6 +70,16 @@ private:
    */
   int RunQuery(const CStdString &sql);
 
+  int AddGame(const CGame& game, bool bCheck = true);
+  int AddPath(const CStdString& strPath);
+  int AddPlatform(const CStdString& strPlatform);
+  int AddPublisher(const CStdString& strPublisher);
+  int AddGenre(const CStdString& strGenre);
+  bool AddGenreGame(int idGame, int idGenre, int order);
+  int AddCollection(const CStdString& strArtist);
+  bool AddCollectionGame(int idGame, int idCollection, int order);
+
+
   /*!
     * @brief Update an old version of the database.
     * @param version The version to update the database from.
@@ -76,5 +87,10 @@ private:
     */
   bool UpdateOldVersion(int version);
 
-
+  std::map<CStdString, int> m_pathCache; // TODO: static vars in function
+  std::map<CStdString, int> m_platformCache;
+  std::map<CStdString, int> m_publisherCache;
+  std::map<CStdString, int> m_genreCache;
+  std::map<CStdString, int> m_collectionCache;
+  //std::map<CStdString, int> m_thumbCache;
 };

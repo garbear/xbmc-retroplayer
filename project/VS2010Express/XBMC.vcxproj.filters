@@ -3056,6 +3056,9 @@
     <ClCompile Include="..\..\xbmc\games\GameDatabase.cpp">
       <Filter>games</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\Game.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -5927,6 +5930,9 @@
       <Filter>games</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameDbUrl.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\Game.h">
       <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>
