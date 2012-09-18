@@ -289,6 +289,9 @@
     <Filter Include="filesystem\GameDatabaseDirectory">
       <UniqueIdentifier>{5a551f80-dfef-4ec7-b96b-d8da10ce6f6d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\windows">
+      <UniqueIdentifier>{b8c36d6f-e298-4592-a2a4-7597b8d105d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3058,6 +3061,9 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\Game.cpp">
       <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGamesBase.cpp">
+      <Filter>games\windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5934,6 +5940,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\Game.h">
       <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGamesBase.h">
+      <Filter>games\windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

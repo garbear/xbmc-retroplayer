@@ -366,6 +366,7 @@
 #define WINDOW_VIDEOS                     10006
 #define WINDOW_SYSTEM_INFORMATION         10007
 #define WINDOW_TEST_PATTERN               10008
+#define WINDOW_GAMES                      10009
 #define WINDOW_SCREEN_CALIBRATION         10011
 
 #define WINDOW_SETTINGS_START             10012

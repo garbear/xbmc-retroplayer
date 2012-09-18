@@ -916,6 +916,13 @@
 						<thumb>-</thumb>
 						<visible>!Skin.HasSetting(HomeMenuNoMusicButton)</visible>
 					</item>
+					<item id="13">
+						<label>15016</label>
+						<onclick>ActivateWindow(Games)</onclick>
+						<icon>-</icon>
+						<thumb>-</thumb>
+						<visible>!Skin.HasSetting(HomeMenuNoGamesButton)</visible>
+					</item>
 					<item id="1">
 						<label>0</label>
 						<onclick condition="!System.Platform.Android">ActivateWindow(Programs,Addons,return)</onclick>
