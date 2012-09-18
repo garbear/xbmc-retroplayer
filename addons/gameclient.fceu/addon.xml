@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="gameclient.fceu"
+       version="1"
+       name="FCEU"
+       provider-name="RetroArch project">
+  <requires>
+    <c-pluff version="0.1"/>
+  </requires>
+  <extension point="xbmc.gameclient"
+             library_linux="libretro-git-fceu.so"
+             library_osx=""
+             library_wingl="libretro-git-fceu-x86.dll"
+             library_windx="libretro-git-fceu-x86.dll">
+    <system name="NES"/>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en"></summary>
+    <description>FCEU is an open source Nintendo Entertainment System emulator.</description>
+    <platform>all</platform>
+  </extension>
+</addon>

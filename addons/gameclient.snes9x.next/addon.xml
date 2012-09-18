@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="gameclient.snes9x.next"
+       version="1"
+       name="SNES9x Next"
+       provider-name="RetroArch project">
+  <requires>
+    <c-pluff version="0.1"/>
+  </requires>
+  <extension point="xbmc.gameclient"
+             library_linux="libretro-git-snes9x-next.so"
+             library_osx=""
+             library_wingl="libretro-git-snes9x-next-x86.dll"
+             library_windx="libretro-git-snes9x-next-x86.dll">
+    <system name="SNES"/>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">SNES9x Next emulator</summary>
+    <description>SNES9x Next is based on SNES9x, but has been heavily modified/speed hacked to achieve better speed.</description>
+    <platform>all</platform>
+  </extension>
+</addon>

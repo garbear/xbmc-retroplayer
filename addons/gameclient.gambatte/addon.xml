@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="gameclient.gambatte"
+       version="1"
+       name="Gambatte"
+       provider-name="RetroArch project">
+  <requires>
+    <c-pluff version="0.1"/>
+  </requires>
+  <extension point="xbmc.gameclient"
+             library_linux="libretro-git-gambatte.so"
+             library_osx=""
+             library_wingl="libretro-git-gambatte-x86.dll"
+             library_windx="libretro-git-gambatte-x86.dll">
+    <system name="GB,GBC,GBA"/>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en"></summary>
+    <description>Gambatte is an accuracy-focused, open-source, cross-platform Game Boy Color and Game Boy Advance emulator written in C++. It is based on hundreds of corner case hardware tests, as well as previous documentation and reverse engineering efforts.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
