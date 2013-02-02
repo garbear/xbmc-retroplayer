@@ -27,6 +27,7 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+#include "threads/SingleLock.h"
 
 #include <limits>
 
@@ -369,12 +370,12 @@ void CGameClient::SetDevice(unsigned int port, unsigned int device)
 
 void CGameClient::RunFrame()
 {
-  // Should use lock_guard here. Cannot find it.
-  m_critSection.lock();
+  // RunFrame() and RewindFrames() can be run
+  // in different threads, must lock.
+  CSingleLock lock(m_critSection);
   if (m_bIsPlaying)
     m_dll.retro_run();
   AppendStateDelta();
-  m_critSection.unlock();
 }
 
 void CGameClient::AppendStateDelta()
@@ -409,7 +410,7 @@ void CGameClient::AppendStateDelta()
 
 int CGameClient::RewindFrames(int frames)
 {
-  m_critSection.lock();
+  CSingleLock lock(m_critSection);
   int frames_rewound = 0;
   while (frames > 0 && m_rewindBuffer.size() > 0)
   {
@@ -427,7 +428,6 @@ int CGameClient::RewindFrames(int frames)
   if (frames_rewound)
     m_dll.retro_unserialize(reinterpret_cast<uint8_t*>(m_lastSaveState.data()), m_serializeSize);
 
-  m_critSection.unlock();
   return frames_rewound;
 }
 
