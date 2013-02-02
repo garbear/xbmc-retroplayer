@@ -305,10 +305,10 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
   if (state_size)
   {
      m_rewindSupported = true;
-     m_rewindMaxFrames = 30.0 * m_frameRate; // Allow up to rougly 30 seconds worth of rewind.
+     m_rewindMaxFrames = 60.0 * m_frameRate; // Allow up to rougly 30 seconds worth of rewind.
      m_serializeSize = state_size;
      m_lastSaveState.resize((state_size + sizeof(uint32_t) - 1) / sizeof(uint32_t));
-     AppendStateDelta();
+     m_dll.retro_serialize(reinterpret_cast<uint8_t*>(m_lastSaveState.data()), m_serializeSize);
   }
 
   // Query the game region
@@ -369,9 +369,12 @@ void CGameClient::SetDevice(unsigned int port, unsigned int device)
 
 void CGameClient::RunFrame()
 {
+  // Should use lock_guard here. Cannot find it.
+  m_critSection.lock();
   if (m_bIsPlaying)
     m_dll.retro_run();
   AppendStateDelta();
+  m_critSection.unlock();
 }
 
 void CGameClient::AppendStateDelta()
@@ -406,6 +409,7 @@ void CGameClient::AppendStateDelta()
 
 int CGameClient::RewindFrames(int frames)
 {
+  m_critSection.lock();
   int frames_rewound = 0;
   while (frames > 0 && m_rewindBuffer.size() > 0)
   {
@@ -423,6 +427,7 @@ int CGameClient::RewindFrames(int frames)
   if (frames_rewound)
     m_dll.retro_unserialize(reinterpret_cast<uint8_t*>(m_lastSaveState.data()), m_serializeSize);
 
+  m_critSection.unlock();
   return frames_rewound;
 }
 

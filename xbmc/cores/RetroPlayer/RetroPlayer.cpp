@@ -304,3 +304,51 @@ void CRetroPlayer::ToFFRW(int iSpeed /* = 0 */)
   if (unpause)
     m_pauseEvent.Set();
 }
+
+void CRetroPlayer::Seek(bool bPlus, bool bLargeStep)
+{
+  if (bPlus) // Cannot seek forward in time.
+    return;
+
+  int seek_seconds = bLargeStep ? 10 : 1;
+  m_gameClient->RewindFrames(seek_seconds * m_gameClient->GetFrameRate());
+}
+
+void CRetroPlayer::SeekPercentage(float fPercent)
+{
+  int max_buffer = m_gameClient->RewindFramesAvailMax();
+  int current_buffer = m_gameClient->RewindFramesAvail();
+  int target_buffer = max_buffer * fPercent / 100.0f;
+  int rewind_frames = current_buffer - target_buffer;
+  if (rewind_frames > 0)
+    m_gameClient->RewindFrames(rewind_frames);
+}
+
+float CRetroPlayer::GetPercentage()
+{
+  int max_buffer = m_gameClient->RewindFramesAvailMax();
+  int current_buffer = m_gameClient->RewindFramesAvail();
+  return (current_buffer * 100.0f) / max_buffer;
+}
+
+void CRetroPlayer::SeekTime(int64_t iTime)
+{
+  int target_frame = 1000 * m_gameClient->GetFrameRate() / iTime;
+  int current_buffer = m_gameClient->RewindFramesAvail();
+  int rewind_frames = current_buffer - target_frame;
+  if (rewind_frames > 0)
+    m_gameClient->RewindFrames(rewind_frames);
+}
+
+int64_t CRetroPlayer::GetTime()
+{
+  int current_buffer = m_gameClient->RewindFramesAvail();
+  return 1000 * current_buffer / m_gameClient->GetFrameRate(); // Millisecs
+}
+
+int64_t CRetroPlayer::GetTotalTime()
+{
+  int max_buffer = m_gameClient->RewindFramesAvailMax();
+  return 1000 * max_buffer / m_gameClient->GetFrameRate(); // Millisecs
+}
+

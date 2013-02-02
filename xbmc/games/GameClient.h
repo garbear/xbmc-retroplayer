@@ -152,6 +152,16 @@ namespace ADDON
     int RewindFrames(int frames);
 
     /**
+     * Returns how many frames it is possible to rewind
+     * with a call to RewindFrames(). */
+    int RewindFramesAvail() const { return m_rewindBuffer.size(); }
+
+    /**
+     * Returns the maximum amount of frames that can ever
+     * be rewound. */
+    int RewindFramesAvailMax() const { return m_rewindMaxFrames; }
+
+    /**
      * Reset the game, if running.
      */
     void Reset();
@@ -179,6 +189,7 @@ namespace ADDON
     double     m_sampleRate; // Audio frequency
     int        m_region; // Region of the loaded game
 
+    CCriticalSection m_critSection;
     bool m_rewindSupported;
     size_t m_rewindMaxFrames;
     size_t m_serializeSize;

@@ -77,8 +77,6 @@ public:
   //virtual float GetAVDelay() { return 0.0f;};
 
   virtual void ToFFRW(int iSpeed = 0);
-  virtual bool CanSeek() { return true; } // Allows FF (and RW, which isn't used)
-  virtual void Seek(bool bPlus = true, bool bLargeStep = false) { }
   // In the future, a "back buffer" will store game history to enable rewinding
   // Braid-style. The size of this back buffer will be known, from which the
   // time can be computed, or perhaps a set time like 30s from which the buffer
@@ -95,6 +93,13 @@ public:
   // SeekTime()
   // GetTime()
   // GetTotalTime()
+  virtual bool CanSeek() { return true; } // Allows FF. (RW might not be possible depending on game.)
+  virtual void Seek(bool bPlus = true, bool bLargeStep = false);
+  virtual void SeekPercentage(float fPercent = 0);
+  virtual float GetPercentage();
+  virtual void SeekTime(int64_t iTime = 0);
+  virtual int64_t GetTime();
+  virtual int64_t GetTotalTime();
 
 
 protected:
@@ -118,6 +123,8 @@ private:
 
   CEvent m_ready;
   CEvent m_pauseEvent;
+
+  CCriticalSection m_critSection;
 
   CFileItem m_file;
   CPlayerOptions m_PlayerOptions;
