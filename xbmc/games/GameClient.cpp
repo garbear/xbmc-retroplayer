@@ -93,6 +93,7 @@ void CGameClient::Initialize()
   m_frameRate = 0.0;
   m_sampleRate = 0.0;
   m_region = -1; // invalid
+  m_rewindSupported = false;
 }
 
 bool CGameClient::LoadSettings(bool bForce /* = false */)
@@ -368,6 +369,19 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
   m_frameRate = fps;
   m_sampleRate = sampleRate;
 
+  m_rewindBuffer.clear();
+  // Check if save states are supported, so rewind can be used.
+  // TODO: Rewind should be optional as it has some computational overhead.
+  size_t state_size = m_dll.retro_serialize_size();
+  if (state_size)
+  {
+     m_rewindSupported = true;
+     m_rewindMaxFrames = 60.0 * m_frameRate; // Allow up to rougly 30 seconds worth of rewind.
+     m_serializeSize = state_size;
+     m_lastSaveState.resize((state_size + sizeof(uint32_t) - 1) / sizeof(uint32_t));
+     m_dll.retro_serialize(reinterpret_cast<uint8_t*>(m_lastSaveState.data()), m_serializeSize);
+  }
+
   // Query the game region
   switch (m_dll.retro_get_region())
   {
@@ -433,8 +447,65 @@ void CGameClient::SetDevice(unsigned int port, unsigned int device)
 
 void CGameClient::RunFrame()
 {
+  // RunFrame() and RewindFrames() can be run
+  // in different threads, must lock.
+  CSingleLock lock(m_critSection);
   if (m_bIsPlaying)
     m_dll.retro_run();
+  AppendStateDelta();
+}
+
+void CGameClient::AppendStateDelta()
+{
+  if (!m_rewindSupported)
+    return;
+
+  std::vector<uint32_t> stateBuffer(m_lastSaveState.size());
+  bool success = m_dll.retro_serialize(reinterpret_cast<uint8_t*>(stateBuffer.data()), m_serializeSize);
+  if (!success)
+  {
+    CLog::Log(LOGERROR, "GameClient core claimed it could serialize, but failed.");
+    return;
+  }
+
+  m_rewindBuffer.push_back(DeltaPairVector());
+  DeltaPairVector& buffer = m_rewindBuffer.back();
+
+  size_t stateBufferSize = stateBuffer.size();
+  for (size_t i = 0; i < stateBufferSize; i++)
+  {
+    uint32_t xor_val = m_lastSaveState[i] ^ stateBuffer[i];
+    if (xor_val)
+      buffer.push_back(DeltaPair(i, xor_val));
+  }
+
+  m_lastSaveState = stateBuffer; // Can be optimized with std::move() in C++11 or some ring-buffer-esque thing.
+
+  while (m_rewindBuffer.size() > m_rewindMaxFrames)
+    m_rewindBuffer.pop_front();
+}
+
+int CGameClient::RewindFrames(int frames)
+{
+  CSingleLock lock(m_critSection);
+  int frames_rewound = 0;
+  while (frames > 0 && m_rewindBuffer.size() > 0)
+  {
+    const DeltaPairVector& buffer = m_rewindBuffer.back();
+
+    size_t bufferSize = buffer.size();
+    for (size_t i = 0; i < bufferSize; i++)
+      m_lastSaveState[buffer[i].first] ^= buffer[i].second;
+
+    frames_rewound++;
+    frames--;
+    m_rewindBuffer.pop_back();
+  }
+
+  if (frames_rewound)
+    m_dll.retro_unserialize(reinterpret_cast<uint8_t*>(m_lastSaveState.data()), m_serializeSize);
+
+  return frames_rewound;
 }
 
 void CGameClient::Reset()
