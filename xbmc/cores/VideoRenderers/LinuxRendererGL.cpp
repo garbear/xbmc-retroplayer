@@ -797,6 +797,7 @@ unsigned int CLinuxRendererGL::PreInit()
   m_formats.push_back(RENDER_FMT_NV12);
   m_formats.push_back(RENDER_FMT_YUYV422);
   m_formats.push_back(RENDER_FMT_UYVY422);
+  m_formats.push_back(RENDER_FMT_YUV444P);
 #ifdef TARGET_DARWIN
   m_formats.push_back(RENDER_FMT_CVBREF);
 #endif
@@ -1106,6 +1107,12 @@ void CLinuxRendererGL::LoadShaders(int field)
     m_textureUpload = &CLinuxRendererGL::UploadCVRefTexture;
     m_textureCreate = &CLinuxRendererGL::CreateCVRefTexture;
     m_textureDelete = &CLinuxRendererGL::DeleteCVRefTexture;
+  }
+  else if (m_format == RENDER_FMT_YUV444P)
+  {
+    m_textureUpload = &CLinuxRendererGL::UploadYV12Texture;
+    m_textureCreate = &CLinuxRendererGL::CreateYUV444PTexture;
+    m_textureDelete = &CLinuxRendererGL::DeleteYV12Texture;
   }
   else
   {
@@ -1830,6 +1837,16 @@ void CLinuxRendererGL::DeleteYV12Texture(int index)
 
 bool CLinuxRendererGL::CreateYV12Texture(int index)
 {
+  return CreateYV12TextureChromaShift(index, 1, 1);
+}
+
+bool CLinuxRendererGL::CreateYUV444PTexture(int index)
+{
+  return CreateYV12TextureChromaShift(index, 0, 0);
+}
+
+bool CLinuxRendererGL::CreateYV12TextureChromaShift(int index, int chromaShiftX, int chromaShiftY)
+{
   /* since we also want the field textures, pitch must be texture aligned */
   unsigned p;
 
@@ -1841,8 +1858,8 @@ bool CLinuxRendererGL::CreateYV12Texture(int index)
 
   im.height = m_sourceHeight;
   im.width  = m_sourceWidth;
-  im.cshift_x = 1;
-  im.cshift_y = 1;
+  im.cshift_x = chromaShiftX;
+  im.cshift_y = chromaShiftY;
 
 
   if(m_format == RENDER_FMT_YUV420P16
@@ -2873,6 +2890,15 @@ void CLinuxRendererGL::ToRGBFrame(YV12Image* im, unsigned flipIndexPlane, unsign
       srcStride[i] = im->stride[i];
     }
   }
+  else if (m_format == RENDER_FMT_YUV444P)
+  {
+    srcFormat = PIX_FMT_YUV444P;
+    for (int i = 0; i < 3; i++)
+    {
+      src[i]       = im->plane[i];
+      srcStride[i] = im->stride[i];
+    }
+  }
   else if (m_format == RENDER_FMT_NV12)
   {
     srcFormat = PIX_FMT_NV12;
@@ -2939,6 +2965,17 @@ void CLinuxRendererGL::ToRGBFields(YV12Image* im, unsigned flipIndexPlaneTop, un
   if (m_format == RENDER_FMT_YUV420P)
   {
     srcFormat = PIX_FMT_YUV420P;
+    for (int i = 0; i < 3; i++)
+    {
+      srcTop[i]       = im->plane[i];
+      srcStrideTop[i] = im->stride[i] * 2;
+      srcBot[i]       = im->plane[i] + im->stride[i];
+      srcStrideBot[i] = im->stride[i] * 2;
+    }
+  }
+  if (m_format == RENDER_FMT_YUV444P)
+  {
+    srcFormat = PIX_FMT_YUV444P;
     for (int i = 0; i < 3; i++)
     {
       srcTop[i]       = im->plane[i];

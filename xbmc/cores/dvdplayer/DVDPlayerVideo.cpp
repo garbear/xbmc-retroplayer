@@ -1094,6 +1094,9 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
       case RENDER_FMT_YUV420P:
         formatstr = "YV12";
         break;
+      case RENDER_FMT_YUV444P:
+        formatstr = "YUV444P";
+        break;
       case RENDER_FMT_YUV420P16:
         formatstr = "YV12P16";
         break;

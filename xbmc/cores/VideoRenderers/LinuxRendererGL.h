@@ -183,6 +183,10 @@ protected:
   void UploadYV12Texture(int index);
   void DeleteYV12Texture(int index);
   bool CreateYV12Texture(int index);
+  bool CreateYV12TextureChromaShift(int index, int chromaShiftX, int chromaShiftY);
+
+  // Same as YV12 except for texture creation.
+  bool CreateYUV444PTexture(int index);
 
   void UploadNV12Texture(int index);
   void DeleteNV12Texture(int index);

@@ -92,7 +92,7 @@ void CRetroPlayerVideo::Process()
       }
     } // End critical section
 
-    pPicture = CDVDCodecUtils::AllocatePicture(frame.width, frame.height);
+    pPicture = CDVDCodecUtils::AllocatePictureChromaShift(frame.width, frame.height, 0, 0);
     if (!pPicture)
     {
       CLog::Log(LOGERROR, "RetroPlayerVideo: Failed to allocate picture");
@@ -101,7 +101,7 @@ void CRetroPlayerVideo::Process()
 
     pPicture->dts = DVD_NOPTS_VALUE;
     pPicture->pts = DVD_NOPTS_VALUE;
-    pPicture->format = RENDER_FMT_YUV420P; // PIX_FMT_YUV420P
+    pPicture->format = RENDER_FMT_YUV444P; // PIX_FMT_YUV444P
     pPicture->color_range  = 0; // *not* CONF_FLAGS_YUV_FULLRANGE
     pPicture->color_matrix = 4; // CONF_FLAGS_YUVCOEF_BT601
     pPicture->iFlags  = DVP_FLAG_ALLOCATED;
@@ -213,8 +213,8 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
 
     m_swsContext = m_dllSwScale.sws_getContext(
       picture.iWidth,    picture.iHeight,    format,
-      picture.iWidth, picture.iHeight, PIX_FMT_YUV420P,
-      SWS_FAST_BILINEAR | SwScaleCPUFlags(), NULL, NULL, NULL
+      picture.iWidth, picture.iHeight, PIX_FMT_YUV444P,
+      SWS_POINT | SwScaleCPUFlags(), NULL, NULL, NULL
     );
   }
   return true;

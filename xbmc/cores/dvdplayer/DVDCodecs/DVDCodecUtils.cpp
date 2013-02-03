@@ -25,8 +25,8 @@
 #include "utils/fastmemcpy.h"
 #include "DllSwScale.h"
 
-// allocate a new picture (PIX_FMT_YUV420P)
-DVDVideoPicture* CDVDCodecUtils::AllocatePicture(int iWidth, int iHeight)
+// Allows allocating non-sub sampled frames (YUV444P, etc).
+DVDVideoPicture* CDVDCodecUtils::AllocatePictureChromaShift(int iWidth, int iHeight, int chromaShiftX, int chromaShiftY)
 {
   DVDVideoPicture* pPicture = new DVDVideoPicture;
   if (pPicture)
@@ -34,8 +34,8 @@ DVDVideoPicture* CDVDCodecUtils::AllocatePicture(int iWidth, int iHeight)
     pPicture->iWidth = iWidth;
     pPicture->iHeight = iHeight;
 
-    int w = iWidth / 2;
-    int h = iHeight / 2;
+    int w = iWidth >> chromaShiftX;
+    int h = iHeight >> chromaShiftY;
     int size = w * h;
     int totalsize = (iWidth * iHeight) + size * 2;
     BYTE* data = new BYTE[totalsize];
@@ -58,6 +58,12 @@ DVDVideoPicture* CDVDCodecUtils::AllocatePicture(int iWidth, int iHeight)
     }
   }
   return pPicture;
+}
+
+// allocate a new picture (PIX_FMT_YUV420P)
+DVDVideoPicture* CDVDCodecUtils::AllocatePicture(int iWidth, int iHeight)
+{
+  return AllocatePictureChromaShift(iWidth, iHeight, 1, 1);
 }
 
 void CDVDCodecUtils::FreePicture(DVDVideoPicture* pPicture)
