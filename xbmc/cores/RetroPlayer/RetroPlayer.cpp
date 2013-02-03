@@ -317,6 +317,9 @@ void CRetroPlayer::Seek(bool bPlus, bool bLargeStep)
 void CRetroPlayer::SeekPercentage(float fPercent)
 {
   int max_buffer = m_gameClient->RewindFramesAvailMax();
+  if (!max_buffer) // Rewind not supported for game.
+     return;
+
   int current_buffer = m_gameClient->RewindFramesAvail();
   int target_buffer = max_buffer * fPercent / 100.0f;
   int rewind_frames = current_buffer - target_buffer;
@@ -327,14 +330,20 @@ void CRetroPlayer::SeekPercentage(float fPercent)
 float CRetroPlayer::GetPercentage()
 {
   int max_buffer = m_gameClient->RewindFramesAvailMax();
+  if (!max_buffer)
+     return 0.0f;
+
   int current_buffer = m_gameClient->RewindFramesAvail();
   return (current_buffer * 100.0f) / max_buffer;
 }
 
 void CRetroPlayer::SeekTime(int64_t iTime)
 {
-  int target_frame = 1000 * m_gameClient->GetFrameRate() / iTime;
   int current_buffer = m_gameClient->RewindFramesAvail();
+  if (!current_buffer) // Rewind not supported for game.
+     return;
+
+  int target_frame = 1000 * m_gameClient->GetFrameRate() / iTime;
   int rewind_frames = current_buffer - target_frame;
   if (rewind_frames > 0)
     m_gameClient->RewindFrames(rewind_frames);
