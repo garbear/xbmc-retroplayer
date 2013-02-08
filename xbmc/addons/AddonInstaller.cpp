@@ -41,6 +41,7 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "URL.h"
+#include "games/GameManager.h"
 #include "pvr/PVRManager.h"
 
 using namespace std;
@@ -700,6 +701,13 @@ void CAddonInstallJob::OnPostInstall(bool reloadAddon)
   {
     // (re)start the pvr manager
     PVR::CPVRManager::Get().Start(true);
+  }
+
+  // Update the cache of game client addons used in the ROM-launching selection process
+  if (m_addon->Type() == ADDON_GAMEDLL)
+  {
+    GameClientPtr gameClient = boost::dynamic_pointer_cast<CGameClient>(m_addon);
+    CGameManager::Get().RegisterAddon(gameClient);
   }
 }
 

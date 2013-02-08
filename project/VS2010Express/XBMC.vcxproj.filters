@@ -259,6 +259,12 @@
     <Filter Include="utils\test">
       <UniqueIdentifier>{216a634b-e689-418c-aca8-a3abbd2c0387}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games">
+      <UniqueIdentifier>{c083ff38-c5f5-4997-b2c3-4deda753320e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\libretro">
+      <UniqueIdentifier>{d117ceda-5fb0-4206-aca8-ef4f98aa4bd0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="filesystem\test">
       <UniqueIdentifier>{6a33362b-e68d-45ec-8bcc-057d8caf5de6}</UniqueIdentifier>
     </Filter>
@@ -2663,6 +2669,9 @@
     <ClCompile Include="..\..\xbmc\utils\test\Testfft.cpp">
       <Filter>utils\test</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameClient.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\test\TestFileOperationJob.cpp">
       <Filter>utils\test</Filter>
     </ClCompile>
@@ -2803,6 +2812,9 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\network\upnp\UPnPServer.cpp">
       <Filter>network\upnp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameManager.cpp">
+      <Filter>games</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xbmc\interfaces\legacy\Addon.cpp">
       <Filter>interfaces\legacy</Filter>
@@ -5596,6 +5608,15 @@
     <ClInclude Include="..\..\xbmc\test\TestUtils.h">
       <Filter>test</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameClient.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameClientDLL.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\libretro\libretro.h">
+      <Filter>games\libretro</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\xbmc\network\upnp\UPnP.h">
       <Filter>network\upnp</Filter>
     </ClInclude>
@@ -5607,6 +5628,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\network\upnp\UPnPServer.h">
       <Filter>network\upnp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameManager.h">
+      <Filter>games</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\interfaces\legacy\Addon.h">
       <Filter>interfaces\legacy</Filter>
