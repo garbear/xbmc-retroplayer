@@ -73,8 +73,8 @@ void CRetroPlayerVideo::Process()
       if (!m_frames.size())
       {
         lock.Leave();
-        // Assume a frame is late if the jitter is double the frame's display time
-        if (!m_frameReady.WaitMSec((int)(1000 * 2 / m_framerate)))
+        // Assume a frame is late if the jitter is ten times the frame's display time
+        if (!m_frameReady.WaitMSec((int)(1000 * 10 / m_framerate)))
           m_frameReady.Reset();
         else
           CLog::Log(LOGNOTICE, "RetroPlayerVideo: Timeout waiting for frame, status is %s",
