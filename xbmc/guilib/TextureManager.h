@@ -27,6 +27,7 @@
 #define GUILIB_TEXTUREMANAGER_H
 
 #include <vector>
+#include "Texture.h"
 #include "TextureBundle.h"
 #include "threads/CriticalSection.h"
 
@@ -109,6 +110,12 @@ public:
   bool HasTexture(const CStdString &textureName, CStdString *path = NULL, int *bundle = NULL, int *size = NULL);
   bool CanLoad(const CStdString &texturePath) const; ///< Returns true if the texture manager can load this texture
   int Load(const CStdString& strTextureName, bool checkBundleOnly = false);
+  /**
+   * Instead of loading from file, load from a CTexture in memory. The return
+   * value is a UID key that can be used in place of a file name to retrieve
+   * the texture in the future.
+   */
+  CStdString LoadFromTexture(CTexture *texture);
   const CTextureArray& GetTexture(const CStdString& strTextureName);
   void ReleaseTexture(const CStdString& strTextureName);
   void Cleanup();

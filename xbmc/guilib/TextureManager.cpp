@@ -19,10 +19,10 @@
 */
 
 #include "TextureManager.h"
-#include "Texture.h"
 #include "AnimatedGif.h"
 #include "GraphicContext.h"
 #include "threads/SingleLock.h"
+#include "threads/SystemClock.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -427,6 +427,28 @@ int CGUITextureManager::Load(const CStdString& strTextureName, bool checkBundleO
   return 1;
 }
 
+CStdString CGUITextureManager::LoadFromTexture(CTexture *texture)
+{
+  if (!texture)
+    return "";
+
+  // Generate a UID based on the current time
+  CStdString strTextureName;
+  strTextureName.Format("%010i", XbmcThreads::SystemClockMillis());
+
+  CTextureMap *pMap = new CTextureMap(strTextureName, texture->GetWidth(), texture->GetHeight(), 0);
+  if (pMap)
+  {
+    pMap->Add(texture, 100);
+
+    // Lock here, we will do stuff that could break rendering
+    CSingleLock lock(g_graphicsContext);
+
+    m_vecTextures.push_back(pMap);
+    return strTextureName;
+  }
+  return "";
+}
 
 void CGUITextureManager::ReleaseTexture(const CStdString& strTextureName)
 {

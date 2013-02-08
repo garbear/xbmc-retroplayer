@@ -29,6 +29,7 @@
  */
 
 #include "GUIControl.h"
+#include "GUITexture.h"
 
 /*!
  \ingroup controls
@@ -44,8 +45,14 @@ public:
 
   virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
   virtual void Render();
+  virtual void UpdateVisibility(const CGUIListItem *item = NULL);
+  virtual void AllocResources();
+  virtual void FreeResources(bool immediately = false);
   virtual EVENT_RESULT OnMouseEvent(const CPoint &point, const CMouseEvent &event);
   virtual bool CanFocus() const;
   virtual bool CanFocusFromPoint(const CPoint &point) const;
+
+private:
+  CGUITexture *m_gameTexture;
 };
 #endif

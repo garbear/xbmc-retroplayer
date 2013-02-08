@@ -2296,7 +2296,7 @@ bool CGUIInfoManager::GetBool(int condition1, int contextWindow, const CGUIListI
       bReturn = g_application.IsPlayingAudio();
       break;
     case PLAYER_HAS_VIDEO:
-      bReturn = g_application.IsPlayingVideo();
+      bReturn = g_application.IsPlayingVideo() || g_application.IsPlayingGame();
       break;
     case PLAYER_PLAYING:
       bReturn = !g_application.IsPaused() && (g_application.GetPlaySpeed() == 1);

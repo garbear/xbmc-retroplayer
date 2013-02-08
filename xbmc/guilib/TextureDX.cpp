@@ -60,6 +60,12 @@ void CDXTexture::CreateTextureObject()
   case XB_FMT_A8:
     format = D3DFMT_A8;
     break;
+  case XB_FMT_RGB1555:
+    format = D3DFMT_X1R5G5B5;
+    break;
+  case XB_FMT_R5G6B5:
+    format = D3DFMT_R5G6B5;
+    break;
   default:
     return;
   }
