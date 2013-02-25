@@ -184,6 +184,7 @@ public:
   CViewState m_viewStatePictures;
   CViewState m_viewStateMusicFiles;
   CViewState m_viewStateVideoFiles;
+  CViewState m_viewStateGames;
 
   bool m_bMyMusicPlaylistRepeat;
   bool m_bMyMusicPlaylistShuffle;
@@ -233,6 +234,7 @@ public:
   VECSOURCES m_fileSources;
   VECSOURCES m_musicSources;
   VECSOURCES m_videoSources;
+  VECSOURCES m_gameSources;
 
   CStdString m_defaultProgramSource;
   CStdString m_defaultMusicSource;

@@ -25,6 +25,8 @@
 #include "FileItem.h"
 #include "threads/CriticalSection.h"
 
+#include <set>
+#include <vector>
 
 /**
  * The main function of CGameManager is resolving file items into CGameClients.
@@ -84,12 +86,16 @@ public:
    */
   void GetGameClientIDs(const CFileItem& file, CStdStringArray &candidates) const;
 
+  void GetExtensions(std::vector<CStdString> &exts);
+
 private:
   /**
    * If we can launch the file with gameClient, ask the user if they would
    * like to do so.
    */
   void LaunchFile(CFileItem file, const CStdString &strGameClient) const;
+
+  void LoadExtensionsFromDB();
 
   std::vector<ADDON::GameClientConfig> m_gameClients;
   CCriticalSection m_critSection;

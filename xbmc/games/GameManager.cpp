@@ -184,14 +184,7 @@ bool CGameManager::IsGame(CStdString path)
   // If RegisterRemoteAddons() hasn't been called yet, initialize
   // m_remoteExtensions with addons from the database.
   if (m_remoteExtensions.empty())
-  {
-    CLog::Log(LOGDEBUG, "CGameManager: Initializing remote extensions cache");
-    VECADDONS addons;
-    CAddonDatabase database;
-    database.Open();
-    database.GetAddons(addons);
-    RegisterRemoteAddons(addons, true);
-  }
+    LoadExtensionsFromDB();
 
   // Get the file extension (we want .zip if the file is a top-level zip directory)
   CStdString extension(URIUtils::GetExtension(CURL(path).GetFileNameWithoutPath()));
@@ -200,6 +193,23 @@ bool CGameManager::IsGame(CStdString path)
     return false;
 
   return m_remoteExtensions.find(extension) != m_remoteExtensions.end();
+}
+
+void CGameManager::LoadExtensionsFromDB()
+{
+    CLog::Log(LOGDEBUG, "CGameManager: Initializing remote extensions cache from database");
+    VECADDONS addons;
+    CAddonDatabase database;
+    database.Open();
+    database.GetAddons(addons);
+    RegisterRemoteAddons(addons, true);
+}
+
+void CGameManager::GetExtensions(std::vector<CStdString> &exts)
+{
+  if (m_remoteExtensions.empty())
+    LoadExtensionsFromDB();
+  exts.insert(exts.end(), m_remoteExtensions.begin(), m_remoteExtensions.end());
 }
 
 void CGameManager::QueueFile(const CFileItem &file)

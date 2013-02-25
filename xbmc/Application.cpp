@@ -209,6 +209,8 @@
 #include "music/dialogs/GUIDialogMusicOverlay.h"
 #include "video/dialogs/GUIDialogVideoOverlay.h"
 #include "video/VideoInfoScanner.h"
+#include "games/windows/GUIWindowGames.h"
+//#include "games/dialogs/GUIDialogGameInfo.h"
 
 // Dialog includes
 #include "music/dialogs/GUIDialogMusicOSD.h"
@@ -1336,6 +1338,9 @@ bool CApplication::Initialize()
     g_windowManager.Add(new CGUIWindowScreensaver);
     g_windowManager.Add(new CGUIWindowWeather);
     g_windowManager.Add(new CGUIWindowStartup);
+
+    g_windowManager.Add(new CGUIWindowGames);
+    //g_windowManager.Add(new CGUIDialogGameInfo);
 
     /* window id's 3000 - 3100 are reserved for python */
 

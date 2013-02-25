@@ -195,6 +195,8 @@ VECSOURCES *CSettings::GetSourcesFromType(const CStdString &type)
     return &m_videoSources;
   else if (type == "pictures")
     return &m_pictureSources;
+  else if (type == "games")
+    return &m_gameSources;
 
   return NULL;
 }
@@ -714,6 +716,7 @@ bool CSettings::LoadSettings(const CStdString& strSettingsFile)
     GetViewState(pElement, "pictures", m_viewStatePictures, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "videofiles", m_viewStateVideoFiles, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
     GetViewState(pElement, "musicfiles", m_viewStateMusicFiles, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
+    GetViewState(pElement, "games", m_viewStateGames, SORT_METHOD_LABEL, DEFAULT_VIEW_AUTO);
   }
 
   // general settings
@@ -909,6 +912,7 @@ bool CSettings::SaveSettings(const CStdString& strSettingsFile, CGUISettings *lo
     SetViewState(pNode, "pictures", m_viewStatePictures);
     SetViewState(pNode, "videofiles", m_viewStateVideoFiles);
     SetViewState(pNode, "musicfiles", m_viewStateMusicFiles);
+    SetViewState(pNode, "games", m_viewStateGames);
   }
 
   // general settings
@@ -1338,6 +1342,7 @@ bool CSettings::SaveSources()
   SetSources(pRoot, "music", m_musicSources, m_defaultMusicSource);
   SetSources(pRoot, "pictures", m_pictureSources, m_defaultPictureSource);
   SetSources(pRoot, "files", m_fileSources, m_defaultFileSource);
+  SetSources(pRoot, "games", m_gameSources, "");
 
   return doc.SaveFile(GetSourcesFile());
 }
@@ -1384,6 +1389,7 @@ void CSettings::LoadSources()
   m_pictureSources.clear();
   m_programSources.clear();
   m_videoSources.clear();
+  m_gameSources.clear();
 
   CStdString strSourcesFile = GetSourcesFile();
   CLog::Log(LOGNOTICE, "Loading media sources from %s", strSourcesFile.c_str());
@@ -1409,6 +1415,7 @@ void CSettings::LoadSources()
     GetSources(pRootElement, "files", m_fileSources, m_defaultFileSource);
     GetSources(pRootElement, "music", m_musicSources, m_defaultMusicSource);
     GetSources(pRootElement, "video", m_videoSources, dummy);
+    GetSources(pRootElement, "games", m_gameSources, dummy);
   }
 }
 
@@ -1492,6 +1499,7 @@ void CSettings::Clear()
   m_fileSources.clear();
   m_musicSources.clear();
   m_videoSources.clear();
+  m_gameSources.clear();
 
   m_defaultProgramSource.clear();
   m_defaultMusicSource.clear();
