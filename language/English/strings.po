@@ -5952,13 +5952,21 @@ msgctxt "#15020"
 msgid "Allow emulators to load .zip files (debug)"
 msgstr ""
 
-#empty string with id 15021
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15021"
+msgid "Enable rewind if the emulator supports it"
+msgstr ""
 
 msgctxt "#15052"
 msgid "Password"
 msgstr ""
 
-#empty strings from id 15053 to 15099
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15023"
+msgid "Maximum rewind time"
+msgstr ""
+
+#empty strings from id 15054 to 15099
 
 msgctxt "#15100"
 msgid "Library"

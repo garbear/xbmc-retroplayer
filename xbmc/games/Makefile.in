@@ -1,5 +1,6 @@
 SRCS=GameClient.cpp \
-     GameManager.cpp
+     GameManager.cpp \
+     SerialState.cpp
 
 LIB=games.a
 
