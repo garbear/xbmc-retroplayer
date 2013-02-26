@@ -145,7 +145,7 @@ namespace XBMCAddon
       /**
        * setInfo(type, infoLabels) -- Sets the listitem's infoLabels.
        * 
-       * type              : string - type of media(video/music/pictures).
+       * type              : string - type of media(video/music/pictures/game).
        * infoLabels        : dictionary - pairs of { label: value }.
        * 
        * *Note, To set pictures exif info, prepend 'exif:' to the label. Exif values must be passed
@@ -214,6 +214,13 @@ namespace XBMCAddon
        *     title         : string (In the last summer-1)
        *     picturepath   : string (/home/username/pictures/img001.jpg)
        *     exif*         : string (See CPictureInfoTag::TranslateString in PictureInfoTag.cpp for valid strings)
+       * 
+       * Game Value:
+       *     title         : string (Pokemon Blue)
+       *     platform      : string (Atari 2600) - see GameManager.cpp for a list of platforms
+       *     region        : string (USA and Canada) - in the future, this might be a single letter (U/J)
+       *     publisher     : string (Nintendo)
+       *     gameclient    : string (gameclient.snes9x.next)
        * 
        * example:
        *   - self.list.getSelectedItem().setInfo('video', { 'Genre': 'Comedy' })\n
