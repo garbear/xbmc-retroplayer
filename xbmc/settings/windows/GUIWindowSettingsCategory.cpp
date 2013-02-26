@@ -999,6 +999,12 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       if (pControl)
         pControl->SetEnabled(CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0);
     }
+    else if (strSetting.Equals("games.rewindtime"))
+    {
+      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      if (pControl)
+        pControl->SetEnabled(g_guiSettings.GetBool("games.enablerewind"));
+    }
   }
 
   g_guiSettings.SetChanged();
