@@ -37,9 +37,10 @@ namespace XBMCAddon
     /**
      * Addon class.
      * 
-     * Addon(id) -- Creates a new Addon class.
+     * Addon([id, installed) -- Creates a new Addon class.
      * 
-     * id          : string - id of the addon.
+     * id          : [opt] string - id of the addon (default is current addon id)
+     * installed   : [opt] boolean - False to use an uninstalled addon (default=True)
      * 
      * *Note, You can use the above as a keyword.
      * 
@@ -58,14 +59,15 @@ namespace XBMCAddon
       /**
        * Addon class.
        * 
-       * Addon(id) -- Creates a new Addon class.
+       * Addon([id, installed]) -- Creates a new Addon class.
        * 
-       * id          : string - id of the addon.
+       * id          : [opt] string - id of the addon (default is current addon id)
+       * installed   : [opt] boolean - False to use an uninstalled addon (default=True)
        * 
        * example:
        *  - self.Addon = xbmcaddon.Addon(id='script.recentlyadded')
        */
-      Addon(const char* id = NULL) throw (AddonException);
+      Addon(const char* id = NULL, bool installed = true) throw (AddonException);
 
       virtual ~Addon();
 
