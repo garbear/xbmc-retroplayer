@@ -57,6 +57,8 @@
 #include "utils/Variant.h"
 #include "music/karaoke/karaokelyricsfactory.h"
 #include "utils/Mime.h"
+#include "games/tags/GameInfoTag.h"
+#include "games/tags/GameInfoTagLoader.h"
 
 using namespace std;
 using namespace XFILE;
@@ -64,6 +66,7 @@ using namespace PLAYLIST;
 using namespace MUSIC_INFO;
 using namespace PVR;
 using namespace EPG;
+using namespace GAME_INFO;
 
 CFileItem::CFileItem(const CSong& song)
 {
@@ -74,6 +77,7 @@ CFileItem::CFileItem(const CSong& song)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
 
   SetFromSong(song);
@@ -88,6 +92,7 @@ CFileItem::CFileItem(const CStdString &path, const CAlbum& album)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
 
   m_strPath = path;
@@ -104,6 +109,7 @@ CFileItem::CFileItem(const CMusicInfoTag& music)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
   SetLabel(music.GetTitle());
   m_strPath = music.GetURL();
@@ -121,6 +127,7 @@ CFileItem::CFileItem(const CVideoInfoTag& movie)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
 
   SetFromVideoInfoTag(movie);
@@ -249,6 +256,7 @@ CFileItem::CFileItem(const CArtist& artist)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
   SetLabel(artist.strArtist);
   m_strPath = artist.strArtist;
@@ -266,6 +274,7 @@ CFileItem::CFileItem(const CGenre& genre)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
   SetLabel(genre.strGenre);
   m_strPath = genre.strGenre;
@@ -283,6 +292,7 @@ CFileItem::CFileItem(const CFileItem& item): CGUIListItem()
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   *this = item;
 }
 
@@ -295,6 +305,7 @@ CFileItem::CFileItem(const CGUIListItem& item)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
   // not particularly pretty, but it gets around the issue of Reset() defaulting
   // parameters in the CGUIListItem base class.
@@ -310,6 +321,7 @@ CFileItem::CFileItem(void)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
 }
 
@@ -323,6 +335,7 @@ CFileItem::CFileItem(const CStdString& strLabel)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
   SetLabel(strLabel);
 }
@@ -336,6 +349,7 @@ CFileItem::CFileItem(const CStdString& strPath, bool bIsFolder)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
   m_strPath = strPath;
   m_bIsFolder = bIsFolder;
@@ -353,6 +367,7 @@ CFileItem::CFileItem(const CMediaSource& share)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
   Reset();
   m_bIsFolder = true;
   m_bIsShareOrDrive = true;
@@ -383,6 +398,7 @@ CFileItem::~CFileItem(void)
   delete m_pvrRecordingInfoTag;
   delete m_pvrTimerInfoTag;
   delete m_pictureInfoTag;
+  delete m_gameInfoTag;
 
   m_musicInfoTag = NULL;
   m_videoInfoTag = NULL;
@@ -391,6 +407,7 @@ CFileItem::~CFileItem(void)
   m_pvrRecordingInfoTag = NULL;
   m_pvrTimerInfoTag = NULL;
   m_pictureInfoTag = NULL;
+  m_gameInfoTag = NULL;
 }
 
 const CFileItem& CFileItem::operator=(const CFileItem& item)
@@ -497,6 +514,18 @@ const CFileItem& CFileItem::operator=(const CFileItem& item)
     m_pictureInfoTag = NULL;
   }
 
+ if (item.HasGameInfoTag())
+  {
+    m_gameInfoTag = GetGameInfoTag();
+    if (m_gameInfoTag)
+      *m_gameInfoTag = *item.m_gameInfoTag;
+  }
+  else
+  {
+    delete m_gameInfoTag;
+    m_gameInfoTag = NULL;
+  }
+
   m_lStartOffset = item.m_lStartOffset;
   m_lStartPartNumber = item.m_lStartPartNumber;
   m_lEndOffset = item.m_lEndOffset;
@@ -559,6 +588,8 @@ void CFileItem::Reset()
   m_pvrTimerInfoTag=NULL;
   delete m_pictureInfoTag;
   m_pictureInfoTag=NULL;
+  delete m_gameInfoTag;
+  m_gameInfoTag = NULL;
   m_extrainfo.Empty();
   m_specialSort = SortSpecialNone;
   ClearProperties();
@@ -615,6 +646,13 @@ void CFileItem::Archive(CArchive& ar)
     }
     else
       ar << 0;
+    if (m_gameInfoTag)
+    {
+      ar << 1;
+      ar << *m_gameInfoTag;
+    }
+    else
+      ar << 0;
   }
   else
   {
@@ -654,6 +692,9 @@ void CFileItem::Archive(CArchive& ar)
     ar >> iType;
     if (iType == 1)
       ar >> *GetPictureInfoTag();
+    ar >> iType;
+    if (iType == 1)
+      ar >> *GetGameInfoTag();
 
     SetInvalid();
   }
@@ -679,6 +720,9 @@ void CFileItem::Serialize(CVariant& value) const
 
   if (m_pictureInfoTag)
     (*m_pictureInfoTag).Serialize(value["pictureInfoTag"]);
+
+  if (m_gameInfoTag)
+    (*m_gameInfoTag).Serialize(value["gameInfoTag"]);
 }
 
 void CFileItem::ToSortable(SortItem &sortable)
@@ -720,6 +764,9 @@ void CFileItem::ToSortable(SortItem &sortable)
 
   if (HasPVRChannelInfoTag())
     GetPVRChannelInfoTag()->ToSortable(sortable);
+
+  if (HasGameInfoTag())
+    GetGameInfoTag()->ToSortable(sortable);
 }
 
 bool CFileItem::Exists(bool bUseCache /* = true */) const
@@ -764,6 +811,7 @@ bool CFileItem::IsVideo() const
   if (HasMusicInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
   if (IsPVRRecording())  return true;
+  if (HasGameInfoTag()) return false;
 
   if (IsHDHomeRun() || IsTuxBox() || URIUtils::IsDVD(m_strPath) || IsSlingbox())
     return true;
@@ -841,6 +889,7 @@ bool CFileItem::IsAudio() const
   if (HasMusicInfoTag()) return true;
   if (HasVideoInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
+  if (HasGameInfoTag()) return false;
   if (IsCDDA()) return true;
 
   CStdString extension;
@@ -863,6 +912,16 @@ bool CFileItem::IsAudio() const
   return (g_settings.m_musicExtensions.Find(extension) != -1);
 }
 
+bool CFileItem::IsGame() const
+{
+  if (HasGameInfoTag()) return true;
+  if (HasVideoInfoTag()) return false;
+  if (HasMusicInfoTag()) return false;
+  if (HasPictureInfoTag()) return false;
+
+  return false;
+}
+
 bool CFileItem::IsKaraoke() const
 {
   if ( !IsAudio())
@@ -879,6 +938,7 @@ bool CFileItem::IsPicture() const
   if (HasPictureInfoTag()) return true;
   if (HasMusicInfoTag()) return false;
   if (HasVideoInfoTag()) return false;
+  if (HasGameInfoTag()) return false;
 
   return CUtil::IsPicture(m_strPath);
 }
@@ -1455,6 +1515,8 @@ void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
     *GetMusicInfoTag() = *item.GetMusicInfoTag();
   if (item.HasPictureInfoTag())
     *GetPictureInfoTag() = *item.GetPictureInfoTag();
+  if (item.HasGameInfoTag())
+    *GetGameInfoTag() = *item.GetGameInfoTag();
 
   if (replaceLabels && !item.GetLabel().IsEmpty())
     SetLabel(item.GetLabel());
@@ -3041,6 +3103,21 @@ bool CFileItem::LoadMusicTag()
   return false;
 }
 
+bool CFileItem::LoadGameTag()
+{
+  // Already loaded?
+  if (HasGameInfoTag() && m_gameInfoTag->Loaded())
+    return true;
+
+  // Load tag from file
+  CLog::Log(LOGDEBUG, "%s: loading tag information for file: %s", __FUNCTION__, m_strPath.c_str());
+
+  if (CGameInfoTagLoader::Get().Load(m_strPath, *GetGameInfoTag()))
+    return true;
+
+  return false;
+}
+
 void CFileItemList::Swap(unsigned int item1, unsigned int item2)
 {
   if (item1 != item2 && item1 < m_items.size() && item2 < m_items.size())
@@ -3139,6 +3216,14 @@ MUSIC_INFO::CMusicInfoTag* CFileItem::GetMusicInfoTag()
     m_musicInfoTag = new MUSIC_INFO::CMusicInfoTag;
 
   return m_musicInfoTag;
+}
+
+GAME_INFO::CGameInfoTag* CFileItem::GetGameInfoTag()
+{
+  if (!m_gameInfoTag)
+    m_gameInfoTag = new GAME_INFO::CGameInfoTag;
+
+  return m_gameInfoTag;
 }
 
 CStdString CFileItem::FindTrailer() const
