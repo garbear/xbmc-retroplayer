@@ -22,37 +22,47 @@
 #pragma once
 
 #include "threads/Thread.h"
+#include "utils/RingBuffer.h"
 
 #include <stdint.h>
-#include <queue>
 
 class IAEStream;
 
 class CRetroPlayerAudio : public CThread
 {
 public:
-  struct Packet
-  {
-    unsigned char * data;
-    size_t          size; // Frame count * 2 (L+R) * sizeof(int16_t)
-  };
-
   CRetroPlayerAudio();
   ~CRetroPlayerAudio();
 
   /**
    * Rev up the engines and start the thread.
    */
-  unsigned int GoForth(double allegedSamplerate);
+  unsigned int GoForth(double allegedSamplerate, double framerate);
 
   /**
    * Send audio samples to be processed by this class. Data format is:
    * int16_t buf[4] = { l, r, l, r }; this would be 2 frames.
    */
   void SendAudioFrames(const int16_t *data, size_t frames);
-  //void SendAudioFrames(int16_t left, size_t right);
 
-  unsigned int GetSampleRate() const;
+  /**
+   * Send a single frame. Frames are cached until Flush() is called, so make
+   * sure to call Flush() after every call to CGameClient::RunFrame().
+   */
+  void SendAudioFrame(int16_t left, int16_t right); 
+
+  /**
+   * This function is only necessary if single frame audio is used, as
+   * SendAudioFrames() sets the event after each multi-sample packet. If no
+   * single frames have been observed (no call to SendAudioFrame()), this has
+   * no effect.
+   */
+  void Flush() { if (m_bSingleFrames) m_packetReady.Set(); }
+
+  /**
+   * Accumulative audio delay. Does not include delay due to current packet, so
+   * at 60fps this could be up to 17ms (~1/60) behind.
+   */
   double GetDelay() const;
 
 protected:
@@ -60,9 +70,8 @@ protected:
 
 private:
   IAEStream          *m_pAudioStream;
-  std::queue<Packet> m_packets;
+  CRingBuffer        m_buffer;
+  bool               m_bSingleFrames;
   CCriticalSection   m_critSection;
-  CEvent             m_streamReady;
   CEvent             m_packetReady;
-  CEvent             m_pauseEvent;
 };

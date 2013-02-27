@@ -55,9 +55,8 @@ CGameClient::DataReceiver CRetroPlayer::m_callbacks(OnVideoFrame,
 
 retro_keyboard_event_t CRetroPlayer::m_keyboardCallback = NULL;
 
-CRetroPlayer::CRetroPlayer(IPlayerCallback& callback) :
-    IPlayer(callback), CThread("RetroPlayer"),
-    m_playSpeed(PLAYSPEED_NORMAL)
+CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
+  : IPlayer(callback), CThread("RetroPlayer"), m_playSpeed(PLAYSPEED_NORMAL)
 {
 }
 
@@ -327,6 +326,19 @@ bool CRetroPlayer::CloseFile()
 
 void CRetroPlayer::Process()
 {
+  // Input doesn't need any parameters, so start it immediately
+  m_input.Begin();
+
+  // Calculate the framerate (how often RunFrame() should be called)
+  double framerate = m_gameClient->GetFrameRate();
+
+  // Safe defaults?
+  if (framerate < 5.0 || framerate > 100.0)
+  {
+    CLog::Log(LOGNOTICE, "RetroPlayer: Game client reported %f fps, assuming 60 fps", framerate);
+    framerate = 60;
+  }
+
   // We want to sync the video clock to the audio. The creation of the audio
   // thread will return the decided-upon sample rate.
   unsigned int samplerate = 0;
@@ -336,49 +348,31 @@ void CRetroPlayer::Process()
   if (allegedSamplerate > 0)
   {
     // The audio thread will return the sample rate decided by the audio stream
-    samplerate = m_audio.GoForth(allegedSamplerate);
+    samplerate = m_audio.GoForth(allegedSamplerate, framerate);
     if (samplerate)
+    {
       CLog::Log(LOGDEBUG, "RetroPlayer: Created audio stream with sample rate %u from reported rate of %f",
         samplerate, (float)allegedSamplerate);
+
+      // If audio is playing, use that as the reference clock and adjust our framerate accordingly
+      double oldFramerate = framerate; // for logging purposes
+      framerate *= samplerate / allegedSamplerate;
+      CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate changed from %f to %f", (float)oldFramerate, (float)framerate);
+    }
     else
       CLog::Log(LOGERROR, "RetroPlayer: Error creating audio stream with sample rate %f", (float)allegedSamplerate);
   }
   else
-    CLog::Log(LOGERROR, "RetroPlayer: Error, invalid game client sample rate %f", (float)allegedSamplerate);
+    CLog::Log(LOGERROR, "RetroPlayer: Error, invalid sample rate %f, continuing without sound", (float)allegedSamplerate);
 
-  // Calculate the framerate of the emualtor now (i.e. how often RunFrame() is called)
-  double framerate = m_gameClient->GetFrameRate();
-
-  // Safe defaults? Was this test done earlier?
-  if (framerate < 5.0 || framerate > 100.0)
-  {
-    CLog::Log(LOGNOTICE, "RetroPlayer: Game client reported %f fps, assuming 60 fps", framerate);
-    framerate = 60;
-  }
-
-  if (samplerate)
-  {
-    // If audio is playing, use that as the reference clock and adjust our framerate accordingly
-    const double oldFramerate = framerate; // for logging purposes
-    framerate *= samplerate / allegedSamplerate;
-    CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate changed from %f to %f", oldFramerate, framerate);
-  }
-  else
-    CLog::Log(LOGDEBUG, "RetroPlayer: No change in frame rate due to no audio");
-
-  // Got our final framerate. Record it back in our game client. Note, this
-  // modifies the outcome of Seek(), SeekPercent(), GetPercent() and GetTotalTime().
-  // It might be good to re-size the savestate buffer to maintain a constant time
-  // duration (like 60.0s)
+  // Got our final framerate. Record it back in our game client so that our
+  // savestate buffer can be resized accordingly.
   m_gameClient->SetFrameRate(framerate);
 
-  // Start video and audio now that our parameters have been determined
   m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
-  m_input.Begin();
 
-  const double frametime = 1000 * 1000 / framerate; // useconds
+  const double frametime = 1000 * 1000 / framerate; // microseconds
   double nextpts = CDVDClock::GetAbsoluteClock() + frametime;
-
   CLog::Log(LOGDEBUG, "RetroPlayer: Beginning loop de loop");
   while (!m_bStop)
   {
@@ -399,6 +393,9 @@ void CRetroPlayer::Process()
 
     // Run the game client for the next frame
     m_gameClient->RunFrame();
+
+    // If the game client uses single frame audio, render those now
+    m_audio.Flush();
 
     // Slow down (increase nextpts) if we're playing catchup after stalling
     if (nextpts < CDVDClock::GetAbsoluteClock())
@@ -432,10 +429,7 @@ void CRetroPlayer::OnVideoFrame(const void *data, unsigned width, unsigned heigh
 /* static */
 void CRetroPlayer::OnAudioSample(int16_t left, int16_t right)
 {
-  int16_t buf[2] = {left, right};
-  // Too many small allocations?
-  //OnAudioSampleBatch(buf, 1);
-  //m_retroPlayer->m_audio.SendAudioFrames(left, right);
+  m_retroPlayer->m_audio.SendAudioFrame(left, right);
 }
 
 /* static */

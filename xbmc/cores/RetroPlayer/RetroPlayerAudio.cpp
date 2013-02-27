@@ -27,7 +27,13 @@
 #include "cores/dvdplayer/DVDClock.h"
 #include "utils/log.h"
 
-CRetroPlayerAudio::CRetroPlayerAudio() : CThread("RetroPlayerAudio"), m_pAudioStream(NULL)
+#include <vector>
+
+#define FRAMESIZE (2 * sizeof(uint16_t)) // L (2) + R (2)
+#define BUFFER_VIDEO_FRAMES 10 // Buffer can hold audio for 10 video frames max
+
+CRetroPlayerAudio::CRetroPlayerAudio()
+  : CThread("RetroPlayerAudio"), m_pAudioStream(NULL), m_bSingleFrames(false)
 {
 }
 
@@ -36,7 +42,7 @@ CRetroPlayerAudio::~CRetroPlayerAudio()
   StopThread();
 }
 
-unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
+unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate, double framerate)
 {
   if (m_pAudioStream)
     { CAEFactory::FreeStream(m_pAudioStream); m_pAudioStream = NULL; }
@@ -57,6 +63,13 @@ unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
   }
   else
   {
+    // Create a ring buffer of 10 fames to hold our audio packets. We should
+    // dispatch a packet every frame, but this gives us some room to overflow.
+    const double frameTime = 1.0 / (framerate * m_pAudioStream->GetSampleRate() / allegedSamplerate);
+    const unsigned int bufferSize = (unsigned int)(BUFFER_VIDEO_FRAMES * frameTime * m_pAudioStream->GetSampleRate() * FRAMESIZE);
+
+    m_buffer.Create(bufferSize);
+
     Create();
     return m_pAudioStream->GetSampleRate();
   }
@@ -70,14 +83,16 @@ void CRetroPlayerAudio::Process()
     return;
   }
 
-  Packet packet = {};
+  std::vector<unsigned char> data; // data.size() is max buffer size
+  unsigned int size; // current packet size
 
   while (!m_bStop)
   {
     {
       CSingleLock lock(m_critSection);
 
-      if (m_packets.empty())
+      size = m_buffer.getMaxReadSize();
+      if (size == 0)
       {
         lock.Leave();
         m_packetReady.WaitMSec(17); // ~1 video frame @ 60fps
@@ -85,34 +100,32 @@ void CRetroPlayerAudio::Process()
         continue;
       }
 
-      packet = m_packets.front();
-      m_packets.pop();
+      // Ensure we have enough space by resizing to the largest data packet observed
+      if (data.size() < size)
+        data.resize(size);
+      m_buffer.ReadData(reinterpret_cast<char*>(data.data()), size);
     }
 
-    // So we can clean up packet.data later
-    unsigned char* data = packet.data;
-
-    // Calculate some inherent properties of the sound data
-    const DWORD  frameSize      = 2 * sizeof(uint16_t); // L (2) + R (2)
-    const double secondsPerByte = 1.0 / (m_pAudioStream->GetSampleRate() * frameSize);
+    unsigned char* dataPtr = data.data();
 
     // Calculate a timeout when this definitely should be done
     double timeout;
-    timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + packet.size * secondsPerByte);
+    const double secondsPerByte = 1.0 / (m_pAudioStream->GetSampleRate() * FRAMESIZE);
+    timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + size * secondsPerByte);
     timeout += DVD_SEC_TO_TIME(1.0);
     timeout += CDVDClock::GetAbsoluteClock();
 
     // Keep track of how much data has been added to the stream
-    DWORD copied;
+    unsigned int copied;
     do
     {
       // Fast-forward packet data on successful add
-      copied = m_pAudioStream->AddData(data, packet.size);
-      data += copied;
-      packet.size -= copied;
+      copied = m_pAudioStream->AddData(dataPtr, size);
+      dataPtr += copied;
+      size -= copied;
 
       // Test for incomplete frames remaining
-      if (packet.size < frameSize)
+      if (size < FRAMESIZE)
         break;
 
       if (copied == 0 && timeout < CDVDClock::GetAbsoluteClock())
@@ -125,21 +138,17 @@ void CRetroPlayerAudio::Process()
     } while (!m_bStop);
 
     // Discard extra data
-    if (packet.size > 0 && !m_bStop)
-      CLog::Log(LOGNOTICE, "RetroPlayerAudio: %u bytes left over after rendering, discarding", (unsigned int)packet.size);
-
-    // Clean up the data allocated in CRetroPlayer::OnAudioSampleBatch()
-    delete[] packet.data;
-    data = NULL;
+    if (size > 0 && !m_bStop)
+      CLog::Log(LOGNOTICE, "RetroPlayerAudio: %u bytes left over after rendering, discarding", size);
   }
 
-  m_bStop = true;
-  { CAEFactory::FreeStream(m_pAudioStream); m_pAudioStream = NULL; }
-}
-
-unsigned int CRetroPlayerAudio::GetSampleRate() const
-{
-  return !m_bStop && m_pAudioStream ? m_pAudioStream->GetSampleRate() : 0;
+  {
+    CSingleLock lock(m_critSection);
+    m_bStop = true;
+    m_buffer.Destroy();
+  }
+  CAEFactory::FreeStream(m_pAudioStream);
+  m_pAudioStream = NULL;
 }
 
 double CRetroPlayerAudio::GetDelay() const
@@ -153,15 +162,22 @@ void CRetroPlayerAudio::SendAudioFrames(const int16_t *data, size_t frames)
 
   if (!m_bStop && IsRunning())
   {
-    Packet packet;
-    packet.size = frames * 2 * sizeof(int16_t);
-    packet.data = new unsigned char[packet.size];
+    m_buffer.WriteData(reinterpret_cast<const char*>(data), frames * FRAMESIZE);
+    m_packetReady.Set();
+  }
+}
 
-    if (packet.data)
-    {
-      memcpy(packet.data, data, packet.size);
-      m_packets.push(packet);
-      m_packetReady.Set();
-    }
+void CRetroPlayerAudio::SendAudioFrame(int16_t left, int16_t right)
+{
+  CSingleLock lock(m_critSection);
+
+  if (!m_bSingleFrames)
+    m_bSingleFrames = true;
+
+  if (!m_bStop && IsRunning())
+  {
+    m_buffer.WriteData(reinterpret_cast<const char*>(&left), sizeof(left));
+    m_buffer.WriteData(reinterpret_cast<const char*>(&right), sizeof(right));
+    // m_packetReady.Set() is called in Flush()
   } 
 }
