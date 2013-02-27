@@ -4126,7 +4126,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
        && g_windowManager.GetActiveWindow() != WINDOW_FULLSCREEN_VIDEO )
        SwitchToFullScreen();
 
-      if (!item.IsDVDImage() && !item.IsDVDFile())
+      if (!item.IsDVDImage() && !item.IsDVDFile() && !item.IsGame())
       {
         CVideoInfoTag *details = m_itemCurrentFile->GetVideoInfoTag();
         // Save information about the stream if we currently have no data
@@ -4371,6 +4371,15 @@ bool CApplication::IsPlayingVideo() const
     return true;
 
   return false;
+}
+
+bool CApplication::IsPlayingGame() const
+{
+  if (!m_pPlayer)
+    return false;
+  if (!m_pPlayer->IsPlaying())
+    return false;
+  return m_eCurrentPlayer == EPC_RETROPLAYER;
 }
 
 bool CApplication::IsPlayingFullScreenVideo() const
@@ -5041,7 +5050,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
     }
     else
 #endif
-    if (item.IsAudio() || item.IsVideo())
+    if (item.IsAudio() || item.IsVideo() || item.IsGame())
     { // an audio or video file
       PlayFile(item);
     }

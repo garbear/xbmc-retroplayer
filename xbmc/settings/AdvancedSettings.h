@@ -342,6 +342,7 @@ class CAdvancedSettings
     DatabaseSettings m_databaseTV;    // advanced tv database setup
     DatabaseSettings m_databaseEpg;   /*!< advanced EPG database setup */
 
+    unsigned int m_iGameAudioBuffer;  // Audio delay (ms), lower values might cause buffer underruns
     bool m_bPreferVFS;                // Prefer using XBMC to load files if the emulator supports it (~50% do)
     bool m_bAllowZip;                 // ~50% say they load .zips, but some crash. If the emulator allows XBMC to
                                       // load from memory (VFS), XBMC can still safely load games from within zips
