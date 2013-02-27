@@ -19,6 +19,7 @@
 */
 
 #include "WINJoystick.h"
+#include "cores/RetroPlayer/RetroPlayerInput.h"
 #include "input/ButtonTranslator.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
@@ -47,6 +48,14 @@ extern HWND g_hWnd;
 #define SDL_HAT_LEFTUP      (SDL_HAT_LEFT|SDL_HAT_UP)
 #define SDL_HAT_LEFTDOWN    (SDL_HAT_LEFT|SDL_HAT_DOWN)
 #endif
+
+#define JOY_POV_360  JOY_POVBACKWARD * 2
+#define JOY_POV_NE   (JOY_POVFORWARD + JOY_POVRIGHT) / 2
+#define JOY_POV_SE   (JOY_POVRIGHT + JOY_POVBACKWARD) / 2
+#define JOY_POV_SW   (JOY_POVBACKWARD + JOY_POVLEFT) / 2
+#define JOY_POV_NW   (JOY_POVLEFT + JOY_POV_360) / 2
+
+#define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 
 CJoystick::CJoystick()
 {
@@ -229,7 +238,7 @@ void CJoystick::Reset(bool axis /*=true*/)
   }
 }
 
-void CJoystick::Update()
+void CJoystick::Update(CRetroPlayerInput *joystickHandler)
 {
   if (!IsEnabled())
     return;
@@ -273,6 +282,47 @@ void CJoystick::Update()
     // Get the input's device state
     if( FAILED( hr = pjoy->GetDeviceState( sizeof( DIJOYSTATE2 ), &js ) ) )
       return; // The device should have been acquired during the Poll()
+
+    if (joystickHandler)
+    {
+      // Build a gamepad object to pass to CRetroPlayerInput
+      CRetroPlayerInput::Gamepad gamepad = { };
+      gamepad.name = m_JoystickNames[j];
+      gamepad.id = j;
+
+      // Gamepad buttons
+      gamepad.buttonCount = std::min(ARRAY_LENGTH(gamepad.buttons), ARRAY_LENGTH(js.rgbButtons));
+      for (unsigned int b = 0; b < gamepad.buttonCount; b++)
+        if (js.rgbButtons[b] & 0x80)
+          gamepad.buttons[b] = 1;
+
+      // Gamepad hats
+      gamepad.hatCount = std::min(ARRAY_LENGTH(gamepad.hats), (size_t)numhat);
+      for (unsigned int h = 0; h < gamepad.hatCount; h++)
+      {
+        bool bCentered = ((js.rgdwPOV[h] & 0xFFFF) == 0xFFFF);
+        if (!bCentered)
+        {
+          if ((JOY_POV_NW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_360) || js.rgdwPOV[h] <= JOY_POV_NE)
+            gamepad.hats[h].up = 1;
+          else if (JOY_POV_SE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SW)
+            gamepad.hats[h].down = 1;
+
+          if (JOY_POV_NE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SE)
+            gamepad.hats[h].right = 1;
+          else if (JOY_POV_SW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_NW)
+            gamepad.hats[h].left = 1;
+        }
+      }
+
+      // Gamepad axes
+      long amounts[] = {js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz};
+      gamepad.axisCount = std::min(ARRAY_LENGTH(gamepad.axes), ARRAY_LENGTH(amounts));
+      for (unsigned int a = 0; a < gamepad.axisCount; a++)
+        gamepad.axes[a] = NormalizeAxis(amounts[a]);
+
+      joystickHandler->ProcessGamepad(gamepad);
+    }
 
     // get button states first, they take priority over axis
     for( int b = 0; b < 128; b++ )
@@ -472,13 +522,18 @@ int CJoystick::GetAxisWithMaxAmount()
   return axis;
 }
 
+float CJoystick::NormalizeAxis(long value) const
+{
+  if (value > m_DeadzoneRange)
+    return (float)(value - m_DeadzoneRange) / (float)(MAX_AXISAMOUNT - m_DeadzoneRange);
+  else if (value < -m_DeadzoneRange)
+    return (float)(value + m_DeadzoneRange) / (float)(MAX_AXISAMOUNT - m_DeadzoneRange);
+  return 0;
+}
+
 float CJoystick::GetAmount(int axis)
 {
-  if (m_Amount[axis] > m_DeadzoneRange)
-    return (float)(m_Amount[axis]-m_DeadzoneRange)/(float)(MAX_AXISAMOUNT-m_DeadzoneRange);
-  if (m_Amount[axis] < -m_DeadzoneRange)
-    return (float)(m_Amount[axis]+m_DeadzoneRange)/(float)(MAX_AXISAMOUNT-m_DeadzoneRange);
-  return 0;
+  return NormalizeAxis(m_Amount[axis]);
 }
 
 void CJoystick::SetEnabled(bool enabled /*=true*/)

@@ -374,6 +374,7 @@ void CRetroPlayer::Process()
 
   // Start video and audio now that our parameters have been determined
   m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
+  m_input.Begin();
 
   const double frametime = 1000 * 1000 / framerate; // useconds
   double nextpts = CDVDClock::GetAbsoluteClock() + frametime;
@@ -416,6 +417,7 @@ void CRetroPlayer::Process()
 
   m_video.StopThread(true);
   m_audio.StopThread(true);
+  m_input.Finish();
   m_bStop = true;
 }
 
@@ -447,7 +449,7 @@ size_t CRetroPlayer::OnAudioSampleBatch(const int16_t *data, size_t frames)
 /* static */
 int16_t CRetroPlayer::OnInputState(unsigned port, unsigned device, unsigned index, unsigned id)
 {
-  return 0;
+  return m_retroPlayer->m_input.GetInput(port, device, index, id);
 }
 
 /* static */

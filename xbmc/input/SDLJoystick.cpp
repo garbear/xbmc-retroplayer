@@ -20,7 +20,9 @@
 
 #include "system.h"
 #include "SDLJoystick.h"
+#include "Application.h"
 #include "ButtonTranslator.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 
@@ -28,6 +30,8 @@
 
 #ifdef HAS_SDL_JOYSTICK
 #include <SDL/SDL.h>
+
+#define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 
 using namespace std;
 
@@ -125,7 +129,7 @@ void CJoystick::Reset(bool axis /*=false*/)
   }
 }
 
-void CJoystick::Update()
+void CJoystick::Update(CRetroPlayerInput *joystickHandler)
 {
   if (!IsEnabled())
     return;
@@ -150,6 +154,38 @@ void CJoystick::Update()
     numax = (numax>MAX_AXES)?MAX_AXES:numax;
     int axisval;
     uint8_t hatval;
+
+    if (joystickHandler)
+    {
+      // Build a gamepad object to pass to CRetroPlayerInput
+      CRetroPlayerInput::Gamepad gamepad = { };
+      gamepad.name = m_JoystickNames[j];
+      gamepad.id = SDL_JoystickIndex(joy);
+
+      // Gamepad buttons
+      gamepad.buttonCount = std::min(ARRAY_LENGTH(gamepad.buttons), (size_t)numb);
+      for (unsigned int b = 0; b < gamepad.buttonCount; b++)
+        if (SDL_JoystickGetButton(joy, b))
+          gamepad.buttons[b] = 1;
+
+      // Gamepad hats
+      gamepad.hatCount = std::min(ARRAY_LENGTH(gamepad.hats), (size_t)numhat);
+      for (unsigned int h = 0; h < gamepad.hatCount; h++)
+      {
+        uint8_t hat = SDL_JoystickGetHat(joy, h);
+        if      (hat & SDL_HAT_UP)    gamepad.hats[h].up = 1;
+        else if (hat & SDL_HAT_DOWN)  gamepad.hats[h].down = 1;
+        if      (hat & SDL_HAT_RIGHT) gamepad.hats[h].right = 1;
+        else if (hat & SDL_HAT_LEFT)  gamepad.hats[h].left = 1;
+      }
+
+      // Gamepad axes
+      gamepad.axisCount = std::min(ARRAY_LENGTH(gamepad.axes), (size_t)numax);
+      for (unsigned int a = 0; a < gamepad.axisCount; a++)
+        gamepad.axes[a] = NormalizeAxis(SDL_JoystickGetAxis(joy, a));
+
+      joystickHandler->ProcessGamepad(gamepad);
+    }
 
     // get button states first, they take priority over axis
     for (int b = 0 ; b<numb ; b++)
@@ -253,6 +289,16 @@ void CJoystick::Update(SDL_Event& joyEvent)
   DECLARE_UNUSED(bool,ignore = false)
   DECLARE_UNUSED(bool,axis = false);
 
+  // Update() is called from CWinEventsSDL::MessagePump(), which doesn't pass
+  // us a pointer to CRetroPlayerInput
+  CRetroPlayerInput *joystickHandler = NULL;
+  if (g_application.m_pPlayer && g_application.GetCurrentPlayer() == EPC_RETROPLAYER)
+  {
+    CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(g_application.m_pPlayer);
+    if (rp)
+      joystickHandler = &rp->GetInput();
+  }
+
   switch(joyEvent.type)
   {
   case SDL_JOYBUTTONDOWN:
@@ -261,12 +307,19 @@ void CJoystick::Update(SDL_Event& joyEvent)
     m_pressTicksButton = SDL_GetTicks();
     SetButtonActive();
     CLog::Log(LOGDEBUG, "Joystick %d button %d Down", joyId, buttonId);
+    if (joystickHandler)
+      joystickHandler->ProcessButtonDown(m_JoystickNames[joyEvent.jbutton.which], joyEvent.jbutton.which, joyEvent.jbutton.button);
     break;
 
   case SDL_JOYAXISMOTION:
     joyId = joyEvent.jaxis.which;
     axisId = joyEvent.jaxis.axis + 1;
     m_NumAxes = SDL_JoystickNumAxes(m_Joysticks[joyId]);
+    if (joystickHandler)
+    {
+      joystickHandler->ProcessAxisState(m_JoystickNames[joyEvent.jbutton.which], joyEvent.jbutton.which, joyEvent.jaxis.axis,
+          NormalizeAxis(joyEvent.jaxis.value));
+    }
     if (axisId<=0 || axisId>=MAX_AXES)
     {
       CLog::Log(LOGERROR, "Axis Id out of range. Maximum supported axis: %d", MAX_AXES);
@@ -295,6 +348,15 @@ void CJoystick::Update(SDL_Event& joyEvent)
     m_HatState = joyEvent.jhat.value;
     SetHatActive(m_HatState != SDL_HAT_CENTERED);
     CLog::Log(LOGDEBUG, "Joystick %d Hat %d Down with position %d", joyId, buttonId, m_HatState);
+    if (joystickHandler)
+    {
+      CRetroPlayerInput::Hat hat = CRetroPlayerInput::Hat();
+      if      (joyEvent.jhat.value & SDL_HAT_UP)    hat.up = 1;
+      else if (joyEvent.jhat.value & SDL_HAT_DOWN)  hat.down = 1;
+      if      (joyEvent.jhat.value & SDL_HAT_RIGHT) hat.right = 1;
+      else if (joyEvent.jhat.value & SDL_HAT_LEFT)  hat.left = 1;
+      joystickHandler->ProcessHatState(m_JoystickNames[joyEvent.jbutton.which], joyEvent.jbutton.which, joyEvent.jhat.hat, hat);
+    }
     break;
 
   case SDL_JOYBALLMOTION:
@@ -305,6 +367,10 @@ void CJoystick::Update(SDL_Event& joyEvent)
     m_pressTicksButton = 0;
     SetButtonActive(false);
     CLog::Log(LOGDEBUG, "Joystick %d button %d Up", joyEvent.jbutton.which, m_ButtonId);
+    if (joystickHandler)
+      joystickHandler->ProcessButtonDown(m_JoystickNames[joyEvent.jbutton.which], joyEvent.jbutton.which, joyEvent.jbutton.button);
+    ignore = true;
+    break;
 
   default:
     ignore = true;
@@ -420,13 +486,18 @@ int CJoystick::GetAxisWithMaxAmount()
   return axis;
 }
 
+float CJoystick::NormalizeAxis(int value) const
+{
+  if (value > m_DeadzoneRange)
+    return (float)(value - m_DeadzoneRange) / (float)(MAX_AXISAMOUNT - m_DeadzoneRange);
+  else if (value < -m_DeadzoneRange)
+    return (float)(value + m_DeadzoneRange) / (float)(MAX_AXISAMOUNT - m_DeadzoneRange);
+  return 0;
+}
+
 float CJoystick::GetAmount(int axis)
 {
-  if (m_Amount[axis] > m_DeadzoneRange)
-    return (float)(m_Amount[axis]-m_DeadzoneRange)/(float)(MAX_AXISAMOUNT-m_DeadzoneRange);
-  if (m_Amount[axis] < -m_DeadzoneRange)
-    return (float)(m_Amount[axis]+m_DeadzoneRange)/(float)(MAX_AXISAMOUNT-m_DeadzoneRange);
-  return 0;
+  return NormalizeAxis(m_Amount[axis]);
 }
 
 void CJoystick::SetEnabled(bool enabled /*=true*/)

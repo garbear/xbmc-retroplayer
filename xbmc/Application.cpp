@@ -33,6 +33,7 @@
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "cores/AudioEngine/AEFactory.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
 #include "PlayListPlayer.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -477,9 +478,16 @@ bool CApplication::OnEvent(XBMC_Event& newEvent)
         CApplicationMessenger::Get().Quit();
       break;
     case XBMC_KEYDOWN:
+      // RetroPlayer is notified of the key press in OnKey()
       g_application.OnKey(g_Keyboard.ProcessKeyDown(newEvent.key.keysym));
       break;
     case XBMC_KEYUP:
+      if (g_application.m_pPlayer && g_application.m_eCurrentPlayer == EPC_RETROPLAYER)
+      {
+        CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(g_application.m_pPlayer);
+        if (rp)
+          rp->GetInput().ProcessKeyUp(CKeyboardStat::TranslateKey(newEvent.key.keysym));
+      }
       g_Keyboard.ProcessKeyUp();
       break;
     case XBMC_MOUSEBUTTONDOWN:
@@ -2452,6 +2460,16 @@ bool CApplication::OnKey(const CKey& key)
       if (action.GetID() == 0)
         action = CButtonTranslator::GetInstance().GetAction(iWin, key);
     }
+    else if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
+    {
+      // Notify RetroPlayer's input system of the pressed key
+      CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(m_pPlayer);
+      if (rp)
+        rp->GetInput().ProcessKeyDown(key);
+
+      // Fetch action from <FullscreenGame> tag instead of <FullscreenVideo>
+      action = CButtonTranslator::GetInstance().GetAction(WINDOW_FULLSCREEN_GAME, key);
+    }
     else
     {
       // in any other case use the fullscreen window section of keymap.xml to map key->action
@@ -2989,8 +3007,23 @@ bool CApplication::ProcessGamepad(float frameTime)
     return false;
 
   int iWin = GetActiveWindowID();
+
+  // If we're playing a game fullscreen, we want to process gamepad actions
+  // for WINDOW_FULLSCREEN_GAME instead of WINDOW_FULLSCREEN_VIDEO.
+  if ((iWin & WINDOW_ID_MASK) == WINDOW_FULLSCREEN_VIDEO && m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
+    iWin = WINDOW_FULLSCREEN_GAME;
+
   int bid = 0;
-  g_Joystick.Update();
+
+  CRetroPlayerInput *joystickHandler = NULL;
+  if (g_application.m_pPlayer && g_application.m_eCurrentPlayer == EPC_RETROPLAYER)
+  {
+    CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(g_application.m_pPlayer);
+    if (rp)
+      joystickHandler = &rp->GetInput();
+  }
+  g_Joystick.Update(joystickHandler);
+
   if (g_Joystick.GetButton(bid))
   {
     // reset Idle Timer
