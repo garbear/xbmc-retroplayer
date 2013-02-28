@@ -163,7 +163,7 @@ bool CGameClient::CStrategyUseParentZip::CanLoad(const GameClientConfig &gc, con
   }
 
   // Make sure the container zip is on the local hard disk (or not inside another zip)
-  if (!parentURL.GetProtocol().empty())
+  if (!CURL(parentURL.GetHostName()).GetProtocol().empty())
   {
     CLog::Log(LOGINFO, "GameClient::CStrategyUseParentZip: Zip file is not on the local hard disk");
     return false;
