@@ -259,7 +259,7 @@ namespace ADDON
 
     /**
      * Given the strategies above, order them in the way that respects
-     * g_advancedSettings.m_bPreferVFS.
+     * g_guiSettings.GetBool("games.prefervfs").
      */
     static void GetStrategy(CStrategyUseHD &hd, CStrategyUseParentZip &outerzip,
         CStrategyUseVFS &vfs, CStrategyEnterZip &innerzip, IRetroStrategy *strategies[4]);

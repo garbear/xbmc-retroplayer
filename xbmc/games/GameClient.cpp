@@ -25,7 +25,7 @@
 #include "Application.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"
-#include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
 #include "utils/log.h"
@@ -384,7 +384,7 @@ void CGameClient::DeInit()
 void CGameClient::GetStrategy(CStrategyUseHD &hd, CStrategyUseParentZip &outerzip,
       CStrategyUseVFS &vfs, CStrategyEnterZip &innerzip, IRetroStrategy *strategies[4])
 {
-  if (!g_advancedSettings.m_bPreferVFS)
+  if (!g_guiSettings.GetBool("games.prefervfs"))
   {
     // Passing file names comes first
     strategies[0] = &hd;
@@ -560,10 +560,10 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
 
   // Check if save states are supported, so rewind can be used.
   size_t state_size = m_dll.retro_serialize_size();
-  m_rewindSupported = state_size && g_advancedSettings.m_bEnableRewind;
+  m_rewindSupported = state_size && g_guiSettings.GetBool("games.enablerewind");
   if (m_rewindSupported)
   {
-    m_serialState.Init(state_size, (size_t)(60.0 * m_frameRate)); // Allow up to rougly 60 seconds worth of rewind.
+    m_serialState.Init(state_size, (size_t)(g_guiSettings.GetInt("games.rewindtime") * m_frameRate));
     if (!m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
     {
       m_rewindSupported = false;
@@ -717,9 +717,8 @@ void CGameClient::SetExtensions(const CStdString &strExtensionList)
     if (ext.at(0) != '.')
       ext = "." + ext;
 
-    // Zip crashes every emulator I've tried so far
-    // Skip it unless enabled via advanced settings
-    if (ext == ".zip" && !g_advancedSettings.m_bAllowZip)
+    // Zip crashes some emulators, allow users to disable zips for problematic emulators
+    if (ext == ".zip" && !g_guiSettings.GetBool("games.allowzip"))
       continue;
 
     m_config.extensions.insert(ext);

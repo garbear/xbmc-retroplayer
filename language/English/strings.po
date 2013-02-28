@@ -5936,13 +5936,36 @@ msgctxt "#15016"
 msgid "Games"
 msgstr ""
 
-#empty strings from id 15017 to 15018
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15017"
+msgid "Audio delay"
+msgstr ""
+
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15018"
+msgid "Prefer loading files from memory (debug)"
+msgstr ""
 
 msgctxt "#15019"
 msgid "Add"
 msgstr ""
 
-#empty strings from id 15020 to 15051
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15020"
+msgid "Allow emulators to load .zip files (debug)"
+msgstr ""
+
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15021"
+msgid "Enable rewind if the emulator supports it"
+msgstr ""
+
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15022"
+msgid "Maximum rewind time"
+msgstr ""
+
+#empty strings from id 15023 to 15051
 
 msgctxt "#15052"
 msgid "Password"
