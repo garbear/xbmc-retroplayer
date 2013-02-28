@@ -65,7 +65,7 @@ public:
    * to only invoke the file inside the add-on manager, and IsGame() is called
    * often enough that leaving the add-on manager will eventually reset it.
    */
-   bool IsGame(const CStdString& path);
+   bool IsGame(CStdString path);
 
   /**
    * Queue a file to be launched when the current game client is installed.

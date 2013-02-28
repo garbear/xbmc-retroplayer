@@ -169,6 +169,13 @@ bool CGameClient::CStrategyUseParentZip::CanLoad(const GameClientConfig &gc, con
     return false;
   }
 
+  // Make sure the extension is valid
+  if (!IsExtensionValid(URIUtils::GetExtension(file.GetPath()), gc.extensions))
+  {
+    CLog::Log(LOGINFO, "GameClient::CStrategyUseParentZip: Extension %s is not valid", URIUtils::GetExtension(file.GetPath()).c_str());
+    return false;
+  }
+
   // Found our file
   m_path = parentURL.GetHostName();
   m_useVfs = false;
@@ -249,7 +256,7 @@ bool CGameClient::IsExtensionValid(const CStdString &ext, const std::set<CStdStr
   ext2.ToLower();
   if (ext2.at(0) != '.')
     ext2 = "." + ext2;
-  return std::find(setExts.begin(), setExts.end(), ext2) != setExts.end();
+  return setExts.find(ext2) != setExts.end();
 }
 
 CGameClient::CGameClient(const AddonProps &props) : CAddon(props)
@@ -424,7 +431,8 @@ bool CGameClient::CanOpen(const CFileItem &file, const GameClientConfig &config,
   // If we don't do thorough screening, at least check inside the zip for valid files
   if (!useStrategies)
   {
-    CStdString ext = URIUtils::GetExtension(file.GetPath());
+    // Get the file extension (we want .zip if the file is a top-level zip directory)
+    CStdString ext(URIUtils::GetExtension(file.GetAsUrl().GetFileNameWithoutPath()));
     if (ext == ".zip")
     {
       // If .zip is not valid, see if there is a file inside that is
@@ -432,8 +440,7 @@ bool CGameClient::CanOpen(const CFileItem &file, const GameClientConfig &config,
       return IsExtensionValid(ext, config.extensions) || GetEffectiveRomPath(file.GetPath(), config.extensions, path2);
     }
     // If the game client lists extensions, check those as well
-    return config.extensions.empty() ||
-        std::find(config.extensions.begin(), config.extensions.end(), ext) != config.extensions.end();
+    return config.extensions.empty() || config.extensions.find(ext) != config.extensions.end();
   }
   else
   {

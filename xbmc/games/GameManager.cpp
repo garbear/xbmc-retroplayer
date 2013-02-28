@@ -172,7 +172,7 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDataba
   CLog::Log(LOGDEBUG, "CGameManager: tracking %d remote extensions", (int)(m_remoteExtensions.size()));
 }
 
-bool CGameManager::IsGame(const CStdString& path)
+bool CGameManager::IsGame(CStdString path)
 {
   CSingleLock lock(m_critSection);
 
@@ -192,21 +192,13 @@ bool CGameManager::IsGame(const CStdString& path)
     RegisterRemoteAddons(addons, true);
   }
 
-  // Get the file extension
-  CStdString extension(URIUtils::GetExtension(path));
+  // Get the file extension (we want .zip if the file is a top-level zip directory)
+  CStdString extension(URIUtils::GetExtension(CURL(path).GetFileNameWithoutPath()));
   extension.ToLower();
   if (extension.empty())
     return false;
 
-  // Because .zip files can be audio or video, we rake the contents for valid
-  // game files. Zips with unknown extensions inside (arcade games, perhaps)
-  // may fail this test.
-  if (extension.Equals(".zip"))
-  {
-    CStdString path2;
-    return CGameClient::GetEffectiveRomPath(path, m_remoteExtensions, path2);
-  }
-  return std::find(m_remoteExtensions.begin(), m_remoteExtensions.end(), extension) != m_remoteExtensions.end();
+  return m_remoteExtensions.find(extension) != m_remoteExtensions.end();
 }
 
 void CGameManager::QueueFile(const CFileItem &file)
