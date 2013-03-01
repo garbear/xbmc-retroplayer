@@ -292,12 +292,12 @@ void CRetroPlayerInput::ProcessGamepad(const Gamepad &gamepad)
       {
         // Record the new joypad state
         m_joypadState[gamepad.id][id] = gamepad.hats[h][i];
-        CLog::Log(LOGDEBUG, "RetroPlayerInput: Controller=%i, Hat %s %s, action=%s, ID=%d", gamepad.id, dir[i],
+        CLog::Log(LOGDEBUG, "RetroPlayerInput: Controller=%i, Hat %d %s, action=%s, ID=%d", gamepad.id,
           h + 1, dir[i], gamepad.hats[h][i] ? "press" : "unpress", actionName.c_str(), actionID);
       }
       else
       {
-        CLog::Log(LOGDEBUG, "RetroPlayerInput: Controller=%i, Invalid hat %s %s, action=%s, ID=%d", gamepad.id, dir[i],
+        CLog::Log(LOGDEBUG, "RetroPlayerInput: Controller=%i, Invalid hat %d %s, action=%s, ID=%d", gamepad.id,
           h + 1, dir[i], gamepad.hats[h][i] ? "press" : "unpress", actionName.c_str(), actionID);
       }
     }
