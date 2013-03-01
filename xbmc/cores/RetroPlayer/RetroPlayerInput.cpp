@@ -81,7 +81,7 @@ const char *CRetroPlayerInput::Hat::GetDirection() const
 }
 
 
-CRetroPlayerInput::CRetroPlayerInput() : m_bActive(false), m_gamepad()
+CRetroPlayerInput::CRetroPlayerInput() : m_bActive(false)//, m_gamepad()
 {
 }
 
@@ -89,9 +89,7 @@ void CRetroPlayerInput::Begin()
 {
   memset(m_joypadState, 0, sizeof(m_joypadState));
   for(int i =0; i < GAMEPAD_MAX_CONTROLLERS; i++)
-  {
     m_gamepad[i] = Gamepad();
-  }  
   memset(g_gamepad, 0, sizeof(g_gamepad));
   m_bActive = true;
 }
@@ -253,7 +251,7 @@ void CRetroPlayerInput::ProcessGamepad(const Gamepad &gamepad)
 
   static const char *dir[] = {"UP", "RIGHT", "DOWN", "LEFT"};
 
-  for (unsigned int h = 0; h < gamepad.hatCount; h++)
+  for (unsigned int h = 0; h < gamepad.hatCount && h < m_gamepad[gamepad.id].hatCount; h++)
   {
     // We only care if a change in state is detected
     if (gamepad.hats[h] == m_gamepad[gamepad.id].hats[h])

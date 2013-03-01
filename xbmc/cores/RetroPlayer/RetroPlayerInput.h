@@ -60,6 +60,7 @@ public:
 
   struct Gamepad
   {
+    Gamepad() : buttonCount(sizeof(buttons)), hatCount(sizeof(hats)), axisCount(sizeof(axes)) { }
     CStdString    name;
     int           id;
     unsigned char buttons[GAMEPAD_BUTTON_COUNT];

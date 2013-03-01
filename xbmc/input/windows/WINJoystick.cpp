@@ -286,7 +286,7 @@ void CJoystick::Update(CRetroPlayerInput *joystickHandler)
     if (joystickHandler)
     {
       // Build a gamepad object to pass to CRetroPlayerInput
-      CRetroPlayerInput::Gamepad gamepad = { };
+      CRetroPlayerInput::Gamepad gamepad;
       gamepad.name = m_JoystickNames[j];
       gamepad.id = j;
 
