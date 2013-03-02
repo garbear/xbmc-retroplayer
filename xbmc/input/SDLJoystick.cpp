@@ -22,7 +22,7 @@
 #include "SDLJoystick.h"
 #include "Application.h"
 #include "ButtonTranslator.h"
-#include "cores/RetroPlayer/RetroPlayer.h"
+#include "cores/RetroPlayer/RetroPlayerInput.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 
@@ -291,13 +291,7 @@ void CJoystick::Update(SDL_Event& joyEvent)
 
   // Update() is called from CWinEventsSDL::MessagePump(), which doesn't pass
   // us a pointer to CRetroPlayerInput
-  CRetroPlayerInput *joystickHandler = NULL;
-  if (g_application.m_pPlayer && g_application.GetCurrentPlayer() == EPC_RETROPLAYER)
-  {
-    CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(g_application.m_pPlayer);
-    if (rp)
-      joystickHandler = &rp->GetInput();
-  }
+  CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
 
   switch(joyEvent.type)
   {

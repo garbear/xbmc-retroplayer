@@ -482,11 +482,10 @@ bool CApplication::OnEvent(XBMC_Event& newEvent)
       g_application.OnKey(g_Keyboard.ProcessKeyDown(newEvent.key.keysym));
       break;
     case XBMC_KEYUP:
-      if (g_application.m_pPlayer && g_application.m_eCurrentPlayer == EPC_RETROPLAYER)
       {
-        CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(g_application.m_pPlayer);
-        if (rp)
-          rp->GetInput().ProcessKeyUp(CKeyboardStat::TranslateKey(newEvent.key.keysym),0);
+        CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+        if (joystickHandler)
+          joystickHandler->ProcessKeyUp(CKeyboardStat::TranslateKey(newEvent.key.keysym),0);
       }
       g_Keyboard.ProcessKeyUp();
       break;
@@ -2463,9 +2462,9 @@ bool CApplication::OnKey(const CKey& key)
     else if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
     {
       // Notify RetroPlayer's input system of the pressed key
-      CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(m_pPlayer);
-      if (rp)
-        rp->GetInput().ProcessKeyDown(key,0);
+      CRetroPlayerInput* joystickHandler = GetJoystickHandler();
+      if (joystickHandler)
+        joystickHandler->ProcessKeyDown(key,0);
 
       // Fetch action from <FullscreenGame> tag instead of <FullscreenVideo>
       action = CButtonTranslator::GetInstance().GetAction(WINDOW_FULLSCREEN_GAME, key);
@@ -3015,14 +3014,7 @@ bool CApplication::ProcessGamepad(float frameTime)
 
   int bid = 0;
 
-  CRetroPlayerInput *joystickHandler = NULL;
-  if (g_application.m_pPlayer && g_application.m_eCurrentPlayer == EPC_RETROPLAYER)
-  {
-    CRetroPlayer* rp = dynamic_cast<CRetroPlayer*>(g_application.m_pPlayer);
-    if (rp)
-      joystickHandler = &rp->GetInput();
-  }
-  g_Joystick.Update(joystickHandler);
+  g_Joystick.Update(GetJoystickHandler());
 
   if (g_Joystick.GetButton(bid))
   {
@@ -5663,6 +5655,14 @@ void CApplication::Minimize()
 PLAYERCOREID CApplication::GetCurrentPlayer()
 {
   return m_eCurrentPlayer;
+}
+
+CRetroPlayerInput *CApplication::GetJoystickHandler()
+{
+  CRetroPlayer* rp = NULL;
+  if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
+    rp = dynamic_cast<CRetroPlayer*>(m_pPlayer);
+  return rp ? &rp->GetInput() : NULL;
 }
 
 void CApplication::UpdateLibraries()
