@@ -27,7 +27,7 @@
 #include "ApplicationMessenger.h"
 #include "guilib/GUIWindowManager.h"
 #ifdef HAS_SDL_JOYSTICK
-#include "input/SDLJoystick.h"
+#include "input/JoystickManager.h"
 #endif
 #include "input/MouseStat.h"
 #include "WindowingFactory.h"
@@ -232,7 +232,7 @@ bool CWinEventsSDL::MessagePump()
       case SDL_JOYAXISMOTION:
       case SDL_JOYBALLMOTION:
       case SDL_JOYHATMOTION:
-        g_Joystick.Update(event);
+        CJoystickManager::Get().Update(&event);
         ret = true;
         break;
 #endif

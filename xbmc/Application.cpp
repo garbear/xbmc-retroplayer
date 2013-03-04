@@ -327,10 +327,8 @@
   #include "input/windows/IRServerSuite.h"
 #endif
 
-#if defined(TARGET_WINDOWS)
-#include "input/windows/WINJoystick.h"
-#elif defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
-#include "input/SDLJoystick.h"
+#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+#include "input/JoystickManager.h"
 #endif
 
 #if defined(TARGET_ANDROID)
@@ -800,7 +798,7 @@ bool CApplication::CreateGUI()
   sdlFlags |= SDL_INIT_VIDEO;
 #endif
 
-#if defined(HAS_SDL_JOYSTICK) && !defined(TARGET_WINDOWS)
+#if (defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)) && !defined(TARGET_WINDOWS)
   sdlFlags |= SDL_INIT_JOYSTICK;
 #endif
 
@@ -1416,9 +1414,9 @@ bool CApplication::Initialize()
   // reset our screensaver (starts timers etc.)
   ResetScreenSaver();
 
-#ifdef HAS_SDL_JOYSTICK
-  g_Joystick.SetEnabled(g_guiSettings.GetBool("input.enablejoystick") &&
-                    CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0 );
+#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+  CJoystickManager::Get().SetEnabled(g_guiSettings.GetBool("input.enablejoystick") &&
+      CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0);
 #endif
 
   return true;
@@ -3001,102 +2999,11 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
 
 bool CApplication::ProcessGamepad(float frameTime)
 {
-#ifdef HAS_SDL_JOYSTICK
-  if (!m_AppFocused)
-    return false;
-
-  int iWin = GetActiveWindowID();
-
-  // If we're playing a game fullscreen, we want to process gamepad actions
-  // for WINDOW_FULLSCREEN_GAME instead of WINDOW_FULLSCREEN_VIDEO.
-  if ((iWin & WINDOW_ID_MASK) == WINDOW_FULLSCREEN_VIDEO && m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
-    iWin = WINDOW_FULLSCREEN_GAME;
-
-  int bid = 0;
-
-  g_Joystick.Update(GetJoystickHandler());
-
-  if (g_Joystick.GetButton(bid))
+#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+  if (m_AppFocused && CJoystickManager::Get().Count() > 0)
   {
-    // reset Idle Timer
-    m_idleTimer.StartZero();
-
-    ResetScreenSaver();
-    if (WakeUpScreenSaverAndDPMS())
-    {
-      g_Joystick.Reset(true);
-      return true;
-    }
-
-    int actionID;
-    CStdString actionName;
-    bool fullrange;
-    if (CButtonTranslator::GetInstance().TranslateJoystickString(iWin, g_Joystick.GetJoystick().c_str(), bid, JACTIVE_BUTTON, actionID, actionName, fullrange))
-    {
-      CAction action(actionID, 1.0f, 0.0f, actionName);
-      g_Joystick.Reset();
-      g_Mouse.SetActive(false);
-      return ExecuteInputAction(action);
-    }
-    else
-    {
-      g_Joystick.Reset();
-    }
-  }
-  if (g_Joystick.GetAxis(bid))
-  {
-    if (g_Joystick.GetAmount() < 0)
-    {
-      bid = -bid;
-    }
-
-    int actionID;
-    CStdString actionName;
-    bool fullrange;
-    if (CButtonTranslator::GetInstance().TranslateJoystickString(iWin, g_Joystick.GetJoystick().c_str(), bid, JACTIVE_AXIS, actionID, actionName, fullrange))
-    {
-      ResetScreenSaver();
-      if (WakeUpScreenSaverAndDPMS())
-      {
-        return true;
-      }
-
-      CAction action(actionID, fullrange ? (g_Joystick.GetAmount() + 1.0f)/2.0f : fabs(g_Joystick.GetAmount()), 0.0f, actionName);
-      g_Joystick.Reset();
-      g_Mouse.SetActive(false);
-      return ExecuteInputAction(action);
-    }
-    else
-    {
-      g_Joystick.ResetAxis(abs(bid));
-    }
-  }
-  int position = 0;
-  if (g_Joystick.GetHat(bid, position))
-  {
-    // reset Idle Timer
-    m_idleTimer.StartZero();
-
-    ResetScreenSaver();
-    if (WakeUpScreenSaverAndDPMS())
-    {
-      g_Joystick.Reset();
-      return true;
-    }
-
-    int actionID;
-    CStdString actionName;
-    bool fullrange;
-
-    bid = position<<16|bid;
-
-    if (bid && CButtonTranslator::GetInstance().TranslateJoystickString(iWin, g_Joystick.GetJoystick().c_str(), bid, JACTIVE_HAT, actionID, actionName, fullrange))
-    {
-      CAction action(actionID, 1.0f, 0.0f, actionName);
-      g_Joystick.Reset();
-      g_Mouse.SetActive(false);
-      return ExecuteInputAction(action);
-    }
+    CJoystickManager::Get().Update();
+    return true;
   }
 #endif
   return false;
@@ -3281,8 +3188,8 @@ bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKe
    if (WakeUpScreenSaverAndDPMS())
      return true;
 
-#ifdef HAS_SDL_JOYSTICK
-   g_Joystick.Reset();
+#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+   CJoystickManager::Get().Reset();
 #endif
    g_Mouse.SetActive(false);
 

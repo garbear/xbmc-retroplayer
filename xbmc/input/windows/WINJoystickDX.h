@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2007-2013 Team XBMC
+ *      Copyright (C) 2012-2013 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,27 +20,32 @@
 
 #pragma once
 
-#include "IJoystick.h"
+#include "input/IJoystick.h"
 
-#include <SDL/SDL_joystick.h>
 #include <string>
 
 union SDL_Event;
 
-class CJoystickSDL : public IJoystick
+class CJoystickDX : public IJoystick
 {
 public:
   static void Initialize(JoystickArray &joysticks);
   static void DeInitialize(JoystickArray &joysticks);
 
-  virtual ~CJoystickSDL() { }
+  virtual ~CJoystickDX() { Release(); }
   virtual void Update();
-  virtual void Update(SDL_Event *joyEvent);
+  virtual void Update(SDL_Event *joyEvent) { }
   virtual const SJoystick &GetState() const { return m_state; }
 
 private:
-  CJoystickSDL(std::string name, SDL_Joystick *pJoystick, unsigned int id);
-  
-  SDL_Joystick *m_pJoystick;
-  SJoystick m_state;
+  CJoystickDX(LPDIRECTINPUTDEVICE8 joystickDevice, const std::string &name, const DIDEVCAPS &devCaps);
+
+  static BOOL CALLBACK EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext);
+  static BOOL CALLBACK EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE *pdidoi, VOID *pContext);
+  bool InitAxes();
+  void Release();
+
+  static LPDIRECTINPUT8 m_pDirectInput;
+  LPDIRECTINPUTDEVICE8  m_joystickDevice;
+  SJoystick             m_state;
 };

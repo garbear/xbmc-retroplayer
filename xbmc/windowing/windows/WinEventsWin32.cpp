@@ -26,7 +26,7 @@
 #include "Application.h"
 #include "input/XBMC_vkeys.h"
 #include "input/MouseStat.h"
-#include "input/windows/WINJoystick.h"
+#include "input/JoystickManager.h"
 #include "storage/MediaManager.h"
 #include "windowing/WindowingFactory.h"
 #include <dbt.h>
@@ -417,8 +417,10 @@ LRESULT CALLBACK CWinEventsWin32::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
       break;
     case WM_ACTIVATE:
       {
+#if defined(HAS_SDL_JOYSTICK)
         if( WA_INACTIVE != wParam )
-          g_Joystick.Reinitialize();
+          CJoystickManager::Get().Reinitialize();
+#endif
 
         bool active = g_application.m_AppActive;
         if (HIWORD(wParam))
@@ -724,7 +726,9 @@ LRESULT CALLBACK CWinEventsWin32::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
             if (((_DEV_BROADCAST_HEADER*) lParam)->dbcd_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
             {
               g_peripherals.TriggerDeviceScan(PERIPHERAL_BUS_USB);
-              g_Joystick.Reinitialize();
+#if defined(HAS_SDL_JOYSTICK)
+              CJoystickManager::Get().Reinitialize();
+#endif
             }
             // check if an usb or optical media was inserted or removed
             if (((_DEV_BROADCAST_HEADER*) lParam)->dbcd_devicetype == DBT_DEVTYP_VOLUME)

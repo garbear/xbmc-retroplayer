@@ -543,7 +543,7 @@ void CGUISettings::Initialize()
 #else
   AddBool(in, "input.enablemouse", 21369, true);
 #endif
-#if defined(HAS_SDL_JOYSTICK)
+#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
   AddBool(in, "input.enablejoystick", 35100, true);
 #endif
 
