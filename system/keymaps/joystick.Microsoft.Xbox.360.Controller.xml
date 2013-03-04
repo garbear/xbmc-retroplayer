@@ -336,6 +336,7 @@
   </FullscreenVideo>
   <FullscreenGame>
     <joystick name="Controller (XBOX 360 For Windows)">
+      <altname>XBMC-Compatible XInput Controller</altname>
       <altname>Controller (Gamepad F310)</altname>
       <altname>Controller (Gamepad for Xbox 360)</altname>
       <altname>Controller (Rumble Gamepad F510)</altname>

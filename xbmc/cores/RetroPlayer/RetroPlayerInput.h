@@ -21,61 +21,19 @@
  */
 #pragma once
 
-#include "games/libretro/libretro.h"
-#include "guilib/Key.h"
-#include "threads/CriticalSection.h"
+#include "guilib/Key.h" // for ACTION_GAME_CONTROL_START
+#include "input/IJoystick.h" // for GAMEPAD_MAX_CONTROLLERS
 
+#include <map>
 #include <stdint.h>
 
-// From dinput.h
-#define GAMEPAD_BUTTON_COUNT 128 // WINJoystick
-#define GAMEPAD_HAT_COUNT    4   // WINJoystick
-#define GAMEPAD_AXIS_COUNT   64  // SDLJoystick
-#define GAMEPAD_MAX_CONTROLLERS 4
+class CAction;
 
 class CRetroPlayerInput
 {
 public:
-  /**
-   * An arrow-based device on a gamepad. Legally, no more than two buttons can
-   * be pressed, and only if they are adjacent. If no buttons are pressed, the
-   * hat is centered.
-   */
-  struct Hat
-  {
-    Hat() { up = right = down = left = 0; }
-    bool operator==(const Hat &lhs) const { return up == lhs.up && right == lhs.right && down == lhs.down && left == lhs.left; }
-    // Iterate through cardinal directions in an ordinal fashion
-    unsigned char &operator[](unsigned int i);
-    const unsigned char &operator[](unsigned int i) const;
-    // Translate this hat into a cardinal direction ("N", "NE", "E", ...) or "CENTERED"
-    const char *GetDirection() const;
-
-    // 1 if pressed, 0 if unpressed
-    unsigned char up;
-    unsigned char right;
-    unsigned char down;
-    unsigned char left;
-  };
-
-  struct Gamepad
-  {
-    Gamepad() : buttonCount(sizeof(buttons)), hatCount(sizeof(hats)), axisCount(sizeof(axes)) { }
-    CStdString    name;
-    int           id;
-    unsigned char buttons[GAMEPAD_BUTTON_COUNT];
-    unsigned int  buttonCount;
-    Hat           hats[GAMEPAD_HAT_COUNT];
-    unsigned int  hatCount;
-    float         axes[GAMEPAD_AXIS_COUNT];
-    unsigned int  axisCount;
-  };
-
-  CRetroPlayerInput();
-  ~CRetroPlayerInput() { Finish(); }
-
-  void Begin();
-  void Finish();
+  CRetroPlayerInput() { Reset(); }
+  void Reset() { memset(m_joypadState, 0, sizeof(m_joypadState)); }
 
   /**
    * Called by the game client to query gamepad states.
@@ -93,29 +51,23 @@ public:
    * Marks a key as pressed. This intercepts keys sent to CApplication::OnKey()
    * before they are translated into actions.
    */
-  void ProcessKeyDown(const CKey &key, unsigned controller_id);
+  void ProcessKeyDown(unsigned int controllerID, uint32_t key, const CAction &action);
 
   /**
    * Marks a key as released. Because key releases aren't processed by
    * CApplication and aren't translated into actions, these are intercepted
    * at the raw event stage in CApplication::OnEvent().
    */
-  void ProcessKeyUp(const CKey &key, unsigned controller_id);
-
-  void ProcessButtonDown(const CStdString &name, int id, unsigned char button);
-
-  void ProcessButtonUp(const CStdString &name, int id, unsigned char button);
-
-  void ProcessHatState(const CStdString &name, int id, unsigned int hat, const Hat &hatState);
-
-  void ProcessAxisState(const CStdString &name, int id, unsigned int axis, float value);
+  void ProcessKeyUp(unsigned int controllerID, uint32_t key);
 
   /**
-   * Monitor gamepads for input changes. This is called by g_Joystick.Update()
-   * on every frame, once per gamepad device. Currently, gamepad axes are
-   * ignored.
+   * RetroPlayerInput is notified of joystick events by CJoystickManager.
    */
-  void ProcessGamepad(const Gamepad &gamepad);
+  void ProcessButtonDown(unsigned int controllerID, unsigned int buttonID, const CAction &action);
+  void ProcessButtonUp(unsigned int controllerID, unsigned int buttonID);
+  void ProcessHatDown(unsigned int controllerID, unsigned int hatID, unsigned char dir, const CAction &action);
+  void ProcessHatUp(unsigned int controllerID, unsigned int hatID, unsigned char dir);
+  void ProcessAxis(unsigned int controllerID, unsigned int joyID, const CAction &action);
 
 private:
   /**
@@ -126,11 +78,18 @@ private:
    */
   int TranslateActionID(int id) const;
 
-  bool m_bActive; // Unused currently
+  int16_t m_joypadState[GAMEPAD_MAX_CONTROLLERS][ACTION_GAME_CONTROL_END - ACTION_GAME_CONTROL_START + 1];
 
-  // RETRO_DEVICE_ID_JOYPAD_R3 is the last key in libretro.h
-  int16_t m_joypadState[GAMEPAD_MAX_CONTROLLERS][ACTION_JOYPAD_CONTROL_END - ACTION_GAME_CONTROL_START + 1];
-  Gamepad m_gamepad[GAMEPAD_MAX_CONTROLLERS];
+public:
+  struct DeviceItem
+  {
+    unsigned int controllerID;
+    unsigned int key;
+    unsigned int buttonID;
+    unsigned int hatID;
+    unsigned char hatDir;
+  };
 
-  CCriticalSection m_statesGuard;
+private:
+  std::map<DeviceItem, int> m_deviceItems;
 };

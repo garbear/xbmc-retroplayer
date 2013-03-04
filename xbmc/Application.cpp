@@ -483,7 +483,7 @@ bool CApplication::OnEvent(XBMC_Event& newEvent)
       {
         CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
         if (joystickHandler)
-          joystickHandler->ProcessKeyUp(CKeyboardStat::TranslateKey(newEvent.key.keysym),0);
+          joystickHandler->ProcessKeyUp(0, CKeyboardStat::TranslateKey(newEvent.key.keysym).GetButtonCode());
       }
       g_Keyboard.ProcessKeyUp();
       break;
@@ -2459,13 +2459,14 @@ bool CApplication::OnKey(const CKey& key)
     }
     else if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
     {
-      // Notify RetroPlayer's input system of the pressed key
-      CRetroPlayerInput* joystickHandler = GetJoystickHandler();
-      if (joystickHandler)
-        joystickHandler->ProcessKeyDown(key,0);
-
       // Fetch action from <FullscreenGame> tag instead of <FullscreenVideo>
       action = CButtonTranslator::GetInstance().GetAction(WINDOW_FULLSCREEN_GAME, key);
+      if (ACTION_GAME_CONTROL_START <= action.GetID() && action.GetID() <= ACTION_GAME_CONTROL_END)
+      {
+        // Notify RetroPlayer's input system of the pressed key
+        if (GetJoystickHandler())
+          GetJoystickHandler()->ProcessKeyDown(0, key.GetButtonCode(), action);
+      }
     }
     else
     {
@@ -3246,6 +3247,8 @@ int CApplication::GetActiveWindowID(void)
     // check for LiveTV and switch to it's virtual window
     else if (g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())
       iWin = WINDOW_FULLSCREEN_LIVETV;
+    else if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
+      iWin = WINDOW_FULLSCREEN_GAME;
   }
 
   // Return the window id

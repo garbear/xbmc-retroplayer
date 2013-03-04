@@ -389,9 +389,6 @@ bool CRetroPlayer::CloseFile()
 
 void CRetroPlayer::Process()
 {
-  // Input doesn't need any parameters, so start it immediately
-  m_input.Begin();
-
   // Calculate the framerate (how often RunFrame() should be called)
   double framerate = m_gameClient->GetFrameRate();
 
@@ -470,7 +467,6 @@ void CRetroPlayer::Process()
 
   m_video.StopThread(true);
   m_audio.StopThread(true);
-  m_input.Finish();
   m_bStop = true;
 }
 

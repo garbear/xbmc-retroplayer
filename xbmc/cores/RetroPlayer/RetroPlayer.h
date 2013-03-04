@@ -43,12 +43,7 @@ public:
   bool InstallGameClient(CFileItem file, ADDON::GameClientPtr &result) const;
   bool ChooseAddon(const CFileItem &file, const CStdStringArray &clients, ADDON::GameClientPtr &result) const;
 
-  virtual bool OnAction(const CAction &action)
-  {
-    // No need to forward ACTION_GAME_CONTROL_* to m_input, these are
-    // intercepted elsewhere
-    return false;
-  }
+  virtual bool OnAction(const CAction &action) { return false; }
 
   // Upon successful open, m_file is set to the opened file
   virtual bool IsPlaying() const { return !m_bStop && !m_file.GetPath().empty(); }

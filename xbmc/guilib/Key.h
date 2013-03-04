@@ -337,13 +337,12 @@
 #define ACTION_JOYPAD_R2              313
 #define ACTION_JOYPAD_L3              314
 #define ACTION_JOYPAD_R3              315
-#define ACTION_JOYPAD_CONTROL_END     315
 
 // ID values for an analog device
-#define ACTION_ANALOG_CONTROLLER_LEFT  316
-#define ACTION_ANALOG_CONTROLLER_RIGHT 317
-#define ACTION_ANALOG_CONTROLLER_X     318
-#define ACTION_ANALOG_CONTROLLER_Y     319
+#define ACTION_ANALOG_LEFT_X          316
+#define ACTION_ANALOG_LEFT_Y          317
+#define ACTION_ANALOG_RIGHT_X         318
+#define ACTION_ANALOG_RIGHT_Y         319
 
 // The mouse is a simple mouse, similar to Super Nintendo's mouse. X and Y
 // coordinates are reported relative to the previous poll.
@@ -360,7 +359,7 @@
 #define ACTION_LIGHTGUN_TURBO         328
 #define ACTION_LIGHTGUN_PAUSE         329
 #define ACTION_LIGHTGUN_START         330
-#define ACTION_GAME_CONTROL_END       331
+#define ACTION_GAME_CONTROL_END       330
 
 
 // Window ID defines to make the code a bit more readable

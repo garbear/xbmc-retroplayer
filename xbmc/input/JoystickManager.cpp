@@ -24,6 +24,7 @@
 #include "JoystickManager.h"
 #include "Application.h"
 #include "ButtonTranslator.h"
+#include "cores/RetroPlayer/RetroPlayerInput.h"
 #include "utils/log.h"
 #include "MouseStat.h"
 
@@ -127,6 +128,8 @@ void CJoystickManager::ProcessStateChanges()
 
 void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
 {
+  CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+
   for (unsigned int i = 0; i < newState.buttonCount; i++)
   {
     if (oldState.buttons[i] == newState.buttons[i])
@@ -153,12 +156,28 @@ void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick
     if (!Wakeup() && newState.buttons[i])
     {
       CAction action(actionID, 1.0f, 0.0f, actionName);
-      g_application.ExecuteInputAction(action);
-      // Track the button press for deferred repeated execution
-      TrackAction(action);
+
+      if (IsGameControl(actionID))
+      {
+        if (joystickHandler)
+          joystickHandler->ProcessButtonDown(joyID, i, action);
+        m_actionTracker.Reset(); // Don't track game control actions
+      }
+      else
+      {
+        g_application.ExecuteInputAction(action);
+        // Track the button press for deferred repeated execution
+        TrackAction(action);
+      }
     }
     else if (!newState.buttons[i])
     {
+      if (IsGameControl(actionID))
+      {
+        // Allow game input to record button release
+        if (joystickHandler)
+          joystickHandler->ProcessButtonUp(joyID, i);
+      }
       m_actionTracker.Reset(); // If a button was released, reset the tracker
     }
   }
@@ -166,6 +185,8 @@ void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick
 
 void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
 {
+  CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+
   for (unsigned int i = 0; i < newState.hatCount; i++)
   {
     SHat &oldHat = oldState.hats[i];
@@ -201,12 +222,28 @@ void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &n
       if (!Wakeup() && newHat[j])
       {
         CAction action(actionID, 1.0f, 0.0f, actionName);
-        g_application.ExecuteInputAction(action);
-        // Track the hat press for deferred repeated execution
-        TrackAction(action);
+
+        if (IsGameControl(actionID))
+        {
+          if (joystickHandler)
+            joystickHandler->ProcessHatDown(joyID, i, j, action);
+          m_actionTracker.Reset(); // Don't track game control actions
+        }
+        else
+        {
+          g_application.ExecuteInputAction(action);
+          // Track the hat press for deferred repeated execution
+          TrackAction(action);
+        }
       }
       else if (!newHat[j])
       {
+        if (IsGameControl(actionID))
+        {
+          // Allow game input to record hat release
+          if (joystickHandler)
+            joystickHandler->ProcessHatUp(joyID, i, j);
+        }
         m_actionTracker.Reset(); // If a hat was released, reset the tracker
       }
     }
@@ -215,6 +252,8 @@ void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &n
 
 void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
 {
+  CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+
   for (unsigned int i = 0; i < newState.axisCount; i++)
   {
     // Only send one "centered" message
@@ -241,7 +280,13 @@ void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &n
 
     if (!Wakeup() || newState.axes[i] == 0.0f)
     {
-      g_application.ExecuteInputAction(action);
+      if (IsGameControl(actionID) || newState.axes[i] == 0.0f)
+      {
+        if (joystickHandler)
+          joystickHandler->ProcessAxis(joyID, i, action);
+      }
+      else
+        g_application.ExecuteInputAction(action);
     }
   }
 }
@@ -292,6 +337,11 @@ void CJoystickManager::SetEnabled(bool enabled /* = true */)
     DeInitialize();
     m_bEnabled = false;
   }
+}
+
+inline bool CJoystickManager::IsGameControl(int actionID)
+{
+  return ACTION_GAME_CONTROL_START <= actionID && actionID <= ACTION_GAME_CONTROL_END;
 }
 
 #endif // defined(HAS_SDL_JOYSTICK)
