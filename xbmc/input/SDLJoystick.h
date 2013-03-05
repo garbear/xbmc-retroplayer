@@ -22,10 +22,10 @@
 
 #include "IJoystick.h"
 
-#include <SDL/SDL_joystick.h>
 #include <string>
 
-union SDL_Event;
+struct _SDL_Joystick;
+typedef struct _SDL_Joystick SDL_Joystick;
 
 class CJoystickSDL : public IJoystick
 {
@@ -35,7 +35,6 @@ public:
 
   virtual ~CJoystickSDL() { }
   virtual void Update();
-  virtual void Update(SDL_Event *joyEvent);
   virtual const SJoystick &GetState() const { return m_state; }
 
 private:

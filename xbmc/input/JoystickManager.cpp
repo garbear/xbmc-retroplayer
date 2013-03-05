@@ -95,16 +95,6 @@ void CJoystickManager::Update()
   ProcessStateChanges();
 }
 
-void CJoystickManager::Update(SDL_Event *joyEvent)
-{
-  if (!IsEnabled())
-    return;
-
-  for (JoystickArray::iterator it = m_joysticks.begin(); it != m_joysticks.end(); it++)
-    (*it)->Update(joyEvent);
-  ProcessStateChanges();
-}
-
 void CJoystickManager::ProcessStateChanges()
 {
   for (unsigned int joyID = 0; joyID < m_joysticks.size(); joyID++)

@@ -22,7 +22,7 @@
 #include "utils/log.h"
 
 #include <SDL/SDL.h>
-#include <SDL/SDL_events.h>
+#include <SDL/SDL_joystick.h>
 
 #define MAX_AXES          64
 #define MAX_AXISAMOUNT    32768
@@ -117,78 +117,4 @@ void CJoystickSDL::Update()
   // Gamepad axes
   for (unsigned int a = 0; a < m_state.axisCount; a++)
     m_state.axes[a] = NormalizeAxis((long)SDL_JoystickGetAxis(m_pJoystick, a), MAX_AXISAMOUNT);
-}
-
-void CJoystickSDL::Update(SDL_Event *joyEvent)
-{
-  switch(joyEvent->type)
-  {
-  case SDL_JOYBUTTONDOWN:
-    {
-      unsigned char buttonId = joyEvent->jbutton.button;
-      if (buttonId < m_state.buttonCount)
-      {
-        m_state.buttons[buttonId] = 1;
-        CLog::Log(LOGDEBUG, "Joystick %u button %u down", m_state.id, buttonId + 1);
-      }
-      else
-      {
-        CLog::Log(LOGERROR, "Joystick %u invalid button %u down, joystick only supports %u buttons",
-            m_state.id, buttonId + 1, m_state.buttonCount);
-      }
-    }
-    break;
-
-  case SDL_JOYBUTTONUP:
-    {
-      unsigned char buttonId = joyEvent->jbutton.button;
-      if (buttonId < m_state.buttonCount)
-      {
-        m_state.buttons[buttonId] = 0;
-        CLog::Log(LOGDEBUG, "Joystick %u button %u up", m_state.id, buttonId);
-      }
-      else
-      {
-        CLog::Log(LOGERROR, "Joystick %u invalid button %u up, joystick only supports %u buttons",
-            m_state.id, buttonId + 1, m_state.buttonCount);
-      }
-    }
-    break;
-
-  case SDL_JOYHATMOTION:
-    {
-      unsigned int hatId = joyEvent->jhat.hat;
-      if (hatId < m_state.hatCount)
-      {
-        m_state.hats[hatId].Center();
-        if      (joyEvent->jhat.value & SDL_HAT_UP)    m_state.hats[hatId].up = 1;
-        else if (joyEvent->jhat.value & SDL_HAT_DOWN)  m_state.hats[hatId].down = 1;
-        if      (joyEvent->jhat.value & SDL_HAT_RIGHT) m_state.hats[hatId].right = 1;
-        else if (joyEvent->jhat.value & SDL_HAT_LEFT)  m_state.hats[hatId].left = 1;
-        CLog::Log(LOGDEBUG, "Joystick %u hat %u new direction %s", m_state.id, hatId, m_state.hats[hatId].GetDirection());
-      }
-      else
-        CLog::Log(LOGERROR, "Joystick %u invalid hat %u, joystick only supports %u hats", m_state.id, hatId, m_state.hatCount);
-    }
-    break;
-
-  case SDL_JOYAXISMOTION:
-    {
-      unsigned int axisId = joyEvent->jaxis.axis;
-      if (axisId < m_state.axisCount)
-      {
-        m_state.axes[axisId] = NormalizeAxis((long)joyEvent->jaxis.value, MAX_AXISAMOUNT);
-        CLog::Log(LOGDEBUG, "Joystick %u axis %u amount %f", m_state.id, axisId, m_state.axes[axisId]);
-      }
-      else
-      {
-        CLog::Log(LOGERROR, "Joystick %u invalid axis %u, joystick only supports %u axes", m_state.id, axisId, m_state.axisCount);
-      }
-    }
-    break;
-
-  case SDL_JOYBALLMOTION:
-  default:
-    break;
-  }
 }

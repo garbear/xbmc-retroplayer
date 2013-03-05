@@ -226,17 +226,6 @@ bool CWinEventsSDL::MessagePump()
           CApplicationMessenger::Get().Quit();
         break;
 
-#ifdef HAS_SDL_JOYSTICK
-      case SDL_JOYBUTTONUP:
-      case SDL_JOYBUTTONDOWN:
-      case SDL_JOYAXISMOTION:
-      case SDL_JOYBALLMOTION:
-      case SDL_JOYHATMOTION:
-        CJoystickManager::Get().Update(&event);
-        ret = true;
-        break;
-#endif
-
       case SDL_ACTIVEEVENT:
         //If the window was inconified or restored
         if( event.active.state & SDL_APPACTIVE )

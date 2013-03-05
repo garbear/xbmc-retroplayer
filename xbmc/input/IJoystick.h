@@ -134,8 +134,6 @@ public:
   unsigned int  axisCount;
 };
 
-union SDL_Event;
-
 class IJoystick;
 typedef std::vector<boost::shared_ptr<IJoystick> > JoystickArray;
 
@@ -149,8 +147,6 @@ public:
   virtual ~IJoystick() { }
 
   virtual void Update() = 0;
-  
-  virtual void Update(SDL_Event *joyEvent) = 0;
 
   virtual const SJoystick &GetState() const = 0;
 };

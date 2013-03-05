@@ -24,7 +24,6 @@
 #include "utils/StdString.h"
 
 class CAction;
-union SDL_Event;
 
 // Class to manage all connected joysticks
 class CJoystickManager
@@ -39,7 +38,6 @@ public:
   void SetEnabled(bool enabled = true);
   bool IsEnabled() const { return m_bEnabled; }
   void Update();
-  void Update(SDL_Event *joyEvent);
   unsigned int Count() const { return m_joysticks.size(); }
   void Reinitialize() { Initialize(); }
   void Reset() { m_actionTracker.Reset(); }

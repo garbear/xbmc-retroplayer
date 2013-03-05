@@ -21,8 +21,6 @@
 
 #include "input/IJoystick.h"
 
-union SDL_Event;
-
 class CJoystickXInput : public IJoystick
 {
 public:
@@ -31,7 +29,6 @@ public:
 
   virtual ~CJoystickXInput() { }
   virtual void Update();
-  virtual void Update(SDL_Event *joyEvent) { }
   virtual const SJoystick &GetState() const { return m_state; }
 
 private:

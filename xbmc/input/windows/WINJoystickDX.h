@@ -24,8 +24,6 @@
 
 #include <string>
 
-union SDL_Event;
-
 class CJoystickDX : public IJoystick
 {
 public:
@@ -34,7 +32,6 @@ public:
 
   virtual ~CJoystickDX() { Release(); }
   virtual void Update();
-  virtual void Update(SDL_Event *joyEvent) { }
   virtual const SJoystick &GetState() const { return m_state; }
 
 private:
