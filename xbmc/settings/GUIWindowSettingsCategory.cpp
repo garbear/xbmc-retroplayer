@@ -90,7 +90,7 @@
 #include "Settings.h"
 #include "AdvancedSettings.h"
 #include "input/MouseStat.h"
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+#if defined(HAS_SDL_JOYSTICK)
 #include "input/JoystickManager.h"
 #endif
 #include "guilib/LocalizeStrings.h"
@@ -1435,7 +1435,7 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
   }
   else if (strSetting.Equals("input.enablejoystick"))
   {
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+#if defined(HAS_SDL_JOYSTICK)
     CJoystickManager::Get().SetEnabled(g_guiSettings.GetBool("input.enablejoystick")
         && CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0);
 #endif

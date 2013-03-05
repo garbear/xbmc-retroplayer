@@ -75,7 +75,7 @@ void CJoystickSDL::Initialize(JoystickArray &joysticks)
       }
     }
   }
-  
+
   // Disable joystick events, since we'll be polling them
   SDL_JoystickEventState(SDL_DISABLE);
 }

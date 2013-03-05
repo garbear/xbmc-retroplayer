@@ -798,7 +798,7 @@ bool CApplication::CreateGUI()
   sdlFlags |= SDL_INIT_VIDEO;
 #endif
 
-#if (defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)) && !defined(TARGET_WINDOWS)
+#if defined(HAS_SDL_JOYSTICK) && !defined(TARGET_WINDOWS)
   sdlFlags |= SDL_INIT_JOYSTICK;
 #endif
 
@@ -1414,7 +1414,7 @@ bool CApplication::Initialize()
   // reset our screensaver (starts timers etc.)
   ResetScreenSaver();
 
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+#ifdef HAS_SDL_JOYSTICK
   CJoystickManager::Get().SetEnabled(g_guiSettings.GetBool("input.enablejoystick") &&
       CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0);
 #endif
@@ -3000,7 +3000,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
 
 bool CApplication::ProcessGamepad(float frameTime)
 {
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+#ifdef HAS_SDL_JOYSTICK
   if (m_AppFocused && CJoystickManager::Get().Count() > 0)
   {
     CJoystickManager::Get().Update();
@@ -3189,7 +3189,8 @@ bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKe
    if (WakeUpScreenSaverAndDPMS())
      return true;
 
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
+#ifdef HAS_SDL_JOYSTICK
+   // Reset the action repeat event
    CJoystickManager::Get().Reset();
 #endif
    g_Mouse.SetActive(false);
