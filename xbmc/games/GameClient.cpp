@@ -391,7 +391,7 @@ void CGameClient::DeInit()
 void CGameClient::GetStrategy(CStrategyUseHD &hd, CStrategyUseParentZip &outerzip,
       CStrategyUseVFS &vfs, CStrategyEnterZip &innerzip, IRetroStrategy *strategies[4])
 {
-  if (!g_guiSettings.GetBool("games.prefervfs"))
+  if (!g_guiSettings.GetBool("gamesdebug.prefervfs"))
   {
     // Passing file names comes first
     strategies[0] = &hd;
@@ -725,7 +725,7 @@ void CGameClient::SetExtensions(const CStdString &strExtensionList)
       ext = "." + ext;
 
     // Zip crashes some emulators, allow users to disable zips for problematic emulators
-    if (ext == ".zip" && !g_guiSettings.GetBool("games.allowzip"))
+    if (ext == ".zip" && !g_guiSettings.GetBool("gamesdebug.allowzip"))
       continue;
 
     m_config.extensions.insert(ext);
