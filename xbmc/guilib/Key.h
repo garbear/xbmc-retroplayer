@@ -401,7 +401,6 @@
 
 #define WINDOW_GAMES                      10050
 #define WINDOW_DIALOG_GAMES_INFO          10051
-#define WINDOW_SETTINGS_MYGAMES           10052
 
 #define WINDOW_SCREENSAVER_DIM               97
 #define WINDOW_DEBUG_INFO                    98
