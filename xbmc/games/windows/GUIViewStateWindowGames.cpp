@@ -25,7 +25,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "settings/Settings.h"
 #include "utils/StringUtils.h"
-#include "ViewState.h"
+#include "view/ViewState.h"
 
 CGUIViewStateWindowGames::CGUIViewStateWindowGames(const CFileItemList& items) : CGUIViewState(items)
 {
