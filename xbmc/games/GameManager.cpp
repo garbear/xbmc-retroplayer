@@ -131,7 +131,7 @@ void CGameManager::UnregisterAddonByID(const CStdString &ID)
   CLog::Log(LOGERROR, "CGameManager: can't unregister %s - not registered!", ID.c_str());
 }
 
-void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDatabase /* = false */)
+void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDatabase /* cosmetic */)
 {
   CSingleLock lock(m_critSection);
 
@@ -148,14 +148,18 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDataba
     if (!gc)
       gc = GameClientPtr(new CGameClient(remote->Props()));
 
-    if (!gc->GetConfig().extensions.empty())
+    bool bIsRemoteBroken = !gc->Props().broken.empty();
+    bool bHasExteionsions = !gc->GetConfig().extensions.empty();
+
+    if (bHasExteionsions && !bIsRemoteBroken)
     {
-      // Extensions were specified in addon.xml
+      // Extensions were specified in (unbroken) addon.xml
       m_remoteExtensions.insert(gc->GetConfig().extensions.begin(), gc->GetConfig().extensions.end());
     }
     else
     {
-      // No extensions listed in addon.xml. If installed, get the extensions from the DLL.
+      // No extensions listed in addon.xml. If installed, get the extensions from
+      // the DLL. If the add-on is broken, also try to get extensions from the DLL.
       CLog::Log(LOGDEBUG, "CGameManager - No extensions for %s v%s in %s",
           gc->ID().c_str(), gc->Version().c_str(), fromDatabase ? "database" : "addon.xml");
 
