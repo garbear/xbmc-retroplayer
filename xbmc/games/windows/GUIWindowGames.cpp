@@ -67,6 +67,7 @@ bool CGUIWindowGames::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_WINDOW_DEINIT:
     {
+      return CGUIMediaWindow::OnMessage(message);
     }
     break;
 
