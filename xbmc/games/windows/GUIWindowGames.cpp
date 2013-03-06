@@ -20,11 +20,14 @@
 
 #include "GUIWindowGames.h"
 #include "addons/GUIDialogAddonInfo.h"
+#include "Application.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "FileItem.h"
+#include "games/tags/GameInfoTag.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIPassword.h"
 #include "settings/GUISettings.h"
+#include "URL.h"
 #include "Util.h"
 
 #define CONTROL_BTNVIEWASICONS      2
@@ -118,35 +121,40 @@ void CGUIWindowGames::GetContextButtons(int itemNumber, CContextButtons &buttons
 
   if (item && !item->GetProperty("pluginreplacecontextitems").asBoolean())
   {
-    if (m_vecItems->IsVirtualDirectoryRoot())
+    if (m_vecItems->IsSourcesPath())
     {
-      buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523); // Switch media
-    }
-    else if (m_vecItems->IsSourcesPath())
-    {
+      // Context buttons for a sources path, like "Add source", "Remove Source", etc.
       CGUIDialogContextMenu::GetContextButtons("games", item, buttons);
+    }
+    else if (!m_vecItems->IsVirtualDirectoryRoot())
+    {
+      buttons.Add(CONTEXT_BUTTON_PLAY_ITEM, 208); // Play
+      // Let RetroPlayer handle this one
+      //buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213); // Play With...
+      
+      if (!m_vecItems->IsPlugin() && (item->IsPlugin() || item->IsScript()))
+        buttons.Add(CONTEXT_BUTTON_INFO, 24003); // Add-on info
+      /*
+      if (!(item->m_bIsFolder || item->IsZIP() || item->IsRAR() || item->IsCBZ() || item->IsCBR() || item->IsScript()))
+        buttons.Add(CONTEXT_BUTTON_INFO, 13406); // Picture info, could be game info in the future
+      */
+      if (g_guiSettings.GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
+      {
+        buttons.Add(CONTEXT_BUTTON_DELETE, 117);
+        buttons.Add(CONTEXT_BUTTON_RENAME, 118);
+      }
+      if (item->IsPlugin() || item->IsScript() || m_vecItems->IsPlugin())
+      {
+        buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045);
+      }
+
+      buttons.Add(CONTEXT_BUTTON_GOTO_ROOT, 20128);
+      buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523);
     }
     else
     {
-      buttons.Add(CONTEXT_BUTTON_GOTO_ROOT, 20128);
-      buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523);
-
-      if (item)
-      {
-        if (!m_vecItems->IsPlugin() && (item->IsPlugin() || item->IsScript()))
-          buttons.Add(CONTEXT_BUTTON_INFO, 24003); // Add-on info
-        /*
-        if (!(item->m_bIsFolder || item->IsZIP() || item->IsRAR() || item->IsCBZ() || item->IsCBR() || item->IsScript()))
-          buttons.Add(CONTEXT_BUTTON_INFO, 13406); // picture info
-        */
-        if (g_guiSettings.GetBool("filelists.allowfiledeletion") && !item->IsReadOnly())
-        {
-          buttons.Add(CONTEXT_BUTTON_DELETE, 117);
-          buttons.Add(CONTEXT_BUTTON_RENAME, 118);
-        }
-        if (item->IsPlugin() || item->IsScript() || m_vecItems->IsPlugin())
-          buttons.Add(CONTEXT_BUTTON_PLUGIN_SETTINGS, 1045);
-      }
+      // We are virtual directory root
+      buttons.Add(CONTEXT_BUTTON_SWITCH_MEDIA, 523); // Switch media
     }
   }
   CGUIMediaWindow::GetContextButtons(itemNumber, buttons);
@@ -167,6 +175,25 @@ bool CGUIWindowGames::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   }
   switch (button)
   {
+  case CONTEXT_BUTTON_PLAY_ITEM:
+  case CONTEXT_BUTTON_PLAY_WITH:
+    {
+      CFileItem gameFile = *item;
+      CURL url(item->GetPath());
+      if (url.GetProtocol() == "zip" && url.GetFileName() == "")
+      {
+        // Zip file masquerading as a zip directory
+        if (!g_guiSettings.GetBool("gamesdebug.allowzip"))
+          return false;
+        gameFile = CFileItem(url.GetHostName(), false);
+      }
+
+      // Allocate a game info tag to let the player know it's a game
+      gameFile.GetGameInfoTag();
+
+      // Let RetroPlayer choose the right action henceforth
+      return g_application.PlayFile(gameFile);
+    }
   case CONTEXT_BUTTON_INFO:
     OnInfo(itemNumber);
     return true;
@@ -177,7 +204,7 @@ bool CGUIWindowGames::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
     OnRenameItem(itemNumber);
     return true;
   case CONTEXT_BUTTON_SETTINGS:
-    g_windowManager.ActivateWindow(WINDOW_SETTINGS_MYGAMES); // TODO
+    g_windowManager.ActivateWindow(WINDOW_SETTINGS_MYGAMES);
     return true;
   case CONTEXT_BUTTON_GOTO_ROOT:
     Update("");
