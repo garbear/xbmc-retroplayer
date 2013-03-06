@@ -239,7 +239,12 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
         if (addon) // NAME (disabled)
           emuChoices.Add(candidates.size(), gc->Name() + " (" + g_localizeStrings.Get(1223) + ")");
         else
+        {
+          // Don't include broken remote add-ons
+          if (!(*itRemote)->Props().broken.empty())
+            continue;
           emuChoices.Add(candidates.size(), gc->Name());
+        }
         candidates.push_back(gc->ID());
       }
     }
