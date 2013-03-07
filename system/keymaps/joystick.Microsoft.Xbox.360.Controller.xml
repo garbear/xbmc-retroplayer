@@ -370,7 +370,12 @@
       <hat id="1" position="down">JoypadDown</hat>
       <hat id="1" position="left">JoypadLeft</hat>
       <hat id="1" position="right">JoypadRight</hat>
-      <!-- No axis mappings yet -->
+      <axis id="1" limit="-1">JoypadLeft</axis>
+      <axis id="1" limit="+1">JoypadRight</axis>
+      <axis id="2" limit="-1">JoypadUp</axis>
+      <axis id="2" limit="+1">JoypadDown</axis>
+      <axis id="3" limit="+1">AnalogRewind</axis>
+      <axis id="3" limit="-1">AnalogFastForward</axis>
     </joystick>
     <joystick name="Microsoft X-Box 360 pad">
       <altname>BigBen Interactive XBOX 360 Controller</altname>
@@ -399,6 +404,12 @@
       <hat id="1" position="down">JoypadDown</hat>
       <hat id="1" position="left">JoypadLeft</hat>
       <hat id="1" position="right">JoypadRight</hat>
+      <axis id="1" limit="-1">JoypadLeft</axis>
+      <axis id="1" limit="+1">JoypadRight</axis>
+      <axis id="2" limit="-1">JoypadUp</axis>
+      <axis id="2" limit="+1">JoypadDown</axis>
+      <axis id="3" limit="+1">AnalogRewind</axis>
+      <axis id="3" limit="-1">AnalogFastForward</axis>
     </joystick>
   </FullscreenGame>
   <FullscreenLiveTV>
