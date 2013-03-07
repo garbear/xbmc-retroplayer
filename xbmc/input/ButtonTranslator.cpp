@@ -34,12 +34,7 @@
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
 #include "XBIRRemote.h"
-
-#if defined(TARGET_WINDOWS)
-#include "input/windows/WINJoystick.h"
-#elif defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
-#include "SDLJoystick.h"
-#endif
+#include "JoystickManager.h"
 
 #define JOYSTICK_DEFAULT_MAP "_xbmc_"
 
@@ -268,6 +263,30 @@ static const ActionMapping actions[] =
         // Do nothing action
         { "noop"             , ACTION_NOOP}
 };
+
+/* static */
+bool CButtonTranslator::IsAnalog(int actionID)
+{
+  switch (actionID)
+  {
+  case ACTION_ANALOG_SEEK_FORWARD:
+  case ACTION_ANALOG_SEEK_BACK:
+  case ACTION_SCROLL_UP:
+  case ACTION_SCROLL_DOWN:
+  case ACTION_ANALOG_FORWARD:
+  case ACTION_ANALOG_REWIND:
+  case ACTION_ANALOG_MOVE:
+  case ACTION_CURSOR_LEFT:
+  case ACTION_CURSOR_RIGHT:
+  case ACTION_VOLUME_UP:
+  case ACTION_VOLUME_DOWN:
+  case ACTION_ZOOM_IN:
+  case ACTION_ZOOM_OUT:
+    return true;
+  default:
+    return false;
+  }
+}
 
 static const ActionMapping windows[] =
        {{"home"                     , WINDOW_HOME},
@@ -742,7 +761,6 @@ int CButtonTranslator::TranslateLircRemoteString(const char* szDevice, const cha
 }
 #endif
 
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
 void CButtonTranslator::MapJoystickActions(int windowID, TiXmlNode *pJoystick)
 {
   string joyname = JOYSTICK_DEFAULT_MAP; // default global map name
@@ -959,7 +977,6 @@ int CButtonTranslator::GetActionCode(int window, int id, const JoystickMap &wmap
     TranslateActionString(strAction.c_str(), action);
   return action;
 }
-#endif
 
 void CButtonTranslator::GetActions(std::vector<std::string> &actionList)
 {
@@ -1126,7 +1143,6 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
     }
   }
 
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
   if ((pDevice = pWindow->FirstChild("joystick")) != NULL)
   {
     // map joystick actions
@@ -1136,7 +1152,6 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
       pDevice = pDevice->NextSibling("joystick");
     }
   }
-#endif
 
   if ((pDevice = pWindow->FirstChild("touch")) != NULL)
   {
@@ -1461,11 +1476,9 @@ void CButtonTranslator::Clear()
   lircRemotesMap.clear();
 #endif
 
-#if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
   m_joystickButtonMap.clear();
   m_joystickAxisMap.clear();
   m_joystickHatMap.clear();
-#endif
 
   m_Loaded = false;
 }

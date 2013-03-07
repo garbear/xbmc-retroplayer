@@ -35,6 +35,9 @@
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKaiToast.h"
+#include "input/JoystickManager.h"
+#include "peripherals/devices/PeripheralImon.h"
+
 
 #if defined(TARGET_DARWIN)
 #include "osx/CocoaPowerSyscall.h"
@@ -243,6 +246,9 @@ void CPowerManager::OnSleep()
   CBuiltins::Execute("LIRC.Stop");
 #endif
 
+  CLog::Log(LOGNOTICE, "%s: Stopping joystick manager", __FUNCTION__);
+  CJoystickManager::Get().SetEnabled(false);
+
   g_application.SaveFileState(true);
   g_application.StopPlaying();
   g_application.StopShutdownTimer();
@@ -283,6 +289,10 @@ void CPowerManager::OnWake()
   CLog::Log(LOGNOTICE, "%s: Restarting lirc", __FUNCTION__);
   CBuiltins::Execute("LIRC.Start");
 #endif
+
+  CLog::Log(LOGNOTICE, "%s: Restarting joystick manager", __FUNCTION__);
+  CJoystickManager::Get().SetEnabled(CSettings::Get().GetBool("input.enablejoystick") &&
+      PERIPHERALS::CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0);
 
   CAEFactory::Resume();
   g_application.UpdateLibraries();
