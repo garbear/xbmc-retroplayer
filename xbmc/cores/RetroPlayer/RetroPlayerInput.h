@@ -67,7 +67,7 @@ public:
   void ProcessButtonUp(unsigned int controllerID, unsigned int buttonID);
   void ProcessHatDown(unsigned int controllerID, unsigned int hatID, unsigned char dir, const CAction &action);
   void ProcessHatUp(unsigned int controllerID, unsigned int hatID, unsigned char dir);
-  void ProcessAxis(unsigned int controllerID, unsigned int joyID, const CAction &action);
+  void ProcessAxis(unsigned int controllerID, unsigned int axisID, const CAction &action);
 
 private:
   /**
@@ -88,6 +88,7 @@ public:
     unsigned int buttonID;
     unsigned int hatID;
     unsigned char hatDir;
+    unsigned char axisID;
   };
 
 private:

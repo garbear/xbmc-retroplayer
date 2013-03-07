@@ -51,7 +51,6 @@ private:
   void ProcessHatPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID);
   void ProcessAxisMotion(SJoystick &oldState, const SJoystick &newState, unsigned int joyID);
 
-  void TrackAction(const CAction &action);
   // Returns true if this wakes up from the screensaver
   bool Wakeup();
   // Allows Wakeup() to perform another wakeup check
@@ -68,6 +67,7 @@ private:
   {
     ActionTracker() { Reset(); }
     void Reset() { actionID = targetTime = 0; name.clear(); }
+    void Track(const CAction &action);
     int        actionID;
     CStdString name;
     uint32_t   targetTime;

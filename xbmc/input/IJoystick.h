@@ -53,7 +53,7 @@ inline float NormalizeAxis(long value, long maxAxisAmount)
     return (float)(value - deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
   else if (value < -deadzoneRange)
     return (float)(value + deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
-  return 0;
+  return 0.0f;
 }
 
 /**
