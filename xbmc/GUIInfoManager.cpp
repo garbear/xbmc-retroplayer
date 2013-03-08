@@ -37,6 +37,7 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "pictures/PictureInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
+#include "games/tags/GameInfoTag.h"
 #include "guilib/GUIWindowManager.h"
 #include "playlists/PlayList.h"
 #include "utils/TuxBoxUtil.h"
@@ -3748,6 +3749,8 @@ void CGUIInfoManager::SetCurrentItem(CFileItem &item)
 
   if (item.IsAudio())
     SetCurrentSong(item);
+  else if (item.IsGame())
+    SetCurrentGame(item);
   else
     SetCurrentMovie(item);
 
@@ -3855,6 +3858,22 @@ void CGUIInfoManager::SetCurrentMovie(CFileItem &item)
 
   item.FillInDefaultIcon();
   m_currentMovieThumb = item.GetArt("thumb");
+}
+
+void CGUIInfoManager::SetCurrentGame(CFileItem &item)
+{
+  CLog::Log(LOGDEBUG,"CGUIInfoManager::SetCurrentGame(%s)", item.GetPath().c_str());
+  *m_currentFile = item;
+
+  m_currentFile->LoadGameTag();
+  if (m_currentFile->GetGameInfoTag()->GetTitle().IsEmpty())
+  {
+    // No title in tag, show filename only
+    m_currentFile->GetGameInfoTag()->SetTitle(CUtil::GetTitleFromPath(m_currentFile->GetPath()));
+  }
+  m_currentFile->GetGameInfoTag()->SetLoaded(true);
+
+  m_currentFile->FillInDefaultIcon();
 }
 
 string CGUIInfoManager::GetSystemHeatInfo(int info)

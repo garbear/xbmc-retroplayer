@@ -33,6 +33,7 @@
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "cores/AudioEngine/AEFactory.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
 #include "PlayListPlayer.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -4092,7 +4093,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
      * This should speed up player startup for files on internet filesystems (eg. webdav) and
      * increase performance on low powered systems (Atom/ARM).
      */
-    if (item.IsVideo())
+    if (item.IsVideo() || item.IsGame())
     {
       CJobManager::GetInstance().Pause(CJob::PRIORITY_LOW); // Pause any low priority jobs
     }
@@ -4344,6 +4345,15 @@ bool CApplication::IsPlayingVideo() const
     return true;
 
   return false;
+}
+
+bool CApplication::IsPlayingGame() const
+{
+  if (!m_pPlayer)
+    return false;
+  if (!m_pPlayer->IsPlaying())
+    return false;
+  return m_eCurrentPlayer == EPC_RETROPLAYER;
 }
 
 bool CApplication::IsPlayingFullScreenVideo() const
@@ -5007,7 +5017,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
     }
     else
 #endif
-    if (item.IsAudio() || item.IsVideo())
+    if (item.IsAudio() || item.IsVideo() || item.IsGame())
     { // an audio or video file
       PlayFile(item);
     }
