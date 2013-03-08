@@ -24,6 +24,7 @@
 #include "JoystickManager.h"
 #include "Application.h"
 #include "ButtonTranslator.h"
+#include "cores/RetroPlayer/RetroPlayerInput.h"
 #include "utils/log.h"
 #include "MouseStat.h"
 
@@ -123,6 +124,8 @@ void CJoystickManager::ProcessStateChanges()
 
 void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
 {
+  CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+
   for (unsigned int i = 0; i < newState.buttonCount; i++)
   {
     if (oldState.buttons[i] == newState.buttons[i])
@@ -149,12 +152,28 @@ void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick
     if (!Wakeup() && newState.buttons[i])
     {
       CAction action(actionID, 1.0f, 0.0f, actionName);
-      g_application.ExecuteInputAction(action);
-      // Track the button press for deferred repeated execution
-      m_actionTracker.Track(action);
+
+      if (IsGameControl(actionID))
+      {
+        if (joystickHandler)
+          joystickHandler->ProcessButtonDown(joyID, i, action);
+        m_actionTracker.Reset(); // Don't track game control actions
+      }
+      else
+      {
+        g_application.ExecuteInputAction(action);
+        // Track the button press for deferred repeated execution
+        m_actionTracker.Track(action);
+      }
     }
     else if (!newState.buttons[i])
     {
+      if (IsGameControl(actionID))
+      {
+        // Allow game input to record button release
+        if (joystickHandler)
+          joystickHandler->ProcessButtonUp(joyID, i);
+      }
       m_actionTracker.Reset(); // If a button was released, reset the tracker
     }
   }
@@ -162,6 +181,8 @@ void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick
 
 void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
 {
+  CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+
   for (unsigned int i = 0; i < newState.hatCount; i++)
   {
     SHat &oldHat = oldState.hats[i];
@@ -197,12 +218,28 @@ void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &n
       if (!Wakeup() && newHat[j])
       {
         CAction action(actionID, 1.0f, 0.0f, actionName);
-        g_application.ExecuteInputAction(action);
-        // Track the hat press for deferred repeated execution
-        m_actionTracker.Track(action);
+
+        if (IsGameControl(actionID))
+        {
+          if (joystickHandler)
+            joystickHandler->ProcessHatDown(joyID, i, j, action);
+          m_actionTracker.Reset(); // Don't track game control actions
+        }
+        else
+        {
+          g_application.ExecuteInputAction(action);
+          // Track the hat press for deferred repeated execution
+          m_actionTracker.Track(action);
+        }
       }
       else if (!newHat[j])
       {
+        if (IsGameControl(actionID))
+        {
+          // Allow game input to record hat release
+          if (joystickHandler)
+            joystickHandler->ProcessHatUp(joyID, i, j);
+        }
         // If a hat was released, reset the tracker
         m_actionTracker.Reset();
       }
@@ -212,6 +249,8 @@ void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &n
 
 void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
 {
+  CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+
   for (unsigned int i = 0; i < newState.axisCount; i++)
   {
     // Absolute magnitude
@@ -242,7 +281,7 @@ void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &n
     }
     g_Mouse.SetActive(false);
 
-    // Use newState.axes[i] as the second about so subscribers can recover the original value
+    // Use newState.axes[i] as the second about so RetroPlayerInput can recover the original value
     CAction action(actionID, fullrange ? (newState.axes[i] + 1.0f) / 2.0f : absAxis, newState.axes[i], actionName);
 
     // For digital event, we treat action repeats like buttons and hats
@@ -260,11 +299,29 @@ void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &n
 
       if (!Wakeup() && absAxis >= AXIS_DIGITAL_DEADZONE)
       {
-        g_application.ExecuteInputAction(action);
-        m_actionTracker.Track(action);
+        if (IsGameControl(actionID))
+        {
+          // Need a unique button ID so axis ID's don't clash
+          // Decimal makes logs easier to read than hex
+          if (joystickHandler)
+            joystickHandler->ProcessButtonDown(joyID, i + 1000, action);
+          m_actionTracker.Reset(); // Don't track game control actions
+        }
+        else
+        {
+          g_application.ExecuteInputAction(action);
+          m_actionTracker.Track(action);
+        }
       }
       else if (absAxis < AXIS_DIGITAL_DEADZONE)
       {
+        if (IsGameControl(actionID))
+        {
+          // Need a unique button ID so axis ID's don't clash
+          // Decimal makes logs easier to read than hex
+          if (joystickHandler)
+            joystickHandler->ProcessButtonUp(joyID, i + 1000);
+        }
         m_actionTracker.Reset();
       }
     }
@@ -276,7 +333,12 @@ void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &n
       if (Wakeup())
         continue;
 
-      if (newState.axes[i] != 0.0f)
+      if (IsGameControl(actionID))
+      {
+        if (joystickHandler)
+          joystickHandler->ProcessAxis(joyID, i, action);
+      }
+      else if (newState.axes[i] != 0.0f)
         g_application.ExecuteInputAction(action);
 
       // The presence of analog actions disables others from being tracked
@@ -330,6 +392,11 @@ void CJoystickManager::SetEnabled(bool enabled /* = true */)
     DeInitialize();
     m_bEnabled = false;
   }
+}
+
+inline bool CJoystickManager::IsGameControl(int actionID)
+{
+  return ACTION_GAME_CONTROL_START <= actionID && actionID <= ACTION_GAME_CONTROL_END;
 }
 
 #endif // defined(HAS_SDL_JOYSTICK)
