@@ -267,6 +267,7 @@ void CSettingsGroup::GetCategories(vecSettingsCategory &vecCategories)
 #define SETTINGS_SERVICE      WINDOW_SETTINGS_SERVICE - WINDOW_SETTINGS_START
 #define SETTINGS_APPEARANCE   WINDOW_SETTINGS_APPEARANCE - WINDOW_SETTINGS_START
 #define SETTINGS_PVR          WINDOW_SETTINGS_MYPVR - WINDOW_SETTINGS_START
+#define SETTINGS_GAMES        WINDOW_SETTINGS_MYGAMES - WINDOW_SETTINGS_START
 
 // Settings are case sensitive
 CGUISettings::CGUISettings(void)
@@ -1025,6 +1026,11 @@ void CGUISettings::Initialize()
 
   CSettingsCategory* pvrc = AddCategory(SETTINGS_PVR, "pvrclient", 19279);
   AddString(pvrc, "pvrclient.menuhook", 19280, "", BUTTON_CONTROL_STANDARD);
+
+  // Game settings
+  AddGroup(SETTINGS_GAMES, 15016);
+  CSettingsCategory* gamesGen = AddCategory(SETTINGS_GAMES, "games", 16000);
+  AddSeparator(gamesGen, "games.sep1");
 }
 
 CGUISettings::~CGUISettings(void)
