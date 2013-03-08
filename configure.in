@@ -2396,6 +2396,7 @@ OUTPUT_FILES="Makefile \
     xbmc/cores/RetroPlayer/Makefile \
     xbmc/games/Makefile \
     xbmc/games/tags/Makefile \
+    xbmc/games/windows/Makefile \
     xbmc/main/Makefile"
 
 if test "$use_skin_touched" = "yes"; then
