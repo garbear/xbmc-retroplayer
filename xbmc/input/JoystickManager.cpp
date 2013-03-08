@@ -68,7 +68,7 @@ void CJoystickManager::Initialize()
 #elif defined(TARGET_LINUX)
   CLinuxJoystick::Initialize(m_joysticks);
 #if defined(HAS_SDL_JOYSTICK)
-  CLinuxJoystickSDL::Initialize(m_joysticks);
+  //CLinuxJoystickSDL::Initialize(m_joysticks);
 #endif
 #endif // TARGET_LINUX
 
@@ -88,7 +88,7 @@ void CJoystickManager::DeInitialize()
 #elif defined(TARGET_LINUX)
   CLinuxJoystick::DeInitialize(m_joysticks);
 #if defined(HAS_SDL_JOYSTICK)
-  CLinuxJoystickSDL::DeInitialize(m_joysticks);
+  //CLinuxJoystickSDL::DeInitialize(m_joysticks);
 #endif
 #endif // TARGET_LINUX
 }
