@@ -1010,8 +1010,14 @@ void CGUISettings::Initialize()
 
   // Game settings
   AddGroup(SETTINGS_GAMES, 15016);
-  CSettingsCategory* gamesGen = AddCategory(SETTINGS_GAMES, "games", 16000);
+  CSettingsCategory* gamesGen = AddCategory(SETTINGS_GAMES, "games", 16000); // General
   AddSeparator(gamesGen, "games.sep1");
+  AddString(gamesGen, "games.manageaddons", 24025, "", BUTTON_CONTROL_STANDARD); // Manage emulators...
+  CSettingsCategory* gamesDebug = AddCategory(SETTINGS_GAMES, "gamesdebug", 14092); // Debugging
+  AddBool(gamesDebug, "gamesdebug.prefervfs", 15018, true); // Prefer loading files from memory (debug)
+  // Some emulators crash when loading .zip files. If the emulator allows XBMC to
+  // load from memory (VFS), XBMC can still safely load games from within zips.
+  AddBool(gamesDebug, "gamesdebug.allowzip", 15020, true); // Allow emulators to load .zip files (debug)
 }
 
 CGUISettings::~CGUISettings(void)
