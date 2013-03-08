@@ -154,6 +154,7 @@ CGUIWindowSettingsCategory::CGUIWindowSettingsCategory(void)
   m_idRange.push_back(WINDOW_SETTINGS_SERVICE);
   m_idRange.push_back(WINDOW_SETTINGS_APPEARANCE);
   m_idRange.push_back(WINDOW_SETTINGS_MYPVR);
+  m_idRange.push_back(WINDOW_SETTINGS_MYGAMES);
 
   m_iScreen = 0;
   m_strOldTrackFormat = "";
