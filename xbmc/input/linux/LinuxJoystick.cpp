@@ -113,7 +113,7 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
     {
       // Found a joystick device
       string filename(inputDir + "/" + pDirent->d_name);
-      CLog::Log(LOGINFO, /* __FUNCTION__ */ "CLinuxJoystick::Initialize: opening joystick %s", filename.c_str());
+      CLog::Log(LOGNOTICE, /* __FUNCTION__ */ "CLinuxJoystick::Initialize: opening joystick %s", filename.c_str());
 
       int fd = open(filename.c_str(), O_RDONLY);
       if (fd < 0)
@@ -125,7 +125,7 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
       unsigned char axes = 0;
       unsigned char buttons = 0;
       int version = 0x000000;
-      char name[128] = "Unknown";
+      char name[128] = "Unknown XBMC-Compatible Linux Joystick";
 
       if (ioctl(fd, JSIOCGVERSION, &version) < 0 ||
           ioctl(fd, JSIOCGAXES, &axes) < 0 ||
@@ -152,7 +152,8 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
         continue;
       }
 
-      CLog::Log(LOGINFO, /* __FUNCTION__ */ "CLinuxJoystick::Initialize: driver version is %d.%d.%d",
+      CLog::Log(LOGNOTICE, /* __FUNCTION__ */ "CLinuxJoystick::Initialize: Enabled Joystick: \"%s\" (Linux Joystick API)", name);
+      CLog::Log(LOGNOTICE, /* __FUNCTION__ */ "CLinuxJoystick::Initialize: driver version is %d.%d.%d",
           version >> 16, (version >> 8) & 0xff, version & 0xff);
 
       uint16_t buttonMap[BTNMAP_SIZE];
@@ -179,7 +180,7 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
       {
         /* buttonMap out of range for names. Don't print any. */
         CLog::Log(LOGERROR, /* __FUNCTION__ */ "CLinuxJoystick::Initialize: XBMC is not fully compatible with your kernel. Unable to retrieve button map!");
-        CLog::Log(LOGERROR, "CLinuxJoystick::Initialize: Joystick \"%s\" has %d buttons and %d axes", name, buttons, axes);
+        CLog::Log(LOGNOTICE, "CLinuxJoystick::Initialize: Joystick \"%s\" has %d buttons and %d axes", name, buttons, axes);
       }
       else
       {
@@ -190,7 +191,7 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
           if (i < buttons - 1)
             strButtons << ", ";
         }
-        CLog::Log(LOGINFO, "Buttons: %s", strButtons.str().c_str());
+        CLog::Log(LOGNOTICE, "Buttons: %s", strButtons.str().c_str());
 
         ostringstream strAxes;
         for (int i = 0; i < axes; i++)
@@ -199,7 +200,7 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
           if (i < axes - 1)
             strAxes << ", ";
         }
-        CLog::Log(LOGINFO, "Axes: %s", strAxes.str().c_str());
+        CLog::Log(LOGNOTICE, "Axes: %s", strAxes.str().c_str());
       }
 
       // Got enough information, time to move on to the next joystick
