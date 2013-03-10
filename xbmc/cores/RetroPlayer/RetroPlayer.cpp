@@ -476,8 +476,8 @@ void CRetroPlayer::Process()
       (m_playSpeed > PLAYSPEED_PAUSED ? m_playSpeed : -m_playSpeed / REWIND_SCALE);
 
     // Slow down to 0.5x (an extra frame) if the audio is delayed
-    if (m_audio.GetDelay() * 1000 > g_guiSettings.GetInt("games.audiodelay"))
-      nextpts += realFrameTime;
+    //if (m_audio.GetDelay() * 1000 > g_guiSettings.GetInt("games.audiodelay"))
+    //  nextpts += realFrameTime;
 
     CDVDClock::WaitAbsoluteClock(nextpts);
     nextpts += realFrameTime;
