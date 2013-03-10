@@ -65,6 +65,7 @@ CSoftAEStream::CSoftAEStream(enum AEDataFormat dataFormat, unsigned int sampleRa
   m_forceResample         = (options & AESTREAM_FORCE_RESAMPLE) != 0;
   m_paused                = (options & AESTREAM_PAUSED) != 0;
   m_autoStart             = (options & AESTREAM_AUTOSTART) != 0;
+  m_lowLatency            = (options & AESTREAM_LOW_LATENCY) != 0;
 
   if (m_autoStart)
     m_paused = true;
@@ -135,16 +136,25 @@ void CSoftAEStream::Initialize()
 
   m_aeChannelLayout = AE.GetChannelLayout();
   m_aeBytesPerFrame = AE_IS_RAW(m_initDataFormat) ? m_bytesPerFrame : (m_samplesPerFrame * sizeof(float));
-  // set the waterlevel to 75 percent of the number of frames per second.
-  // this lets us drain the main buffer down futher before flagging an underrun.
-  m_waterLevel      = AE.GetSampleRate() - (AE.GetSampleRate() / 4);
+
+  if (!m_lowLatency)
+  {
+    // set the waterlevel to 75 percent of the number of frames per second.
+    // this lets us drain the main buffer down futher before flagging an underrun.
+    m_waterLevel = AE.GetSampleRate() - (AE.GetSampleRate() / 4);
+  }
+  else
+  {
+    // set the waterlevel to 6.25 percent of the number of frames per second.
+    m_waterLevel = AE.GetSampleRate() / 16;
+  }
   m_refillBuffer    = m_waterLevel;
 
   m_format.m_dataFormat    = useDataFormat;
   m_format.m_sampleRate    = m_initSampleRate;
   m_format.m_encodedRate   = m_initEncodedSampleRate;
   m_format.m_channelLayout = m_initChannelLayout;
-  m_format.m_frames        = m_initSampleRate / 8;
+  m_format.m_frames        = m_initSampleRate / (!m_lowLatency ? 8 : 80);
   m_format.m_frameSamples  = m_format.m_frames * m_initChannelLayout.Count();
   m_format.m_frameSize     = m_bytesPerFrame;
 
@@ -189,7 +199,7 @@ void CSoftAEStream::Initialize()
   if (m_resample)
   {
     int err;
-    m_ssrc                   = src_new(SRC_SINC_MEDIUM_QUALITY, m_initChannelLayout.Count(), &err);
+    m_ssrc                   = src_new(!m_lowLatency ? SRC_SINC_MEDIUM_QUALITY : SRC_SINC_FASTEST, m_initChannelLayout.Count(), &err);
     m_ssrcData.data_in       = m_convertBuffer;
     m_internalRatio          = (double)AE.GetSampleRate() / (double)m_initSampleRate;
     m_ssrcData.src_ratio     = m_internalRatio;

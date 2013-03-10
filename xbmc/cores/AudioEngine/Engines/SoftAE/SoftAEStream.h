@@ -140,6 +140,7 @@ private:
   bool                m_paused;
   bool                m_autoStart;
   bool                m_draining;
+  bool                m_lowLatency;
   CAELimiter          m_limiter;
 
   /* vizualization internals */
