@@ -145,6 +145,7 @@ void CSoftAEStream::Initialize()
   }
   else
   {
+    // set the waterlevel to 6.25 percent of the number of frames per second.
     m_waterLevel = AE.GetSampleRate() / 16;
   }
   m_refillBuffer    = m_waterLevel;
