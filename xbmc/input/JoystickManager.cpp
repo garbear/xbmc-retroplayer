@@ -303,10 +303,15 @@ void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &n
       {
         if (IsGameControl(actionID))
         {
-          // Need a unique button ID so axis ID's don't clash
-          // Decimal makes logs easier to read than hex
+          // Because an axis's direction can reverse and the button ID
+          // (joyID + 1000) will be given a different action, record the button
+          // up event first.
           if (joystickHandler)
+          {
+            // Use decimal mask because it's easier to recover from logs
+            joystickHandler->ProcessButtonUp(joyID, i + 1000);
             joystickHandler->ProcessButtonDown(joyID, i + 1000, action);
+          }
           m_actionTracker.Reset(); // Don't track game control actions
         }
         else
@@ -319,8 +324,7 @@ void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &n
       {
         if (IsGameControl(actionID))
         {
-          // Need a unique button ID so axis ID's don't clash
-          // Decimal makes logs easier to read than hex
+          // Use decimal mask because it's easier to recover from logs
           if (joystickHandler)
             joystickHandler->ProcessButtonUp(joyID, i + 1000);
         }
