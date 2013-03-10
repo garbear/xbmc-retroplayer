@@ -456,8 +456,8 @@ void CRetroPlayer::Process()
     m_audio.Flush();
 
     // Slow down (increase nextpts) if we're playing catchup after stalling
-    if (nextpts < CDVDClock::GetAbsoluteClock())
-      nextpts = CDVDClock::GetAbsoluteClock();
+    //if (nextpts < CDVDClock::GetAbsoluteClock())
+    //  nextpts = CDVDClock::GetAbsoluteClock();
 
     double realFrameTime = frametime * PLAYSPEED_NORMAL /
       (m_playSpeed > PLAYSPEED_PAUSED ? m_playSpeed : -m_playSpeed / REWIND_SCALE);
