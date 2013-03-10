@@ -73,12 +73,8 @@ unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
 
   CLog::Log(LOGINFO, "RetroPlayerAudio: Creating audio stream, sample rate hint = %u", samplerate);
   static enum AEChannel map[3] = {AE_CH_FL, AE_CH_FR, AE_CH_NULL};
-#if defined(TARGET_WINDOWS)
-  unsigned int options = AESTREAM_AUTOSTART | AESTREAM_LOW_LATENCY;
-#else
-  unsigned int options = AESTREAM_AUTOSTART;
-#endif
-  m_pAudioStream = CAEFactory::MakeStream(AE_FMT_FLOAT, samplerate, samplerate, CAEChannelInfo(map), options);
+  m_pAudioStream = CAEFactory::MakeStream(AE_FMT_FLOAT, samplerate, samplerate, CAEChannelInfo(map),
+      AESTREAM_AUTOSTART | AESTREAM_LOW_LATENCY);
 
   if (!m_pAudioStream)
   {
