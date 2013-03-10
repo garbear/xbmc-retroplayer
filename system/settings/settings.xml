@@ -1565,6 +1565,7 @@
           </control>
         </setting>
         <setting id="gamesgeneral.audiodelay" type="integer" label="15017" help="36458">
+          <visible>false</visible>
           <level>2</level>
           <default>500</default>
           <constraints>
