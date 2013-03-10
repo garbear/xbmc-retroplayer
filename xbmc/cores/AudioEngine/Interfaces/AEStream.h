@@ -29,7 +29,8 @@
 enum AEStreamOptions {
   AESTREAM_FORCE_RESAMPLE = 0x01, /* force resample even if rates match */
   AESTREAM_PAUSED         = 0x02, /* create the stream paused */
-  AESTREAM_AUTOSTART      = 0x04  /* autostart the stream when enough data is buffered */
+  AESTREAM_AUTOSTART      = 0x04, /* autostart the stream when enough data is buffered */
+  AESTREAM_LOW_LATENCY    = 0x08, /* use minimal buffer sizes for game mode */
 };
 
 /**
