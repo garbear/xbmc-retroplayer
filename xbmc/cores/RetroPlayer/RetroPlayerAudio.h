@@ -22,9 +22,9 @@
 #pragma once
 
 #include "threads/Thread.h"
-#include "utils/RingBuffer.h"
 
 #include <stdint.h>
+#include <vector>
 
 class IAEStream;
 
@@ -37,7 +37,7 @@ public:
   /**
    * Rev up the engines and start the thread.
    */
-  unsigned int GoForth(double allegedSamplerate, double framerate);
+  unsigned int GoForth(double allegedSamplerate);
 
   /**
    * Send audio samples to be processed by this class. Data format is:
@@ -49,7 +49,7 @@ public:
    * Send a single frame. Frames are cached until Flush() is called, so make
    * sure to call Flush() after every call to CGameClient::RunFrame().
    */
-  void SendAudioFrame(int16_t left, int16_t right); 
+  void SendAudioFrame(int16_t left, int16_t right);
 
   /**
    * This function is only necessary if single frame audio is used, as
@@ -57,11 +57,12 @@ public:
    * single frames have been observed (no call to SendAudioFrame()), this has
    * no effect.
    */
-  void Flush() { if (m_bSingleFrames) m_packetReady.Set(); }
+  void Flush() { m_bFlushSingleFrames = true; }
 
   /**
    * Accumulative audio delay. Does not include delay due to current packet, so
-   * at 60fps this could be up to 17ms (~1/60) behind.
+   * at 60fps this could be up to 17ms (~1/60) behind. Accuracy is also subject
+   * to accuracy found in AE GetDelay() functions.
    */
   double GetDelay() const;
 
@@ -69,9 +70,50 @@ protected:
   virtual void Process();
 
 private:
-  IAEStream          *m_pAudioStream;
-  CRingBuffer        m_buffer;
-  bool               m_bSingleFrames;
-  CCriticalSection   m_critSection;
-  CEvent             m_packetReady;
+  /**
+   * Operate several std::vector buffers in a ring-like fashion. This avoids
+   * the problem of blocking on a single buffer, and also allows the buffer
+   * queue to get backed up several video frames.
+   */
+  class AudioMultiBuffer
+  {
+  public:
+    AudioMultiBuffer() : m_pos(0) { }
+    // A Window is a collection of audio data, usually corresponding to a frame of video
+    struct Window
+    {
+      Window() : frames(0) { }
+      std::vector<unsigned char> window;
+      // Number of audio frames in the window
+      unsigned int frames;
+    };
+    // Return the queued buffer containing the most recent data. Null if no data
+    Window *GetWindow();
+    // Return the next unused buffer. Null if AudioMultiBuffer is full
+    Window *GetTheNextWindow(); // GetNextWindow() is reserved on Windows
+    // Set the size of all buffers
+    void ResizeAll(unsigned int size);
+    // Delcare a buffer unused
+    void Free(Window *window) { window->frames = 0; }
+
+  private:
+    // If buffer gets backed up, start dropping audio after 4 windows
+    static const unsigned int WINDOW_COUNT = 4;
+    Window windows[WINDOW_COUNT];
+    // Index of the current window to be returned by GetWindow()
+    int m_pos;
+  };
+
+  IAEStream            *m_pAudioStream;
+  // Process() is greedy and will try to keep m_buffer drained
+  AudioMultiBuffer     m_buffer;
+  // Set to true if SendAudioFrame() is called
+  bool                 m_bSingleFrames;
+  std::vector<int16_t> m_singleFrameBuffer;
+  // Count of samples in m_singleFrameBuffer
+  unsigned int         m_singleFrameSamples;
+  // Set to true if Flush() is called, reset inside SendAudioFrame()
+  bool                 m_bFlushSingleFrames;
+  CCriticalSection     m_critSection;
+  CEvent               m_packetReady;
 };

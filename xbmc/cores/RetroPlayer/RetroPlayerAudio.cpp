@@ -24,16 +24,18 @@
 #include "RetroPlayerAudio.h"
 #include "cores/AudioEngine/AEFactory.h"
 #include "cores/AudioEngine/Interfaces/AEStream.h"
+#include "cores/AudioEngine/Utils/AEConvert.h"
 #include "cores/dvdplayer/DVDClock.h"
 #include "utils/log.h"
 
 #include <vector>
 
-#define FRAMESIZE (2 * sizeof(uint16_t)) // L (2) + R (2)
-#define BUFFER_VIDEO_FRAMES 10 // Buffer can hold audio for 10 video frames max
+// Pre-convert audio to float to avoid additional buffer in AE stream
+#define FRAMESIZE  (2 * sizeof(float)) // L (float) + R (float)
 
 CRetroPlayerAudio::CRetroPlayerAudio()
-  : CThread("RetroPlayerAudio"), m_pAudioStream(NULL), m_bSingleFrames(false)
+  : CThread("RetroPlayerAudio"), m_pAudioStream(NULL), m_bSingleFrames(false),
+    m_singleFrameSamples(0), m_bFlushSingleFrames(false)
 {
 }
 
@@ -42,7 +44,7 @@ CRetroPlayerAudio::~CRetroPlayerAudio()
   StopThread();
 }
 
-unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate, double framerate)
+unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
 {
   if (m_pAudioStream)
     { CAEFactory::FreeStream(m_pAudioStream); m_pAudioStream = NULL; }
@@ -59,7 +61,7 @@ unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate, double framera
 #else
   unsigned int options = AESTREAM_AUTOSTART;
 #endif
-  m_pAudioStream = CAEFactory::MakeStream(AE_FMT_S16NE, samplerate, samplerate, CAEChannelInfo(map), options);
+  m_pAudioStream = CAEFactory::MakeStream(AE_FMT_FLOAT, samplerate, samplerate, CAEChannelInfo(map), options);
 
   if (!m_pAudioStream)
   {
@@ -68,13 +70,6 @@ unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate, double framera
   }
   else
   {
-    // Create a ring buffer of 10 fames to hold our audio packets. We should
-    // dispatch a packet every frame, but this gives us some room to overflow.
-    const double frameTime = 1.0 / (framerate * m_pAudioStream->GetSampleRate() / allegedSamplerate);
-    const unsigned int bufferSize = (unsigned int)(BUFFER_VIDEO_FRAMES * frameTime * m_pAudioStream->GetSampleRate() * FRAMESIZE);
-
-    m_buffer.Create(bufferSize);
-
     Create();
     return m_pAudioStream->GetSampleRate();
   }
@@ -88,40 +83,33 @@ void CRetroPlayerAudio::Process()
     return;
   }
 
-  std::vector<unsigned char> data; // data.size() is max buffer size
-  unsigned int size; // current packet size
+  AudioMultiBuffer::Window *window;
 
   while (!m_bStop)
   {
     {
       CSingleLock lock(m_critSection);
 
-      size = m_buffer.getMaxReadSize();
-      if (size == 0)
+      // Greedy - try to keep m_buffer drained
+      if (!(window = m_buffer.GetWindow()))
       {
         lock.Leave();
         m_packetReady.WaitMSec(17); // ~1 video frame @ 60fps
         // If event timed out, we might be done, so check m_bStop again
         continue;
       }
-
-      // Ensure we have enough space by resizing to the largest data packet observed
-      if (data.size() < size)
-        data.resize(size);
-      m_buffer.ReadData(reinterpret_cast<char*>(data.data()), size);
     }
-
-    unsigned char* dataPtr = data.data();
 
     // Calculate a timeout when this definitely should be done
     double timeout;
-    const double secondsPerByte = 1.0 / (m_pAudioStream->GetSampleRate() * FRAMESIZE);
-    timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + size * secondsPerByte);
+    timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + window->frames / m_pAudioStream->GetSampleRate());
     timeout += DVD_SEC_TO_TIME(1.0);
     timeout += CDVDClock::GetAbsoluteClock();
 
     // Keep track of how much data has been added to the stream
-    unsigned int copied;
+    unsigned char  *dataPtr = window->window.data();
+    unsigned int   size     = window->frames * FRAMESIZE;
+    unsigned int   copied;
     do
     {
       // Fast-forward packet data on successful add
@@ -145,13 +133,12 @@ void CRetroPlayerAudio::Process()
     // Discard extra data
     if (size > 0 && !m_bStop)
       CLog::Log(LOGNOTICE, "RetroPlayerAudio: %u bytes left over after rendering, discarding", size);
+
+    m_buffer.Free(window);
   }
 
-  {
-    CSingleLock lock(m_critSection);
-    m_bStop = true;
-    m_buffer.Destroy();
-  }
+  m_bStop = true;
+
   CAEFactory::FreeStream(m_pAudioStream);
   m_pAudioStream = NULL;
 }
@@ -165,24 +152,84 @@ void CRetroPlayerAudio::SendAudioFrames(const int16_t *data, size_t frames)
 {
   CSingleLock lock(m_critSection);
 
-  if (!m_bStop && IsRunning())
+  AudioMultiBuffer::Window *window = m_buffer.GetTheNextWindow();
+  if (window)
   {
-    m_buffer.WriteData(reinterpret_cast<const char*>(data), frames * FRAMESIZE);
+    if (window->window.size() < frames * FRAMESIZE)
+      window->window.resize(frames * FRAMESIZE);
+
+    // Batch-convert our audio samples to floats here using AE converters. We
+    // do this to avoid conversion in AE, which reqiures another buffer and
+    // another source of delay.
+    uint8_t *source = reinterpret_cast<uint8_t*>(const_cast<int16_t*>(data));
+    float   *dest   = reinterpret_cast<float*>(window->window.data());
+    static CAEConvert::AEConvertToFn convertFn = CAEConvert::ToFloat(AE_FMT_S16NE);
+
+    convertFn(source, frames * 2, dest); // L + R
+    window->frames = frames;
+
     m_packetReady.Set();
   }
 }
 
+// TODO: Use parameters from RetroPlayer
+// We don't want to flush intra-frame while the game is processing (game
+// clients might use threads, for example). We also want to minimize
+// m_singleFrameBuffer.
+#define SAMPLERATE     32000
+#define FPS            60
+#define SAFETYFACTOR   4 // video frames
+#define BUFFERSAMPLES  (SAMPLERATE * 2 * SAFETYFACTOR / FPS)
+
 void CRetroPlayerAudio::SendAudioFrame(int16_t left, int16_t right)
 {
-  CSingleLock lock(m_critSection);
-
   if (!m_bSingleFrames)
-    m_bSingleFrames = true;
-
-  if (!m_bStop && IsRunning())
   {
-    m_buffer.WriteData(reinterpret_cast<const char*>(&left), sizeof(left));
-    m_buffer.WriteData(reinterpret_cast<const char*>(&right), sizeof(right));
-    // m_packetReady.Set() is called in Flush()
-  } 
+    m_bSingleFrames = true;
+    CLog::Log(LOGNOTICE, "RetroPlayer (Audio): Using single-frame audio");
+    m_singleFrameBuffer.resize(BUFFERSAMPLES * sizeof(int16_t));
+  }
+
+  int16_t *dest = m_singleFrameBuffer.data() + m_singleFrameSamples;
+  *dest = left;
+  *(dest + 1) = right;
+
+  m_singleFrameSamples += 2;
+
+  if (m_bFlushSingleFrames || m_singleFrameSamples >= BUFFERSAMPLES)
+  {
+    m_bFlushSingleFrames = false;
+    SendAudioFrames(m_singleFrameBuffer.data(), m_singleFrameSamples / 2);
+    m_singleFrameSamples = 0;
+  }
+}
+
+CRetroPlayerAudio::AudioMultiBuffer::Window *CRetroPlayerAudio::AudioMultiBuffer::GetWindow()
+{
+  // Return the window indicated by the m_pos index if it has frames
+  if (windows[m_pos].frames != 0)
+  {
+    // Advance m_pos so that GetTheNextWindow() starts at the correct window
+    m_pos = (m_pos + 1) % WINDOW_COUNT;
+    return &windows[m_pos];
+  }
+  return NULL;
+}
+
+CRetroPlayerAudio::AudioMultiBuffer::Window *CRetroPlayerAudio::AudioMultiBuffer::GetTheNextWindow()
+{
+  // Start at the current window, and progress until we find one with no frames
+  for (unsigned int i = m_pos; i < m_pos + WINDOW_COUNT; i++)
+  {
+    if (windows[i % WINDOW_COUNT].frames == 0)
+      return &windows[i % WINDOW_COUNT];
+  }
+  return NULL;
+}
+
+void CRetroPlayerAudio::AudioMultiBuffer::ResizeAll(unsigned int size)
+{
+  // Start at the current window, and progress until we find one with no frames
+  for (unsigned int i = 0; i < WINDOW_COUNT; i++)
+    windows[i].window.resize(size);
 }

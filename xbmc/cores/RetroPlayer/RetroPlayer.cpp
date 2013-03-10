@@ -406,7 +406,7 @@ void CRetroPlayer::Process()
   if (allegedSamplerate > 0)
   {
     // The audio thread will return the sample rate decided by the audio stream
-    samplerate = m_audio.GoForth(allegedSamplerate, framerate);
+    samplerate = m_audio.GoForth(allegedSamplerate);
     if (samplerate)
     {
       CLog::Log(LOGDEBUG, "RetroPlayer: Created audio stream with sample rate %u from reported rate of %f",
