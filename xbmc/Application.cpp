@@ -2470,7 +2470,7 @@ bool CApplication::OnKey(const CKey& key)
       if (action.GetID() == 0)
         action = CButtonTranslator::GetInstance().GetAction(iWin, key);
     }
-    else if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
+    else if (IsPlayingGame())
     {
       // Fetch action from <FullscreenGame> tag instead of <FullscreenVideo>
       action = CButtonTranslator::GetInstance().GetAction(WINDOW_FULLSCREEN_GAME, key);
@@ -3265,7 +3265,7 @@ int CApplication::GetActiveWindowID(void)
     // check for LiveTV and switch to it's virtual window
     else if (g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())
       iWin = WINDOW_FULLSCREEN_LIVETV;
-    else if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
+    else if (IsPlayingGame())
       iWin = WINDOW_FULLSCREEN_GAME;
   }
 
@@ -5540,7 +5540,7 @@ PLAYERCOREID CApplication::GetCurrentPlayer()
 CRetroPlayerInput *CApplication::GetJoystickHandler()
 {
   CRetroPlayer* rp = NULL;
-  if (m_pPlayer && m_eCurrentPlayer == EPC_RETROPLAYER)
+  if (IsPlayingGame())
     rp = dynamic_cast<CRetroPlayer*>(m_pPlayer);
   return rp ? &rp->GetInput() : NULL;
 }

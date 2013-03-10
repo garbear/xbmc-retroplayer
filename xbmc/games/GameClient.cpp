@@ -863,7 +863,7 @@ bool CGameClient::EnvironmentCallback(unsigned int cmd, void *data)
     // the game from a menu item or similar.
     CLog::Log(LOGINFO, "GameClient environment query ID=%d: game signaled shutdown event", RETRO_ENVIRONMENT_SHUTDOWN);
 
-    if (g_application.m_pPlayer && g_application.GetCurrentPlayer() == EPC_RETROPLAYER)
+    if (g_application.IsPlayingGame())
       g_application.StopPlaying();
 
     break;
