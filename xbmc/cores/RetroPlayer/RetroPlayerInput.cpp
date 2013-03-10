@@ -38,7 +38,7 @@ bool operator < (const CRetroPlayerInput::DeviceItem &lhs, const CRetroPlayerInp
          lhs.buttonID     != rhs.buttonID     ? lhs.buttonID     < rhs.buttonID :
          lhs.hatID        != rhs.hatID        ? lhs.hatID        < rhs.hatID :
          lhs.hatDir       != rhs.hatDir       ? lhs.hatDir       < rhs.hatDir :
-         false;
+         false; // Two keys are considered equivalent if < returns false reflexively
 }
 
 int16_t CRetroPlayerInput::GetInput(unsigned port, unsigned device, unsigned index, unsigned id)
