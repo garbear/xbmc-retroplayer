@@ -85,7 +85,7 @@ CLinuxJoystick::CLinuxJoystick(int fd, unsigned int id, const char *name, const 
   m_state.id          = id;
   m_state.name        = name;
   m_state.buttonCount = std::min(m_state.buttonCount, (unsigned int)buttons);
-  m_state.hatCount    = 0; // TODO: Translate axes into hats
+  m_state.hatCount    = 0;
   m_state.axisCount   = std::min(m_state.axisCount, (unsigned int)axes);
 }
 
@@ -311,9 +311,8 @@ void CLinuxJoystick::Update()
         m_state.buttons[joyEvent.number] = joyEvent.value;
       break;
     case JS_EVENT_AXIS:
-      // TODO: Axis -> hat translation
       if (joyEvent.number < m_state.axisCount)
-        m_state.axes[joyEvent.number] = joyEvent.value;
+        m_state.axes[joyEvent.number] = NormalizeAxis(joyEvent.value, 32767);
       break;
     default:
       break;
