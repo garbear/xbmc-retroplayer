@@ -28,6 +28,9 @@
 #include "cores/dvdplayer/DVDClock.h"
 #include "utils/log.h"
 
+// Temporary - notify users about unsupported samplerate
+#include "dialogs/GUIDialogOK.h"
+
 #include <vector>
 
 // Pre-convert audio to float to avoid additional buffer in AE stream
@@ -49,10 +52,25 @@ unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
   if (m_pAudioStream)
     { CAEFactory::FreeStream(m_pAudioStream); m_pAudioStream = NULL; }
 
-  // Reported sample rates look like 32040.5 or 31997.22. Round up to nearest
-  // 10 or so, cast to int, and let AE figure out the most appropriate samplerate.
-  const unsigned int roundupto = 10;
-  const unsigned int samplerate = ((unsigned int)allegedSamplerate / roundupto + 1) * roundupto;
+  unsigned int samplerate = 0;
+
+  // List comes from AESinkALSA.cpp
+  static unsigned int sampleRateList[] = {5512, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 0};
+  for (unsigned int *rate = sampleRateList; ; rate++)
+  {
+    if (*(rate + 1) == 0)
+    {
+      // Reached the end of our list
+      samplerate = *rate;
+      break;
+    }
+    if ((unsigned int)allegedSamplerate < (*rate + *(rate + 1)) / 2)
+    {
+      // allegedSamplerate is between this rate and the next, so use this rate
+      samplerate = *rate;
+      break;
+    }
+  }
 
   CLog::Log(LOGINFO, "RetroPlayerAudio: Creating audio stream, sample rate hint = %u", samplerate);
   static enum AEChannel map[3] = {AE_CH_FL, AE_CH_FR, AE_CH_NULL};
@@ -64,10 +82,20 @@ unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
     CLog::Log(LOGERROR, "RetroPlayerAudio: Failed to create audio stream");
     return 0;
   }
+  else if (samplerate != m_pAudioStream->GetSampleRate())
+  {
+    // For real-time (ish) audio, we need to avoid resampling
+    CLog::Log(LOGERROR, "RetroPlayerAudio: sink sample rate (%u) doesn't match", m_pAudioStream->GetSampleRate());
+    // Temporary: Notify the user via GUI box
+    CStdString msg;
+    msg.Format("Sample rate not supported by audio device: %uHz", samplerate);
+    CGUIDialogOK::ShowAndGetInput(257, msg.c_str(), "Continuing without sound", 0);
+    return 0;
+  }
   else
   {
     Create();
-    return m_pAudioStream->GetSampleRate();
+    return samplerate;
   }
 }
 
