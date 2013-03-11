@@ -5969,16 +5969,18 @@ msgctxt "#15021"
 msgid "Enable rewind if the emulator supports it"
 msgstr ""
 
-msgctxt "#15052"
-msgid "Password"
-msgstr ""
-
 #: xbmc/settings/GUISettings.cpp
 msgctxt "#15023"
 msgid "Maximum rewind time"
 msgstr ""
 
-#empty strings from id 15054 to 15099
+#empty strings from id 15024 to 15051
+
+msgctxt "#15052"
+msgid "Password"
+msgstr ""
+
+#empty strings from id 15053 to 15099
 
 msgctxt "#15100"
 msgid "Library"
