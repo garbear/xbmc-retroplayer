@@ -149,9 +149,9 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDataba
       gc = GameClientPtr(new CGameClient(remote->Props()));
 
     bool bIsRemoteBroken = !gc->Props().broken.empty();
-    bool bHasExteionsions = !gc->GetConfig().extensions.empty();
+    bool bHasExtensions = !gc->GetConfig().extensions.empty();
 
-    if (bHasExteionsions && !bIsRemoteBroken)
+    if (bHasExtensions && !bIsRemoteBroken)
     {
       // Extensions were specified in (unbroken) addon.xml
       m_remoteExtensions.insert(gc->GetConfig().extensions.begin(), gc->GetConfig().extensions.end());
