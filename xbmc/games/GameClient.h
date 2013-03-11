@@ -158,7 +158,7 @@ namespace ADDON
     /**
      * Helper function: If strPath is a zip file, this will enumerate its
      * contents and return the first file inside with a valid extension. If
-     * this returns false, effectivePath will be set to strPath.
+     * this returns false, effectivePath will be set to zipPath.
      */
     static bool GetEffectiveRomPath(const CStdString &zipPath, const std::set<CStdString> &validExts, CStdString &effectivePath);
 
