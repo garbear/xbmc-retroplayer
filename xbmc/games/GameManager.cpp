@@ -135,7 +135,12 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDataba
 {
   CSingleLock lock(m_critSection);
 
-  m_remoteExtensions.clear();
+  m_gameExtensions.clear();
+
+  // First, populate the extensions list with our local extensions so that
+  // IsGame() is tested against them as well
+  for (std::vector<GameClientConfig>::iterator itLocal = m_gameClients.begin(); itLocal != m_gameClients.end(); itLocal++)
+    m_gameExtensions.insert(itLocal->extensions.begin(), itLocal->extensions.end());
 
   for (VECADDONS::const_iterator itRemote = addons.begin(); itRemote != addons.end(); itRemote++)
   {
@@ -154,7 +159,7 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDataba
     if (bHasExtensions && !bIsRemoteBroken)
     {
       // Extensions were specified in (unbroken) addon.xml
-      m_remoteExtensions.insert(gc->GetConfig().extensions.begin(), gc->GetConfig().extensions.end());
+      m_gameExtensions.insert(gc->GetConfig().extensions.begin(), gc->GetConfig().extensions.end());
     }
     else
     {
@@ -162,19 +167,9 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons, bool fromDataba
       // the DLL. If the add-on is broken, also try to get extensions from the DLL.
       CLog::Log(LOGDEBUG, "CGameManager - No extensions for %s v%s in %s",
           gc->ID().c_str(), gc->Version().c_str(), fromDatabase ? "database" : "addon.xml");
-
-      for (std::vector<GameClientConfig>::iterator itLocal = m_gameClients.begin(); itLocal != m_gameClients.end(); itLocal++)
-      {
-        if (itLocal->id == remote->ID())
-        {
-          m_remoteExtensions.insert(itLocal->extensions.begin(), itLocal->extensions.end());
-          CLog::Log(LOGDEBUG, "CGameManager - %d extensions for %s found in DLL", (int)(itLocal->extensions.size()), gc->ID().c_str());
-          break;
-        }
-      }
     }
   }
-  CLog::Log(LOGDEBUG, "CGameManager: tracking %d remote extensions", (int)(m_remoteExtensions.size()));
+  CLog::Log(LOGDEBUG, "CGameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
 }
 
 bool CGameManager::IsGame(CStdString path)
@@ -186,8 +181,8 @@ bool CGameManager::IsGame(CStdString path)
   m_queuedFile = CFileItem();
 
   // If RegisterRemoteAddons() hasn't been called yet, initialize
-  // m_remoteExtensions with addons from the database.
-  if (m_remoteExtensions.empty())
+  // m_gameExtensions with addons from the database.
+  if (m_gameExtensions.empty())
     LoadExtensionsFromDB();
 
   // Get the file extension (we want .zip if the file is a top-level zip directory)
@@ -196,7 +191,7 @@ bool CGameManager::IsGame(CStdString path)
   if (extension.empty())
     return false;
 
-  return m_remoteExtensions.find(extension) != m_remoteExtensions.end();
+  return m_gameExtensions.find(extension) != m_gameExtensions.end();
 }
 
 void CGameManager::LoadExtensionsFromDB()
@@ -211,9 +206,9 @@ void CGameManager::LoadExtensionsFromDB()
 
 void CGameManager::GetExtensions(std::vector<CStdString> &exts)
 {
-  if (m_remoteExtensions.empty())
+  if (m_gameExtensions.empty())
     LoadExtensionsFromDB();
-  exts.insert(exts.end(), m_remoteExtensions.begin(), m_remoteExtensions.end());
+  exts.insert(exts.end(), m_gameExtensions.begin(), m_gameExtensions.end());
 }
 
 void CGameManager::QueueFile(const CFileItem &file)
@@ -256,8 +251,6 @@ void CGameManager::LaunchFile(CFileItem file, const CStdString &strGameClient) c
 void CGameManager::GetGameClientIDs(const CFileItem& file, CStdStringArray &candidates) const
 {
   CSingleLock lock(m_critSection);
-
-  candidates.clear();
 
   CStdString gameclient = file.GetProperty("gameclient").asString();
   for (std::vector<GameClientConfig>::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
