@@ -86,7 +86,6 @@ bool CGUIWindowGames::OnMessage(CGUIMessage& message)
 
         if (iAction == ACTION_DELETE_ITEM)
         {
-          // is delete allowed?
           if (g_guiSettings.GetBool("filelists.allowfiledeletion"))
             OnDeleteItem(iItem);
           else
