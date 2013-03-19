@@ -144,6 +144,9 @@ protected:
   friend class CDatabaseManager;
   bool Update(const DatabaseSettings &db);
 
+  bool GetAllTables(CStdStringArray &tableList);
+  bool GetAllIndices(CStdStringArray &indexList);
+
   void Split(const CStdString& strFileNameAndPath, CStdString& strPath, CStdString& strFileName);
   uint32_t ComputeCRC(const CStdString &text);
 
