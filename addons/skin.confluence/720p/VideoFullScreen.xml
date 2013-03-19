@@ -249,6 +249,7 @@
 				<posx>330</posx>
 				<posy>95r</posy>
 				<visible>!VideoPlayer.Content(LiveTV) | [VideoPlayer.Content(LiveTV) + VideoPlayer.HasEpg]</visible>
+				<visible>Player.HasDuration</visible>
 				<control type="label" id="1">
 					<visible>!VideoPlayer.Content(LiveTV)</visible>
 					<posx>0</posx>
