@@ -33,6 +33,7 @@ public:
 
   void Init(size_t frameSize, size_t frameCount);
   void Reset(); // Free up any memory allocated
+  void SetMaxFrames(size_t frameCount);
 
   uint8_t *GetState() const { return reinterpret_cast<uint8_t*>(m_state); }
   uint8_t *GetNextState() const { return reinterpret_cast<uint8_t*>(m_nextState); }

@@ -49,6 +49,20 @@ void CSerialState::Reset()
   m_stateSize = 0;
 }
 
+void CSerialState::SetMaxFrames(size_t frameCount)
+{
+  m_maxFrames = frameCount;
+  if (!m_maxFrames && (m_state || m_nextState))
+  {
+    Reset();
+  }
+  else
+  {
+    while (m_rewindBuffer.size() > m_maxFrames)
+      m_rewindBuffer.pop_front();
+  }
+}
+
 void CSerialState::AdvanceFrame()
 {
   m_rewindBuffer.push_back(DeltaPairVector());
