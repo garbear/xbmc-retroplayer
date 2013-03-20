@@ -33,7 +33,6 @@
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "cores/AudioEngine/AEFactory.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
-#include "cores/RetroPlayer/RetroPlayer.h"
 #include "PlayListPlayer.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -206,7 +205,6 @@
 #include "music/dialogs/GUIDialogMusicOverlay.h"
 #include "video/dialogs/GUIDialogVideoOverlay.h"
 #include "video/VideoInfoScanner.h"
-#include "games/windows/GUIWindowGames.h"
 
 // Dialog includes
 #include "music/dialogs/GUIDialogMusicOSD.h"
@@ -275,6 +273,10 @@
 #include "dialogs/GUIDialogMediaFilter.h"
 #include "utils/XMLUtils.h"
 #include "addons/AddonInstaller.h"
+
+/* Game-related include files */
+#include "cores/RetroPlayer/RetroPlayer.h"
+#include "games/windows/GUIWindowGames.h"
 
 #ifdef HAS_PERFORMANCE_SAMPLE
 #include "utils/PerformanceSample.h"
@@ -1348,7 +1350,7 @@ bool CApplication::Initialize()
     g_windowManager.Add(new CGUIWindowWeather);
     g_windowManager.Add(new CGUIWindowStartup);
 
-    g_windowManager.Add(new CGUIWindowGames);\
+    g_windowManager.Add(new CGUIWindowGames);
 
     /* window id's 3000 - 3100 are reserved for python */
 
@@ -3378,6 +3380,8 @@ bool CApplication::Cleanup()
 
     g_windowManager.Remove(WINDOW_DIALOG_SEEK_BAR);
     g_windowManager.Remove(WINDOW_DIALOG_VOLUME_BAR);
+
+    g_windowManager.Delete(WINDOW_GAMES);
 
     CAddonMgr::Get().DeInit();
 
