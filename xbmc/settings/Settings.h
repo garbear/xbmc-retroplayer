@@ -330,6 +330,7 @@ public:
   CStdString GetVideoThumbFolder() const;
   CStdString GetBookmarksThumbFolder() const;
   CStdString GetLibraryFolder() const;
+  CStdString GetSavegamesFolder() const;
   CStdString GetSourcesFile() const;
 
   CStdString GetSettingsFile() const;

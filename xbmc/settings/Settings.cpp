@@ -1703,6 +1703,17 @@ CStdString CSettings::GetBookmarksThumbFolder() const
   return folder;
 }
 
+CStdString CSettings::GetSavegamesFolder() const
+{
+  CStdString folder;
+  if (GetCurrentProfile().hasDatabases())
+    URIUtils::AddFileToFolder(GetProfileUserDataFolder(), "Savegames", folder);
+  else
+    URIUtils::AddFileToFolder(GetUserDataFolder(), "Savegames", folder);
+
+  return folder;
+}
+
 CStdString CSettings::GetLibraryFolder() const
 {
   CStdString folder;
@@ -1744,6 +1755,7 @@ void CSettings::CreateProfileFolders()
   CDirectory::Create(GetThumbnailsFolder());
   CDirectory::Create(GetVideoThumbFolder());
   CDirectory::Create(GetBookmarksThumbFolder());
+  CDirectory::Create(GetSavegamesFolder());
   CLog::Log(LOGINFO, "thumbnails folder: %s", GetThumbnailsFolder().c_str());
   for (unsigned int hex=0; hex < 16; hex++)
   {
