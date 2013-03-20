@@ -1,4 +1,5 @@
 SRCS=GameClient.cpp \
+     GameFileLoader.cpp \
      GameManager.cpp \
      SerialState.cpp
 

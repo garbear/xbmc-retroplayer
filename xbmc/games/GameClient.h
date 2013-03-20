@@ -22,10 +22,12 @@
 #pragma once
 
 #include "addons/Addon.h"
-#include "FileItem.h"
 #include "GameClientDLL.h"
+#include "GameFileLoader.h"
 #include "games/tags/GameInfoTagLoader.h"
 #include "SerialState.h"
+#include "FileItem.h"
+#include "threads/CriticalSection.h"
 
 #include <set>
 
@@ -62,75 +64,6 @@ namespace ADDON
   {
   public:
     /**
-     * Loading a file in libretro cores is a complicated process. Game clients
-     * support different extensions, some support loading from the VFS, and
-     * some have the ability to load ROMs from within zips. Game clients have
-     * a tendency to lie about their capabilities. Furthermore, different ROMs
-     * can have different results, so it is desirable to try different
-     * strategies upon failure.
-     */
-    class IRetroStrategy
-    {
-    public:
-      IRetroStrategy() : m_useVfs(false) { }
-      virtual ~IRetroStrategy() { }
-      /**
-       * Returns true if this strategy is a viable option. strPath is filled
-       * with the file that should be loaded, either the original file or a
-       * substitute file.
-       */
-      virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file) = 0;
-      /**
-       * Populates retro_game_info with results.
-       */
-      bool GetGameInfo(retro_game_info &info) const;
-
-    protected:
-      // Member variables populated with results from CanLoad()
-      CStdString m_path;
-      bool       m_useVfs;
-    };
-
-    /**
-     * Load the file from the local hard disk.
-     */
-    class CStrategyUseHD : public IRetroStrategy
-    {
-    public:
-      virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
-    };
-
-    /**
-     * Use the VFS to load the file.
-     */
-    class CStrategyUseVFS : public IRetroStrategy
-    {
-    public:
-      virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
-    };
-
-    /**
-     * If the game client blocks extracting, we don't want to load a file from
-     * within a zip. In this case, we try to use the container zip (parent
-     * folder on the vfs).
-     */
-    class CStrategyUseParentZip : public IRetroStrategy
-    {
-    public:
-      virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
-    };
-
-    /**
-     * If a zip fails to load, try loading the ROM inside from the zip:// vfs.
-     * Avoid recursion clashes with the above strategy.
-     */
-    class CStrategyEnterZip : public IRetroStrategy
-    {
-    public:
-      virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
-    };
-
-    /**
      * Callback container. Data is passed in and out of the game client through
      * these callbacks.
      */
@@ -155,22 +88,10 @@ namespace ADDON
         : VideoFrame(vf), AudioSample(as), AudioSampleBatch(asb), GetInputState(is), SetPixelFormat(spf), SetKeyboardCallback(skc) { }
     };
 
-    /**
-     * Helper function: If strPath is a zip file, this will enumerate its
-     * contents and return the first file inside with a valid extension. If
-     * this returns false, effectivePath will be set to zipPath.
-     */
-    static bool GetEffectiveRomPath(const CStdString &zipPath, const std::set<CStdString> &validExts, CStdString &effectivePath);
-
-    /**
-     * If the game client was a bad boy and provided no extensions, this will
-     * optimistically return true.
-     */
-    static bool IsExtensionValid(const CStdString &ext, const std::set<CStdString> &setExts);
-    bool IsExtensionValid(const CStdString &ext) const { return IsExtensionValid(ext, m_config.extensions); }
-
     CGameClient(const AddonProps &props);
+
     CGameClient(const cp_extension_t *props);
+
     virtual ~CGameClient() { DeInit(); }
 
     /**
@@ -183,18 +104,19 @@ namespace ADDON
     void DeInit();
 
     /**
-     * Perform the gamut of checks on the file - "gameclient" property,
-     * platform, extension, and a positive match on at least one of the above
-     * strategies. If config.bAllowVFS and config.bRequireZip are provided,
-     * then useStrategies=true can be used to allow more lenient/accurate
-     * testing, especially for files inside zips (when .zip isn't supported)
-     * and files on the VFS.
+     * Perform the gamut of checks on the file: "gameclient" property, platform,
+     * extension, and a positive match on at least one of the CGameFileLoader
+     * strategies. If config.bAllowVFS and config.bRequireZip are provided, then
+     * useStrategies=true can be used to allow more lenient/accurate testing,
+     * especially for files inside zips (when .zip isn't supported) and files
+     * on the VFS.
      */
-    static bool CanOpen(const CFileItem &file, const GameClientConfig &config, bool useStrategies = false);
-    bool CanOpen(const CFileItem &file, bool useStrategies = false) const { return CanOpen(file, m_config, useStrategies); }
+    bool CanOpen(const CFileItem &file, bool useStrategies = false) const;
 
     bool OpenFile(const CFileItem &file, const DataReceiver &callbacks);
     void CloseFile();
+
+    // De facto test for open-ness
     const CStdString &GetFilePath() const { return m_gamePath; }
 
     // Returns true after Init() is called and until DeInit() is called.
@@ -255,6 +177,12 @@ namespace ADDON
     double GetFrameRate() const { return m_frameRate; }
     void SetFrameRate(double framerate);
     double GetSampleRate() const { return m_sampleRate; }
+    
+    /**
+     * If the game client was a bad boy and provided no extensions, this will
+     * optimistically return true.
+     */
+    bool IsExtensionValid(const CStdString &ext) const;
 
   private:
     void Initialize();
@@ -263,8 +191,8 @@ namespace ADDON
      * Given the strategies above, order them in the way that respects
      * g_guiSettings.GetBool("gamesdebug.prefervfs").
      */
-    static void GetStrategy(CStrategyUseHD &hd, CStrategyUseParentZip &outerzip,
-        CStrategyUseVFS &vfs, CStrategyEnterZip &innerzip, IRetroStrategy *strategies[4]);
+    static void GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParentZip &outerzip,
+        CGameFileLoaderUseVFS &vfs, CGameFileLoaderEnterZip &innerzip, CGameFileLoader *strategies[4]);
 
     /**
      * Parse a pipe-separated list, returned from the game client, into an

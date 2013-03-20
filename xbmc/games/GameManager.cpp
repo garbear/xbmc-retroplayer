@@ -24,6 +24,8 @@
 #include "addons/AddonManager.h"
 #include "Application.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "filesystem/Directory.h"
+#include "GameFileLoader.h"
 #include "guilib/GUIWindowManager.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
@@ -256,7 +258,7 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, CStdStringArray &cand
   for (std::vector<GameClientConfig>::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
     CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->id.c_str());
-    if (CGameClient::CanOpen(file, *it, true))
+    if (CGameFileLoader::CanOpen(file, *it, true))
     {
       CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", it->id.c_str());
       candidates.push_back(it->id);
