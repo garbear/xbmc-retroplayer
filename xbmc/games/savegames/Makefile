@@ -1,4 +1,5 @@
-SRCS=Savestate.cpp \
+SRCS=GUIDialogGameSaves.cpp \
+     Savestate.cpp \
      SavestateDatabase.cpp
 
 LIB=savegames.a

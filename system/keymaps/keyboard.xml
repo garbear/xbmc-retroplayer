@@ -281,8 +281,33 @@
       <ampersand>Save7</ampersand>
       <asterisk>Save8</asterisk>
       <leftbracket>Save9</leftbracket>
+      <f1>ActivateWindow(GameSaves)</f1>
     </keyboard>
   </FullscreenGame>
+  <GameSaves>
+    <keyboard>
+      <delete>Delete</delete>
+      <one>Load1</one>
+      <two>Load2</two>
+      <three>Load3</three>
+      <four>Load4</four>
+      <five>Load5</five>
+      <six>Load6</six>
+      <seven>Load7</seven>
+      <eight>Load8</eight>
+      <nine>Load9</nine>
+      <exclaim>Save1</exclaim>
+      <at>Save2</at>
+      <hash>Save3</hash>
+      <dollar>Save4</dollar>
+      <percent>Save5</percent>
+      <caret>Save6</caret>
+      <ampersand>Save7</ampersand>
+      <asterisk>Save8</asterisk>
+      <leftbracket>Save9</leftbracket>
+      <f1>Close</f1>
+    </keyboard>
+  </GameSaves>
   <VideoTimeSeek>
     <keyboard>
       <return>Select</return>
