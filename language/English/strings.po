@@ -5966,7 +5966,7 @@ msgstr ""
 
 #: xbmc/settings/GUISettings.cpp
 msgctxt "#15021"
-msgid "Enable rewind if the emulator supports it"
+msgid "Enable rewind if supported"
 msgstr ""
 
 #: xbmc/settings/GUISettings.cpp
