@@ -255,9 +255,12 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, CStdStringArray &cand
   CStdString gameclient = file.GetProperty("gameclient").asString();
   for (std::vector<GameClientConfig>::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
-    CLog::Log(LOGINFO, "GameManager: To open or not to open using %s, that is the question",it->id.c_str());
+    CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->id.c_str());
     if (CGameClient::CanOpen(file, *it, true))
+    {
+      CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", it->id.c_str());
       candidates.push_back(it->id);
+    }
     if (!gameclient.empty() && it->id == gameclient)
       break; // If the game client isn't installed, it's not a valid candidate
   }
