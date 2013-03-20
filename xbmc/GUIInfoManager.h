@@ -108,6 +108,7 @@ namespace INFO
 #define PLAYER_CAN_SEEK              51
 #define PLAYER_START_TIME            52
 #define PLAYER_TITLE                 53
+#define PLAYER_HAS_GAME              54
 
 #define WEATHER_CONDITIONS          100
 #define WEATHER_TEMPERATURE         101
