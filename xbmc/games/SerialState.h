@@ -32,6 +32,7 @@ public:
   ~CSerialState() { Reset(); }
 
   void Init(size_t frameSize, size_t frameCount);
+  bool IsInited() const { return m_state && m_nextState; }
   void Reset(); // Free up any memory allocated
   void SetMaxFrames(size_t frameCount);
 
