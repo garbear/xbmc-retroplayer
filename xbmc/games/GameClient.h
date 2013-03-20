@@ -24,6 +24,7 @@
 #include "addons/Addon.h"
 #include "GameClientDLL.h"
 #include "GameFileLoader.h"
+#include "games/savegames/Savestate.h"
 #include "games/tags/GameInfoTagLoader.h"
 #include "SerialState.h"
 #include "FileItem.h"
@@ -157,6 +158,47 @@ namespace ADDON
     void RunFrame();
 
     /**
+     * Load the serialized state from the auto-save slot (filename looks like
+     * feba62c2.savestate). Returns true if the next call to Load() or Save()
+     * is expected to succeed (such as if the file can't be loaded because it
+     * doesn't exist, but Save() will create the file and Load() and Save()
+     * will work after that).
+     *
+     * Savestates are placed in special://savegames/gameclient.id/
+     */
+    bool AutoLoad();
+
+    /**
+     * Load the serialized state from the numbered slot (filename looks like
+     * feba62c2_1.savestate).
+     */
+    bool Load(unsigned int slot);
+
+    /**
+     * Load the serialized state from the specified path.
+     */
+    bool Load(const CStdString &saveStatePath);
+
+    /**
+     * Commit the current serialized state to the local drive (filename looks
+     * like feba62c2.savestate).
+     */
+    bool AutoSave();
+
+    /**
+     * Commit the current serialized state to the local drive (filename looks
+     * like feba62c2_1.savestate).
+     */
+    bool Save(unsigned int slot);
+
+    /**
+     * Commit the current serialized state to the local drive. The CRC of the
+     * label is concatenated to the CRC of the game file, and the resulting
+     * filename looks like feba62c2_bdcb488a.savestate
+     */
+    bool Save(const CStdString &label);
+
+    /**
      * Rewind gameplay 'frames' frames.
      * As there is a fixed size buffer backing
      * save state deltas, it might not be possible to rewind as many
@@ -186,6 +228,21 @@ namespace ADDON
 
   private:
     void Initialize();
+
+    /**
+     * Init the savestate file by setting the game path, game client and game
+     * CRC.
+     *
+     * gameBuffer and length are convenience variables to avoid hitting the
+     * disk for CRC calculation when the game file is already loaded in RAM.
+     */
+    bool InitSaveState(const void *gameBuffer = NULL, size_t length = 0);
+
+    // Internal load function. 
+    bool Load();
+
+    // Internal save function.
+    bool Save();
 
     /**
      * Given the strategies above, order them in the way that respects
@@ -219,6 +276,10 @@ namespace ADDON
     CCriticalSection m_critSection;
     bool             m_rewindSupported;
     CSerialState     m_serialState;
+    CSavestate       m_saveState;
+
+    // If rewinding is disabled, use a buffer to avoid re-allocation when saving games
+    std::vector<uint8_t> m_savestateBuffer;
 
     /**
      * This callback exists to give XBMC a chance to poll for input. XBMC already

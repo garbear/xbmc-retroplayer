@@ -594,6 +594,8 @@
     <ClCompile Include="..\..\xbmc\filesystem\ZipManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileLoader.cpp" />
     <ClCompile Include="..\..\xbmc\games\libretro\LibretroEnvironment.cpp" />
+    <ClCompile Include="..\..\xbmc\games\savegames\SavestateDatabase.cpp" />
+    <ClCompile Include="..\..\xbmc\games\savegames\Savestate.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameboyTag.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp" />
@@ -1069,6 +1071,8 @@
     <ClInclude Include="..\..\xbmc\filesystem\windows\WINSMBDirectory.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileLoader.h" />
     <ClInclude Include="..\..\xbmc\games\libretro\LibretroEnvironment.h" />
+    <ClInclude Include="..\..\xbmc\games\savegames\SavestateDatabase.h" />
+    <ClInclude Include="..\..\xbmc\games\savegames\Savestate.h" />
     <ClInclude Include="..\..\xbmc\guilib\cximage.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameboyTag.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h" />
