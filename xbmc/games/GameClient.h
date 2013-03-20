@@ -195,6 +195,7 @@ namespace ADDON
 
     bool OpenFile(const CFileItem &file, const DataReceiver &callbacks);
     void CloseFile();
+    const CStdString &GetFilePath() const { return m_gamePath; }
 
     // Returns true after Init() is called and until DeInit() is called.
     bool IsInitialized() const { return m_dll.IsLoaded(); }
@@ -250,9 +251,10 @@ namespace ADDON
     // Reset the game, if running.
     void Reset();
 
+    // Video framerate is used to calculate savestate wall time
     double GetFrameRate() const { return m_frameRate; }
+    void SetFrameRate(double framerate);
     double GetSampleRate() const { return m_sampleRate; }
-    void   SetFrameRate(double framerate) { m_frameRate = framerate; } // Adjusted to match AE sample rate
 
   private:
     void Initialize();
@@ -281,6 +283,7 @@ namespace ADDON
     GameClientDLL    m_dll;
     bool             m_bIsInited; // Keep track of whether m_dll.retro_init() has been called
     bool             m_bIsPlaying; // This is true between retro_load_game() and retro_unload_game()
+    CStdString       m_gamePath; // path of the current playing file
 
     // Returned by m_dll:
     CStdString       m_clientName;
