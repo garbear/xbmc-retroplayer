@@ -274,10 +274,6 @@ namespace ADDON
     void SetExtensions(const CStdString &strExtensionList);
     void SetPlatforms(const CStdString &strPlatformList);
 
-    static bool EnvironmentCallback(unsigned cmd, void *data);
-    static DataReceiver::SetPixelFormat_t _SetPixelFormat; // called by EnvironmentCallback()
-    static DataReceiver::SetKeyboardCallback_t _SetKeyboardCallback; // called by EnvironmentCallback()
-
     GameClientConfig m_config;
 
     GameClientDLL    m_dll;

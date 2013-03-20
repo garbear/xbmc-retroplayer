@@ -3030,6 +3030,9 @@
     <ClCompile Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.cpp">
       <Filter>games\windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\libretro\LibretroEnvironment.cpp">
+      <Filter>games\libretro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -5911,6 +5914,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.h">
       <Filter>games\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\libretro\LibretroEnvironment.h">
+      <Filter>games\libretro</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
