@@ -43,12 +43,15 @@ public:
   bool InstallGameClient(CFileItem file, ADDON::GameClientPtr &result) const;
   bool ChooseAddon(const CFileItem &file, const CStdStringArray &clients, ADDON::GameClientPtr &result) const;
 
-  virtual bool OnAction(const CAction &action) { return false; }
+  virtual bool OnAction(const CAction &action);
 
   // Upon successful open, m_file is set to the opened file
   virtual bool IsPlaying() const { return !m_bStop && !m_file.GetPath().empty(); }
   virtual void Pause();
   virtual bool IsPaused() const { return m_playSpeed == 0; }
+
+  const CStdString &GetFilePath() { return m_file.GetPath(); }
+  CStdString GetGameClient() { return m_gameClient ? m_gameClient->ID() : ""; }
 
   virtual bool HasVideo() const { return true; }
   virtual bool HasAudio() const { return true; }
@@ -99,7 +102,10 @@ public:
   // SeekTime()
   // GetTime()
   // GetTotalTime()
-  virtual bool CanSeek() { return true; } // Allows FF. (RW might not be possible depending on game.)
+  // GetActualFPS()
+
+  // Allows FF. (RW might not be possible depending on game.)
+  virtual bool CanSeek() { return true; }
   virtual void Seek(bool bPlus = true, bool bLargeStep = false);
   virtual void SeekPercentage(float fPercent = 0);
   virtual float GetPercentage();

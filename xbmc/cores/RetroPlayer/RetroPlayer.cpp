@@ -69,7 +69,7 @@ CRetroPlayer::~CRetroPlayer()
 bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options)
 {
   CLog::Log(LOGINFO, "RetroPlayer: Opening: %s", file.GetPath().c_str());
-  m_bStop = false; // What trips you to true?
+  m_bStop = false;
 
   if (IsRunning())
     CloseFile();
@@ -119,16 +119,16 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   }
   else
   {
-     if (!ChooseAddon(file, candidates, m_gameClient))
-       return false;
+    if (!ChooseAddon(file, candidates, m_gameClient))
+      return false;
   }
 
   if (!m_gameClient)
   {
     CLog::Log(LOGERROR, "RetroPlayer: No game client");
-    // -- Playback failed --
-    // One or more items failed to play.
-    // Check the log file for details.
+    // "Playback failed"
+    // "One or more items failed to play."
+    // "Check the log file for details."
     CGUIDialogOK::ShowAndGetInput(16026, 16027, 16029, 0);
     return false;
   }
@@ -158,13 +158,14 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   // Validate the reported framerate
   if (m_gameClient->GetFrameRate() < 5.0 || m_gameClient->GetFrameRate() > 100.0)
   {
-    CLog::Log(LOGERROR, "RetroPlayer: Game client reported invalid framerate: %f", (float)m_gameClient->GetFrameRate());
+    CLog::Log(LOGERROR, "RetroPlayer: Game client reported invalid framerate: %f", m_gameClient->GetFrameRate());
     m_gameClient.reset();
     return false;
   }
 
   // Success. We use m_file.GetPath() to check if a file is playing in IsPlaying()
   m_file = file;
+  m_file.SetPath(m_gameClient->GetFilePath());
   m_PlayerOptions = options;
 
   g_renderManager.PreInit();
@@ -176,7 +177,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
 bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) const
 {
   // If an explicit game client was specified, try to download that
-  if (!file.GetProperty("gameclient").empty())
+  if (file.HasProperty("gameclient"))
   {
     // First, make sure the game client isn't installed
     CStdString id(file.GetProperty("gameclient").asString());
@@ -252,9 +253,9 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
     if (candidates.empty())
     {
       CLog::Log(LOGDEBUG, "RetroPlayer: No compatible game clients for installation");
-      // -- Playback failed --
-      // No compatible emulators found for file:
-      // FILENAME
+      // "Playback failed"
+      // "No compatible emulators found for file:"
+      // "FILENAME"
       CGUIDialogOK::ShowAndGetInput(16026, 16023, URIUtils::GetFileName(file.GetPath()), 0);
       return false;
     }
@@ -290,9 +291,9 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
           if (!(CAddonInstaller::Get().PromptForInstall(id, addon) && addon && addon->Type() == ADDON_GAMEDLL))
           {
             CLog::Log(LOGDEBUG, "RetroPlayer: Game client installation canceled/failed");
-            // -- id --
-            // Installation failed
-            // Check the log file for details.
+            // "id"
+            // "Installation failed"
+            // "Check the log file for details."
             CGUIDialogOK::ShowAndGetInput(id.c_str(), 114, 16029, 0);
             return false;
           }
@@ -372,7 +373,10 @@ bool CRetroPlayer::ChooseAddon(const CFileItem &file, const CStdStringArray &add
 bool CRetroPlayer::CloseFile()
 {
   CLog::Log(LOGDEBUG, "RetroPlayer: Closing file");
-  // SetPlaySpeed(DVD_PLAYSPEED_NORMAL);
+  if (m_gameClient)
+    m_gameClient->CloseFile();
+
+  m_playSpeed = PLAYSPEED_NORMAL;
 
   // Set the abort request so that other threads can finish up
   m_bStop = true;
@@ -390,6 +394,14 @@ bool CRetroPlayer::CloseFile()
 
   CLog::Log(LOGDEBUG, "RetroPlayer: File closed");
   return true;
+}
+
+bool CRetroPlayer::OnAction(const CAction &action)
+{
+  if (!IsPlaying())
+    return false;
+
+  return false;
 }
 
 void CRetroPlayer::Process()
@@ -439,8 +451,10 @@ void CRetroPlayer::Process()
       // No need to pause audio or video, the absence of frames will pause it
       // 1s should be a good failsafe if the event isn't triggered (shouldn't happen)
       m_pauseEvent.WaitMSec(1000);
+
       // Reset the clock
       nextpts = CDVDClock::GetAbsoluteClock() + frametime;
+
       continue;
     }
     else if (m_playSpeed < PLAYSPEED_PAUSED)
@@ -470,9 +484,11 @@ void CRetroPlayer::Process()
     nextpts += realFrameTime;
   }
 
+  m_bStop = true;
+  m_gameClient->CloseFile();
+
   m_video.StopThread(true);
   m_audio.StopThread(true);
-  m_bStop = true;
 }
 
 /* static */
