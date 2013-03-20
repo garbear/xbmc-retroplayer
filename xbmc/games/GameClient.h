@@ -177,7 +177,7 @@ namespace ADDON
     double GetFrameRate() const { return m_frameRate; }
     void SetFrameRate(double framerate);
     double GetSampleRate() const { return m_sampleRate; }
-    
+
     /**
      * If the game client was a bad boy and provided no extensions, this will
      * optimistically return true.

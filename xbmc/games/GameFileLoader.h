@@ -50,7 +50,7 @@ public:
   /**
     * Returns true if this strategy is a viable option. CGameFileLoader::strPath
     * is filled with the file that should be loaded, either the original file or
-    * a prefered substitute file.
+    * a preferred substitute file.
     */
   virtual bool CanLoad(const ADDON::GameClientConfig &gc, const CFileItem& file) = 0;
 
@@ -58,7 +58,7 @@ public:
     * Populates retro_game_info with results.
     */
   bool GetGameInfo(retro_game_info &info) const;
-  
+
   /**
     * Perform the gamut of checks on the file: "gameclient" property, platform,
     * extension, and a positive match on at least one of the CGameFileLoader
@@ -81,7 +81,7 @@ public:
     * extensions, this will optimistically return true.
     */
   static bool IsExtensionValid(const CStdString &ext, const std::set<CStdString> &setExts);
-  
+
 protected:
   // Member variables populated with results from CanLoad()
   CStdString m_path;
