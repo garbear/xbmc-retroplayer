@@ -193,6 +193,7 @@ public:
   bool IsPaused() const;
   bool IsPlayingAudio() const;
   bool IsPlayingVideo() const;
+  bool IsPlayingGame() const;
   bool IsPlayingFullScreenVideo() const;
   bool IsStartingPlayback() const { return m_bPlaybackStarting; }
   bool IsFullScreen();
