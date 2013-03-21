@@ -1949,6 +1949,12 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
       }
     }
   }
+  else if (strSetting.Equals("games.manageaddons"))
+  {
+    CStdStringArray params;
+    params.push_back("addons://all/xbmc.gameclient");
+    g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
+  }
 
   UpdateSettings();
 }
