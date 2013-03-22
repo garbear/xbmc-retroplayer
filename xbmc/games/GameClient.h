@@ -158,8 +158,8 @@ namespace ADDON
 
     /**
      * Load the serialized state from the auto-save slot (filename looks like
-     * feba62c2.savestate). Returns true if the next call to Load() or Save()
-     * is expected to succeed (such as if the file can't be loaded because it
+     * feba62c2.sav). Returns true if the next call to Load() or Save() is
+     * expected to succeed (such as if the file can't be loaded because it
      * doesn't exist, but Save() will create the file and Load() and Save()
      * will work after that).
      *
@@ -169,7 +169,7 @@ namespace ADDON
 
     /**
      * Load the serialized state from the numbered slot (filename looks like
-     * feba62c2_1.savestate).
+     * feba62c2_1.sav).
      */
     bool Load(unsigned int slot);
 
@@ -180,20 +180,21 @@ namespace ADDON
 
     /**
      * Commit the current serialized state to the local drive (filename looks
-     * like feba62c2.savestate).
+     * like feba62c2.sav).
      */
     bool AutoSave();
 
     /**
      * Commit the current serialized state to the local drive (filename looks
-     * like feba62c2_1.savestate).
+     * like feba62c2_1.sav).
      */
+
     bool Save(unsigned int slot);
 
     /**
      * Commit the current serialized state to the local drive. The CRC of the
      * label is concatenated to the CRC of the game file, and the resulting
-     * filename looks like feba62c2_bdcb488a.savestate
+     * filename looks like feba62c2_bdcb488a.sav
      */
     bool Save(const CStdString &label);
 

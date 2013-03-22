@@ -61,13 +61,13 @@ public:
    * if either of these is unknown. Format is
    *
    * Autosave (hex is game CRC):
-   *     special://savegames/gameclient.id/feba62c2.savestate
+   *     special://savegames/gameclient.id/feba62c2.sav
    *
    * Save type slot (digit after the underscore is slot 1-9):
-   *     special://savegames/gameclient.id/feba62c2_1.savestate
+   *     special://savegames/gameclient.id/feba62c2_1.sav
    *
    * Save type label (hex after the underscore is CRC of the label):
-   *     special://savegames/gameclient.id/feba62c2_8dc22669.savestate
+   *     special://savegames/gameclient.id/feba62c2_8dc22669.sav
    */
   const CStdString &GetPath() const;
   void SetPath(const CStdString &path);

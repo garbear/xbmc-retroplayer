@@ -33,7 +33,7 @@
 #include "utils/Variant.h"
 #include "XBDateTime.h"
 
-#define SAVESTATE_EXTENSION     ".savestate"
+#define SAVESTATE_EXTENSION     ".sav"
 #define SAVESTATE_THUMB_WIDTH   (g_advancedSettings.GetThumbSize())
 
 using namespace XFILE;
@@ -240,18 +240,18 @@ void CSavestate::SetPath(const CStdString &path)
   CStdString saveName = URIUtils::GetFileName(path);
   if (saveName.size() == 8 + strlen(SAVESTATE_EXTENSION))
   {
-    // Auto-save (file name is like feba62c2.savestate)
+    // Auto-save (file name is like feba62c2.sav)
     SetSaveTypeAuto();
   }
   else if (saveName.size() == 8 + 2 + strlen(SAVESTATE_EXTENSION) && '1' <= saveName[9] && saveName[9] <= '9')
   {
-    // Save type slot (file name is like feba62c2_1.savestate)
+    // Save type slot (file name is like feba62c2_1.sav)
     unsigned int slot = saveName[9] - '0';
     SetSaveTypeSlot(slot);
   }
   else if (saveName.size() == 8 + 1 + 8 + strlen(SAVESTATE_EXTENSION))
   {
-    // Save type label (file name is like feba62c2_8dc22669.savestate)
+    // Save type label (file name is like feba62c2_8dc22669.sav)
     SetSaveTypeLabel(""); // Unknown label for now
   }
   else
