@@ -468,12 +468,25 @@ bool CGameClient::InitSaveState(const void *gameBuffer /* = NULL */, size_t leng
     }
     else
     {
-      // Path not in database, calculate the game CRC now
+      // Path and/or CRC not in database, calculate the game CRC now
       CLog::Log(LOGDEBUG, "GameClient: %s not in database, trying CRC", URIUtils::GetFileName(m_gamePath).c_str());
       if (gameBuffer)
-        m_saveState.SetGameCRCFromFile(reinterpret_cast<const char*>(gameBuffer), length);
+      {
+        // If the length is too great, fall back to CRCing the file path
+        if (length <= MAX_SAVESTATE_CRC_LENGTH)
+          m_saveState.SetGameCRCFromFile(reinterpret_cast<const char*>(gameBuffer), length);
+        else
+          m_saveState.SetGameCRCFromFile(m_gamePath, true);
+      }
       else
         m_saveState.SetGameCRCFromFile(m_gamePath);
+
+      // If we got a CRC, make the database aware of it
+      if ((db.IsOpen() || db.Open()) && !m_saveState.GetGameCRC().empty())
+      {
+        CLog::Log(LOGDEBUG, "GameClient: Updating database with CRC %s", m_saveState.GetGameCRC().c_str());
+        db.UpdateCRC(m_gamePath, m_saveState.GetGameCRC());
+      }
     }
   }
 
@@ -521,10 +534,13 @@ bool CGameClient::Load(const CStdString &saveStatePath)
 
 bool CGameClient::Load()
 {
+  // Load the savestate into a copy, and assign the copy into our member
+  // variable if the deserialization succeeds
+  CSavestate savestate(m_saveState);
   std::vector<uint8_t> data;
-  CSavestate savestate;
+
   CSavestateDatabase db;
-  if (m_saveState.Read(data) && db.Open() && db.GetObjectByIndex("path", m_saveState.GetPath(), &savestate))
+  if (db.Open() && db.Load(savestate, data))
   {
     if (!m_dll.retro_unserialize(data.data(), data.size()))
     {
@@ -573,7 +589,8 @@ bool CGameClient::Save(unsigned int slot)
   m_saveState.SetSaveTypeSlot(slot); // Generate temporary slot label
   m_saveState.SetSaveTypeLabel(m_saveState.GetLabel());
   CSavestateDatabase db;
-  db.DeleteSaveState(m_saveState.GetPath(), false);
+  if (db.Open())
+    db.DeleteSaveState(m_saveState.GetPath(), false);
 
   m_saveState.SetSaveTypeSlot(slot);
   return Save();
@@ -610,7 +627,7 @@ bool CGameClient::Save()
   }
 
   CSavestateDatabase db;
-  return db.Save(m_saveState, m_savestateBuffer);
+  return db.Open() && db.Save(m_saveState, m_savestateBuffer);
 }
 
 unsigned int CGameClient::RewindFrames(unsigned int frames)

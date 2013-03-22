@@ -158,24 +158,32 @@ bool CSavestateDatabase::GetCRC(const CStdString &gamePath, CStdString &strCrc)
 
   try
   {
-    strSQL = PrepareSQL(
-      "SELECT gamecrc "
-      "FROM savestate "
-        "JOIN gamepath ON savestate.idgamepath=gamepath.idgamepath "
-        "JOIN gamecrc ON savestate.idgamecrc=gamecrc.idgamecrc "
-      "WHERE gamepath='%s' "
-      "LIMIT 1",
-      gamePath.c_str()
-    );
-    if (m_pDS->query(strSQL.c_str()))
+    int idGamePath;
+    if (GetItemID("gamepath", gamePath, idGamePath))
     {
-      if (m_pDS->num_rows() != 0)
+      // The strategy here is outlined in CDynamicDatabase::GetItemNav()
+      // This assumes all savestates with CRC X have gamepath Y
+      strSQL = PrepareSQL(
+        "SELECT gamecrc "
+        "FROM gamecrc "
+        "WHERE idgamecrc IN ("
+          "SELECT idgamecrc "
+          "FROM savestate "
+          "WHERE idgamepath=%d "
+          "LIMIT 1"
+        ")",
+        idGamePath
+      );
+      if (m_pDS->query(strSQL.c_str()))
       {
-        strCrc = m_pDS->fv(0).get_asString();
+        if (m_pDS->num_rows() != 0)
+        {
+          strCrc = m_pDS->fv(0).get_asString();
+          m_pDS->close();
+          return !strCrc.empty();
+        }
         m_pDS->close();
-        return !strCrc.empty();
       }
-      m_pDS->close();
     }
   }
   catch (...)
@@ -183,6 +191,28 @@ bool CSavestateDatabase::GetCRC(const CStdString &gamePath, CStdString &strCrc)
     CLog::Log(LOGERROR, "%s - Unable to get CRC. SQL: %s", __FUNCTION__, strSQL.c_str());
   }
   return false;
+}
+
+void CSavestateDatabase::UpdateCRC(const CStdString &gamePath, const CStdString &strCrc)
+{
+  int idGameCrc;
+  if (GetItemID("gamecrc", strCrc, idGameCrc))
+  {
+    // CRC exists in database. Update existing savestates
+    CSavestate savestate;
+    CFileItemList items;
+    map<string, long> predicates;
+    predicates["gamecrc"] = idGameCrc;
+    GetObjectsNav(items, predicates);
+    for (int i = 0; i < items.Size(); i++)
+    {
+      if (GetObjectByIndex("path", items[i]->GetPath(), &savestate))
+      {
+        savestate.SetGamePath(gamePath);
+        AddObject(&savestate);
+      }
+    }
+  }
 }
 
 bool CSavestateDatabase::GetAutoSaveByPath(const CStdString &gameClient, const CStdString &gamePath, CSavestate &savestate)
@@ -202,15 +232,25 @@ bool CSavestateDatabase::GetAutoSave(const CStdString &gameClient, bool usePath,
   
   CStdString strSQL;
 
+  int idGameClient = -1;
+  int idGamePath   = -1;
+  int idGameCrc    = -1;
+
+  bool success = GetItemID("gameclient", gameClient, idGameClient);
+  if (usePath)
+    success &= GetItemID("gamepath", value, idGamePath);
+  else
+    success &= GetItemID("gamecrc", value, idGameCrc);
+  if (!success)
+    return false;
+
   try
   {
     strSQL = PrepareSQL(
       "SELECT idsavestate, strContentBSON64 "
       "FROM savestate "
-        "JOIN gameclient ON savestate.idgameclient=gameclient.idgameclient "
-        "JOIN gamepath ON savestate.idgamepath=gamepath.idgamepath "
-      "WHERE gameclient='%s' AND %s='%s'",
-      gameClient.c_str(), usePath ? "gamepath" : "gamecrc", value.c_str()
+      "WHERE idgameclient=%d AND %s=%d",
+      idGameClient, usePath ? "gamepath" : "gamecrc", usePath ? idGamePath : idGameCrc
     );
     if (m_pDS->query(strSQL.c_str()))
     {
@@ -240,10 +280,16 @@ bool CSavestateDatabase::GetAutoSave(const CStdString &gameClient, bool usePath,
   return false;
 }
 
+bool CSavestateDatabase::Load(CSavestate &savestate, std::vector<uint8_t> &data)
+{
+  // Try reading the data first, and hit the database only if that succeeds
+  return savestate.Read(data) && GetObjectByIndex("path", savestate.GetPath(), &savestate);
+}
+
 bool CSavestateDatabase::Save(CSavestate &savestate, const std::vector<uint8_t> &data)
 {
   savestate.SetSize(data.size());
-  if (Open() && savestate.Write(data))
+  if (savestate.Write(data))
   {
     if (AddObject(&savestate) != -1)
       return true;
@@ -256,7 +302,7 @@ bool CSavestateDatabase::Save(CSavestate &savestate, const std::vector<uint8_t> 
 bool CSavestateDatabase::RenameSaveState(const CStdString &saveStatePath, const CStdString &newLabel)
 {
   CSavestate savestate;
-  if (Open() && GetObjectByIndex("path", saveStatePath.c_str(), &savestate) && savestate.GetLabel() != newLabel)
+  if (GetObjectByIndex("path", saveStatePath.c_str(), &savestate) && savestate.GetLabel() != newLabel)
   {
     if (savestate.Rename(newLabel))
       return AddObject(&savestate) != -1;
@@ -268,7 +314,7 @@ bool CSavestateDatabase::DeleteSaveState(const CStdString &saveStatePath, bool d
 {
   CSavestate savestate;
   savestate.SetPath(saveStatePath);
-  if (Open() && !DeleteObjectByIndex("path", saveStatePath.c_str(), deleteOrphans))
+  if (!DeleteObjectByIndex("path", saveStatePath.c_str(), deleteOrphans))
   {
     // Failed to delete the object. If it still exists, don't delete the save
     // state from the file system, as that would cause inconsistencies

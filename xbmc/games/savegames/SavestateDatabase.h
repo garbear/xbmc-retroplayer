@@ -31,11 +31,24 @@ public:
 
   virtual bool Open();
 
+  /**
+   * Gets the CRC of the corresponding game path. A savestate record must exist
+   * in the database with the game path. If multiple save states have the same
+   * game path, it is assumed that they all have the same game CRC as only the
+   * first is chosen.
+   */
   bool GetCRC(const CStdString &gamePath, CStdString &strCrc);
+
+  /**
+   * Precondition: Game path is not in the database. If the CRC is in the
+   * database, this will update stale game paths to point to it.
+   */
+  void UpdateCRC(const CStdString &gamePath, const CStdString &strCrc);
 
   bool GetAutoSaveByPath(const CStdString &gameClient, const CStdString &gamePath, CSavestate &savestate);
   bool GetAutoSaveByCrc(const CStdString &gameClient, const CStdString &gameCrc, CSavestate &savestate);
 
+  bool Load(CSavestate &savestate, std::vector<uint8_t> &data);
   bool Save(CSavestate &savestate, const std::vector<uint8_t> &data);
   bool RenameSaveState(const CStdString &saveStatePath, const CStdString &newLabel);
   bool DeleteSaveState(const CStdString &saveStatePath, bool deleteOrphans = true);
@@ -56,6 +69,7 @@ protected:
 
   virtual CFileItem *CreateFileItem(const CVariant &object) const;
 
-private:
   bool GetAutoSave(const CStdString &gameClient, bool usePath, const CStdString &value, CSavestate &savestate);
+
+  // TODO: Add std::map<string, int> cache for gamepath, gamecrc and gameclient IDs
 };

@@ -238,18 +238,18 @@ void CSavestate::SetPath(const CStdString &path)
 
   // Analyze the save state name to determine the type
   CStdString saveName = URIUtils::GetFileName(path);
-  if (saveName.size() == 8 + 10) // .savestate is 10 characters
+  if (saveName.size() == 8 + strlen(SAVESTATE_EXTENSION))
   {
     // Auto-save (file name is like feba62c2.savestate)
     SetSaveTypeAuto();
   }
-  else if (saveName.size() == 8 + 2 + 10 && '1' <= saveName[9] && saveName[9] <= '9')
+  else if (saveName.size() == 8 + 2 + strlen(SAVESTATE_EXTENSION) && '1' <= saveName[9] && saveName[9] <= '9')
   {
     // Save type slot (file name is like feba62c2_1.savestate)
     unsigned int slot = saveName[9] - '0';
     SetSaveTypeSlot(slot);
   }
-  else if (saveName.size() == 8 + 1 + 8 + 10)
+  else if (saveName.size() == 8 + 1 + 8 + strlen(SAVESTATE_EXTENSION))
   {
     // Save type label (file name is like feba62c2_8dc22669.savestate)
     SetSaveTypeLabel(""); // Unknown label for now
@@ -273,7 +273,7 @@ void CSavestate::SetPath(const CStdString &path)
 CStdString CSavestate::GetThumbnail() const
 {
   CStdString path(GetPath());
-  if (path.length() > strlen(SAVESTATE_EXTENSION))
+  if (path.length())
     path = URIUtils::ReplaceExtension(path, ".png");
   return path;
 }
@@ -309,16 +309,25 @@ void CSavestate::SetSaveTypeLabel(const CStdString &label)
   m_label = label;
 }
 
-void CSavestate::SetGameCRCFromFile(const CStdString &filename)
+void CSavestate::SetGameCRCFromFile(const CStdString &filename, bool forceFilename /* = false */)
 {
   std::vector<char> buffer;
   CFile file;
   int64_t length;
   if (file.Open(filename) && (length = file.GetLength()) > 0)
   {
-    buffer.resize((size_t)length);
-    file.Read(buffer.data(), length);
-    SetGameCRCFromFile(buffer.data(), buffer.size());
+    if (length > MAX_SAVESTATE_CRC_LENGTH || forceFilename)
+    {
+      Crc32 crc;
+      crc.ComputeFromLowerCase(filename);
+      m_gameCRC.Format("%08x", (unsigned __int32)crc);
+    }
+    else
+    {
+      buffer.resize((size_t)length);
+      file.Read(buffer.data(), length);
+      SetGameCRCFromFile(buffer.data(), buffer.size());
+    }
   }
 }
 

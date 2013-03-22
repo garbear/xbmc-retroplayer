@@ -362,7 +362,8 @@ void CGUIDialogGameSaves::DeleteSaveState(const CStdString &saveStatePath)
     if (pDialog->IsConfirmed())
     {
       CSavestateDatabase db;
-      if (!db.DeleteSaveState(saveStatePath))
+
+      if (!db.Open() || !db.DeleteSaveState(saveStatePath))
       {
         CGUIDialogOK* pDialogOK = dynamic_cast<CGUIDialogOK*>(g_windowManager.GetWindow(WINDOW_DIALOG_OK));
         pDialogOK->SetHeading(117); // Delete
@@ -389,10 +390,13 @@ void CGUIDialogGameSaves::ClearSaveStates()
     if (pDialog->IsConfirmed())
     {
       CSavestateDatabase db;
-      bool success = true;
-      for (int i = 0; i < m_vecItems->Size(); i++)
-        if (!db.DeleteSaveState((*m_vecItems)[i]->GetPath()))
-          success = false;
+      bool success = db.Open();
+      if (success)
+      {
+        for (int i = 0; i < m_vecItems->Size(); i++)
+          if (!db.DeleteSaveState((*m_vecItems)[i]->GetPath()))
+            success = false;
+      }
 
       if (!success)
       {

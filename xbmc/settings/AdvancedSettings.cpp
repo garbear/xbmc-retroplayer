@@ -1030,8 +1030,8 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
     XMLUtils::GetString(pDatabase, "pass", m_databaseEpg.pass);
     XMLUtils::GetString(pDatabase, "name", m_databaseEpg.name);
   }
-  
-  pDatabase = pRootElement->FirstChildElement("SavestateDatabase");
+
+  pDatabase = pRootElement->FirstChildElement("savestatedatabase");
   if (pDatabase)
   {
     XMLUtils::GetString(pDatabase, "type", m_databaseSavestates.type);
