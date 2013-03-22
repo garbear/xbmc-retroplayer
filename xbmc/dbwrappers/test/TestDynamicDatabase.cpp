@@ -18,17 +18,18 @@
  *
  */
 
-#include "../DynamicDatabase.h"
+#include "dbwrappers/DynamicDatabase.h"
 #include "dbwrappers/dataset.h"
+#include "FileItem.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
-#include "utils/IDBInfoTag.h"
+#include "utils/IDeserializable.h"
+#include "utils/ISerializable.h"
 #include "utils/Variant.h"
 #include "utils/Vector.h"
 #include "music/MusicDatabase.h"
-#include "FileItem.h"
 
 #include "gtest/gtest.h"
 
@@ -39,22 +40,22 @@
 #define MYSQLHOST "127.0.0.1"
 #define MYSQLPORT "3306"
 #define MYSQLUSER "root"
-#define MYSQLPASS "root"
+#define MYSQLPASS "xbmc"
 
 using namespace XFILE;
 using namespace std;
 
 
 // Test strategy: We implement the virtual database, CDynamicDatabase, and the
-// abstract object it operates on, IDBInfoTag. Lawn gnomes are suited for this
-// task because they live in a garden (1:N), travel to different places (N:N),
-// and have a name and a number of little gnome friends (1:1 indices of types
-// TEXT and INTEGER).
+// abstract object it operates on. Lawn gnomes are suited for this task because
+// they live in a garden (1:N), travel to different places (N:N), and have a
+// name and a number of little gnome friends (1:1 indices of types TEXT and
+// INTEGER).
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Test abstract info tag implementation: CLawnGnome
-class CLawnGnome : public IDBInfoTag
+class CLawnGnome : public ISerializable, public IDeserializable
 {
 public:
   string         m_name;
@@ -63,61 +64,33 @@ public:
   vector<string> m_placesTraveled;
   int            m_databaseId;
 
-  CLawnGnome()
-    : m_littleGnomeFriends(0), m_databaseId(-1)
-  {
-  }
+  CLawnGnome() : m_littleGnomeFriends(0), m_databaseId(-1) { }
   CLawnGnome(string name, string gardenName, int littleGnomeFriends)
     : m_name(name), m_gardenName(gardenName), m_littleGnomeFriends(littleGnomeFriends), m_databaseId(-1)
   {
   }
 
-  virtual int GetID() const { return m_databaseId; }
   void TravelTo(const string &strPlace) { m_placesTraveled.push_back(strPlace); }
-
-  virtual void Deserialize(const bson *document, int dbId)
+  
+  virtual void Serialize(CVariant& value) const
   {
-    bson_iterator it[1], subit[1];
-    bson_type     type,  subtype;
-    string        key,   subkey;
-
-    bson_iterator_init(it, document);
-    type = bson_iterator_type(it);
-    while (type != BSON_EOO)
-    {
-      key = bson_iterator_key(it);
-      if (type == BSON_STRING && key == "name") m_name = bson_iterator_string(it);
-      else if (type == BSON_STRING && key == "garden") m_gardenName = bson_iterator_string(it);
-      else if (type == BSON_INT && key == "littlegnomefriends") m_littleGnomeFriends = bson_iterator_int(it);
-      else if (type == BSON_ARRAY && key == "placestraveled")
-      {
-        bson_iterator_subiterator(it, subit);
-        subtype = bson_iterator_next(subit);
-        while (subtype == BSON_STRING)
-        {
-          m_placesTraveled.push_back(bson_iterator_string(subit));
-          subtype = bson_iterator_next(subit);
-        }
-      }
-      type = bson_iterator_next(it);
-    }
+    value["name"]               = m_name;
+    value["garden"]             = m_gardenName;
+    value["littlegnomefriends"] = m_littleGnomeFriends;
+    value["databaseid"]         = m_databaseId;
+    value["placestraveled"].clear();
+    for (vector<string>::const_iterator it = m_placesTraveled.begin(); it != m_placesTraveled.end(); it++)
+      value["placestraveled"].push_back(*it);
   }
-
-  virtual void Serialize(bson *document) const
+  virtual void Deserialize(const CVariant& value)
   {
-    CStdString arrayKey;
-    bson_init(document);
-    bson_append_string(document, "name", m_name.c_str());
-    bson_append_string(document, "garden", m_gardenName.c_str());
-    bson_append_int(document, "littlegnomefriends", m_littleGnomeFriends);
-    bson_append_start_array(document, "placestraveled");
-    for (unsigned int i = 0; i < m_placesTraveled.size(); i++)
-    {
-      arrayKey.Format("%d", i);
-      bson_append_string(document, arrayKey.c_str(), m_placesTraveled[i].c_str());
-    }
-    bson_append_finish_array(document);
-    bson_finish(document);
+    m_name               = value["name"].asString();
+    m_gardenName         = value["garden"].asString();
+    m_littleGnomeFriends = (int)value["littlegnomefriends"].asInteger();
+    m_databaseId         = (int)value["databaseid"].asInteger();
+    m_placesTraveled.clear();
+    for (CVariant::const_iterator_array it = value["placestraveled"].begin_array(); it != value["placestraveled"].end_array(); it++)
+      m_placesTraveled.push_back(it->asString());
   }
 };
 
@@ -154,12 +127,14 @@ public:
     }
     return false;
   }
+
   /* Gnome uniqueness is quantified by their name and garden. */
-  virtual bool IsValid(const bson *object) const
+  virtual bool IsValid(const CVariant &object) const
   {
-    return !GetField(object, "name").asString().empty() && !GetField(object, "garden").asString().empty();
+    return !object["name"].asString().empty() && !object["garden"].asString().empty();
   }
-  virtual bool Exists(const bson *object, int &idObject)
+
+  virtual bool Exists(const CVariant &object, int &idObject)
   {
     if (!IsValid(object))
       return false;
@@ -167,7 +142,7 @@ public:
       "SELECT idGnome "
       "FROM gnome JOIN garden ON garden.idgarden=gnome.idgarden "
       "WHERE name='%s' AND garden='%s'",
-      GetField(object, "name").asString().c_str(), GetField(object, "garden").asString().c_str()
+      object["name"].asString().c_str(), object["garden"].asString().c_str()
     );
     if (m_pDS->query(strSQL.c_str()))
     {
@@ -182,10 +157,10 @@ public:
     }
     return false;
   }
-  virtual CFileItem *CreateFileItem(const std::string &strBson, int id) const
+  virtual CFileItem *CreateFileItem(const CVariant &object) const
   {
     CLawnGnome gnome;
-    DeserializeBSON(strBson, id, &gnome);
+    gnome.Deserialize(object);
     CFileItem *item = new CFileItem(gnome.m_name);
     item->SetPath(gnome.m_gardenName);
     return item;
@@ -198,7 +173,7 @@ public:
       auto_ptr<dbiplus::Dataset> pDS(m_pDB->CreateDataset());
       if (pDS->query("SELECT idGnome FROM Gnome"))
         while (!pDS->eof())
-          { DeleteObject(pDS->fv(0).get_asInt()); pDS->next(); }
+        { DeleteObjectByID(pDS->fv(0).get_asInt()); pDS->next(); }
       pDS->close();
       return Count() == 0 && Count("garden") == 0 && Count("placestraveled") == 0;
     }
@@ -468,18 +443,18 @@ void runTests(CGnomeDatabase &db)
   EXPECT_EQ(objects.Size(), 2);
 
   // Test deleting objects and check for orphans
-  EXPECT_TRUE(db.DeleteObject(id1, false)); // Delete Gnomeo, leave orphans
+  EXPECT_TRUE(db.DeleteObjectByID(id1, false)); // Delete Gnomeo, leave orphans
   EXPECT_EQ(db.Count("garden"), 4);
   EXPECT_EQ(db.Count("placestraveled"), 8);
-  EXPECT_TRUE(db.DeleteObject(id1));
+  EXPECT_TRUE(db.DeleteObjectByID(id1));
   EXPECT_NE(id1=db.AddObject(&Gnomeo), -1); // Re-add, get the different ID
   EXPECT_EQ(db.Count("garden"), 4);
   EXPECT_EQ(db.Count("placestraveled"), 8);
-  EXPECT_TRUE(db.DeleteObject(id1, true));  // Delete Gnomeo, delete orphans
+  EXPECT_TRUE(db.DeleteObjectByID(id1, true));  // Delete Gnomeo, delete orphans
   EXPECT_EQ(db.Count("garden"), 3); // minus Montague Garden
   EXPECT_EQ(db.Count("placestraveled"), 7); // minus Venice
   EXPECT_NE(db.AddObject(&Gnomeo), -1); // Put Gnomeo back
-  EXPECT_TRUE(db.DeleteObject(999));
+  EXPECT_TRUE(db.DeleteObjectByID(999));
 
   // Test removing relations
   CFileItemList temp2;
