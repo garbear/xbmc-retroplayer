@@ -33,7 +33,7 @@ TEST(TestBSONVariantWriter, Write)
   helloWorldIn["hello"] = "world";
   const char helloWorldRef[] = "\x16\x00\x00\x00\x02hello\x00\x06\x00\x00\x00world\x00\x00";
 
-  std::vector<const char> helloWorldOut = CBSONVariantWriter::Write(helloWorldIn);
+  std::vector<char> helloWorldOut = CBSONVariantWriter::Write(helloWorldIn);
   EXPECT_EQ(memcmp(helloWorldOut.data(), helloWorldRef, helloWorldOut.size()), 0);
 
   CVariant heterogeneousIn, arrayIn;
@@ -51,6 +51,6 @@ TEST(TestBSONVariantWriter, Write)
                                   "\x33\x33\x33\x14\x40\x12" "2\x00\xc2\x07\x00\x00\x00\x00"
                                   "\x00\x00\x00\x00";  // ^
 
-  std::vector<const char> heterogeneousOut = CBSONVariantWriter::Write(heterogeneousIn);
+  std::vector<char> heterogeneousOut = CBSONVariantWriter::Write(heterogeneousIn);
   EXPECT_EQ(memcmp(heterogeneousOut.data(), heterogeneousRef, heterogeneousOut.size()), 0);
 }
