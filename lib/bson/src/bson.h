@@ -125,12 +125,12 @@ typedef enum {
 
 typedef int bson_bool_t;
 
-typedef struct {
+typedef struct bson_iterator {
     const char *cur;
     bson_bool_t first;
 } bson_iterator;
 
-typedef struct {
+typedef struct bson {
     char *data;    /**< Pointer to a block of data in this BSON object. */
     char *cur;     /**< Pointer to the current position. */
     int dataSize;  /**< The number of bytes allocated to char *data. */
