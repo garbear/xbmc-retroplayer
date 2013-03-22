@@ -694,7 +694,6 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
 #endif
 
       CVariant varColumnValues = var[column];
-      vector<CVariant> items;
       if (varColumnValues.isDouble() ||
           varColumnValues.isString() ||
           varColumnValues.isWideString() ||
@@ -709,7 +708,7 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
       }
 
       // Each item needs its own entry in its table and link in the link table
-      for (CVariant::const_iterator_array itemIt = items.begin(); itemIt != items.end(); itemIt++)
+      for (CVariant::const_iterator_array itemIt = varColumnValues.begin_array(); itemIt != varColumnValues.end_array(); itemIt++)
       {
         string value = PrepareVariant(*itemIt, type);
         if (value.empty() || value == "''")
