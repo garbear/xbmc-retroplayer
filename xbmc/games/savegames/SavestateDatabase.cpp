@@ -115,7 +115,7 @@ bool CSavestateDatabase::IsValid(const CVariant &object) const
   return !object["path"].asString().empty();
 }
 
-CFileItem* CSavestateDatabase::CreateFileItem(const CVariant &object, int id) const
+CFileItem* CSavestateDatabase::CreateFileItem(const CVariant &object) const
 {
   CSavestate p(object);
   CFileItem *item = new CFileItem(p.GetLabel());

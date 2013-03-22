@@ -54,7 +54,7 @@ protected:
   virtual bool Exists(const CVariant &object, int &idObject);
   virtual bool IsValid(const CVariant &object) const;
 
-  virtual CFileItem *CreateFileItem(const CVariant &object, int id) const;
+  virtual CFileItem *CreateFileItem(const CVariant &object) const;
 
 private:
   bool GetAutoSave(const CStdString &gameClient, bool usePath, const CStdString &value, CSavestate &savestate);
