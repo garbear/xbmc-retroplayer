@@ -226,7 +226,7 @@ bool CGUIDialogGameSaves::OnAction(const CAction &action)
 
 bool CGUIDialogGameSaves::OnContextMenu(const CFileItemPtr &savefile)
 {
-  // Save file is an auto-save if there is no underscore in the name (e.g. feba62c2.savestate)
+  // Save file is an auto-save if there is no underscore in the name (e.g. feba62c2.sav)
   //bool isAuto = (URIUtils::GetFileName(savefile->GetPath()).Find("_") < 0);
 
   CContextButtons choices;
