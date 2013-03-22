@@ -128,7 +128,7 @@ protected:
    * construct a CFileItem.
    * @return CFileItem allocated on the heap.
    */
-  virtual CFileItem *CreateFileItem(const CVariant &object, int id) const = 0;
+  virtual CFileItem *CreateFileItem(const CVariant &object) const = 0;
 
   /*!
    * Helper functions to avoid "FK_%s_%s_%s" games.

@@ -1150,7 +1150,8 @@ bool CDynamicDatabase::GetObjectsNav(CFileItemList &items, const map<string, lon
         CVariant var = CJSONVariantParser::Parse(output, m_pDS->fv(1).get_asString().size());
 #endif
 
-        pItem = CFileItemPtr(CreateFileItem(var, m_pDS->fv(0).get_asInt()));
+        var["databaseid"] = m_pDS->fv(0).get_asInt();
+        pItem = CFileItemPtr(CreateFileItem(var));
         items.Add(pItem);
         m_pDS->next();
       }
