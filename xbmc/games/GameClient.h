@@ -207,10 +207,10 @@ namespace ADDON
     unsigned int RewindFrames(unsigned int frames);
 
     // Returns how many frames it is possible to rewind with a call to RewindFrames().
-    size_t GetAvailableFrames() const { return m_rewindSupported ? m_serialState.GetFramesAvailable() : 0; }
+    size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
 
     // Returns the maximum amount of frames that can ever be rewound.
-    size_t GetMaxFrames() const { return m_rewindSupported ? m_serialState.GetMaxFrames() : 0; }
+    size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
 
     // Reset the game, if running.
     void Reset();
@@ -231,7 +231,7 @@ namespace ADDON
 
     /**
      * Init the savestate file by setting the game path, game client and game
-     * CRC.
+     * CRC. Most field, such as playtime, are preserved.
      *
      * gameBuffer and length are convenience variables to avoid hitting the
      * disk for CRC calculation when the game file is already loaded in RAM.
@@ -274,7 +274,8 @@ namespace ADDON
     int              m_region; // Region of the loaded game
 
     CCriticalSection m_critSection;
-    bool             m_rewindSupported;
+    unsigned int     m_serialSize;
+    bool             m_bRewindEnabled;
     CSerialState     m_serialState;
     CSavestate       m_saveState;
 
