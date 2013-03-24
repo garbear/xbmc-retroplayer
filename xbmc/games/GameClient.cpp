@@ -314,30 +314,32 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
   m_serialSize = m_dll.retro_serialize_size();
   m_bRewindEnabled = g_guiSettings.GetBool("games.enablerewind");
 
-  bool initSuccess = InitSaveState(info.data, info.size);
-  if (m_serialSize)
+  if (!InitSaveState(info.data, info.size))
   {
-    if (g_guiSettings.GetBool("games.savestates"))
+    m_serialSize = 0;
+    m_bRewindEnabled = false;
+  }
+  else if (!m_serialSize)
+  {
+    CLog::Log(LOGINFO, "GameClient: Game serialization not supported, continuing without save or rewind");
+    m_bRewindEnabled = false;
+  }
+  else
+  {
+    // Load savestate if possible
+    bool loadSuccess = false;
+
+    if (!file.m_startSaveState.empty())
+      loadSuccess = Load(file.m_startSaveState);
+    else if (g_guiSettings.GetBool("games.savestates"))
+      loadSuccess = AutoLoad();
+
+    if (!loadSuccess && m_bRewindEnabled)
     {
-      if (!initSuccess)
-        CLog::Log(LOGERROR, "GameClient: Couldn't open database, continuing without save support");
-      else
-      {
-        // Load savestate if possible
-        bool loadSuccess = false;
-        if (!file.m_startSaveState.empty())
-          loadSuccess = Load(file.m_startSaveState);
-        if (!loadSuccess)
-          loadSuccess = AutoLoad();
-        else
-          loadSuccess = AutoLoad();
-        if (!loadSuccess && m_bRewindEnabled)
-        {
-          CLog::Log(LOGDEBUG, "GameClient: Failed to load last savestate, forcing rewind to off");
-          m_bRewindEnabled = false;
-        }
-      }
+      CLog::Log(LOGDEBUG, "GameClient: Failed to load last savestate, forcing rewind to off");
+      m_bRewindEnabled = false;
     }
+
     // Set up rewind functionality
     if (m_bRewindEnabled)
     {
@@ -352,10 +354,6 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
         CLog::Log(LOGDEBUG, "GameClient: Unable to serialize state, proceeding without rewind");
       }
     }
-  }
-  else
-  {
-    CLog::Log(LOGINFO, "GameClient: Game serialization not supported");
   }
 
   // Query the game region
