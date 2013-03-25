@@ -40,8 +40,29 @@ void CLibretroEnvironment::ResetCallbacks()
 
 bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
 {
-  // Note: SHUTDOWN doesn't use data and GET_SYSTEM_DIRECTORY uses data as a return path
-  if (!(cmd == RETRO_ENVIRONMENT_SHUTDOWN || cmd == RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY) && !data)
+  static const char *cmds[] = {"RETRO_ENVIRONMENT_SET_ROTATION",
+                               "RETRO_ENVIRONMENT_GET_OVERSCAN",
+                               "RETRO_ENVIRONMENT_GET_CAN_DUPE",
+                               "RETRO_ENVIRONMENT_GET_VARIABLE",
+                               "RETRO_ENVIRONMENT_SET_VARIABLES",
+                               "RETRO_ENVIRONMENT_SET_MESSAGE",
+                               "RETRO_ENVIRONMENT_SHUTDOWN",
+                               "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL",
+                               "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY",
+                               "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT",
+                               "RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS",
+                               "RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK"};
+
+  if (0 <= cmd && cmd < sizeof(cmds) / sizeof(cmds[0]))
+    CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: %s", cmd, cmds[cmd - 1]);
+  else
+  {
+    CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid query", cmd);
+    return false;
+  }
+
+  // Note: SHUTDOWN doesn't use data
+  if (!data && cmd != RETRO_ENVIRONMENT_SHUTDOWN)
   {
     CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no data! naughty core?", cmd);
     return false;
@@ -53,16 +74,16 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Whether or not the game client should use overscan (true) or crop away overscan (false)
       *reinterpret_cast<bool*>(data) = false;
-      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: %s", RETRO_ENVIRONMENT_GET_OVERSCAN,
-          *reinterpret_cast<bool*>(data) ? "use overscan" : "crop away overscan");
+      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: %s", cmd,
+        *reinterpret_cast<bool*>(data) ? "use overscan" : "crop away overscan");
       break;
     }
   case RETRO_ENVIRONMENT_GET_CAN_DUPE:
     {
       // Boolean value whether or not we support frame duping, passing NULL to video frame callback
       *reinterpret_cast<bool*>(data) = true;
-      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: frame duping is %s",
-          RETRO_ENVIRONMENT_GET_CAN_DUPE, *reinterpret_cast<bool*>(data) ? "enabled" : "disabled");
+      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: frame duping is %s", cmd,
+        *reinterpret_cast<bool*>(data) ? "enabled" : "disabled");
       break;
     }
   case RETRO_ENVIRONMENT_GET_VARIABLE:
@@ -77,22 +98,19 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         if (strncmp("too_sexy_for", var->key, 12) == 0)
         {
           var->value = "my_shirt";
-          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: variable %s set to %s",
-              RETRO_ENVIRONMENT_GET_VARIABLE, var->key, var->value);
+          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: variable %s set to %s", cmd, var->key, var->value);
         }
         else
         {
           var->value = NULL;
-          CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: undefined variable %s",
-              RETRO_ENVIRONMENT_GET_VARIABLE, var->key);
+          CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: undefined variable %s", cmd, var->key);
         }
       }
       else
       {
         if (var->value)
           var->value = NULL;
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variable given",
-            RETRO_ENVIRONMENT_GET_VARIABLE);
+        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variable given", cmd);
       }
       break;
     }
@@ -104,20 +122,15 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // of the key.
       const retro_variable *vars = reinterpret_cast<const retro_variable*>(data);
       if (!vars->key)
-      {
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variables given",
-            RETRO_ENVIRONMENT_SET_VARIABLES);
-      }
+        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variables given", cmd);
       else
       {
         while (vars && vars->key)
         {
           if (vars->value)
-            CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of var %s (%s)",
-              RETRO_ENVIRONMENT_SET_VARIABLES, vars->key, vars->value);
+            CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key, vars->value);
           else
-            CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: var %s has no description",
-              RETRO_ENVIRONMENT_SET_VARIABLES, vars->key);
+            CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: var %s has no description", cmd, vars->key);
           vars++;
         }
       }
@@ -128,8 +141,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Sets a message to be displayed. Generally not for trivial messages.
       const retro_message *msg = reinterpret_cast<const retro_message*>(data);
       if (msg->msg && msg->frames)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: display msg \"%s\" for %d frames",
-            RETRO_ENVIRONMENT_SET_MESSAGE, msg->msg, msg->frames);
+        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: display msg \"%s\" for %d frames", cmd, msg->msg, msg->frames);
       break;
     }
   case RETRO_ENVIRONMENT_SET_ROTATION:
@@ -138,17 +150,15 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // by 0, 90, 180, 270 degrees counter-clockwise respectively.
       unsigned int rotation = *reinterpret_cast<const unsigned int*>(data);
       if (0 <= rotation && rotation <= 3)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set screen rotation to %d degrees",
-            RETRO_ENVIRONMENT_SET_ROTATION, rotation * 90);
+        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set screen rotation to %d degrees", cmd, rotation * 90);
       else
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid rotation %d",
-            RETRO_ENVIRONMENT_SET_ROTATION, rotation);
+        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid rotation %d", cmd, rotation);
       break;
     }
   case RETRO_ENVIRONMENT_SHUTDOWN:
     // Game has been shut down. Should only be used if game has a specific way to shutdown
     // the game from a menu item or similar.
-    CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: game signaled shutdown event", RETRO_ENVIRONMENT_SHUTDOWN);
+    CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: game signaled shutdown event", cmd);
 
     g_application.StopPlaying();
 
@@ -165,14 +175,11 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // 4: High-end desktops with very powerful CPUs.
       unsigned int performanceLevel = *reinterpret_cast<const unsigned int*>(data);
       if (0 <= performanceLevel && performanceLevel <= 3)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: performance hint: %d",
-            RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, performanceLevel);
+        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: performance hint: %d", cmd, performanceLevel);
       else if (performanceLevel == 4)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: performance hint: I hope you have a badass computer...",
-            RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL);
+        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: performance hint: I hope you have a badass computer...", cmd);
       else
-        CLog::Log(LOGERROR, "GameClient environment query ID=%d: invalid performance hint: %d",
-            RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, performanceLevel);
+        CLog::Log(LOGERROR, "GameClient environment query ID=%d: invalid performance hint: %d", cmd, performanceLevel);
       break;
     }
   case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
@@ -181,8 +188,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // etc. The returned value can be NULL, in which case it's up to the implementation to find
       // a suitable directory.
       *reinterpret_cast<const char**>(data) = NULL;
-      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: no system directory given to core",
-          RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY);
+      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: no system directory given to core", cmd);
       break;
     }
   case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -197,14 +203,17 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       case RETRO_PIXEL_FORMAT_0RGB1555: // 5 bit color, high bit must be zero
       case RETRO_PIXEL_FORMAT_XRGB8888: // 8 bit color, high byte is ignored
       case RETRO_PIXEL_FORMAT_RGB565:   // 5/6/5 bit color
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set pixel format: %d",
-            RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, pix_fmt);
-        if (fn_SetPixelFormat)
-          fn_SetPixelFormat(pix_fmt);
-        break;
+        {
+          static const char *fmts[] = {"RETRO_PIXEL_FORMAT_0RGB1555",
+                                       "RETRO_PIXEL_FORMAT_XRGB8888",
+                                       "RETRO_PIXEL_FORMAT_RGB565"};
+          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set pixel format: %d, %s", cmd, pix_fmt, fmts[pix_fmt]);
+          if (fn_SetPixelFormat)
+            fn_SetPixelFormat(pix_fmt);
+          break;
+        }
       default:
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid pixel format: %d",
-            RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL, pix_fmt);
+        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid pixel format: %d", cmd, pix_fmt);
         return false;
       }
       break;
@@ -217,17 +226,13 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const retro_input_descriptor *descriptor = reinterpret_cast<const retro_input_descriptor*>(data);
 
       if (!descriptor->description)
-      {
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no descriptors given",
-            RETRO_ENVIRONMENT_SET_VARIABLES);
-      }
+        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no descriptors given", cmd);
       else
       {
         while (descriptor && descriptor->description)
         {
           CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of input %s (port=%d, device=%d, index=%d, id=%d)",
-            RETRO_ENVIRONMENT_SET_VARIABLES, descriptor->description,
-              descriptor->port, descriptor->device, descriptor->index, descriptor->id);
+            cmd, descriptor->description, descriptor->port, descriptor->device, descriptor->index, descriptor->id);
           descriptor++;
         }
       }
@@ -238,17 +243,10 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Sets a callback function, called by XBMC, used to notify core about
       // keyboard events.
       const retro_keyboard_callback *callback_struct = reinterpret_cast<const retro_keyboard_callback*>(data);
-      if (callback_struct->callback)
-      {
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set keyboard callback", RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK);
-        if (fn_SetKeyboardCallback)
-          fn_SetKeyboardCallback(callback_struct->callback);
-      }
+      if (callback_struct->callback && fn_SetKeyboardCallback)
+        fn_SetKeyboardCallback(callback_struct->callback);
       break;
     }
-  default:
-    CLog::Log(LOGERROR, "CLibretroEnvironment query: invalid query: %u", cmd);
-    return false;
   }
   return true;
 }
