@@ -28,6 +28,7 @@
 #include "GameFileLoader.h"
 #include "games/savegames/Savestate.h"
 #include "guilib/GUIWindowManager.h"
+#include "guilib/WindowIDs.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
