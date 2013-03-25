@@ -366,11 +366,14 @@ void CGUIDialogGameSaves::DeleteSaveState(const CStdString &saveStatePath)
       if (!db.Open() || !db.DeleteSaveState(saveStatePath))
       {
         CGUIDialogOK* pDialogOK = dynamic_cast<CGUIDialogOK*>(g_windowManager.GetWindow(WINDOW_DIALOG_OK));
-        pDialogOK->SetHeading(117); // Delete
-        pDialogOK->SetLine(0, 16205); // Delete failed
-        pDialogOK->SetLine(1, "");
-        pDialogOK->SetLine(2, "");
-        pDialogOK->DoModal();
+        if (pDialogOK)
+        {
+          pDialogOK->SetHeading(117); // Delete
+          pDialogOK->SetLine(0, 16205); // Delete failed
+          pDialogOK->SetLine(1, "");
+          pDialogOK->SetLine(2, "");
+          pDialogOK->DoModal();
+        }
       }
       Update();
     }
@@ -401,11 +404,14 @@ void CGUIDialogGameSaves::ClearSaveStates()
       if (!success)
       {
         CGUIDialogOK* pDialogOK = dynamic_cast<CGUIDialogOK*>(g_windowManager.GetWindow(WINDOW_DIALOG_OK));
-        pDialogOK->SetHeading(117); // Delete
-        pDialogOK->SetLine(0, 16206); // Failed to delete at least one file
-        pDialogOK->SetLine(1, "");
-        pDialogOK->SetLine(2, "");
-        pDialogOK->DoModal();
+        if (pDialogOK)
+        {
+          pDialogOK->SetHeading(117); // Delete
+          pDialogOK->SetLine(0, 16206); // Failed to delete at least one file
+          pDialogOK->SetLine(1, "");
+          pDialogOK->SetLine(2, "");
+          pDialogOK->DoModal();
+        }
       }
 
       Update();
