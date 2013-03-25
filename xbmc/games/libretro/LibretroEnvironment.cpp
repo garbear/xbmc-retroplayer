@@ -20,22 +20,37 @@
 
 #include "LibretroEnvironment.h"
 #include "Application.h"
+#include "dialogs/GUIDialogContextMenu.h"
+#include "dialogs/GUIDialogFileBrowser.h"
+#include "guilib/LocalizeStrings.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/WindowIDs.h"
+#include "settings/Settings.h"
+#include "storage/MediaManager.h"
 #include "utils/log.h"
 
+using namespace ADDON;
 
 CLibretroEnvironment::SetPixelFormat_t      CLibretroEnvironment::fn_SetPixelFormat      = NULL;
 CLibretroEnvironment::SetKeyboardCallback_t CLibretroEnvironment::fn_SetKeyboardCallback = NULL;
 
-void CLibretroEnvironment::SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc)
+GameClientPtr CLibretroEnvironment::m_activeClient;
+CStdString    CLibretroEnvironment::m_systemDirectory;
+bool          CLibretroEnvironment::m_bAbort = false;
+
+void CLibretroEnvironment::SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc, GameClientPtr activeClient)
 {
   fn_SetPixelFormat = spf;
   fn_SetKeyboardCallback = skc;
+  m_activeClient = activeClient;
+  m_bAbort = false;
 }
 
 void CLibretroEnvironment::ResetCallbacks()
 {
   fn_SetPixelFormat = NULL;
   fn_SetKeyboardCallback = NULL;
+  m_activeClient.reset();
 }
 
 bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
@@ -187,8 +202,63 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Returns a directory for storing system specific ROMs such as BIOSes, configuration data,
       // etc. The returned value can be NULL, in which case it's up to the implementation to find
       // a suitable directory.
-      *reinterpret_cast<const char**>(data) = NULL;
-      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: no system directory given to core", cmd);
+      const char **strData = reinterpret_cast<const char**>(data);
+      *strData = NULL;
+      m_systemDirectory.clear();
+
+      if (m_activeClient)
+      {
+        // The game client's first encounter with GET_SYSTEM_DIRECTORY is
+        // graffitied by this setting. From this point on it will appear in
+        // the directories tab of Game Settings.
+        m_activeClient->UpdateSetting("showingamesettings", "true");
+
+        if (m_activeClient->GetSetting("systemdirectory").length())
+          m_systemDirectory = m_activeClient->GetSetting("systemdirectory");
+        else
+        {
+          CContextButtons choices;
+          choices.Add(0, 15035); // Choose system directory
+          choices.Add(1, 15036); // Skip and try game directory
+          choices.Add(2, 222); // Cancel
+
+          int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choices);
+          if (btnid == 0)
+          {
+            // Setup the shares, system files might be located with game files so start there
+            VECSOURCES shares;
+            VECSOURCES *pGameShares = g_settings.GetSourcesFromType("games");
+            if (pGameShares)
+              shares = *pGameShares;
+
+            // Always append local drives
+            g_mediaManager.GetLocalDrives(shares);
+
+            // "External system directory"
+            if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(15034), m_systemDirectory))
+              m_activeClient->UpdateSetting("systemdirectory", m_systemDirectory);
+            else
+              m_bAbort = true;
+          }
+          else if (btnid == 1)
+          {
+            // Proceed normally, passing NULL as data argument
+          }
+          else
+          {
+            m_bAbort = true;
+          }
+        }
+        m_activeClient->SaveSettings();
+      }
+
+      if (m_systemDirectory.length())
+        *reinterpret_cast<const char**>(data) = m_systemDirectory.c_str();
+
+      if (*strData)
+        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: using system directory %s", cmd, m_systemDirectory.c_str());
+      else
+        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: no system directory passed to game client", cmd);
       break;
     }
   case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:

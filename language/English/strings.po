@@ -6026,7 +6026,28 @@ msgctxt "#15032"
 msgid "Clear Save States"
 msgstr ""
 
-#empty strings from id 15033 to 15051
+#: xbmc/games/GameClient.cpp
+msgctxt "#15033"
+msgid "Emulator setup"
+msgstr ""
+
+#: xbmc/games/GameClient.cpp
+#: xbmc/games/libretro/LibretroEnvironment.cpp
+msgctxt "#15034"
+msgid "External system directory"
+msgstr ""
+
+#: xbmc/games/libretro/LibretroEnvironment.cpp
+msgctxt "#15035"
+msgid "Choose system directory"
+msgstr ""
+
+#: xbmc/games/libretro/LibretroEnvironment.cpp
+msgctxt "#15036"
+msgid "Skip and try game directory"
+msgstr ""
+
+#empty strings from id 15037 to 15051
 
 msgctxt "#15052"
 msgid "Password"

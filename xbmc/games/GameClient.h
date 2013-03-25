@@ -96,6 +96,17 @@ namespace ADDON
     virtual ~CGameClient() { DeInit(); }
 
     /**
+     * Settings and strings are handled slightly differently with game client
+     * add-ons because they are non-unique, in that all game clients share the
+     * same class of settings and strings. Default settings are hard-coded,
+     * trivial saves are skipped to avoid unnecessary file creations, and
+     * strings simply use g_localizeStrings.
+     * \sa LoadSettings
+     */
+    virtual void SaveSettings();
+    virtual CStdString GetString(uint32_t id);
+
+    /**
      * Load the DLL and query basic parameters. After Init() is called, the
      * Get*() and CanOpen() functions may be called.
      */
@@ -225,6 +236,9 @@ namespace ADDON
      * optimistically return true.
      */
     bool IsExtensionValid(const CStdString &ext) const;
+
+  protected:
+    virtual bool LoadSettings(bool bForce = false);
 
   private:
     void Initialize();
