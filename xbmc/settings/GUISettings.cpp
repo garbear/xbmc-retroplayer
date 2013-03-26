@@ -1037,11 +1037,14 @@ void CGUISettings::Initialize()
   AddBool(gamesGen, "games.autosave", 15025, true); // Save game state every 30 seconds
   AddSeparator(gamesGen, "games.sep1");
   AddString(gamesGen, "games.manageaddons", 24025, "", BUTTON_CONTROL_STANDARD); // Manage emulators...
+
   CSettingsCategory* gamesDebug = AddCategory(SETTINGS_GAMES, "gamesdebug", 14092); // Debugging
   AddBool(gamesDebug, "gamesdebug.prefervfs", 15018, true); // Prefer loading files from memory (debug)
   // Some emulators crash when loading .zip files. If the emulator allows XBMC to
   // load from memory (VFS), XBMC can still safely load games from within zips.
   AddBool(gamesDebug, "gamesdebug.allowzip", 15020, true); // Allow emulators to load .zip files (debug)
+
+  // The "Directories" category is populated dynamically in CGUIWindowSettingsCategory
 }
 
 CGUISettings::~CGUISettings(void)

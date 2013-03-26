@@ -234,8 +234,8 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
             // Always append local drives
             g_mediaManager.GetLocalDrives(shares);
 
-            // "External system directory"
-            if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(15034), m_systemDirectory))
+            // "Choose system directory"
+            if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(15035), m_systemDirectory))
               m_activeClient->UpdateSetting("systemdirectory", m_systemDirectory);
             else
               m_bAbort = true;
