@@ -310,7 +310,7 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
       }
       else
       {
-        delete[] info.data;
+        delete[] reinterpret_cast<const uint8_t*>(info.data);
         info.data = NULL;
 
         // If the user bailed and went to the game settings screen, the abort bit was set
