@@ -183,23 +183,7 @@ bool CGUIWindowGames::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   {
   case CONTEXT_BUTTON_PLAY_ITEM:
   case CONTEXT_BUTTON_PLAY_WITH:
-    {
-      CFileItem gameFile = *item;
-      CURL url(item->GetPath());
-      if (url.GetProtocol() == "zip" && url.GetFileName() == "")
-      {
-        // Zip file masquerading as a zip directory
-        if (!g_guiSettings.GetBool("gamesdebug.allowzip"))
-          return false;
-        gameFile = CFileItem(url.GetHostName(), false);
-      }
-
-      // Allocate a game info tag to let the player know it's a game
-      gameFile.GetGameInfoTag();
-
-      // Let RetroPlayer choose the right action henceforth
-      return g_application.PlayFile(gameFile);
-    }
+    return item && PlayGame(*item);
   case CONTEXT_BUTTON_MANAGE_SAVE_STATES:
     if (item)
       g_windowManager.ActivateWindow(WINDOW_DIALOG_GAME_SAVES, item->GetPath());
@@ -228,6 +212,18 @@ bool CGUIWindowGames::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   return CGUIMediaWindow::OnContextButton(itemNumber, button);
 }
 
+bool CGUIWindowGames::OnClick(int itemNumber)
+{
+  CFileItemPtr item = m_vecItems->Get(itemNumber);
+  if (!item)
+    return true;
+
+  if (!(item->m_bIsFolder || item->IsFileFolder()) && item->IsGame())
+    return PlayGame(*item);
+  else
+    return CGUIMediaWindow::OnClick(itemNumber);
+}
+
 void CGUIWindowGames::OnInfo(int itemNumber)
 {
   CFileItemPtr item = m_vecItems->Get(itemNumber);
@@ -249,6 +245,25 @@ void CGUIWindowGames::OnInfo(int itemNumber)
     pictureInfo->DoModal();
   }
   */
+}
+
+bool CGUIWindowGames::PlayGame(const CFileItem &item)
+{
+  CFileItem gameFile = item;
+  CURL url(item.GetPath());
+  if (url.GetProtocol() == "zip" && url.GetFileName() == "")
+  {
+    // Zip file masquerading as a zip directory
+    if (!g_guiSettings.GetBool("gamesdebug.allowzip"))
+      return false;
+    gameFile = CFileItem(url.GetHostName(), false);
+  }
+
+  // Allocate a game info tag to let the player know it's a game
+  gameFile.GetGameInfoTag();
+
+  // Let RetroPlayer choose the right action henceforth
+  return g_application.PlayFile(gameFile);
 }
 
 CStdString CGUIWindowGames::GetStartFolder(const CStdString &dir)

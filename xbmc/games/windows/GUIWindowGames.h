@@ -33,7 +33,9 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
 
 protected:
-  void OnInfo(int item);
+  virtual bool OnClick(int itemNumber);
+  void OnInfo(int itemNumber);
+  bool PlayGame(const CFileItem &item);
   virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual CStdString GetStartFolder(const CStdString &dir);
