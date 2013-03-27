@@ -72,7 +72,7 @@ string CDynamicDatabase::MakeIndexClause(const string &table, const string &colu
 /* static inline */
 string CDynamicDatabase::MakeLinkTableName(const string &primary, const string &secondary)
 {
-  return primary + "link" + secondary; // primary_link_secondary
+  return primary + "link" + secondary; // primarylinksecondary
 }
 
 /* static inline */
