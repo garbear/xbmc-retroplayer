@@ -149,14 +149,14 @@ CVariant CDynamicDatabase::FieldAsVarient(const field_value &fv, const string &t
 string CDynamicDatabase::PrepareVariant(const CVariant &value, const string &type)
 {
   if (IsText(type))
-    return PrepareSQL("'%s'", value.asString().c_str()).c_str();
+    return PrepareSQL("'%s'", value.asString().c_str());
   else if (IsInteger(type) || IsBool(type))
-    return PrepareSQL("%i", value.asInteger()).c_str();
+    return PrepareSQL("%i", value.asInteger());
   else if (IsFloat(type))
-    return PrepareSQL("%f", value.asFloat()).c_str();
+    return PrepareSQL("%f", value.asFloat());
   else
     // Probably a datetime. Interpret as a string for now
-    return PrepareSQL("'%s'", value.asString().c_str()).c_str();
+    return PrepareSQL("'%s'", value.asString().c_str());
 }
 
 void CDynamicDatabase::CreateIndex(const string &table, const string &column, bool isFK)
@@ -164,7 +164,7 @@ void CDynamicDatabase::CreateIndex(const string &table, const string &column, bo
   // Foreign keys are "idItem", values are plainly "item"
   string strSQL = "CREATE INDEX " + MakeIndexName(table, column) + " "   // CREATE INDEX ix_table_column
                   "ON " + table + (isFK ? " (id" : " (") + column + ")"; // ON table (idcolumn)
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 }
 
 void CDynamicDatabase::CreateUniqueLinks(const string &primary, const string &secondary)
@@ -173,8 +173,8 @@ void CDynamicDatabase::CreateUniqueLinks(const string &primary, const string &se
                    "ON " + MakeLinkTableName(primary, secondary) + " (id" + primary + ", id" + secondary + ")";
   string strSQL2 = "CREATE UNIQUE INDEX " + MakeUniqueIndexName(primary, secondary, 2) + " "
                    "ON " + MakeLinkTableName(primary, secondary) + " (id" + secondary + ", id" + primary + ")";
-  m_pDS->exec(strSQL1.c_str());
-  m_pDS->exec(strSQL2.c_str());
+  m_pDS->exec(strSQL1);
+  m_pDS->exec(strSQL2);
 }
 
 
@@ -217,7 +217,7 @@ void CDynamicDatabase::InitializeMainTable(bool recreate /* = false */)
     ")",
     tableName.c_str(), m_table, MakeForeignKeyClause(m_table, "path").c_str()
   );
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 
   if (recreate)
   {
@@ -228,14 +228,14 @@ void CDynamicDatabase::InitializeMainTable(bool recreate /* = false */)
       "FROM %s",
       tableName.c_str(), m_table, m_table, m_table
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
 
     strSQL = PrepareSQL("DROP TABLE %s", m_table);
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
 
     // The temporary table is now the official one
     strSQL = PrepareSQL("ALTER TABLE %s RENAME TO %s", tableName.c_str(), m_table);
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
   }
 }
 
@@ -278,7 +278,7 @@ void CDynamicDatabase::DeclareOneToMany(const char *column, const char *type /* 
 
   Item item;
   item.name   = column;
-  item.type   = typeUpper.c_str();
+  item.type   = typeUpper;
   item.bIndex = index;
   m_singleLinks.push_back(item);
 }
@@ -294,7 +294,7 @@ void CDynamicDatabase::DeclareManyToMany(const char *column, const char *type /*
 
   Item item;
   item.name   = column;
-  item.type   = typeUpper.c_str();
+  item.type   = typeUpper;
   item.bIndex = index;
   m_multiLinks.push_back(item);
 }
@@ -335,14 +335,14 @@ void CDynamicDatabase::AddIndexInternal(const char *column, const char *type)
 
   // Add the column to the main table
   strSQL = PrepareSQL("ALTER TABLE %s ADD %s %s", m_table, column, type);
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 
   // Create an index on the new column
   CreateIndex(m_table, column, false);
 
   // Populate the new column with value from the strContentBSON64 column
   strSQL = PrepareSQL("SELECT id%s, strContentBSON64 FROM %s", m_table, m_table);
-  if (m_pDS->query(strSQL.c_str()))
+  if (m_pDS->query(strSQL))
   {
     while (!m_pDS->eof())
     {
@@ -358,14 +358,12 @@ void CDynamicDatabase::AddIndexInternal(const char *column, const char *type)
         continue;
 
       strSQL = PrepareSQL(
-        (
-          "UPDATE %s "
-          "SET %s=" + value + " "
-          "WHERE id%s=%i"
-        ).c_str(),
+        "UPDATE %s "
+        "SET %s=" + value + " "
+        "WHERE id%s=%i",
         m_table, column, m_table, m_pDS->fv(0).get_asInt()
       );
-      m_pDS2->exec(strSQL.c_str());
+      m_pDS2->exec(strSQL);
 
       m_pDS->next();
     }
@@ -384,7 +382,7 @@ void CDynamicDatabase::DropIndex(const char *column)
 
   // Tip of the day: the SQLite dataset removes "ON %s" automatically
   strSQL = PrepareSQL("DROP INDEX %s ON %s", MakeIndexName(m_table, column).c_str(), m_table);
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 
   if (m_sqlite)
   {
@@ -413,7 +411,7 @@ void CDynamicDatabase::DropIndex(const char *column)
   else
   {
     strSQL = PrepareSQL("ALTER TABLE %s DROP %s", m_table, column);
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
   }
 }
 
@@ -430,7 +428,7 @@ void CDynamicDatabase::AddOneToManyInternal(const char *column, const char *type
         "%s %s"
       ")", column, column, column, type
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
     if (index)
       CreateIndex(column, column, true);
   }
@@ -444,12 +442,12 @@ void CDynamicDatabase::AddOneToManyInternal(const char *column, const char *type
         "%s"
       ")", column, column, column, type, MakeIndexClause(column, column).c_str()
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
   }
 
   // Now add the relationship to the main table
   strSQL = PrepareSQL("ALTER TABLE %s ADD id%s INTEGER", m_table, column);
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 
   // Foreign key requires an indexed column "to avoid scanning the entire table"
   CreateIndex(m_table, column, true);
@@ -459,8 +457,8 @@ void CDynamicDatabase::AddOneToManyInternal(const char *column, const char *type
   // copied over. How FK'd up is that?
   if (!m_sqlite)
   {
-    strSQL = PrepareSQL("ALTER TABLE %s ADD %s;", m_table, MakeForeignKeyClause(m_table, column).c_str());
-    m_pDS->exec(strSQL.c_str());
+    strSQL = PrepareSQL("ALTER TABLE %s ADD %s", m_table, MakeForeignKeyClause(m_table, column).c_str());
+    m_pDS->exec(strSQL);
   }
   else
   {
@@ -470,7 +468,7 @@ void CDynamicDatabase::AddOneToManyInternal(const char *column, const char *type
   // Populate the new foreign key value
   queue<pair<int, CVariant> > idItems; // idObject -> item value
   strSQL = PrepareSQL("SELECT id%s, strContentBSON64 FROM %s", m_table, m_table);
-  if (m_pDS->query(strSQL.c_str()))
+  if (m_pDS->query(strSQL))
   {
     while (!m_pDS->eof())
     {
@@ -490,14 +488,12 @@ void CDynamicDatabase::AddOneToManyInternal(const char *column, const char *type
 
       // Test to see if the item exists in the new table
       strSQL = PrepareSQL(
-        (
-          "SELECT id%s "
-          "FROM %s "
-          "WHERE %s=" + value
-        ).c_str(),
+        "SELECT id%s "
+        "FROM %s "
+        "WHERE %s=" + value,
         column, column, column
       );
-      if (!m_pDS2->query(strSQL.c_str()))
+      if (!m_pDS2->query(strSQL))
         continue;
       if (m_pDS2->num_rows() == 0)
       {
@@ -505,13 +501,11 @@ void CDynamicDatabase::AddOneToManyInternal(const char *column, const char *type
         m_pDS2->close();
 
         strSQL = PrepareSQL(
-          (
-            "INSERT INTO %s (id%s, %s) "
-            "VALUES (NULL, " + value + ")"
-          ).c_str(),
+          "INSERT INTO %s (id%s, %s) "
+          "VALUES (NULL, " + value + ")",
           column, column, column
         );
-        m_pDS2->exec(strSQL.c_str());
+        m_pDS2->exec(strSQL);
         fkId = (int)m_pDS2->lastinsertid();
         if (fkId < 0)
           continue;
@@ -529,7 +523,7 @@ void CDynamicDatabase::AddOneToManyInternal(const char *column, const char *type
         "WHERE id%s=%i",
         m_table, column, fkId, m_table, m_pDS->fv(0).get_asInt()
       );
-      m_pDS2->exec(strSQL.c_str());
+      m_pDS2->exec(strSQL);
 
       m_pDS->next();
     }
@@ -559,7 +553,7 @@ void CDynamicDatabase::DropOneToManyInternal(const char *column, bool tempDrop /
     try
     {
       strSQL = PrepareSQL("ALTER TABLE %s DROP FOREIGN KEY %s", m_table, MakeForeignKeyName(m_table, column).c_str());
-      m_pDS->exec(strSQL.c_str());
+      m_pDS->exec(strSQL);
     }
     catch (...)
     {
@@ -568,7 +562,7 @@ void CDynamicDatabase::DropOneToManyInternal(const char *column, bool tempDrop /
   }
 
   strSQL = PrepareSQL("DROP INDEX %s ON %s", MakeIndexName(m_table, column).c_str(), m_table);
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 
   // If tempDrop is true, we're calling this from another Drop*Internal() function
   if (!tempDrop)
@@ -597,12 +591,12 @@ void CDynamicDatabase::DropOneToManyInternal(const char *column, bool tempDrop /
     else
     {
       strSQL = PrepareSQL("ALTER TABLE %s DROP id%s", m_table, column);
-      m_pDS->exec(strSQL.c_str());
+      m_pDS->exec(strSQL);
     }
   }
 
   strSQL = PrepareSQL("DROP TABLE %s", column);
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 }
 
 void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *type, bool index)
@@ -618,7 +612,7 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
         "%s %s"
       ")", column, column, column, type
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
     if (index)
       CreateIndex(column, column, true);
   }
@@ -632,7 +626,7 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
         "%s"
       ")", column, column, column, type, MakeIndexClause(column, column).c_str()
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
   }
 
   if (m_sqlite)
@@ -649,7 +643,7 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
       MakeForeignKeyClause(MakeLinkTableName(m_table, column), m_table).c_str(),
       MakeForeignKeyClause(MakeLinkTableName(m_table, column), column).c_str()
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
 
     CreateIndex(MakeLinkTableName(m_table, column), m_table, true);
     CreateIndex(MakeLinkTableName(m_table, column), column, true);
@@ -677,12 +671,12 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
       MakeForeignKeyClause(MakeLinkTableName(m_table, column), m_table).c_str(),
       MakeForeignKeyClause(MakeLinkTableName(m_table, column), column).c_str()
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
   }
 
   // Populate the new foreign key value
   strSQL = PrepareSQL("SELECT id%s, strContentBSON64 FROM %s", m_table, m_table);
-  if (m_pDS->query(strSQL.c_str()))
+  if (m_pDS->query(strSQL))
   {
     while (!m_pDS->eof())
     {
@@ -718,15 +712,13 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
         int fkId;
 
         strSQL = PrepareSQL(
-          (
-            "SELECT id%s "
-            "FROM %s "
-            "WHERE %s=" + value
-          ).c_str(),
+          "SELECT id%s "
+          "FROM %s "
+          "WHERE %s=" + value,
           column, column, column
         );
 
-        if (!m_pDS2->query(strSQL.c_str()))
+        if (!m_pDS2->query(strSQL))
           continue;
         if (m_pDS2->num_rows() == 0)
         {
@@ -734,13 +726,11 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
           m_pDS2->close();
 
           strSQL = PrepareSQL(
-            (
-              "INSERT INTO %s (id%s, %s) "
-              "VALUES (NULL, " + value + ")"
-            ).c_str(),
+            "INSERT INTO %s (id%s, %s) "
+            "VALUES (NULL, " + value + ")",
             column, column, column
           );
-          m_pDS2->exec(strSQL.c_str());
+          m_pDS2->exec(strSQL);
           fkId = (int)m_pDS->lastinsertid();
           if (fkId < 0)
             continue;
@@ -756,7 +746,7 @@ void CDynamicDatabase::AddManyToManyInternal(const char *column, const char *typ
           "VALUES (%i, %i)",
           MakeLinkTableName(m_table, column).c_str(), m_table, column, m_pDS->fv(0).get_asInt(), fkId
         );
-        m_pDS2->exec(strSQL.c_str());
+        m_pDS2->exec(strSQL);
       }
       m_pDS->next();
     }
@@ -780,10 +770,10 @@ void CDynamicDatabase::DropManyToManyInternal(const char *column, bool tempDrop 
   CStdString strSQL;
 
   strSQL = PrepareSQL("DROP TABLE %s", MakeLinkTableName(m_table, column).c_str());
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 
   strSQL = PrepareSQL("DROP TABLE %s", column);
-  m_pDS->exec(strSQL.c_str());
+  m_pDS->exec(strSQL);
 }
 
 int CDynamicDatabase::AddObject(const ISerializable *obj, bool bUpdate /* = true */)
@@ -875,7 +865,7 @@ int CDynamicDatabase::AddObject(const ISerializable *obj, bool bUpdate /* = true
 
       // Combine and commit
       strSQL = "INSERT INTO " + CStdString(m_table) + " (" + COLUMNS + ") VALUES (" + VALUES + ")";
-      m_pDS->exec(strSQL.c_str());
+      m_pDS->exec(strSQL);
 
       if (idObject < 0)
         idObject = (int)m_pDS->lastinsertid();
@@ -918,27 +908,23 @@ int CDynamicDatabase::AddOneToManyItem(const string &parent, const string &type,
 
   // First, check to see if it already exists
   strSQL = PrepareSQL(
-    (
-      "SELECT id%s "
-      "FROM %s "
-      "WHERE %s=" + value
-    ).c_str(),
+    "SELECT id%s "
+    "FROM %s "
+    "WHERE %s=" + value,
     parent.c_str(), parent.c_str(), parent.c_str()
   );
-  m_pDS->query(strSQL.c_str());
+  m_pDS->query(strSQL);
   if (m_pDS->num_rows() == 0)
   {
     m_pDS->close();
 
     // Doesn't exist, add it
     strSQL = PrepareSQL(
-      (
-        "INSERT INTO %s (id%s, %s) "
-        "VALUES (NULL, " + value + ")"
-      ).c_str(),
+      "INSERT INTO %s (id%s, %s) "
+      "VALUES (NULL, " + value + ")",
       parent.c_str(), parent.c_str(), parent.c_str()
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
     return (int)m_pDS->lastinsertid();
   }
   else
@@ -959,7 +945,7 @@ void CDynamicDatabase::AddLink(const string &item, int idObject, int idItem)
     "WHERE id%s=%d AND id%s=%d",
     m_table, item.c_str(), MakeLinkTableName(m_table, item).c_str(), m_table, idObject, item.c_str(), idItem
   );
-  m_pDS->query(strSQL.c_str());
+  m_pDS->query(strSQL);
 
   if (m_pDS->num_rows() == 0)
   {
@@ -971,7 +957,7 @@ void CDynamicDatabase::AddLink(const string &item, int idObject, int idItem)
       "VALUES (%i, %i)",
       MakeLinkTableName(m_table, item).c_str(), m_table, item.c_str(), idObject, idItem
     );
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
   }
   else
   {
@@ -1000,7 +986,7 @@ bool CDynamicDatabase::GetObjectByID(int idObject, IDeserializable *obj)
   {
     strSQL = PrepareSQL("SELECT strContentBSON64 FROM %s WHERE id%s=%i", m_table, m_table, idObject);
 
-    if (m_pDS->query(strSQL.c_str()))
+    if (m_pDS->query(strSQL))
     {
       if (m_pDS->num_rows() != 0)
       {
@@ -1044,17 +1030,15 @@ bool CDynamicDatabase::GetObjectByIndex(const string &column, const CVariant &va
       return false;
 
     strSQL = PrepareSQL(
-      (
-        "SELECT id%s, strContentBSON64 "
-        "FROM %s "
-        "WHERE %s=" + PrepareVariant(value, type) + " "
-        "LIMIT 1"
-      ).c_str(),
+      "SELECT id%s, strContentBSON64 "
+      "FROM %s "
+      "WHERE %s=" + PrepareVariant(value, type) + " "
+      "LIMIT 1",
       m_table, m_table, column.c_str()
     );
 
     // Run the query and, if found, use the object ID to instantiate the info tag
-    if (m_pDS->query(strSQL.c_str()))
+    if (m_pDS->query(strSQL))
     {
       if (m_pDS->num_rows() != 0)
       {
@@ -1135,7 +1119,7 @@ bool CDynamicDatabase::GetObjectsNav(CFileItemList &items, const map<string, lon
     for (vector<CStdString>::const_iterator it = wheres.begin(); it != wheres.end(); it++)
       strSQL += *it;
 
-    if (m_pDS->query(strSQL.c_str()))
+    if (m_pDS->query(strSQL))
     {
       while (!m_pDS->eof())
       {
@@ -1184,9 +1168,9 @@ bool CDynamicDatabase::GetItemByID(const string &itemTable, int idItem, CVariant
   try
   {
     strSQL = PrepareSQL("SELECT %s FROM %s WHERE id%s=%i", itemTable.c_str(), itemTable.c_str(), itemTable.c_str(), idItem);
-    if (m_pDS->query(strSQL.c_str()) && m_pDS->num_rows() > 0)
+    if (m_pDS->query(strSQL) && m_pDS->num_rows() > 0)
     {
-      value = FieldAsVarient(m_pDS->fv(0), type.c_str());
+      value = FieldAsVarient(m_pDS->fv(0), type);
       m_pDS->close();
       return true;
     }
@@ -1217,15 +1201,13 @@ bool CDynamicDatabase::GetItemID(const string &itemTable, const CVariant &value,
   try
   {
     strSQL = PrepareSQL(
-      (
-        "SELECT id%s "
-        "FROM %s "
-        "WHERE %s=" + PrepareVariant(value, type) + " "
-        "LIMIT 1"
-      ).c_str(),
+      "SELECT id%s "
+      "FROM %s "
+      "WHERE %s=" + PrepareVariant(value, type) + " "
+      "LIMIT 1",
       itemTable.c_str(), itemTable.c_str(), itemTable.c_str()
     );
-    if (m_pDS->query(strSQL.c_str()))
+    if (m_pDS->query(strSQL))
     {
       if (m_pDS->num_rows() > 0)
       {
@@ -1330,7 +1312,7 @@ bool CDynamicDatabase::GetItemNav(const char *column, CFileItemList &items, cons
         if (std::find(m_singleLinks.begin(), m_singleLinks.end(), item) != m_singleLinks.end())
         {
           long idValue = it->second;
-          string subq = PrepareSQL("id%s=%d ", item.c_str(), idValue).c_str();
+          string subq = PrepareSQL("id%s=%d ", item.c_str(), idValue);
           // Use subqueryConditions for column=1:N, use multiLinkNavConditions for column=N:N
           if (isManyToMany)
             multiLinkNavConditions.push_back(subq);
@@ -1352,7 +1334,7 @@ bool CDynamicDatabase::GetItemNav(const char *column, CFileItemList &items, cons
         }
         CStdString cond = PrepareSQL("id%s IN (SELECT id%s FROM %s WHERE %s) ",
             m_table, m_table, m_table, combinedWhere.c_str());
-        subqueryConditions.push_back(cond.c_str());
+        subqueryConditions.push_back(cond);
       }
 
       // Did we find any valid predicates?
@@ -1381,7 +1363,7 @@ bool CDynamicDatabase::GetItemNav(const char *column, CFileItemList &items, cons
       strSQL = PrepareSQL("SELECT id%s, %s FROM %s WHERE id%s IN (%s)",
           column, column, column, column, strSubquery.c_str());
 
-    if (m_pDS->query(strSQL.c_str()))
+    if (m_pDS->query(strSQL))
     {
       while (!m_pDS->eof())
       {
@@ -1433,7 +1415,7 @@ int CDynamicDatabase::Count(string column /* = "" */)
   {
     CStdString strSQL = PrepareSQL("SELECT COUNT(*) FROM %s", table.c_str());
 
-    if (m_pDS->query(strSQL.c_str()))
+    if (m_pDS->query(strSQL))
     {
       if (m_pDS->num_rows() != 0)
       {
@@ -1480,7 +1462,7 @@ bool CDynamicDatabase::DeleteObjectByID(int idObject, bool killOrphansMwahahaha 
           MakeLinkTableName(m_table, item).c_str(), m_table, idObject
         );
 
-        if (!m_pDS->query(strSQL.c_str()))
+        if (!m_pDS->query(strSQL))
           return false;
 
         // Now that we have the results in our dataset, delete the link table
@@ -1489,14 +1471,14 @@ bool CDynamicDatabase::DeleteObjectByID(int idObject, bool killOrphansMwahahaha 
           "WHERE id%s=%i",
           MakeLinkTableName(m_table, item).c_str(), m_table, idObject
         );
-        m_pDS2->exec(strSQL.c_str());
+        m_pDS2->exec(strSQL);
 
         // Finally, remove the items one by one
         while (!m_pDS->eof())
         {
           // Delete the 
           strSQL = PrepareSQL("DELETE FROM %s WHERE id%s=%i", item.c_str(), item.c_str(), m_pDS->fv(0).get_asInt());
-          m_pDS2->exec(strSQL.c_str());
+          m_pDS2->exec(strSQL);
           m_pDS->next();
         }
         m_pDS->close();
@@ -1509,7 +1491,7 @@ bool CDynamicDatabase::DeleteObjectByID(int idObject, bool killOrphansMwahahaha 
 
       strSQL = PrepareSQL("SELECT %s FROM %s WHERE id%s=%i", columns.c_str(), m_table, m_table, idObject);
 
-      if (!m_pDS->query(strSQL.c_str()))
+      if (!m_pDS->query(strSQL))
         return false;
 
       for (unsigned int i = 0; i < m_singleLinks.size() && i < (unsigned int)m_pDS->fieldCount(); i++)
@@ -1520,7 +1502,7 @@ bool CDynamicDatabase::DeleteObjectByID(int idObject, bool killOrphansMwahahaha 
         // Count the number of rows with the same FK to see if we need to delete it
         strSQL = PrepareSQL("SELECT COUNT(*) FROM %s WHERE id%s=%i", m_table, item.c_str(), foreignKey);
 
-        if (!m_pDS2->query(strSQL.c_str()))
+        if (!m_pDS2->query(strSQL))
           return false;
 
         if (m_pDS2->num_rows() != 0)
@@ -1531,7 +1513,7 @@ bool CDynamicDatabase::DeleteObjectByID(int idObject, bool killOrphansMwahahaha 
           {
             // Only one record found, continue with the delete
             strSQL = PrepareSQL("DELETE FROM %s WHERE id%s=%i", item.c_str(), item.c_str(), foreignKey);
-            m_pDS2->exec(strSQL.c_str());
+            m_pDS2->exec(strSQL);
           }
         }
       }
@@ -1539,7 +1521,7 @@ bool CDynamicDatabase::DeleteObjectByID(int idObject, bool killOrphansMwahahaha 
     }
 
     strSQL = PrepareSQL("DELETE FROM %s WHERE id%s=%i", m_table, m_table, idObject);
-    m_pDS->exec(strSQL.c_str());
+    m_pDS->exec(strSQL);
     return true;
   }
   catch (...)
@@ -1567,16 +1549,14 @@ bool CDynamicDatabase::DeleteObjectByIndex(const std::string &column, const CVar
       return false;
 
     strSQL = PrepareSQL(
-      (
-        "SELECT id%s "
-        "FROM %s "
-        "WHERE %s=" + PrepareVariant(value, type) + " "
-        "LIMIT 1"
-      ).c_str(),
+      "SELECT id%s "
+      "FROM %s "
+      "WHERE %s=" + PrepareVariant(value, type) + " "
+      "LIMIT 1",
       m_table, m_table, column.c_str()
     );
 
-    if (m_pDS->query(strSQL.c_str()))
+    if (m_pDS->query(strSQL))
     {
       if (m_pDS->num_rows() != 0)
       {
