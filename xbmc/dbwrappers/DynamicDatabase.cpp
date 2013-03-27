@@ -1032,8 +1032,7 @@ bool CDynamicDatabase::GetObjectByIndex(const string &column, const CVariant &va
     strSQL = PrepareSQL(
       "SELECT id%s, strContentBSON64 "
       "FROM %s "
-      "WHERE %s=" + PrepareVariant(value, type) + " "
-      "LIMIT 1",
+      "WHERE %s=" + PrepareVariant(value, type),
       m_table, m_table, column.c_str()
     );
 
@@ -1551,8 +1550,7 @@ bool CDynamicDatabase::DeleteObjectByIndex(const std::string &column, const CVar
     strSQL = PrepareSQL(
       "SELECT id%s "
       "FROM %s "
-      "WHERE %s=" + PrepareVariant(value, type) + " "
-      "LIMIT 1",
+      "WHERE %s=" + PrepareVariant(value, type),
       m_table, m_table, column.c_str()
     );
 
