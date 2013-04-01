@@ -63,9 +63,10 @@ public:
    Sets a flag that this addon has been disabled.  If disabled, it is usually still available on disk.
    \param addonID id of the addon to disable
    \param disable whether to enable or disable.  Defaults to true (disable)
+   \param launchQueuedGame launch a queued rom if enabling the add-on
    \return true on success, false on failure
    \sa IsAddonDisabled, HasDisabledAddons */
-  bool DisableAddon(const CStdString &addonID, bool disable = true);
+  bool DisableAddon(const CStdString &addonID, bool disable = true, bool launchQueuedGame = true);
 
   /*! \brief Checks if an addon is in the database.
    \param addonID id of the addon to be checked
