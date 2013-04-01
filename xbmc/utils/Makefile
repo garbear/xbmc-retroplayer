@@ -6,6 +6,8 @@ SRCS=AlarmClock.cpp \
      Base64.cpp \
      BitstreamConverter.cpp \
      BitstreamStats.cpp \
+     BSONVariantParser.cpp \
+     BSONVariantWriter.cpp \
      CharsetConverter.cpp \
      CPUInfo.cpp \
      Crc32.cpp \
