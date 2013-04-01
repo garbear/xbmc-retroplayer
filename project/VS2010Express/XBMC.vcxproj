@@ -1202,6 +1202,8 @@
     <ClInclude Include="..\..\xbmc\settings\windows\GUIWindowSettingsScreenCalibration.h" />
     <ClInclude Include="..\..\xbmc\settings\windows\GUIWindowTestPattern.h" />
     <ClInclude Include="..\..\xbmc\utils\BooleanLogic.h" />
+    <ClInclude Include="..\..\xbmc\utils\BSONVariantParser.h" />
+    <ClInclude Include="..\..\xbmc\utils\BSONVariantWriter.h" />
     <ClInclude Include="..\..\xbmc\utils\IRssObserver.h" />
     <ClInclude Include="..\..\xbmc\utils\IXmlDeserializable.h" />
     <ClInclude Include="..\..\xbmc\utils\LegacyPathTranslation.h" />
@@ -1345,8 +1347,22 @@
     <ClInclude Include="..\..\xbmc\interfaces\json-rpc\AddonsOperations.h" />
     <ClCompile Include="..\..\xbmc\ThumbLoader.cpp" />
     <ClCompile Include="..\..\xbmc\utils\BooleanLogic.cpp" />
+    <ClCompile Include="..\..\xbmc\utils\BSONVariantParser.cpp" />
+    <ClCompile Include="..\..\xbmc\utils\BSONVariantWriter.cpp" />
     <ClCompile Include="..\..\xbmc\utils\LegacyPathTranslation.cpp" />
     <ClCompile Include="..\..\xbmc\utils\RssManager.cpp" />
+    <ClCompile Include="..\..\xbmc\utils\test\TestBSONVariantParser.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\utils\test\TestBSONVariantWriter.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\test\TestUrlOptions.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">true</ExcludedFromBuild>
