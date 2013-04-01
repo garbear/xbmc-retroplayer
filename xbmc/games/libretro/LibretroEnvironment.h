@@ -20,6 +20,8 @@
  */
 
 #include "libretro.h"
+#include "games/GameClient.h"
+#include "utils/StdString.h"
 
 class CLibretroEnvironment
 {
@@ -27,12 +29,18 @@ public:
   typedef void (*SetPixelFormat_t)      (retro_pixel_format format); // retro_pixel_format defined in libretro.h
   typedef void (*SetKeyboardCallback_t) (retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
 
+  // Libretro interface
   static bool EnvironmentCallback(unsigned cmd, void *data);
 
-  static void SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc);
+  static void SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc, ADDON::GameClientPtr activeClient);
   static void ResetCallbacks();
+
+  static bool Abort() { return m_bAbort; }
 
 private:
   static SetPixelFormat_t      fn_SetPixelFormat;
   static SetKeyboardCallback_t fn_SetKeyboardCallback;
+  static ADDON::GameClientPtr  m_activeClient;
+  static CStdString            m_systemDirectory;
+  static bool                  m_bAbort;
 };
