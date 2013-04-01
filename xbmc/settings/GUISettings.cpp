@@ -1044,6 +1044,8 @@ void CGUISettings::Initialize()
   // Some emulators crash when loading .zip files. If the emulator allows XBMC to
   // load from memory (VFS), XBMC can still safely load games from within zips.
   AddBool(gamesDebug, "gamesdebug.allowzip", 15020, true); // Allow emulators to load .zip files (debug)
+
+  // The "Directories" category is populated dynamically in CGUIWindowSettingsCategory
 }
 
 CGUISettings::~CGUISettings(void)
