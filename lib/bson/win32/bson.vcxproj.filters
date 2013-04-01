@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\bson.c" />
+    <ClCompile Include="..\src\encoding.c" />
+    <ClCompile Include="..\src\env.c" />
+    <ClCompile Include="..\src\gridfs.c" />
+    <ClCompile Include="..\src\md5.c" />
+    <ClCompile Include="..\src\mongo.c" />
+    <ClCompile Include="..\src\numbers.c" />
+    <ClCompile Include="..\src\bcon.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\bson.h" />
+    <ClInclude Include="..\src\encoding.h" />
+    <ClInclude Include="..\src\env.h" />
+    <ClInclude Include="..\src\gridfs.h" />
+    <ClInclude Include="..\src\md5.h" />
+    <ClInclude Include="..\src\mongo.h" />
+    <ClInclude Include="..\src\bcon.h" />
+  </ItemGroup>
+</Project>

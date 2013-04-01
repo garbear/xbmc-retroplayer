@@ -22,6 +22,7 @@ DVDPLAYER_ARCHIVES=xbmc/cores/dvdplayer/DVDPlayer.a \
                    xbmc/cores/dvdplayer/DVDSubtitles/DVDSubtitles.a
 
 DIRECTORY_ARCHIVES=$(DVDPLAYER_ARCHIVES) \
+                   lib/bson/libbson.a \
                    lib/SlingboxLib/SlingboxLib.a \
                    lib/libRTV/librtv.a \
                    lib/libXDAAP/libxdaap.a \
