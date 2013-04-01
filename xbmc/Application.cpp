@@ -278,6 +278,7 @@
 /* Game-related include files */
 #include "cores/RetroPlayer/RetroPlayer.h"
 #include "games/windows/GUIWindowGames.h"
+#include "games/savegames/GUIDialogGameSaves.h"
 
 #ifdef HAS_PERFORMANCE_SAMPLE
 #include "utils/PerformanceSample.h"
@@ -1355,6 +1356,7 @@ bool CApplication::Initialize()
     g_windowManager.Add(new CGUIWindowStartup);
 
     g_windowManager.Add(new CGUIWindowGames);
+    g_windowManager.Add(new CGUIDialogGameSaves);
 
     /* window id's 3000 - 3100 are reserved for python */
 
@@ -3397,6 +3399,7 @@ bool CApplication::Cleanup()
     g_windowManager.Remove(WINDOW_DIALOG_VOLUME_BAR);
 
     g_windowManager.Delete(WINDOW_GAMES);
+    g_windowManager.Delete(WINDOW_DIALOG_GAME_SAVES);
 
     CAddonMgr::Get().DeInit();
 
