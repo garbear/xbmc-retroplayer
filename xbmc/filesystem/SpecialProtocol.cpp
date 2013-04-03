@@ -134,6 +134,8 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
     URIUtils::AddFileToFolder(g_settings.GetDatabaseFolder(), FileName, translatedPath);
   else if (RootDir.Equals("thumbnails"))
     URIUtils::AddFileToFolder(g_settings.GetThumbnailsFolder(), FileName, translatedPath);
+  else if (RootDir.Equals("savegames"))
+    URIUtils::AddFileToFolder(g_settings.GetSavegamesFolder(), FileName, translatedPath);
   else if (RootDir.Equals("recordings") || RootDir.Equals("cdrips"))
     URIUtils::AddFileToFolder(g_guiSettings.GetString("audiocds.recordingpath", false), FileName, translatedPath);
   else if (RootDir.Equals("screenshots"))
