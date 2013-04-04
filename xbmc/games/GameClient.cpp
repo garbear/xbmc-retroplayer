@@ -564,9 +564,10 @@ bool CGameClient::InitSaveState(const void *gameBuffer /* = NULL */, size_t leng
 
 bool CGameClient::AutoLoad()
 {
+  CSingleLock lock(m_critSection);
+
   if (!m_bIsPlaying)
     return false; // libretro DLL would probably crash
-  CSingleLock lock(m_critSection);
   CLog::Log(LOGINFO, "GameClient: Auto-loading last save state");
   if (!InitSaveState())
     return false;
@@ -576,9 +577,10 @@ bool CGameClient::AutoLoad()
 
 bool CGameClient::Load(unsigned int slot)
 {
+  CSingleLock lock(m_critSection);
+
   if (!m_bIsPlaying)
     return false; // libretro DLL would probably crash
-  CSingleLock lock(m_critSection);
   CLog::Log(LOGINFO, "GameClient: Loading save state from slot %u", slot);
   if (!InitSaveState())
     return false;
@@ -588,9 +590,10 @@ bool CGameClient::Load(unsigned int slot)
 
 bool CGameClient::Load(const CStdString &saveStatePath)
 {
+  CSingleLock lock(m_critSection);
+
   if (!m_bIsPlaying)
     return false; // libretro DLL would probably crash
-  CSingleLock lock(m_critSection);
   CLog::Log(LOGINFO, "GameClient: Loading save state %s", saveStatePath.c_str());
   m_saveState.SetPath(saveStatePath);
   return Load();
@@ -629,9 +632,10 @@ bool CGameClient::Load()
 
 bool CGameClient::AutoSave()
 {
+  CSingleLock lock(m_critSection);
+
   if (!m_bIsPlaying)
     return false;
-  CSingleLock lock(m_critSection);
   CLog::Log(LOGINFO, "GameClient: Auto-save");
   if (!InitSaveState())
     return false;
@@ -641,9 +645,10 @@ bool CGameClient::AutoSave()
 
 bool CGameClient::Save(unsigned int slot)
 {
+  CSingleLock lock(m_critSection);
+
   if (!m_bIsPlaying)
     return false;
-  CSingleLock lock(m_critSection);
   CLog::Log(LOGINFO, "GameClient: Saving state to slot %u", slot);
   if (!InitSaveState())
     return false;
@@ -662,9 +667,10 @@ bool CGameClient::Save(unsigned int slot)
 
 bool CGameClient::Save(const CStdString &label)
 {
+  CSingleLock lock(m_critSection);
+
   if (!m_bIsPlaying)
     return false;
-  CSingleLock lock(m_critSection);
   CLog::Log(LOGINFO, "GameClient: Saving state with label %s", label.c_str());
   if (!InitSaveState())
     return false;
