@@ -264,6 +264,9 @@ public:
 
   bool ExecuteXBMCAction(std::string action);
 
+  bool ExecuteInputAction(const CAction &action);
+  int  GetActiveWindowID(void);
+
   static bool OnEvent(XBMC_Event& newEvent);
 
   CNetwork& getNetwork();
@@ -375,6 +378,7 @@ protected:
 #if defined(TARGET_DARWIN_IOS)
   friend class CWinEventsIOS;
 #endif
+
   // screensaver
   bool m_bScreenSave;
   ADDON::AddonPtr m_screenSaver;
@@ -448,8 +452,6 @@ protected:
   bool ProcessEventServer(float frameTime);
   bool ProcessPeripherals(float frameTime);
   bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount, unsigned int holdTime = 0);
-  bool ExecuteInputAction(CAction action);
-  int  GetActiveWindowID(void);
 
   float NavigationIdleTime();
   static bool AlwaysProcess(const CAction& action);
