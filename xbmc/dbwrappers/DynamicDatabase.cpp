@@ -215,7 +215,7 @@ void CDynamicDatabase::InitializeMainTable(bool recreate /* = false */)
       "id%s INTEGER PRIMARY KEY, "
       "strContentBSON64 TEXT"
     ")",
-    tableName.c_str(), m_table, MakeForeignKeyClause(m_table, "path").c_str()
+    tableName.c_str(), m_table
   );
   m_pDS->exec(strSQL);
 
