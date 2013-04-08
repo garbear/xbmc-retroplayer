@@ -2081,9 +2081,12 @@
           <default>true</default>
         </setting>
         <setting id="input.enablejoystick" type="boolean" label="35100" help="36378">
-          <visible>HAS_SDL_JOYSTICK</visible>
+          <visible>HAS_JOYSTICK</visible>
           <level>0</level>
           <default>true</default>
+          <dependencies>
+            <dependency type="enable" on="property" operator="!is" name="HasImonsConflict" />
+          </dependencies>
         </setting>
       </group>
     </category>
