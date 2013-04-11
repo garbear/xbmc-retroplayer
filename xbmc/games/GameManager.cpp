@@ -23,6 +23,7 @@
 #include "GameManager.h"
 #include "addons/AddonManager.h"
 #include "Application.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "GameFileLoader.h"
@@ -102,7 +103,11 @@ void CGameManager::RegisterAddon(GameClientPtr clientAddon, bool launchQueued /*
   // Load the DLL
   if (!clientAddon->Init())
   {
-    CLog::Log(LOGERROR, "CGameManager: failed to load the DLL for add-on %s", clientAddon->ID().c_str());
+    CLog::Log(LOGERROR, "CGameManager: failed to load DLL for %s, disabling in database", clientAddon->ID().c_str());
+    CGUIDialogKaiToast::QueueNotification(clientAddon->Icon(), clientAddon->Name(), g_localizeStrings.Get(15038));
+    CAddonDatabase database;
+    if (database.Open())
+      database.DisableAddon(clientAddon->ID());
     return;
   }
 
