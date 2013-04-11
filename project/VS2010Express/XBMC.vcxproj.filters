@@ -307,6 +307,9 @@
     <Filter Include="games\savegames">
       <UniqueIdentifier>{42e2939e-467c-4c7f-bb3e-b4860c19e9e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\test">
+      <UniqueIdentifier>{1c263d16-915a-42a7-9302-4470f1c763e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3074,6 +3077,9 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\savegames\GUIDialogGameSaves.cpp">
       <Filter>games\savegames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\test\TestGameFileLoader.cpp">
+      <Filter>games\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

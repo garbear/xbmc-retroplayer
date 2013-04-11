@@ -604,6 +604,12 @@
     <ClCompile Include="..\..\xbmc\games\savegames\SavestateDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\games\savegames\Savestate.cpp" />
     <ClCompile Include="..\..\xbmc\games\SerialState.cpp" />
+    <ClCompile Include="..\..\xbmc\games\test\TestGameFileLoader.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp" />
     <ClCompile Include="..\..\xbmc\GUIInfoManager.cpp" />
