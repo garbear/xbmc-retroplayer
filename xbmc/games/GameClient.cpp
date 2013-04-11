@@ -88,8 +88,7 @@ CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
 
 void CGameClient::Initialize()
 {
-  m_config = GameClientConfig();
-  m_config.id = ID();
+  m_config = GameClientConfig(ID());
   m_bIsInited = false;
   m_bIsPlaying = false;
   m_frameRate = 0.0;

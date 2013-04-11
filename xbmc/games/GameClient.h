@@ -56,6 +56,9 @@ namespace ADDON
      * ROM's other files are not available to the emulator.
      */
     bool                         bRequireZip; // Set when the DLL is loaded
+
+    GameClientConfig()                     :         bAllowVFS(true), bRequireZip(false) { }
+    GameClientConfig(const CStdString &id) : id(id), bAllowVFS(true), bRequireZip(false) { }
   };
 
   class CGameClient;
