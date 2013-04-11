@@ -6053,7 +6053,12 @@ msgctxt "#15037"
 msgid "Directories"
 msgstr ""
 
-#empty strings from id 15038 to 15051
+#: xbmc/games/GameManager.cpp
+msgctxt "#15038"
+msgid "Incompatible DLL"
+msgstr ""
+
+#empty strings from id 15039 to 15051
 
 msgctxt "#15052"
 msgid "Password"
