@@ -611,7 +611,7 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
         PVR::CPVRManager::Get().Start(true);
 
       // If the addon is a game client, register it
-      if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_GAMEDLL, false) && addon)
+      else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_GAMEDLL, false) && addon)
         CGameManager::Get().RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon), launchQueuedGame);
     }
     return true;
