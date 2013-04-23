@@ -22,6 +22,7 @@
 #include "Application.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogFileBrowser.h"
+#include "filesystem/Directory.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
@@ -30,6 +31,7 @@
 #include "utils/log.h"
 
 using namespace ADDON;
+using namespace XFILE;
 
 CLibretroEnvironment::SetPixelFormat_t      CLibretroEnvironment::fn_SetPixelFormat      = NULL;
 CLibretroEnvironment::SetKeyboardCallback_t CLibretroEnvironment::fn_SetKeyboardCallback = NULL;
@@ -214,8 +216,15 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         m_activeClient->UpdateSetting("showingamesettings", "true");
 
         if (m_activeClient->GetSetting("systemdirectory").length())
+        {
           m_systemDirectory = m_activeClient->GetSetting("systemdirectory");
-        else
+          // Avoid passing the game client a nonexistent directory. Note, if the
+          // user chooses "skip" this passes NULL but preserves the setting.
+          if (!CDirectory::Exists(m_systemDirectory))
+            m_systemDirectory.clear();
+        }
+
+        if (!m_systemDirectory.length())
         {
           CContextButtons choices;
           choices.Add(0, 15035); // Choose system directory
