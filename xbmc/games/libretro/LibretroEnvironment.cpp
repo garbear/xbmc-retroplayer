@@ -253,7 +253,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       }
 
       if (m_systemDirectory.length())
-        *reinterpret_cast<const char**>(data) = m_systemDirectory.c_str();
+        *strData = m_systemDirectory.c_str();
 
       if (*strData)
         CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: using system directory %s", cmd, m_systemDirectory.c_str());
