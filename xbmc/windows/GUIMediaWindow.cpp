@@ -1521,6 +1521,11 @@ CGUIControl *CGUIMediaWindow::GetFirstFocusableControl(int id)
 
 void CGUIMediaWindow::SetupShares()
 {
+  SetupSharesInternal();
+}
+
+void CGUIMediaWindow::SetupSharesInternal()
+{
   // Setup shares and filemasks for this window
   CFileItemList items;
   CGUIViewState* viewState=CGUIViewState::GetViewState(GetID(), items);

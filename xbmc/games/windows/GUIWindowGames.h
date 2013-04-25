@@ -33,6 +33,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
 
 protected:
+  virtual void SetupShares();
   virtual bool OnClick(int itemNumber);
   void OnInfo(int itemNumber);
   bool PlayGame(const CFileItem &item);

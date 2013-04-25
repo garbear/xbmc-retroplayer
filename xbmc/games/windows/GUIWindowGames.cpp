@@ -116,6 +116,18 @@ bool CGUIWindowGames::OnMessage(CGUIMessage& message)
   return CGUIMediaWindow::OnMessage(message);
 }
 
+void CGUIWindowGames::SetupShares()
+{
+  CGUIMediaWindow::SetupSharesInternal();
+  // XBMC downloads a list of supported extensions from the remote add-ons
+  // repo. Zip files are treated as directories and scanned recursively; if
+  // they don't contain valid extensions (such as MAME arcade games), the
+  // entire zip will be missing from the MyGames window. Skipping the recursive
+  // scan always shows zip files (note: entering the zip will show an empty
+  // folder) and speeds up directory listing as a nice side effect.
+  m_rootDir.SetFlags(DIR_FLAG_NO_FILE_DIRS);
+}
+
 void CGUIWindowGames::GetContextButtons(int itemNumber, CContextButtons &buttons)
 {
   CFileItemPtr item = m_vecItems->Get(itemNumber);
