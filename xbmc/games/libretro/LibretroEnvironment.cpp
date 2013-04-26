@@ -213,7 +213,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         // The game client's first encounter with GET_SYSTEM_DIRECTORY is
         // graffitied by this setting. From this point on it will appear in
         // the directories tab of Game Settings.
-        m_activeClient->UpdateSetting("showingamesettings", "true");
+        m_activeClient->UpdateSetting("hassystemdirectory", "true");
 
         if (m_activeClient->GetSetting("systemdirectory").length())
         {

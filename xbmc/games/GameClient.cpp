@@ -117,7 +117,7 @@ bool CGameClient::LoadSettings(bool bForce /* = false */)
   // Whether system directory setting is visible in Game Settings (GUIWindowSettingsCategory)
   // Setting is made visible the first time the game client asks for it
   TiXmlElement gamesettings("setting");
-  gamesettings.SetAttribute("id", "showingamesettings");
+  gamesettings.SetAttribute("id", "hassystemdirectory");
   gamesettings.SetAttribute("type", "bool");
   gamesettings.SetAttribute("visible", "false"); // don't show the setting in GUIDialogAddonSettings
   gamesettings.SetAttribute("default", "false");
@@ -139,7 +139,7 @@ void CGameClient::SaveSettings()
   // The desired result here is that the user save xml only exists after
   // RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY is first called in
   // CLibretroEnvironment (or is modified by the user).
-  if (HasUserSettings() || GetSetting("showingamesettings") == "true" || GetSetting("systemdirectory") != "")
+  if (HasUserSettings() || GetSetting("hassystemdirectory") == "true" || GetSetting("systemdirectory") != "")
     CAddon::SaveSettings();
 }
 
