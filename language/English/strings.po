@@ -5867,7 +5867,9 @@ msgctxt "#14007"
 msgid "Downloading playlist file failed"
 msgstr ""
 
-#empty string with id 14008
+msgctxt "#14008"
+msgid "Add Games..."
+msgstr ""
 
 msgctxt "#14009"
 msgid "Games directory"
