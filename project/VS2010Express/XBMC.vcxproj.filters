@@ -313,6 +313,9 @@
     <Filter Include="games\test">
       <UniqueIdentifier>{1c263d16-915a-42a7-9302-4470f1c763e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cores\RetroPlayer">
+      <UniqueIdentifier>{73d2ce89-4883-4c68-9146-a90929a0b92b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3041,6 +3044,15 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\SerialState.cpp">
       <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.cpp">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerAudio.cpp">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.cpp">
+      <Filter>cores\RetroPlayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5941,6 +5953,15 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\SerialState.h">
       <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.h">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerAudio.h">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.h">
+      <Filter>cores\RetroPlayer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
