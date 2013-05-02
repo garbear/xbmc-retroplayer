@@ -844,6 +844,8 @@ bool CGUIMediaWindow::Update(const CStdString &strDirectory, bool updateFilterPa
   }
   if (strDirectory.Equals("sources://video/"))
     showLabel = 999;
+  if (strDirectory.Equals("sources://games/"))
+    showLabel = 14008; // Add Games...
   if (showLabel && (m_vecItems->Size() == 0 || !m_guiState->DisableAddSourceButtons())) // add 'add source button'
   {
     CStdString strLabel = g_localizeStrings.Get(showLabel);
@@ -1510,6 +1512,11 @@ CGUIControl *CGUIMediaWindow::GetFirstFocusableControl(int id)
 }
 
 void CGUIMediaWindow::SetupShares()
+{
+  SetupSharesInternal();
+}
+
+void CGUIMediaWindow::SetupSharesInternal()
 {
   // Setup shares and filemasks for this window
   CFileItemList items;

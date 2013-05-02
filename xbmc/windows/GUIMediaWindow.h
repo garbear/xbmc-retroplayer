@@ -56,6 +56,7 @@ protected:
   virtual void LoadAdditionalTags(TiXmlElement *root);
   CGUIControl *GetFirstFocusableControl(int id);
   virtual void SetupShares();
+  void SetupSharesInternal();
   virtual void GoParentFolder();
   virtual bool OnClick(int iItem);
 

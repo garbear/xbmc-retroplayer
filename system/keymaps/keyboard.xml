@@ -456,6 +456,11 @@
       <d>MoveItemDown</d>
     </keyboard>
   </MyVideoPlaylist>
+  <MyGames>
+    <keyboard>
+      <delete>Delete</delete>
+    </keyboard>
+  </MyGames>
   <MyPictures>
     <keyboard>
       <delete>Delete</delete>
