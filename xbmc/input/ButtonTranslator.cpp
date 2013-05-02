@@ -403,6 +403,7 @@ static const ActionMapping windows[] =
         {"osdvideosettings"         , WINDOW_DIALOG_VIDEO_OSD_SETTINGS},
         {"osdaudiosettings"         , WINDOW_DIALOG_AUDIO_OSD_SETTINGS},
         {"videobookmarks"           , WINDOW_DIALOG_VIDEO_BOOKMARKS},
+        {"gamesaves"                , WINDOW_DIALOG_GAME_SAVES},
         {"filebrowser"              , WINDOW_DIALOG_FILE_BROWSER},
         {"networksetup"             , WINDOW_DIALOG_NETWORK_SETUP},
         {"mediasource"              , WINDOW_DIALOG_MEDIA_SOURCE},

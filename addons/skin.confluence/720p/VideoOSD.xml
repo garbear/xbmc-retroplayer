@@ -353,7 +353,8 @@
 				<onright>254</onright>
 				<onup>1000</onup>
 				<ondown>1000</ondown>
-				<onclick>ActivateWindow(VideoBookmarks)</onclick>
+				<onclick condition="!Player.HasGame">ActivateWindow(VideoBookmarks)</onclick>
+				<onclick condition="Player.HasGame">ActivateWindow(GameSaves)</onclick>
 			</control>
 			<control type="button" id="254">
 				<posx>220</posx>
