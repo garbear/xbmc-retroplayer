@@ -6303,11 +6303,13 @@ msgid "Emulator setup"
 msgstr ""
 
 #: xbmc/games/GameClient.cpp
+#: xbmc/settings/windows/GUIWindowSettingsCategory.cpp
 msgctxt "#15026"
 msgid "External system directory"
 msgstr ""
 
 #: xbmc/games/libretro/LibretroEnvironment.cpp
+#: xbmc/settings/windows/GUIWindowSettingsCategory.cpp
 msgctxt "#15027"
 msgid "Choose system directory"
 msgstr ""
@@ -6317,7 +6319,12 @@ msgctxt "#15028"
 msgid "Skip and try game directory"
 msgstr ""
 
-#empty strings from id 15029 to 15051
+#: xbmc/settings/windows/GUIWindowSettingsCategory.cpp
+msgctxt "#15029"
+msgid "Directories"
+msgstr ""
+
+#empty strings from id 15030 to 15051
 
 msgctxt "#15052"
 msgid "Password"
