@@ -1034,6 +1034,12 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       if (pControl && pControl->GetLabel().Left(3) != " - ")
         pControl->SetLabel(" - " + pControl->GetLabel());
     }
+    else if (strSetting.Equals("games.rewindtime"))
+    {
+      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      if (pControl)
+        pControl->SetEnabled(g_guiSettings.GetBool("games.enablerewind"));
+    }
   }
 
   g_guiSettings.SetChanged();

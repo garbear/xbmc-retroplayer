@@ -1057,6 +1057,9 @@ void CGUISettings::Initialize()
   // Game settings
   AddGroup(SETTINGS_GAMES, 15016);
   CSettingsCategory* gamesGen = AddCategory(SETTINGS_GAMES, "games", 16000); // General
+  AddBool(gamesGen, "games.enablerewind", 15021, true); // Enable rewind if supported
+  AddInt(gamesGen, "games.rewindtime", 15022, 60, 10, 10, 600, SPIN_CONTROL_INT_PLUS, MASK_SECS); // Maximum rewind time
+  AddSeparator(gamesGen, "games.sep1");
   AddString(gamesGen, "games.manageaddons", 24025, "", BUTTON_CONTROL_STANDARD); // Manage emulators...
 
   CSettingsCategory* gamesDebug = AddCategory(SETTINGS_GAMES, "gamesdebug", 14092); // Debugging

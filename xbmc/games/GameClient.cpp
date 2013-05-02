@@ -238,6 +238,8 @@ bool CGameClient::CanOpen(const CFileItem &file, bool useStrategies /* = false *
 
 bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
 {
+  CSingleLock lock(m_critSection);
+
   // Can't open a file without first initializing the DLL...
   if (!m_dll.IsLoaded())
     Init();
@@ -369,17 +371,27 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
   m_frameRate = fps;
   m_sampleRate = sampleRate;
 
-  m_rewindBuffer.clear();
   // Check if save states are supported, so rewind can be used.
-  // TODO: Rewind should be optional as it has some computational overhead.
   size_t state_size = m_dll.retro_serialize_size();
-  if (state_size)
+  m_rewindSupported = state_size && g_guiSettings.GetBool("games.enablerewind");
+  if (m_rewindSupported)
   {
-     m_rewindSupported = true;
-     m_rewindMaxFrames = 60.0 * m_frameRate; // Allow up to rougly 30 seconds worth of rewind.
-     m_serializeSize = state_size;
-     m_lastSaveState.resize((state_size + sizeof(uint32_t) - 1) / sizeof(uint32_t));
-     m_dll.retro_serialize(reinterpret_cast<uint8_t*>(m_lastSaveState.data()), m_serializeSize);
+    m_serialState.Init(state_size, (size_t)(g_guiSettings.GetInt("games.rewindtime") * m_frameRate));
+    if (!m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
+    {
+      m_rewindSupported = false;
+      CLog::Log(LOGINFO, "GameClient: Unable to serialize state, proceeding without rewind");
+    }
+    else
+    {
+      CLog::Log(LOGINFO, "GameClient: Rewind is enabled");
+
+      // Load save and auto state
+    }
+  }
+  else
+  {
+    CLog::Log(LOGINFO, "GameClient: Rewind support is not enabled");
   }
 
   // Query the game region
@@ -417,6 +429,8 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
 
 void CGameClient::CloseFile()
 {
+  CSingleLock lock(m_critSection);
+
   if (m_dll.IsLoaded() && m_bIsPlaying)
   {
     m_dll.retro_unload_game();
@@ -447,65 +461,38 @@ void CGameClient::SetDevice(unsigned int port, unsigned int device)
 
 void CGameClient::RunFrame()
 {
-  // RunFrame() and RewindFrames() can be run
-  // in different threads, must lock.
   CSingleLock lock(m_critSection);
+
   if (m_bIsPlaying)
+  {
     m_dll.retro_run();
-  AppendStateDelta();
+
+    // Append a new state delta to the rewind buffer
+    if (m_rewindSupported)
+    {
+      if (m_dll.retro_serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()))
+        m_serialState.AdvanceFrame();
+      else
+      {
+        CLog::Log(LOGERROR, "GameClient core claimed it could serialize, but failed.");
+        m_rewindSupported = false;
+      }
+    }
+  }
 }
 
-void CGameClient::AppendStateDelta()
-{
-  if (!m_rewindSupported)
-    return;
-
-  std::vector<uint32_t> stateBuffer(m_lastSaveState.size());
-  bool success = m_dll.retro_serialize(reinterpret_cast<uint8_t*>(stateBuffer.data()), m_serializeSize);
-  if (!success)
-  {
-    CLog::Log(LOGERROR, "GameClient core claimed it could serialize, but failed.");
-    return;
-  }
-
-  m_rewindBuffer.push_back(DeltaPairVector());
-  DeltaPairVector& buffer = m_rewindBuffer.back();
-
-  size_t stateBufferSize = stateBuffer.size();
-  for (size_t i = 0; i < stateBufferSize; i++)
-  {
-    uint32_t xor_val = m_lastSaveState[i] ^ stateBuffer[i];
-    if (xor_val)
-      buffer.push_back(DeltaPair(i, xor_val));
-  }
-
-  m_lastSaveState = stateBuffer; // Can be optimized with std::move() in C++11 or some ring-buffer-esque thing.
-
-  while (m_rewindBuffer.size() > m_rewindMaxFrames)
-    m_rewindBuffer.pop_front();
-}
-
-int CGameClient::RewindFrames(int frames)
+unsigned int CGameClient::RewindFrames(unsigned int frames)
 {
   CSingleLock lock(m_critSection);
-  int frames_rewound = 0;
-  while (frames > 0 && m_rewindBuffer.size() > 0)
+
+  unsigned int rewound = 0;
+  if (m_bIsPlaying && m_rewindSupported)
   {
-    const DeltaPairVector& buffer = m_rewindBuffer.back();
-
-    size_t bufferSize = buffer.size();
-    for (size_t i = 0; i < bufferSize; i++)
-      m_lastSaveState[buffer[i].first] ^= buffer[i].second;
-
-    frames_rewound++;
-    frames--;
-    m_rewindBuffer.pop_back();
+    rewound = m_serialState.RewindFrames(frames);
+    if (rewound)
+      m_dll.retro_unserialize(m_serialState.GetState(), m_serialState.GetFrameSize());
   }
-
-  if (frames_rewound)
-    m_dll.retro_unserialize(reinterpret_cast<uint8_t*>(m_lastSaveState.data()), m_serializeSize);
-
-  return frames_rewound;
+  return rewound;
 }
 
 void CGameClient::Reset()
@@ -515,12 +502,24 @@ void CGameClient::Reset()
     // TODO: Reset all controller ports to their same value. bSNES since v073r01
     // resets controllers to JOYPAD after a reset, so guard against this.
     m_dll.retro_reset();
+
+    if (m_rewindSupported)
+    {
+      m_serialState.Init(m_serialState.GetFrameSize(), m_serialState.GetMaxFrames());
+      if (!m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
+      {
+        m_rewindSupported = false;
+        CLog::Log(LOGINFO, "GameClient::Reset - Unable to serialize state, proceeding without rewind");
+      }
+    }
   }
 }
 
 void CGameClient::SetFrameRate(double framerate)
 {
   m_frameRate = framerate;
+  if (m_rewindSupported)
+    m_serialState.SetMaxFrames((size_t)(g_guiSettings.GetInt("games.rewindtime") * m_frameRate));
 }
 
 void CGameClient::SetExtensions(const CStdString &strExtensionList)
