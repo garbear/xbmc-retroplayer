@@ -2172,6 +2172,7 @@ msgctxt "#527"
 msgid "Manually add to library"
 msgstr ""
 
+#: xbmc/games/savegames/GUIDialogGameSaves.cpp
 msgctxt "#528"
 msgid "Enter title"
 msgstr ""
@@ -6366,7 +6367,32 @@ msgctxt "#15043"
 msgid "Slot %d"
 msgstr ""
 
-#empty strings from id 15044 to 15051
+#: xbmc/games/savegames/GUIDialogGameSaves.cpp
+msgctxt "#15044"
+msgid "Load save state"
+msgstr ""
+
+#: xbmc/games/windows/GUIWindowGames.cpp
+msgctxt "#15045"
+msgid "Manage save states"
+msgstr ""
+
+#: addons/skin.confluence/720p/VideoOSDGameSaves.xml
+msgctxt "#15046"
+msgid "Save States"
+msgstr ""
+
+#: addons/skin.confluence/720p/VideoOSDGameSaves.xml
+msgctxt "#15047"
+msgid "Create Save State"
+msgstr ""
+
+#: addons/skin.confluence/720p/VideoOSDGameSaves.xml
+msgctxt "#15048"
+msgid "Clear Save States"
+msgstr ""
+
+#empty strings from id 15049 to 15051
 
 msgctxt "#15052"
 msgid "Password"
