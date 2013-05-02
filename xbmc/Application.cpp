@@ -492,9 +492,15 @@ bool CApplication::OnEvent(XBMC_Event& newEvent)
         CApplicationMessenger::Get().Quit();
       break;
     case XBMC_KEYDOWN:
+      // RetroPlayer is notified of the key press in OnKey()
       g_application.OnKey(g_Keyboard.ProcessKeyDown(newEvent.key.keysym));
       break;
     case XBMC_KEYUP:
+      {
+        CRetroPlayerInput *joystickHandler = g_application.GetJoystickHandler();
+        if (joystickHandler)
+          joystickHandler->ProcessKeyUp(0, CKeyboardStat::TranslateKey(newEvent.key.keysym).GetButtonCode());
+      }
       g_Keyboard.ProcessKeyUp();
       break;
     case XBMC_MOUSEBUTTONDOWN:
@@ -2549,6 +2555,17 @@ bool CApplication::OnKey(const CKey& key)
       if (action.GetID() == 0)
         action = CButtonTranslator::GetInstance().GetAction(iWin, key);
     }
+    else if (IsPlayingGame())
+    {
+      // Fetch action from <FullscreenGame> tag instead of <FullscreenVideo>
+      action = CButtonTranslator::GetInstance().GetAction(WINDOW_FULLSCREEN_GAME, key);
+      if (ACTION_GAME_CONTROL_START <= action.GetID() && action.GetID() <= ACTION_GAME_CONTROL_END)
+      {
+        // Notify RetroPlayer's input system of the pressed key
+        if (GetJoystickHandler())
+          GetJoystickHandler()->ProcessKeyDown(0, key.GetButtonCode(), action);
+      }
+    }
     else
     {
       // in any other case use the fullscreen window section of keymap.xml to map key->action
@@ -3360,6 +3377,8 @@ int CApplication::GetActiveWindowID(void)
     // check for LiveTV and switch to it's virtual window
     else if (g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())
       iWin = WINDOW_FULLSCREEN_LIVETV;
+    else if (IsPlayingGame())
+      iWin = WINDOW_FULLSCREEN_GAME;
   }
 
   // Return the window id
@@ -5683,6 +5702,14 @@ void CApplication::Minimize()
 PLAYERCOREID CApplication::GetCurrentPlayer()
 {
   return m_eCurrentPlayer;
+}
+
+CRetroPlayerInput *CApplication::GetJoystickHandler()
+{
+  CRetroPlayer* rp = NULL;
+  if (IsPlayingGame())
+    rp = dynamic_cast<CRetroPlayer*>(m_pPlayer);
+  return rp ? &rp->GetInput() : NULL;
 }
 
 void CApplication::UpdateLibraries()

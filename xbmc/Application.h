@@ -70,6 +70,7 @@ class CInertialScrollingHandler;
 class DPMSSupport;
 class CSplash;
 class CBookmark;
+class CRetroPlayerInput;
 class CWebServer;
 class IPlayer;
 #ifdef HAS_WEB_SERVER
@@ -178,6 +179,7 @@ public:
   CFileItem& CurrentFileItem();
   virtual bool OnMessage(CGUIMessage& message);
   PLAYERCOREID GetCurrentPlayer();
+  CRetroPlayerInput *GetJoystickHandler();
   virtual void OnPlayBackEnded();
   virtual void OnPlayBackStarted();
   virtual void OnPlayBackPaused();
