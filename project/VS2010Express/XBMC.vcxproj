@@ -412,9 +412,16 @@
     <ClCompile Include="..\..\xbmc\DbUrl.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\Database.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\dataset.cpp" />
+    <ClCompile Include="..\..\xbmc\dbwrappers\DynamicDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\mysqldataset.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\qry_dat.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\sqlitedataset.cpp" />
+    <ClCompile Include="..\..\xbmc\dbwrappers\test\TestDynamicDatabase.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug (OpenGL)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (DirectX)|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogBoxBase.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogBusy.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogButtonMenu.cpp" />
@@ -1080,6 +1087,7 @@
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerAudio.h" />
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerInput.h" />
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\DynamicDatabase.h" />
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogKeyboardGeneric.h" />
     <ClInclude Include="..\..\xbmc\DbUrl.h" />
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogMediaFilter.h" />
@@ -1204,6 +1212,7 @@
     <ClInclude Include="..\..\xbmc\utils\BooleanLogic.h" />
     <ClInclude Include="..\..\xbmc\utils\BSONVariantParser.h" />
     <ClInclude Include="..\..\xbmc\utils\BSONVariantWriter.h" />
+    <ClInclude Include="..\..\xbmc\utils\IDeserializable.h" />
     <ClInclude Include="..\..\xbmc\utils\IRssObserver.h" />
     <ClInclude Include="..\..\xbmc\utils\IXmlDeserializable.h" />
     <ClInclude Include="..\..\xbmc\utils\LegacyPathTranslation.h" />
