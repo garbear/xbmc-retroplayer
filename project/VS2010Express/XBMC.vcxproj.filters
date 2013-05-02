@@ -319,6 +319,9 @@
     <Filter Include="games\windows">
       <UniqueIdentifier>{e1900649-cbda-4c79-bd6a-b99103608116}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dbwrappers\test">
+      <UniqueIdentifier>{43dbf5f1-ffdc-4fd5-8f6c-5f38f89b192f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3077,6 +3080,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\test\TestBSONVariantWriter.cpp">
       <Filter>utils\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\DynamicDatabase.cpp">
+      <Filter>dbwrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\test\TestDynamicDatabase.cpp">
+      <Filter>dbwrappers\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6000,6 +6009,12 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\BSONVariantWriter.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\DynamicDatabase.h">
+      <Filter>dbwrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\utils\IDeserializable.h">
       <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
