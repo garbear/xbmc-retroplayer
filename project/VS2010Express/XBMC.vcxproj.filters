@@ -3092,6 +3092,9 @@
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.cpp">
       <Filter>cores\RetroPlayer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerInput.cpp">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6052,6 +6055,9 @@
       <Filter>cores\RetroPlayer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.h">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerInput.h">
       <Filter>cores\RetroPlayer</Filter>
     </ClInclude>
   </ItemGroup>

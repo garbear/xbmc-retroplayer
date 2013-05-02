@@ -73,6 +73,8 @@ class CSplash;
 class CBookmark;
 class CNetwork;
 
+class CRetroPlayerInput;
+
 namespace VIDEO
 {
   class CVideoInfoScanner;
@@ -162,6 +164,7 @@ public:
   CFileItem& CurrentFileItem();
   virtual bool OnMessage(CGUIMessage& message);
   PLAYERCOREID GetCurrentPlayer();
+  CRetroPlayerInput *GetJoystickHandler();
   virtual void OnPlayBackEnded();
   virtual void OnPlayBackStarted();
   virtual void OnPlayBackPaused();
