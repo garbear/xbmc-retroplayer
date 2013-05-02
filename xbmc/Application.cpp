@@ -2987,6 +2987,13 @@ bool CApplication::OnAction(const CAction &action)
     }
   }
 
+  if (IsPlayingGame() && ((ACTION_SAVE <= action.GetID() && action.GetID() <= ACTION_SAVE9) ||
+                          (ACTION_LOAD <= action.GetID() && action.GetID() <= ACTION_LOAD9)))
+  {
+    m_pPlayer->OnAction(action.GetID());
+    return true;
+  }
+
   if (g_peripherals.OnAction(action))
     return true;
 

@@ -32,6 +32,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "guilib/Key.h"
 #include "settings/GUISettings.h"
+#include "threads/SystemClock.h" // Should auto-save tracking be in GameClient.cpp?
 #include "URL.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -71,7 +72,17 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   m_bStop = false;
 
   if (IsRunning())
+  {
+    // If the same file was provided, load the appropriate save state
+    if (m_gameClient && file.GetPath().Equals(m_file.GetPath()))
+    {
+      if (!file.m_startSaveState.empty())
+        return m_gameClient->Load(file.m_startSaveState);
+      else
+        return m_gameClient->AutoLoad();
+    }
     CloseFile();
+  }
 
   // Get game info tag (from a mutable file item, if necessary)
   const GAME_INFO::CGameInfoTag *tag = file.GetGameInfoTag();
@@ -202,6 +213,7 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
         }
       }
     }
+
     file.ClearProperty("gameclient"); // don't want this to interfere later on
   }
 
@@ -400,6 +412,38 @@ bool CRetroPlayer::OnAction(const CAction &action)
   if (!IsPlaying())
     return false;
 
+  switch (action.GetID())
+  {
+  case ACTION_SAVE:
+    return m_gameClient->AutoSave();
+  case ACTION_SAVE1:
+  case ACTION_SAVE2:
+  case ACTION_SAVE3:
+  case ACTION_SAVE4:
+  case ACTION_SAVE5:
+  case ACTION_SAVE6:
+  case ACTION_SAVE7:
+  case ACTION_SAVE8:
+  case ACTION_SAVE9:
+    return m_gameClient->Save(action.GetID() - ACTION_SAVE1 + 1);
+  case ACTION_LOAD:
+    if (m_playSpeed <= 0)
+      ToFFRW(1);
+    return m_gameClient->AutoLoad();
+  case ACTION_LOAD1:
+  case ACTION_LOAD2:
+  case ACTION_LOAD3:
+  case ACTION_LOAD4:
+  case ACTION_LOAD5:
+  case ACTION_LOAD6:
+  case ACTION_LOAD7:
+  case ACTION_LOAD8:
+  case ACTION_LOAD9:
+    if (m_playSpeed <= 0)
+      ToFFRW(1);
+    return m_gameClient->Load(action.GetID() - ACTION_LOAD1 + 1);
+  }
+
   return false;
 }
 
@@ -440,6 +484,8 @@ void CRetroPlayer::Process()
 
   m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
 
+  unsigned int saveTimer = XbmcThreads::SystemClockMillis();
+
   const double frametime = 1000 * 1000 / framerate; // microseconds
   double nextpts = CDVDClock::GetAbsoluteClock() + frametime;
   CLog::Log(LOGDEBUG, "RetroPlayer: Beginning loop de loop");
@@ -468,6 +514,13 @@ void CRetroPlayer::Process()
     // If the game client uses single frame audio, render those now
     m_audio.Flush();
 
+    if (g_guiSettings.GetBool("games.autosave") &&
+      XbmcThreads::SystemClockMillis() - saveTimer > 30000) // every 30 seconds
+    {
+      m_gameClient->AutoSave();
+      saveTimer = XbmcThreads::SystemClockMillis();
+    }
+
     // Slow down (increase nextpts) if we're playing catchup after stalling
     if (nextpts < CDVDClock::GetAbsoluteClock())
       nextpts = CDVDClock::GetAbsoluteClock();
@@ -484,6 +537,8 @@ void CRetroPlayer::Process()
   }
 
   m_bStop = true;
+
+  // Save the game before the video cuts out
   m_gameClient->CloseFile();
 
   m_video.StopThread(true);

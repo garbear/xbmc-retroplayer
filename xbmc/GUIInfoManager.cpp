@@ -4455,6 +4455,12 @@ CStdString CGUIInfoManager::GetItemLabel(const CFileItem *item, int info, CStdSt
         if (item->GetMusicInfoTag()->GetDuration() > 0)
           duration = StringUtils::SecondsToTimeString(item->GetMusicInfoTag()->GetDuration());
       }
+      else if (item->HasProperty("duration"))
+      {
+        // The "duration" property is set for savestate file items, as they
+        // have no dedicated info tag.
+        duration = StringUtils::SecondsToTimeString((long)item->GetProperty("duration").asInteger());
+      }
       return duration;
     }
   case LISTITEM_PLOT:

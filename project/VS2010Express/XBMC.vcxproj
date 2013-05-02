@@ -609,6 +609,8 @@
     <ClCompile Include="..\..\xbmc\games\SerialState.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp" />
+    <ClCompile Include="..\..\xbmc\games\savegames\SavestateDatabase.cpp" />
+    <ClCompile Include="..\..\xbmc\games\savegames\Savestate.cpp" />
     <ClCompile Include="..\..\xbmc\GUIInfoManager.cpp" />
     <ClCompile Include="..\..\xbmc\GUILargeTextureManager.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\AnimatedGif.cpp" />
@@ -1094,6 +1096,8 @@
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />
     <ClInclude Include="..\..\xbmc\games\libretro\libretro.h" />
     <ClInclude Include="..\..\xbmc\games\libretro\LibretroEnvironment.h" />
+    <ClInclude Include="..\..\xbmc\games\savegames\SavestateDatabase.h" />
+    <ClInclude Include="..\..\xbmc\games\savegames\Savestate.h" />
     <ClInclude Include="..\..\xbmc\games\SerialState.h" />
     <ClInclude Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.h" />
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h" />

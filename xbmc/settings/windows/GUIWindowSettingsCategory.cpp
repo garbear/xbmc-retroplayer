@@ -1040,6 +1040,12 @@ void CGUIWindowSettingsCategory::UpdateSettings()
       if (pControl)
         pControl->SetEnabled(g_guiSettings.GetBool("games.enablerewind"));
     }
+    else if (strSetting.Equals("games.autosave"))
+    {
+      CGUIControl *pControl = (CGUIControl *)GetControl(pSettingControl->GetID());
+      if (pControl)
+        pControl->SetEnabled(g_guiSettings.GetBool("games.savestates"));
+    }
   }
 
   g_guiSettings.SetChanged();

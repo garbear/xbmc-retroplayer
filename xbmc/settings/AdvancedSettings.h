@@ -346,6 +346,7 @@ class CAdvancedSettings : public ISettingsHandler
     DatabaseSettings m_databaseVideo; // advanced video database setup
     DatabaseSettings m_databaseTV;    // advanced tv database setup
     DatabaseSettings m_databaseEpg;   /*!< advanced EPG database setup */
+    DatabaseSettings m_databaseSavestates; // advanced savegame database setup
 
     bool m_bPreferVFS;                // Prefer using XBMC to load files if the emulator supports it (~50% do)
     bool m_bAllowZip;                 // ~50% say they load .zips, but some crash. If the emulator allows XBMC to

@@ -418,6 +418,7 @@ public:
   int m_lStartOffset;
   int m_lStartPartNumber;
   int m_lEndOffset;
+  CStdString m_startSaveState;
   LockType m_iLockMode;
   CStdString m_strLockCode;
   int m_iHasLock; // 0 - no lock 1 - lock, but unlocked 2 - locked

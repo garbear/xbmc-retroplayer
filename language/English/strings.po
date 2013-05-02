@@ -6344,7 +6344,29 @@ msgctxt "#15029"
 msgid "Directories"
 msgstr ""
 
-#empty strings from id 15030 to 15051
+#empty strings from id 15030 to 15039
+
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15040"
+msgid "Automatically load previous game state"
+msgstr ""
+
+#: xbmc/settings/GUISettings.cpp
+msgctxt "#15041"
+msgid "Save game state every 30 seconds"
+msgstr ""
+
+#: xbmc/games/savegames/Savestate.cpp
+msgctxt "#15042"
+msgid "Autosave on %s"
+msgstr ""
+
+#: xbmc/games/savegames/Savestate.cpp
+msgctxt "#15043"
+msgid "Slot %d"
+msgstr ""
+
+#empty strings from id 15044 to 15051
 
 msgctxt "#15052"
 msgid "Password"

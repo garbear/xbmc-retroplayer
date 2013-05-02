@@ -322,6 +322,9 @@
     <Filter Include="dbwrappers\test">
       <UniqueIdentifier>{43dbf5f1-ffdc-4fd5-8f6c-5f38f89b192f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\savegames">
+      <UniqueIdentifier>{42e2939e-467c-4c7f-bb3e-b4860c19e9e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3086,6 +3089,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\dbwrappers\test\TestDynamicDatabase.cpp">
       <Filter>dbwrappers\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\savegames\SavestateDatabase.cpp">
+      <Filter>games\savegames</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\savegames\Savestate.cpp">
+      <Filter>games\savegames</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6016,6 +6025,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\IDeserializable.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\savegames\SavestateDatabase.h">
+      <Filter>games\savegames</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\savegames\Savestate.h">
+      <Filter>games\savegames</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
