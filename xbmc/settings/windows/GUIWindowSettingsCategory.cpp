@@ -160,6 +160,7 @@ CGUIWindowSettingsCategory::CGUIWindowSettingsCategory(void)
   m_idRange.push_back(WINDOW_SETTINGS_SERVICE);
   m_idRange.push_back(WINDOW_SETTINGS_APPEARANCE);
   m_idRange.push_back(WINDOW_SETTINGS_MYPVR);
+  m_idRange.push_back(WINDOW_SETTINGS_MYGAMES);
 
   m_iScreen = 0;
   m_strOldTrackFormat = "";
@@ -1955,6 +1956,12 @@ void CGUIWindowSettingsCategory::OnSettingChanged(BaseSettingControlPtr pSetting
         g_guiSettings.SetBool("pvrparental.enabled", false);
       }
     }
+  }
+  else if (strSetting.Equals("games.manageaddons"))
+  {
+    CStdStringArray params;
+    params.push_back("addons://all/xbmc.gameclient");
+    g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
   }
 
   UpdateSettings();

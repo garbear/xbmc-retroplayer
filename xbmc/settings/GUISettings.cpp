@@ -281,6 +281,7 @@ void CSettingsGroup::GetCategories(vecSettingsCategory &vecCategories)
 #define SETTINGS_SERVICE      WINDOW_SETTINGS_SERVICE - WINDOW_SETTINGS_START
 #define SETTINGS_APPEARANCE   WINDOW_SETTINGS_APPEARANCE - WINDOW_SETTINGS_START
 #define SETTINGS_PVR          WINDOW_SETTINGS_MYPVR - WINDOW_SETTINGS_START
+#define SETTINGS_GAMES        WINDOW_SETTINGS_MYGAMES - WINDOW_SETTINGS_START
 
 // Settings are case sensitive
 CGUISettings::CGUISettings(void)
@@ -1052,6 +1053,17 @@ void CGUISettings::Initialize()
 
   CSettingsCategory* pvrc = AddCategory(SETTINGS_PVR, "pvrclient", 19279);
   AddString(pvrc, "pvrclient.menuhook", 19280, "", BUTTON_CONTROL_STANDARD);
+
+  // Game settings
+  AddGroup(SETTINGS_GAMES, 15016);
+  CSettingsCategory* gamesGen = AddCategory(SETTINGS_GAMES, "games", 16000); // General
+  AddString(gamesGen, "games.manageaddons", 24025, "", BUTTON_CONTROL_STANDARD); // Manage emulators...
+
+  CSettingsCategory* gamesDebug = AddCategory(SETTINGS_GAMES, "gamesdebug", 14092); // Debugging
+  AddBool(gamesDebug, "gamesdebug.prefervfs", 15018, true); // Prefer loading files from memory (debug)
+  // Some emulators crash when loading .zip files. If the emulator allows XBMC to
+  // load from memory (VFS), XBMC can still safely load games from within zips.
+  AddBool(gamesDebug, "gamesdebug.allowzip", 15020, true); // Allow emulators to load .zip files (debug)
 }
 
 CGUISettings::~CGUISettings(void)

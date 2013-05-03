@@ -338,6 +338,10 @@ void CAdvancedSettings::Initialize()
   m_airPlayPort = 36667;
   m_initialized = true;
 
+  m_bPreferVFS = false;
+  m_bAllowZip = true;
+  m_bEnableRewind = true;
+
   m_databaseMusic.Reset();
   m_databaseVideo.Reset();
 
@@ -1087,6 +1091,14 @@ void CAdvancedSettings::ParseSettingsFile(const CStdString &file)
     XMLUtils::GetBoolean(pElement, "visualizedirtyregions", m_guiVisualizeDirtyRegions);
     XMLUtils::GetInt(pElement, "algorithmdirtyregions",     m_guiAlgorithmDirtyRegions);
     XMLUtils::GetInt(pElement, "nofliptimeout",             m_guiDirtyRegionNoFlipTimeout);
+  }
+
+  pElement = pRootElement->FirstChildElement("games");
+  if (pElement)
+  {
+    XMLUtils::GetBoolean(pElement, "prefervfs", m_bPreferVFS);
+    XMLUtils::GetBoolean(pElement, "allowzip", m_bAllowZip);
+    XMLUtils::GetBoolean(pElement, "enablerewind", m_bEnableRewind);
   }
 
   // load in the GUISettings overrides:

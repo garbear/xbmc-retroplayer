@@ -307,6 +307,12 @@
     <Filter Include="games\tags">
       <UniqueIdentifier>{c19c485e-b24e-4c45-bb0a-6d41a429f505}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\libretro">
+      <UniqueIdentifier>{819b8b9d-58fc-454b-8b5b-1eb8c59ab9a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\test">
+      <UniqueIdentifier>{1c263d16-915a-42a7-9302-4470f1c763e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3017,6 +3023,21 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\tags\GBATag.cpp">
       <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameClient.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameFileLoader.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameManager.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\libretro\LibretroEnvironment.cpp">
+      <Filter>games\libretro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\test\TestGameFileLoader.cpp">
+      <Filter>games\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5896,6 +5917,24 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\tags\GBATag.h">
       <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameClient.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameClientDLL.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameFileLoader.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameManager.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\libretro\libretro.h">
+      <Filter>games\libretro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\libretro\LibretroEnvironment.h">
+      <Filter>games\libretro</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

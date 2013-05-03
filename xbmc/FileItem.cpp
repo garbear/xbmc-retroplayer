@@ -56,6 +56,7 @@
 #include "utils/Variant.h"
 #include "music/karaoke/karaokelyricsfactory.h"
 #include "utils/Mime.h"
+#include "games/GameManager.h"
 #include "games/tags/GameInfoTag.h"
 #include "games/tags/GameInfoTagLoader.h"
 
@@ -815,6 +816,7 @@ bool CFileItem::IsVideo() const
   if (HasPictureInfoTag()) return false;
   if (IsPVRRecording())  return true;
   if (HasGameInfoTag()) return false;
+  if (!GetProperty("gameclient").empty()) return false;
 
   if (IsHDHomeRun() || IsTuxBox() || URIUtils::IsDVD(m_strPath) || IsSlingbox())
     return true;
@@ -835,6 +837,11 @@ bool CFileItem::IsVideo() const
     return false;
 
   extension.ToLower();
+
+  // If the file is a zip file, ask the game clients if any support this file
+  // before assuming it is video.
+  if (extension.Equals(".zip") && CGameManager::Get().IsGame(m_strPath))
+    return false;
 
   return (g_advancedSettings.m_videoExtensions.Find(extension) != -1);
 }
@@ -893,6 +900,7 @@ bool CFileItem::IsAudio() const
   if (HasVideoInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
   if (HasGameInfoTag()) return false;
+  if (!GetProperty("gameclient").empty()) return false;
   if (IsCDDA()) return true;
 
   CStdString extension;
@@ -912,17 +920,23 @@ bool CFileItem::IsAudio() const
 
   extension.ToLower();
 
+  // If the file is a zip file, ask the game clients if any support this file
+  // before assuming it is audio.
+  if (extension.Equals(".zip") && CGameManager::Get().IsGame(m_strPath))
+    return false;
+
   return (g_advancedSettings.m_musicExtensions.Find(extension) != -1);
 }
 
 bool CFileItem::IsGame() const
 {
   if (HasGameInfoTag()) return true;
+  if (!GetProperty("gameclient").empty()) return true;
   if (HasVideoInfoTag()) return false;
   if (HasMusicInfoTag()) return false;
   if (HasPictureInfoTag()) return false;
 
-  return false;
+  return CGameManager::Get().IsGame(m_strPath);
 }
 
 bool CFileItem::IsKaraoke() const
@@ -942,6 +956,7 @@ bool CFileItem::IsPicture() const
   if (HasMusicInfoTag()) return false;
   if (HasVideoInfoTag()) return false;
   if (HasGameInfoTag()) return false;
+  if (!GetProperty("gameclient").empty()) return false;
 
   return CUtil::IsPicture(m_strPath);
 }
