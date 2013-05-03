@@ -301,6 +301,12 @@
     <Filter Include="input\touch\generic">
       <UniqueIdentifier>{d062c356-66f2-49e7-9510-b216701d2298}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games">
+      <UniqueIdentifier>{7ff3350b-07f8-483b-958c-0edd6081e7a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\tags">
+      <UniqueIdentifier>{c19c485e-b24e-4c45-bb0a-6d41a429f505}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -2999,6 +3005,18 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\input\windows\WINJoystickXInput.cpp">
       <Filter>input\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameboyTag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GBATag.cpp">
+      <Filter>games\tags</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5866,6 +5884,18 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\input\windows\WINJoystickXInput.h">
       <Filter>input\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameboyTag.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GBATag.h">
+      <Filter>games\tags</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
