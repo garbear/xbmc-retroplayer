@@ -1528,6 +1528,27 @@
   <section id="games" label="15016" help="36500">
     <category id="gamesgeneral" label="16000" help="36501">
       <group id="1">
+        <setting id="gamesgeneral.enablerewind" type="boolean" label="15021" help="36506">
+          <level>0</level>
+          <default>true</default>
+        </setting>
+        <setting id="gamesgeneral.rewindtime" type="integer" label="15022" help="36507">
+          <level>2</level>
+          <default>60</default>
+          <constraints>
+            <minimum>10</minimum>
+            <step>10</step>
+            <maximum>600</maximum>
+          </constraints>
+          <dependencies>
+            <dependency type="enable" setting="gamesgeneral.enablerewind">true</dependency>
+          </dependencies>
+          <control type="spinner" format="string">
+            <formatlabel>14045</formatlabel>
+          </control>
+        </setting>
+      </group>
+      <group id="2">
         <setting id="gamesgeneral.manageaddons" type="action" label="24025" help="36502">
           <level>0</level>
         </setting>

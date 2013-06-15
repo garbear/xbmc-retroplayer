@@ -6382,7 +6382,15 @@ msgctxt "#15020"
 msgid "Allow emulators to load .zip files (debug)"
 msgstr ""
 
-#empty strings from id 15021 to 15022
+#: system/settings/settings.xml
+msgctxt "#15021"
+msgid "Enable rewind if supported"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#15022"
+msgid "Maximum rewind time"
+msgstr ""
 
 #: xbmc/games/GameManager.cpp
 msgctxt "#15023"
@@ -14222,7 +14230,17 @@ msgctxt "#36505"
 msgid "Some emulators crash when loading .zip files. However, if the emulator can load files from memory, XBMC will safely load games from within zips."
 msgstr ""
 
-#empty strings from id 36506 to 36999
+#: system/settings/settings.xml
+msgctxt "#36506"
+msgid "No info available yet."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36507"
+msgid "No info available yet."
+msgstr ""
+
+#empty strings from id 36508 to 36999
 #end reservation
 
 #: xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamNavigator.cpp
