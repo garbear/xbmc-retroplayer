@@ -36,8 +36,7 @@ using namespace XFILE;
 
 void CGBATag::Load(const CStdString& strPath, CGameInfoTag &gameInfoTag)
 {
-  CStdString strExtension;
-  URIUtils::GetExtension(strPath, strExtension);
+  CStdString strExtension(URIUtils::GetExtension(strPath));
 
   if (strExtension.Equals(".elf"))
   {
