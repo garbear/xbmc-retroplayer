@@ -355,6 +355,7 @@ void CProfilesManager::CreateProfileFolders()
   CDirectory::Create(GetThumbnailsFolder());
   CDirectory::Create(GetVideoThumbFolder());
   CDirectory::Create(GetBookmarksThumbFolder());
+  CDirectory::Create(GetSavegamesFolder());
   for (size_t hex = 0; hex < 16; hex++)
     CDirectory::Create(URIUtils::AddFileToFolder(GetThumbnailsFolder(), StringUtils::Format("%x", hex)));
 
