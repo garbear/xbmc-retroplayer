@@ -50,6 +50,7 @@ DIRECTORY_ARCHIVES=$(DVDPLAYER_ARCHIVES) \
                    xbmc/filesystem/filesystem.a \
                    xbmc/games/games.a \
                    xbmc/games/libretro/libretro.a \
+                   xbmc/games/savegames/savegames.a \
                    xbmc/games/tags/gameinfotags.a \
                    xbmc/games/windows/gamewindows.a \
                    xbmc/guilib/guilib.a \

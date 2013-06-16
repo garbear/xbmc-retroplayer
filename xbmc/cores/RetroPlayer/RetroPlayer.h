@@ -111,6 +111,9 @@ public:
   virtual int64_t GetTime();
   virtual int64_t GetTotalTime();
 
+  bool Save(unsigned int slot) { return m_gameClient && m_gameClient->Save(slot); }
+  bool Save(const CStdString &label) { return m_gameClient && m_gameClient->Save(label); }
+  bool Load(const CStdString &saveStatePath) { return m_gameClient && m_gameClient->Load(saveStatePath); }
 
 protected:
   virtual void Process();

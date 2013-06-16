@@ -361,6 +361,28 @@
 #define ACTION_LIGHTGUN_START         330
 #define ACTION_GAME_CONTROL_END       330
 
+#define ACTION_SAVE                   380
+#define ACTION_SAVE1                  381
+#define ACTION_SAVE2                  382
+#define ACTION_SAVE3                  383
+#define ACTION_SAVE4                  384
+#define ACTION_SAVE5                  385
+#define ACTION_SAVE6                  386
+#define ACTION_SAVE7                  387
+#define ACTION_SAVE8                  388
+#define ACTION_SAVE9                  389
+
+#define ACTION_LOAD                   390
+#define ACTION_LOAD1                  391
+#define ACTION_LOAD2                  392
+#define ACTION_LOAD3                  393
+#define ACTION_LOAD4                  394
+#define ACTION_LOAD5                  395
+#define ACTION_LOAD6                  396
+#define ACTION_LOAD7                  397
+#define ACTION_LOAD8                  398
+#define ACTION_LOAD9                  399
+
 
 // touch actions
 #define ACTION_TOUCH_TAP              401

@@ -6438,7 +6438,31 @@ msgctxt "#15028"
 msgid "Skip and try game directory"
 msgstr ""
 
-#empty strings from id 15029 to 15051
+#empty string with id 15029
+
+#empty strings from id 15030 to 15039
+
+#: system/settings/settings.xml
+msgctxt "#15040"
+msgid "Automatically load previous game state"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#15041"
+msgid "Save game state every 30 seconds"
+msgstr ""
+
+#: xbmc/games/savegames/Savestate.cpp
+msgctxt "#15042"
+msgid "Autosave on %s"
+msgstr ""
+
+#: xbmc/games/savegames/Savestate.cpp
+msgctxt "#15043"
+msgid "Slot %d"
+msgstr ""
+
+#empty strings from id 15044 to 15051
 
 msgctxt "#15052"
 msgid "Password"
@@ -14261,7 +14285,17 @@ msgctxt "#36508"
 msgid "Change the audio delay. Lower values might cause buffer underruns."
 msgstr ""
 
-#empty strings from id 36509 to 36999
+#: system/settings/settings.xml
+msgctxt "#36509"
+msgid "No info available yet."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#365010"
+msgid "No info available yet."
+msgstr ""
+
+#empty strings from id 36511 to 36999
 #end reservation
 
 #: xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamNavigator.cpp
