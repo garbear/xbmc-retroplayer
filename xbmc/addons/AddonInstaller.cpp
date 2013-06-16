@@ -40,6 +40,7 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "URL.h"
+#include "games/GameManager.h"
 #include "pvr/PVRManager.h"
 
 using namespace std;
@@ -581,7 +582,7 @@ bool CAddonInstallJob::OnPreInstall()
     CAddonDatabase database;
     database.Open();
     bool running = !database.IsAddonDisabled(m_addon->ID()); //grab a current state
-    database.DisableAddon(m_addon->ID(),false); // enable it so we can remove it??
+    database.DisableAddon(m_addon->ID(), false, false); // enable it so we can remove it??
     // regrab from manager to have the correct path set
     AddonPtr addon;
     ADDON::CAddonMgr::Get().GetAddon(m_addon->ID(), addon);
@@ -736,6 +737,15 @@ void CAddonInstallJob::OnPostInstall(bool reloadAddon)
   {
     // (re)start the pvr manager
     PVR::CPVRManager::Get().Start(true);
+  }
+
+  // Update the cache of game client addons used in the ROM-launching selection process
+  if (m_addon->Type() == ADDON_GAMEDLL)
+  {
+    // Regrab from manager to have the correct path set
+    AddonPtr addon; 
+    CAddonMgr::Get().GetAddon(m_addon->ID(), addon);
+    GAMES::CGameManager::Get().RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
   }
 }
 

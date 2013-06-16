@@ -209,7 +209,7 @@ void CGUIDialogAddonInfo::OnUninstall()
   // ensure the addon isn't disabled in our database
   CAddonDatabase database;
   database.Open();
-  database.DisableAddon(m_localAddon->ID(), false);
+  database.DisableAddon(m_localAddon->ID(), false, false);
   CJobManager::GetInstance().AddJob(new CAddonUnInstallJob(m_localAddon),
                                     &CAddonInstaller::Get());
   CAddonMgr::Get().RemoveAddon(m_localAddon->ID());

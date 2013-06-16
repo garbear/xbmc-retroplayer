@@ -25,6 +25,7 @@
 #include "XBDateTime.h"
 #include "addons/Service.h"
 #include "dbwrappers/dataset.h"
+#include "games/GameManager.h"
 #include "pvr/PVRManager.h"
 
 using namespace ADDON;
@@ -557,7 +558,7 @@ void CAddonDatabase::SetPropertiesFromAddon(const AddonPtr& addon,
     pItem->SetProperty("Addon.Language", it->second);
 }
 
-bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = true */)
+bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = true */, bool launchQueuedGame /* = true */)
 {
   try
   {
@@ -584,6 +585,9 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
             PVR::CPVRManager::Get().IsStarted())
           PVR::CPVRManager::Get().Start(true);
 
+        // If the addon isn't a game client, UnregisterAddon() will still do the right thing
+        GAMES::CGameManager::Get().UnregisterAddonByID(addonID);
+
         return true;
       }
       return false; // already disabled or failed query
@@ -605,6 +609,10 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
       // (re)start the pvr manager when enabling a pvr add-on
       else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_PVRDLL, false) && addon)
         PVR::CPVRManager::Get().Start(true);
+
+      // If the addon is a game client, register it
+      else if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_GAMEDLL, false) && addon)
+        GAMES::CGameManager::Get().RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon), launchQueuedGame);
     }
     return true;
   }
