@@ -494,7 +494,7 @@ void CGameClient::SetDevice(unsigned int port, unsigned int device)
   }
 }
 
-void CGameClient::RunFrame()
+bool CGameClient::RunFrame()
 {
   CSingleLock lock(m_critSection);
 
@@ -525,6 +525,8 @@ void CGameClient::RunFrame()
       }
     }
   }
+
+  return true;
 }
 
 bool CGameClient::InitSaveState(const void *gameBuffer /* = NULL */, size_t length /* = 0 */)

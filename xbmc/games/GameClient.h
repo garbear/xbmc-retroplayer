@@ -168,7 +168,7 @@ namespace ADDON
      * Precondition: OpenFile() returned true.
      * Returns false if an exception is thrown in retro_run().
      */
-    void RunFrame();
+    bool RunFrame();
 
     /**
      * Load the serialized state from the auto-save slot (filename looks like
