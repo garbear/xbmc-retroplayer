@@ -11472,7 +11472,9 @@ msgctxt "#24048"
 msgid "Rollback"
 msgstr ""
 
-#empty string with id 24049
+msgctxt "#24049"
+msgid "Add-on manager"
+msgstr ""
 
 msgctxt "#24050"
 msgid "Available Add-ons"
