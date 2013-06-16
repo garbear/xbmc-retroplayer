@@ -164,8 +164,9 @@ namespace ADDON
     void SetDevice(unsigned int port, unsigned int device);
 
     /**
-     * Allow the game to run and produce a video frame. Precondition:
-     * OpenFile() returned true.
+     * Allow the game to run and produce a video frame.
+     * Precondition: OpenFile() returned true.
+     * Returns false if an exception is thrown in retro_run().
      */
     void RunFrame();
 

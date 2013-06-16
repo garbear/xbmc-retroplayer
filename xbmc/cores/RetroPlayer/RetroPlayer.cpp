@@ -509,7 +509,8 @@ void CRetroPlayer::Process()
     }
 
     // Run the game client for the next frame
-    m_gameClient->RunFrame();
+    if (!m_gameClient->RunFrame())
+      break;
 
     // If the game client uses single frame audio, render those now
     m_audio.Flush();

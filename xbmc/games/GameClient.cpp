@@ -493,7 +493,15 @@ void CGameClient::RunFrame()
 
   if (m_bIsPlaying)
   {
-    m_dll.retro_run();
+    try
+    {
+      m_dll.retro_run();
+    }
+    catch (...)
+    {
+      CLog::Log(LOGERROR, "GameClient error: exception thrown in retro_run()");
+      return false;
+    }
 
     m_saveState.SetPlaytimeFrames(m_saveState.GetPlaytimeFrames() + 1);
     m_saveState.SetPlaytimeWallClock(m_saveState.GetPlaytimeWallClock() + 1.0 / m_frameRate);
