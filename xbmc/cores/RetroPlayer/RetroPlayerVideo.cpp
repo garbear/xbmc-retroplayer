@@ -93,15 +93,15 @@ void CRetroPlayerVideo::Process()
       break;
     }
 
-    pPicture->dts = DVD_NOPTS_VALUE;
-    pPicture->pts = DVD_NOPTS_VALUE;
-    pPicture->format = RENDER_FMT_YUV420P; // PIX_FMT_YUV420P
-    pPicture->color_range  = 0; // *not* CONF_FLAGS_YUV_FULLRANGE
-    pPicture->color_matrix = 4; // CONF_FLAGS_YUVCOEF_BT601
-    pPicture->iFlags  = DVP_FLAG_ALLOCATED;
-    pPicture->iDisplayWidth  = frame.width;
-    pPicture->iDisplayHeight = frame.height;
-    pPicture->iDuration = 1 / m_framerate;
+    pPicture->dts            = DVD_NOPTS_VALUE;
+    pPicture->pts            = DVD_NOPTS_VALUE;
+    pPicture->format         = RENDER_FMT_YUV420P; // PIX_FMT_YUV420P
+    pPicture->color_range    = 0; // *not* CONF_FLAGS_YUV_FULLRANGE
+    pPicture->color_matrix   = 4; // CONF_FLAGS_YUVCOEF_BT601
+    pPicture->iFlags         = DVP_FLAG_ALLOCATED;
+    pPicture->iDisplayWidth  = frame.width; // iWidth was set in AllocatePicture()
+    pPicture->iDisplayHeight = frame.height; // iHeight was set in AllocatePicture()
+    pPicture->iDuration      = 1.0 / m_framerate;
 
     // Got the picture, now make sure we're ready to render it
     if (!CheckConfiguration(*pPicture))
