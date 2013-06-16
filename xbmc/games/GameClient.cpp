@@ -301,11 +301,18 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
       if (info.data)
         info.path = NULL;
 
-      if (m_dll.retro_load_game(&info) && !CLibretroEnvironment::Abort())
+      try
       {
-        CLog::Log(LOGINFO, "GameClient: Client successfully loaded game");
-        success = true;
+        success = m_dll.retro_load_game(&info) && !CLibretroEnvironment::Abort();
       }
+      catch (...)
+      {
+        success = false;
+        CLog::Log(LOGERROR, "GameClient error: exception thrown in retro_load_game()");
+      }
+
+      if (success)
+        CLog::Log(LOGINFO, "GameClient: Client successfully loaded game");
       else
       {
         delete[] reinterpret_cast<const uint8_t*>(info.data);
