@@ -26,10 +26,12 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "GameFileLoader.h"
+#include "games/savegames/Savestate.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Setting.h"
-#include "settings/Settings.h"
+//#include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
 #include "utils/log.h"
@@ -40,6 +42,7 @@
 using namespace ADDON;
 using namespace GAME_INFO;
 using namespace GAMES;
+using namespace XFILE;
 
 
 /* TEMPORARY */
@@ -128,6 +131,14 @@ void CGameManager::RegisterAddon(GameClientPtr clientAddon, bool launchQueued /*
       // Don't ask the user twice
       m_queuedFile = CFileItem();
     }
+  }
+
+  // Check to see if the savegame folder for this game client exists
+  CStdString dir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetSavegamesFolder(), clientAddon->ID()));
+  if (!CDirectory::Exists(dir))
+  {
+    CLog::Log(LOGINFO, "Create new savegames folder: %s", dir.c_str());
+    CDirectory::Create(dir);
   }
 }
 
@@ -263,15 +274,35 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, CStdStringArray &cand
   CSingleLock lock(m_critSection);
 
   CStdString gameclient = file.GetProperty("gameclient").asString();
+
+  // If a start save state was specified, validate the candidate against the
+  // save state's game client
+  if (!file.m_startSaveState.empty())
+  {
+    CSavestate savestate;
+    savestate.SetPath(file.m_startSaveState);
+    if (!savestate.GetGameClient().empty())
+    {
+      if (gameclient.empty())
+        gameclient = savestate.GetGameClient(); // Use new game client as filter below
+      else if (gameclient != savestate.GetGameClient())
+        return; // New game client doesn't match, no valid candidates
+    }
+  }
+
   for (std::vector<GameClientConfig>::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
+    if (!gameclient.empty() && gameclient != it->id)
+      continue;
+
     CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->id.c_str());
     if (CGameFileLoader::CanOpen(file, *it, true))
     {
       CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", it->id.c_str());
       candidates.push_back(it->id);
     }
-    if (!gameclient.empty() && it->id == gameclient)
+
+    if (!gameclient.empty())
       break; // If the game client isn't installed, it's not a valid candidate
   }
 }

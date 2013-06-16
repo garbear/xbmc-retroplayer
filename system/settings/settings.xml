@@ -1560,6 +1560,17 @@
             <formatlabel>14046</formatlabel>
           </control>
         </setting>
+        <setting id="gamesgeneral.savestates" type="boolean" label="15040" help="36509">
+          <level>0</level>
+          <default>true</default>
+        </setting>
+        <setting id="gamesgeneral.autosave" type="boolean" label="15041" help="36510">
+          <level>1</level>
+          <default>true</default>
+          <dependencies>
+            <dependency type="enable" setting="gamesgeneral.savestates">true</dependency>
+          </dependencies>
+        </setting>
       </group>
       <group id="2">
         <setting id="gamesgeneral.manageaddons" type="action" label="24025" help="36502">

@@ -25,6 +25,7 @@
 #include "GameClientDLL.h"
 #include "GameFileLoader.h"
 #include "games/libretro/libretro_wrapped.h"
+#include "games/savegames/Savestate.h"
 #include "games/tags/GameInfoTagLoader.h"
 #include "SerialState.h"
 #include "threads/CriticalSection.h"
@@ -171,6 +172,47 @@ namespace ADDON
     bool RunFrame();
 
     /**
+     * Load the serialized state from the auto-save slot (filename looks like
+     * feba62c2.sav). Returns true if the next call to Load() or Save() is
+     * expected to succeed (such as if the file can't be loaded because it
+     * doesn't exist, but Save() will create the file and Load() and Save()
+     * will work after that).
+     *
+     * Savestates are placed in special://savegames/gameclient.id/
+     */
+    bool AutoLoad();
+
+    /**
+     * Load the serialized state from the numbered slot (filename looks like
+     * feba62c2_1.sav).
+     */
+    bool Load(unsigned int slot);
+
+    /**
+     * Load the serialized state from the specified path.
+     */
+    bool Load(const CStdString &saveStatePath);
+
+    /**
+     * Commit the current serialized state to the local drive (filename looks
+     * like feba62c2.sav).
+     */
+    bool AutoSave();
+
+    /**
+     * Commit the current serialized state to the local drive (filename looks
+     * like feba62c2_1.sav).
+     */
+    bool Save(unsigned int slot);
+
+    /**
+     * Commit the current serialized state to the local drive. The CRC of the
+     * label is concatenated to the CRC of the game file, and the resulting
+     * filename looks like feba62c2_bdcb488a.sav
+     */
+    bool Save(const CStdString &label);
+
+    /**
      * Rewind gameplay 'frames' frames.
      * As there is a fixed size buffer backing
      * save state deltas, it might not be possible to rewind as many
@@ -179,10 +221,10 @@ namespace ADDON
     unsigned int RewindFrames(unsigned int frames);
 
     // Returns how many frames it is possible to rewind with a call to RewindFrames().
-    size_t GetAvailableFrames() const { return m_rewindSupported ? m_serialState.GetFramesAvailable() : 0; }
+    size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
 
     // Returns the maximum amount of frames that can ever be rewound.
-    size_t GetMaxFrames() const { return m_rewindSupported ? m_serialState.GetMaxFrames() : 0; }
+    size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
 
     // Reset the game, if running.
     void Reset();
@@ -205,7 +247,22 @@ namespace ADDON
     void Initialize();
 
     /**
-     * Given the strategies above, order them in a way that respects
+     * Init the savestate file by setting the game path, game client and game
+     * CRC. Most field, such as playtime, are preserved.
+     *
+     * gameBuffer and length are convenience variables to avoid hitting the
+     * disk for CRC calculation when the game file is already loaded in RAM.
+     */
+    bool InitSaveState(const void *gameBuffer = NULL, size_t length = 0);
+
+    // Internal load function. 
+    bool Load();
+
+    // Internal save function.
+    bool Save();
+
+    /**
+     * Given the strategies above, order them in the way that respects
      * CSettings::Get().GetBool("gamesdebug.prefervfs").
      */
     static void GetStrategy(GAMES::CGameFileLoaderUseHD &hd, GAMES::CGameFileLoaderUseParentZip &outerzip,
@@ -234,8 +291,13 @@ namespace ADDON
     int              m_region; // Region of the loaded game
 
     CCriticalSection m_critSection;
-    bool             m_rewindSupported;
+    unsigned int     m_serialSize;
+    bool             m_bRewindEnabled;
     CSerialState     m_serialState;
+    CSavestate       m_saveState;
+
+    // If rewinding is disabled, use a buffer to avoid re-allocation when saving games
+    std::vector<uint8_t> m_savestateBuffer;
 
     /**
      * This callback exists to give XBMC a chance to poll for input. XBMC already
