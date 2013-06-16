@@ -165,14 +165,15 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
   double framerate = 1 / picture.iDuration;
 
   if (!g_renderManager.IsConfigured() ||
-      m_outputWidth != picture.iWidth ||
-      m_outputHeight != picture.iHeight ||
+      m_outputWidth     != picture.iWidth ||
+      m_outputHeight    != picture.iHeight ||
       m_outputFramerate != framerate)
   {
+    // Determine RenderManager flags
     unsigned int flags = 0;
-    flags |= CONF_FLAGS_YUVCOEF_BT601; // picture.color_matrix = 4
     if (picture.color_range == 1)
       flags |= CONF_FLAGS_YUV_FULLRANGE;
+    flags |= CONF_FLAGS_YUVCOEF_BT601; // picture.color_matrix = 4
     if (m_bAllowFullscreen)
     {
       flags |= CONF_FLAGS_FULLSCREEN;
@@ -181,7 +182,8 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
 
     CLog::Log(LOGDEBUG, "RetroPlayerVideo: Change configuration: %dx%d, %4.2f fps", picture.iWidth, picture.iHeight, framerate);
     int orientation = 0; // (90 = 5, 180 = 2, 270 = 7), if we ever want to use RETRO_ENVIRONMENT_SET_ROTATION
-    if (!g_renderManager.Configure(picture.iWidth, picture.iHeight, picture.iDisplayWidth, picture.iDisplayHeight, (float)framerate, flags, picture.format, picture.extended_format, orientation))
+    if (!g_renderManager.Configure(picture.iWidth, picture.iHeight, picture.iDisplayWidth, picture.iDisplayHeight,
+      (float)framerate, flags, picture.format, picture.extended_format, orientation))
     {
       CLog::Log(LOGERROR, "RetroPlayerVideo: Failed to configure renderer");
       return false;
