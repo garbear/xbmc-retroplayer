@@ -23,6 +23,7 @@
 #include "FileItem.h"
 #include "filesystem/SpecialProtocol.h"
 #include "filesystem/Directory.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "utils/IDeserializable.h"
@@ -211,8 +212,8 @@ bool has(const vector<CStdString> &haystack, const CStdString &needle)
 TEST(TestDynamicDatabase, DynamicDatabaseSQLite)
 {
   // Create the Database folder if it wasn't done in the setup process
-  if (!CDirectory::Exists(g_settings.GetDatabaseFolder()))
-    CDirectory::Create(g_settings.GetDatabaseFolder());
+  if (!CDirectory::Exists(CProfilesManager::Get().GetDatabaseFolder()))
+    CDirectory::Create(CProfilesManager::Get().GetDatabaseFolder());
 
   // Calling Update creates the database if it doesn't exist
   CGnomeDatabase db;
@@ -220,7 +221,7 @@ TEST(TestDynamicDatabase, DynamicDatabaseSQLite)
 
   EXPECT_NO_FATAL_FAILURE(runTests(db));
 
-  CDirectory::Remove(g_settings.GetDatabaseFolder());
+  CDirectory::Remove(CProfilesManager::Get().GetDatabaseFolder());
 }
 
 TEST(TestDynamicDatabase, DynamicDatabaseMySQL)
