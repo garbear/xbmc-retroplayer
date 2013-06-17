@@ -260,7 +260,7 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
 
   // Install the hooks. These are called by CLibretroEnvironment::EnvironmentCallback()
   CLibretroEnvironment::SetCallbacks(callbacks.SetPixelFormat, callbacks.SetKeyboardCallback,
-    GameClientPtr(new CGameClient(Props())));
+    NULL, NULL, GameClientPtr(new CGameClient(Props())));
 
   // Because we call m_dll.retro_init() here instead of in Init(), keep track
   // of this. Note that if we return false later, m_bIsInited will still be

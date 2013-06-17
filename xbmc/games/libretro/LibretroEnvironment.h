@@ -23,27 +23,37 @@
 #include "games/GameClient.h"
 #include "utils/StdString.h"
 
+#include <map>
+
 namespace GAMES
 {
   class CLibretroEnvironment
   {
   public:
-    typedef void (*SetPixelFormat_t)      (retro_pixel_format format); // retro_pixel_format defined in libretro.h
-    typedef void (*SetKeyboardCallback_t) (retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
+    typedef void (*SetPixelFormat_t)         (retro_pixel_format format); // retro_pixel_format defined in libretro.h
+    typedef void (*SetKeyboardCallback_t)    (retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
+    typedef void (*SetDiskControlCallback_t) (const retro_disk_control_callback *callback_struct); // retro_disk_control_callback defined in libretro.h
+    typedef void (*SetRenderCallback_t)      (const retro_hw_render_callback *callback_struct); // retro_hw_render_callback defined in libretro.h
 
     // Libretro interface
     static bool EnvironmentCallback(unsigned cmd, void *data);
 
-    static void SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc, ADDON::GameClientPtr activeClient);
+    static void SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc,
+                             SetDiskControlCallback_t sdcc, SetRenderCallback_t src,
+                             ADDON::GameClientPtr activeClient);
     static void ResetCallbacks();
 
     static bool Abort() { return m_bAbort; }
+    static bool ParseVariable(const retro_variable &var, CStdString &strDefault);
 
   private:
-    static SetPixelFormat_t      fn_SetPixelFormat;
-    static SetKeyboardCallback_t fn_SetKeyboardCallback;
-    static ADDON::GameClientPtr  m_activeClient;
-    static CStdString            m_systemDirectory;
-    static bool                  m_bAbort;
+    static SetPixelFormat_t         fn_SetPixelFormat;
+    static SetKeyboardCallback_t    fn_SetKeyboardCallback;
+    static SetDiskControlCallback_t fn_SetDiskControlCallback;
+    static SetRenderCallback_t      fn_SetRenderCallback;
+    static ADDON::GameClientPtr     m_activeClient;
+    static CStdString               m_systemDirectory;
+    static bool                     m_bAbort;
+    static std::map<CStdString, CStdString> m_varMap;
   };
 } // namespace GAMES

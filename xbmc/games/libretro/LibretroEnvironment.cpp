@@ -29,22 +29,38 @@
 #include "settings/MediaSourceSettings.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
+
+#define RETRO_ENVIRONMENT_GET_VARIABLE_OLD   4
+#define RETRO_ENVIRONMENT_SET_VARIABLES_OLD  5
+
+#ifndef ARRAY_LENGTH
+#define ARRAY_LENGTH(x)  (sizeof((x)) / sizeof((x)[0]))
+#endif
 
 using namespace ADDON;
 using namespace GAMES;
 using namespace XFILE;
+using namespace std;
 
-CLibretroEnvironment::SetPixelFormat_t      CLibretroEnvironment::fn_SetPixelFormat      = NULL;
-CLibretroEnvironment::SetKeyboardCallback_t CLibretroEnvironment::fn_SetKeyboardCallback = NULL;
+CLibretroEnvironment::SetPixelFormat_t         CLibretroEnvironment::fn_SetPixelFormat         = NULL;
+CLibretroEnvironment::SetKeyboardCallback_t    CLibretroEnvironment::fn_SetKeyboardCallback    = NULL;
+CLibretroEnvironment::SetDiskControlCallback_t CLibretroEnvironment::fn_SetDiskControlCallback = NULL;
+CLibretroEnvironment::SetRenderCallback_t      CLibretroEnvironment::fn_SetRenderCallback      = NULL;
 
 GameClientPtr CLibretroEnvironment::m_activeClient;
 CStdString    CLibretroEnvironment::m_systemDirectory;
 bool          CLibretroEnvironment::m_bAbort = false;
+std::map<CStdString, CStdString> CLibretroEnvironment::m_varMap;
 
-void CLibretroEnvironment::SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc, GameClientPtr activeClient)
+void CLibretroEnvironment::SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc,
+                                        SetDiskControlCallback_t sdcc, SetRenderCallback_t src,
+                                        GameClientPtr activeClient)
 {
   fn_SetPixelFormat = spf;
   fn_SetKeyboardCallback = skc;
+  fn_SetDiskControlCallback = sdcc;
+  fn_SetRenderCallback = src;
   m_activeClient = activeClient;
   m_bAbort = false;
 }
@@ -53,25 +69,32 @@ void CLibretroEnvironment::ResetCallbacks()
 {
   fn_SetPixelFormat = NULL;
   fn_SetKeyboardCallback = NULL;
+  fn_SetDiskControlCallback = NULL;
+  fn_SetRenderCallback = NULL;
   m_activeClient.reset();
 }
 
 bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
 {
-  static const char *cmds[] = {"RETRO_ENVIRONMENT_SET_ROTATION",
-                               "RETRO_ENVIRONMENT_GET_OVERSCAN",
-                               "RETRO_ENVIRONMENT_GET_CAN_DUPE",
-                               "RETRO_ENVIRONMENT_GET_VARIABLE",
-                               "RETRO_ENVIRONMENT_SET_VARIABLES",
-                               "RETRO_ENVIRONMENT_SET_MESSAGE",
-                               "RETRO_ENVIRONMENT_SHUTDOWN",
-                               "RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL",
-                               "RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY",
-                               "RETRO_ENVIRONMENT_SET_PIXEL_FORMAT",
-                               "RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS",
-                               "RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK"};
+  static const char *cmds[] = {"SET_ROTATION",
+                               "GET_OVERSCAN",
+                               "GET_CAN_DUPE",
+                               "GET_VARIABLE (deprecated)", // replaced by new version
+                               "SET_VARIABLES (deprecated)", // replaced by new version
+                               "SET_MESSAGE",
+                               "SHUTDOWN",
+                               "SET_PERFORMANCE_LEVEL",
+                               "GET_SYSTEM_DIRECTORY",
+                               "SET_PIXEL_FORMAT",
+                               "SET_INPUT_DESCRIPTORS",
+                               "SET_KEYBOARD_CALLBACK",
+                               "SET_DISK_CONTROL_INTERFACE",
+                               "SET_HW_RENDER",
+                               "GET_VARIABLE",
+                               "SET_VARIABLES",
+                               "GET_VARIABLE_UPDATE"};
 
-  if (0 <= cmd && cmd < sizeof(cmds) / sizeof(cmds[0]))
+  if (0 <= cmd && cmd < ARRAY_LENGTH(cmds))
     CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: %s", cmd, cmds[cmd - 1]);
   else
   {
@@ -104,53 +127,26 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         *reinterpret_cast<bool*>(data) ? "enabled" : "disabled");
       break;
     }
-  case RETRO_ENVIRONMENT_GET_VARIABLE:
+  case RETRO_ENVIRONMENT_GET_VARIABLE_OLD: // replaced by new form
     {
-      // Interface to acquire user-defined information from environment that cannot feasibly be
-      // supported in a multi-system way. Mostly used for obscure, specific features that the
-      // user can tap into when necessary.
+      // RETRO_ENVIRONMENT_GET_VARIABLE was changed in the libretro API to function slightly
+      // differently. Warn the user that the game client is still using the old functionality.
       retro_variable *var = reinterpret_cast<retro_variable*>(data);
-      if (var->key && var->value)
-      {
-        // For example...
-        if (strncmp("too_sexy_for", var->key, 12) == 0)
-        {
-          var->value = "my_shirt";
-          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: variable %s set to %s", cmd, var->key, var->value);
-        }
-        else
-        {
-          var->value = NULL;
-          CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: undefined variable %s", cmd, var->key);
-        }
-      }
-      else
-      {
-        if (var->value)
-          var->value = NULL;
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variable given", cmd);
-      }
+      CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
+      var->value = NULL;
       break;
     }
-  case RETRO_ENVIRONMENT_SET_VARIABLES:
+  case RETRO_ENVIRONMENT_SET_VARIABLES_OLD: // replaced by new form
     {
-      // Allows an implementation to signal the environment which variables it might want to check
-      // for later using GET_VARIABLE. 'data' points to an array of retro_variable structs terminated
-      // by a { NULL, NULL } element. retro_variable::value should contain a human readable description
-      // of the key.
+      // RETRO_ENVIRONMENT_SET_VARIABLES was changed in the libretro API to function slightly
+      // differently. Warn the user that the game client is still using the old functionality.
       const retro_variable *vars = reinterpret_cast<const retro_variable*>(data);
-      if (!vars->key)
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variables given", cmd);
-      else
+      CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
+      while (vars && vars->key)
       {
-        while (vars && vars->key)
-        {
-          if (vars->value)
-            CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key, vars->value);
-          else
-            CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: var %s has no description", cmd, vars->key);
-          vars++;
-        }
+        CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key,
+          vars->value ? vars->value : "error: no value!");
+        vars++;
       }
       break;
     }
@@ -216,7 +212,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         // the directories tab of Game Settings.
         m_activeClient->UpdateSetting("hassystemdirectory", "true");
 
-        if (m_activeClient->GetSetting("systemdirectory").length())
+        if (!m_activeClient->GetSetting("systemdirectory").empty())
         {
           m_systemDirectory = m_activeClient->GetSetting("systemdirectory");
           // Avoid passing the game client a nonexistent directory. Note, if the
@@ -225,7 +221,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
             m_systemDirectory.clear();
         }
 
-        if (!m_systemDirectory.length())
+        if (m_systemDirectory.empty())
         {
           CContextButtons choices;
           choices.Add(0, 15027); // Choose system directory
@@ -327,6 +323,121 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         fn_SetKeyboardCallback(callback_struct->callback);
       break;
     }
+  case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+    {
+      // Sets an interface to eject and insert disk images. This is used for games which
+      // consist of multiple images and must be manually swapped out by the user (e.g. PSX).
+      const retro_disk_control_callback *disk_control_cb = reinterpret_cast<const retro_disk_control_callback*>(data);
+      if (fn_SetDiskControlCallback)
+        fn_SetDiskControlCallback(disk_control_cb);
+      break;
+    }
+  case RETRO_ENVIRONMENT_SET_HW_RENDER:
+    {
+      // Sets an interface to let a libretro core render with hardware acceleration.
+      // This call is currently very experimental
+      const retro_hw_render_callback *hw_render_cb = reinterpret_cast<const retro_hw_render_callback*>(data);
+      if (fn_SetRenderCallback)
+        fn_SetRenderCallback(hw_render_cb);
+      break;
+    }
+  case RETRO_ENVIRONMENT_GET_VARIABLE:
+    {
+      // Interface to acquire user-defined information from environment that
+      // cannot feasibly be supported in a multi-system way. Mostly used for
+      // obscure, specific features that the user can tap into when necessary.
+      retro_variable *var = reinterpret_cast<retro_variable*>(data);
+      if (var->key && var->value)
+      {
+        // m_varMap provides both a static layer for returning persistent strings,
+        // and a way of detecting stale data for RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE
+        if (false && m_activeClient)
+          m_varMap[var->key] = m_activeClient->GetSetting(var->key);
+        else
+          m_varMap[var->key] = "";
+
+        if (!m_varMap[var->key].empty())
+        {
+          var->value = m_varMap[var->key].c_str();
+          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: variable %s set to %s", cmd, var->key, var->value);
+        }
+        else
+        {
+          var->value = NULL;
+          CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: undefined variable %s", cmd, var->key);
+        }
+      }
+      else
+      {
+        if (var->value)
+          var->value = NULL;
+        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variable given", cmd);
+      }
+      break;
+    }
+  case RETRO_ENVIRONMENT_SET_VARIABLES:
+    {
+      // Allows an implementation to define its configuration options. 'data' points
+      // to an array of retro_variable structs terminated by a { NULL, NULL } element.
+      const retro_variable *vars = reinterpret_cast<const retro_variable*>(data);
+      m_varMap.clear();
+      if (vars->key)
+      {
+        while (vars && vars->key)
+        {
+          if (vars->value)
+          {
+            CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key, vars->value);
+            if (!ParseVariable(*vars, m_varMap[vars->key])) // m_varMap[vars->key] is always created
+              CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: error parsing variable");
+          }
+          else
+            CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: var %s has no value", cmd, vars->key);
+          vars++;
+        }
+      }
+      else
+        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variables given", cmd);
+      break;
+    }
+  case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
+    {
+      // Indicate that environment variables are stale and should be re-queried with GET_VARIABLE.
+      bool stale = false;
+      *reinterpret_cast<bool*>(data) = stale;
+      break;
+    }
   }
+
+  return true;
+}
+
+bool CLibretroEnvironment::ParseVariable(const retro_variable &var, CStdString &strDefault)
+{
+  // Variable parsing follows a very procedural approach heavily grounded in C-think:
+  // the value contains a description, a delimiting semicolon, a pipe-separated
+  // list of values, and cries at the sight of object-oriented programming.
+  // Example setting: "Speed hack coprocessor X; false|true"
+  CStdString description;
+  CStdString strValues(var.value);
+  CStdStringArray values;
+
+  size_t pos;
+  if ((pos = strValues.find(';')) != string::npos)
+  {
+    description = strValues.substr(0, pos);
+    description = description.Trim();
+    strValues = strValues.substr(pos + 1);
+  }
+  if (description.empty())
+    description = var.key;
+
+  StringUtils::SplitString(strValues, "|", values);
+
+  if (values.empty())
+    return false;
+
+  strDefault = values[0].Trim().c_str();
+
   return true;
 }
