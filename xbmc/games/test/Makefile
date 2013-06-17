@@ -1,5 +1,6 @@
 SRCS=	\
-	TestGameFileLoader.cpp
+	TestGameFileLoader.cpp \
+	TestLibretroEnvironment.cpp
 
 LIB=gamesTest.a
 

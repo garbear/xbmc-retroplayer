@@ -25,6 +25,8 @@
 
 #include <map>
 
+class TiXmlElement;
+
 namespace GAMES
 {
   class CLibretroEnvironment
@@ -44,7 +46,7 @@ namespace GAMES
     static void ResetCallbacks();
 
     static bool Abort() { return m_bAbort; }
-    static bool ParseVariable(const retro_variable &var, CStdString &strDefault);
+    static bool ParseVariable(const retro_variable &var, TiXmlElement &xmlSetting, CStdString &strDefault);
 
   private:
     static SetPixelFormat_t         fn_SetPixelFormat;

@@ -30,6 +30,7 @@
 #include "threads/CriticalSection.h"
 
 #include <set>
+#include <vector>
 
 #define GAMECLIENT_MAX_PLAYERS  8
 
@@ -107,6 +108,11 @@ namespace ADDON
      */
     virtual void SaveSettings();
     virtual CStdString GetString(uint32_t id);
+
+    /**
+     *
+     */
+    void SetVariables(std::vector<TiXmlElement> xmlSettings);
 
     /**
      * Load the DLL and query basic parameters. After Init() is called, the
@@ -241,6 +247,7 @@ namespace ADDON
 
   protected:
     virtual bool LoadSettings(bool bForce = false);
+    void AddSystemDirectory(std::vector<TiXmlElement> xmlSettings);
 
   private:
     void Initialize();

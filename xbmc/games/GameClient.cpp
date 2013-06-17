@@ -107,12 +107,25 @@ bool CGameClient::LoadSettings(bool bForce /* = false */)
   category.SetAttribute("label", "15025"); // Emulator setup
   m_addonXmlDoc.InsertEndChild(category);
 
+  std::vector<TiXmlElement> xmlSettings;
+  AddSystemDirectory(xmlSettings);
+  for (std::vector<TiXmlElement>::const_iterator it = xmlSettings.begin(); it != xmlSettings.end(); it++)
+    m_addonXmlDoc.RootElement()->InsertEndChild(*it);
+
+  SettingsFromXML(m_addonXmlDoc, true);
+  LoadUserSettings();
+  m_settingsLoaded = true;
+  return true;
+}
+
+void CGameClient::AddSystemDirectory(std::vector<TiXmlElement> xmlSettings)
+{
   TiXmlElement systemdir("setting");
   systemdir.SetAttribute("id", "systemdirectory");
   systemdir.SetAttribute("label", "15026"); // External system directory
   systemdir.SetAttribute("type", "folder");
   systemdir.SetAttribute("default", "");
-  m_addonXmlDoc.RootElement()->InsertEndChild(systemdir);
+  xmlSettings.push_back(systemdir);
 
   // Whether system directory setting is visible in Game Settings (GUIWindowSettingsCategory)
   // Setting is made visible the first time the game client asks for it
@@ -121,26 +134,39 @@ bool CGameClient::LoadSettings(bool bForce /* = false */)
   gamesettings.SetAttribute("type", "bool");
   gamesettings.SetAttribute("visible", "false"); // don't show the setting in GUIDialogAddonSettings
   gamesettings.SetAttribute("default", "false");
-  m_addonXmlDoc.RootElement()->InsertEndChild(gamesettings);
-
-  SettingsFromXML(m_addonXmlDoc, true);
-  LoadUserSettings();
-  m_settingsLoaded = true;
-  return true;
+  xmlSettings.push_back(gamesettings);
 }
 
 void CGameClient::SaveSettings()
 {
   // Avoid creating unnecessary files. This will skip creating the user save
-  // xml unless a value has deviated from a default, or a previous user save
-  // xml was loaded. Once a user save xml is created all saves will then
-  // succeed.
-  //
-  // The desired result here is that the user save xml only exists after
-  // RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY is first called in
-  // CLibretroEnvironment (or is modified by the user).
+  // xml unless game client sends a RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY or
+  // RETRO_ENVIRONMENT_SET_VARIABLES query in CLibretroEnvironment, or if the
+  // user modifies the settings directly.
   if (HasUserSettings() || GetSetting("hassystemdirectory") == "true" || GetSetting("systemdirectory") != "")
     CAddon::SaveSettings();
+}
+
+void CGameClient::SetVariables(std::vector<TiXmlElement> xmlSettings)
+{
+  m_addonXmlDoc.Clear();
+
+  TiXmlElement category("category");
+  category.SetAttribute("label", "15033"); // Emulator setup
+  m_addonXmlDoc.InsertEndChild(category);
+
+  TiXmlElement sep("setting");
+  sep.SetAttribute("type", "sep");
+  xmlSettings.push_back(sep);
+
+  AddSystemDirectory(xmlSettings);
+
+  for (std::vector<TiXmlElement>::const_iterator it = xmlSettings.begin(); it != xmlSettings.end(); it++)
+    m_addonXmlDoc.RootElement()->InsertEndChild(*it);
+
+  SettingsFromXML(m_addonXmlDoc, true);
+  LoadUserSettings();
+  m_settingsLoaded = true;
 }
 
 CStdString CGameClient::GetString(uint32_t id)

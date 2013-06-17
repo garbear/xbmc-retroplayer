@@ -29,10 +29,25 @@
 #include "settings/MediaSourceSettings.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"
+#include "utils/RegExp.h"
 #include "utils/StringUtils.h"
+
+#include <set>
+#include <sstream>
+#include <vector>
 
 #define RETRO_ENVIRONMENT_GET_VARIABLE_OLD   4
 #define RETRO_ENVIRONMENT_SET_VARIABLES_OLD  5
+
+#define SETTING_TYPE_NONE            (0 << 0)
+#define SETTING_TYPE_BOOL            (1 << 0)
+#define SETTING_TYPE_TEXT            (1 << 1)
+#define SETTING_TYPE_IPADDRESS       (1 << 2)
+#define SETTING_TYPE_NUMBER          (1 << 3)
+#define SETTING_TYPE_SLIDER_INT      (1 << 4)
+#define SETTING_TYPE_SLIDER_FLOAT    (1 << 5)
+#define SETTING_TYPE_SLIDER_PERCENT  (1 << 6)
+#define SETTING_TYPE_ENUM            (1 << 7)
 
 #ifndef ARRAY_LENGTH
 #define ARRAY_LENGTH(x)  (sizeof((x)) / sizeof((x)[0]))
@@ -383,18 +398,24 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       m_varMap.clear();
       if (vars->key)
       {
+        vector<TiXmlElement> xmlSettings;
         while (vars && vars->key)
         {
           if (vars->value)
           {
             CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key, vars->value);
-            if (!ParseVariable(*vars, m_varMap[vars->key])) // m_varMap[vars->key] is always created
+            TiXmlElement setting("setting");
+            if (ParseVariable(*vars, setting, m_varMap[vars->key])) // m_varMap[vars->key] is always created
+              xmlSettings.push_back(setting);
+            else
               CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: error parsing variable");
           }
           else
             CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: var %s has no value", cmd, vars->key);
           vars++;
         }
+        if (m_activeClient)
+          m_activeClient->SetVariables(xmlSettings);
       }
       else
         CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variables given", cmd);
@@ -404,6 +425,12 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Indicate that environment variables are stale and should be re-queried with GET_VARIABLE.
       bool stale = false;
+      if (m_activeClient)
+      {
+        for (map<CStdString, CStdString>::const_iterator it = m_varMap.begin(); !stale && it != m_varMap.end(); it++)
+          if (it->second.empty() || it->second != m_activeClient->GetSetting(it->first))
+            stale = true;
+      }
       *reinterpret_cast<bool*>(data) = stale;
       break;
     }
@@ -412,7 +439,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
   return true;
 }
 
-bool CLibretroEnvironment::ParseVariable(const retro_variable &var, CStdString &strDefault)
+bool CLibretroEnvironment::ParseVariable(const retro_variable &var, TiXmlElement &xmlSetting, CStdString &strDefault)
 {
   // Variable parsing follows a very procedural approach heavily grounded in C-think:
   // the value contains a description, a delimiting semicolon, a pipe-separated
@@ -421,6 +448,30 @@ bool CLibretroEnvironment::ParseVariable(const retro_variable &var, CStdString &
   CStdString description;
   CStdString strValues(var.value);
   CStdStringArray values;
+  unsigned short setting = SETTING_TYPE_NONE;
+
+  // Boolean labels. For canonicalization purposes, make sure even strings are
+  // synonymous with true and odd strings with false; NULL is allowed anywhere
+  // if the count becomes uneven.
+  const char *boolsetting[] = {"true", "false", "yes", "no"};
+
+  // Generate the regexp for verifying boolean values
+  stringstream strRegBool;
+  strRegBool << "^(" << boolsetting[0];
+  for (size_t i = 1; i < ARRAY_LENGTH(boolsetting); i++)
+  {
+    if (boolsetting[i])
+      strRegBool << '|' << boolsetting[i];
+  }
+  strRegBool << ")$";
+
+  CRegExp regBool, regIpAddress, regInt, regFloat, regPercent;
+  if (!regBool.RegComp(strRegBool.str()) ||
+      !regIpAddress.RegComp("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$") || // Match to #.#.#.#
+      !regInt.RegComp("^[0-9]+$") ||
+      !regFloat.RegComp("^[0-9]*\\.[0-9]+$") ||
+      !regPercent.RegComp("^[0-9]+%$"))
+    return false;
 
   size_t pos;
   if ((pos = strValues.find(';')) != string::npos)
@@ -434,10 +485,98 @@ bool CLibretroEnvironment::ParseVariable(const retro_variable &var, CStdString &
 
   StringUtils::SplitString(strValues, "|", values);
 
+  // Infer setting type based on number and format of values
   if (values.empty())
     return false;
+  if (values.size() == 1)
+    setting |= (SETTING_TYPE_TEXT | SETTING_TYPE_IPADDRESS | SETTING_TYPE_NUMBER);
+  if (values.size() == 2)
+    setting |= SETTING_TYPE_BOOL;
+  if (values.size() > 1)
+    setting |= (SETTING_TYPE_SLIDER_INT | SETTING_TYPE_SLIDER_FLOAT | SETTING_TYPE_SLIDER_PERCENT | SETTING_TYPE_ENUM);
 
-  strDefault = values[0].Trim().c_str();
+  for (CStdStringArray::iterator it = values.begin(); it != values.end(); it++)
+  {
+    (*it) = it->Trim();
+
+    // Discard invalid settings types
+    struct FilterTypes
+    {
+      CRegExp *regex;
+      unsigned short setting;
+    };
+    FilterTypes filters[] =
+    {
+      { &regBool,      SETTING_TYPE_BOOL },
+      { &regIpAddress, SETTING_TYPE_IPADDRESS },
+      { &regInt,       SETTING_TYPE_NUMBER },
+      { &regInt,       SETTING_TYPE_SLIDER_INT },
+      { &regFloat,     SETTING_TYPE_SLIDER_FLOAT },
+      { &regPercent,   SETTING_TYPE_SLIDER_PERCENT },
+    };
+    for (size_t i = 0; i < sizeof(filters) / sizeof(filters[0]); i++)
+      if ((setting & filters[i].setting) && filters[i].regex->RegFind(*it) < 0)
+        setting &= ~filters[i].setting;
+  }
+
+  // Got our type, construct final XML element. If two types are superimposed,
+  // i.e. SETTING_TYPE_BOOL | SETTING_TYPE_ENUM, choose the more specific one.
+  xmlSetting.SetAttribute("id", var.key);
+  xmlSetting.SetAttribute("label", description.c_str());
+
+  if (setting & SETTING_TYPE_BOOL)
+  {
+    // Canonicalize the default value
+    for (size_t i = 0; i < sizeof(boolsetting) / sizeof(boolsetting[0]); i++)
+      if (boolsetting[i] && values[0].Equals(boolsetting[i]))
+        { values[0] = (i % 2 == 0 ? "true" : "false"); break; }
+    xmlSetting.SetAttribute("type", "bool");
+  }
+  else if (setting & SETTING_TYPE_TEXT)
+    xmlSetting.SetAttribute("type", "text");
+  else if (setting & SETTING_TYPE_IPADDRESS)
+    xmlSetting.SetAttribute("type", "ipaddress");
+  else if (setting & SETTING_TYPE_NUMBER)
+    xmlSetting.SetAttribute("type", "number");
+  else if ((setting & SETTING_TYPE_SLIDER_INT) || (setting & SETTING_TYPE_SLIDER_PERCENT))
+  {
+    bool percent = (setting & SETTING_TYPE_SLIDER_PERCENT) != 0;
+    vector<long int> intValues;
+    for (CStdStringArray::const_iterator it = values.begin(); it != values.end(); it++)
+      intValues.push_back(strtol(it->c_str(), NULL, 10));
+    
+    // TODO: Euclid's GCD
+    int min = 0;
+    int step = 5;
+    int max = 100;
+    int count = 21;
+
+    // Only allow linear steps
+    bool valid = (min + step * (count - 1) == max);
+    if (valid && false)
+    {
+      CStdString range;
+      range.Format("%d,%d,%d", min, step, max);
+      xmlSetting.SetAttribute("type", "slider");
+      xmlSetting.SetAttribute("option", percent ? "percent" : "int");
+      xmlSetting.SetAttribute("range", range.c_str());
+    }
+    else
+    {
+      // Fall back to a simple enum
+      StringUtils::JoinString(values, "|", strValues);
+      xmlSetting.SetAttribute("type", "enum");
+      xmlSetting.SetAttribute("values", strValues.c_str());
+    }
+  }
+  else if ((setting & SETTING_TYPE_ENUM) || (setting & SETTING_TYPE_SLIDER_FLOAT))
+  {
+    StringUtils::JoinString(values, "|", strValues);
+    xmlSetting.SetAttribute("type", "enum");
+    xmlSetting.SetAttribute("values", strValues.c_str());
+  }
+  xmlSetting.SetAttribute("default", values[0].c_str());
+  strDefault = values[0].c_str();
 
   return true;
 }

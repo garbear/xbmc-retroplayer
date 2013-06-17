@@ -3137,6 +3137,9 @@
     <ClCompile Include="..\..\xbmc\games\savegames\GUIDialogGameSaves.cpp">
       <Filter>games\savegames</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\test\TestLibretroEnvironment.cpp">
+      <Filter>games\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
