@@ -26,6 +26,7 @@
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "games/GameClient.h"
+#include "games/libretro/libretro_wrapped.h"
 #include "threads/Thread.h"
 
 #include <stdint.h>
@@ -124,13 +125,13 @@ private:
   static void    OnAudioSample(int16_t left, int16_t right);
   static size_t  OnAudioSampleBatch(const int16_t *data, size_t frames);
   static int16_t OnInputState(unsigned port, unsigned device, unsigned index, unsigned id);
-  static void    OnSetPixelFormat(retro_pixel_format pixelFormat); // retro_pixel_format defined in libretro.h
-  static void    OnSetKeyboardCallback(retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
+  static void    OnSetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat); // retro_pixel_format defined in libretro.h
+  static void    OnSetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
 
   // So that the static functions above may invoke audio, video and input callbacks
   static CRetroPlayer *m_retroPlayer;
   static ADDON::CGameClient::DataReceiver m_callbacks;
-  static retro_keyboard_event_t m_keyboardCallback; // unused
+  static LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // unused
 
   CRetroPlayerVideo    m_video;
   CRetroPlayerAudio    m_audio;

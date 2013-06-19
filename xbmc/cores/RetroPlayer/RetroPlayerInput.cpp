@@ -20,7 +20,7 @@
  */
 
 #include "RetroPlayerInput.h"
-#include "games/libretro/libretro.h"
+#include "games/libretro/libretro_wrapped.h"
 #include "utils/log.h"
 
 #include <string.h>

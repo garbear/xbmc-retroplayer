@@ -23,7 +23,7 @@
 #include "linux/PlatformDefs.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "DllSwScale.h"
-#include "games/libretro/libretro.h"
+#include "games/libretro/libretro_wrapped.h"
 #include "threads/Thread.h"
 
 #include <stdint.h>
@@ -60,10 +60,10 @@ public:
 
   /**
    * Set the m_pixelFormat to match the format used by the game client. If this
-   * function is not called, m_pixelFormat defaults to RETRO_PIXEL_FORMAT_0RGB1555.
+   * function is not called, m_pixelFormat defaults to LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555.
    * For a list of valid pixel formats, see libretro.h.
    */
-  void SetPixelFormat(retro_pixel_format pixelFormat) { m_pixelFormat = pixelFormat; }
+  void SetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat) { m_pixelFormat = pixelFormat; }
 
 protected:
   virtual void Process();
@@ -74,7 +74,7 @@ private:
   Frame              m_queuedFrame;
   CEvent             m_frameEvent;  // Set immediately when a new frame is queued
   CCriticalSection   m_critSection; // Guard m_queuedFrame
-  retro_pixel_format m_pixelFormat;
+  LIBRETRO::retro_pixel_format m_pixelFormat;
   DllSwScale         m_dllSwScale;
   SwsContext         *m_swsContext;
 

@@ -29,7 +29,7 @@
 CRetroPlayerVideo::CRetroPlayerVideo()
   : CThread("RetroPlayerVideo"),
     m_queuedFrame(),
-    m_pixelFormat(RETRO_PIXEL_FORMAT_0RGB1555),
+    m_pixelFormat(LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555),
     m_swsContext(NULL),
     m_bAllowFullscreen(false),
     m_framerate(0.0),
@@ -203,15 +203,15 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
     PixelFormat format;
     switch (m_pixelFormat)
     {
-    case RETRO_PIXEL_FORMAT_XRGB8888:
+    case LIBRETRO::RETRO_PIXEL_FORMAT_XRGB8888:
       CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: XRGB8888, using PIX_FMT_0RGB32");
       format = PIX_FMT_0RGB32;
       break;
-    case RETRO_PIXEL_FORMAT_RGB565:
+    case LIBRETRO::RETRO_PIXEL_FORMAT_RGB565:
   	  CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: RGB565, using PIX_FMT_RGB565");
       format = PIX_FMT_RGB565;
       break;
-    case RETRO_PIXEL_FORMAT_0RGB1555:
+    case LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555:
     default:
       CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: 0RGB1555, using PIX_FMT_RGB555");
       format = PIX_FMT_RGB555;
