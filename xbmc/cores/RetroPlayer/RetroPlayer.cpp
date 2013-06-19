@@ -55,7 +55,7 @@ CGameClient::DataReceiver CRetroPlayer::m_callbacks(OnVideoFrame,
                                                     OnSetPixelFormat,
                                                     OnSetKeyboardCallback);
 
-retro_keyboard_event_t CRetroPlayer::m_keyboardCallback = NULL;
+LIBRETRO::retro_keyboard_event_t CRetroPlayer::m_keyboardCallback = NULL;
 
 CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
   : IPlayer(callback), CThread("RetroPlayer"), m_playSpeed(PLAYSPEED_NORMAL)
@@ -575,13 +575,13 @@ int16_t CRetroPlayer::OnInputState(unsigned port, unsigned device, unsigned inde
 }
 
 /* static */
-void CRetroPlayer::OnSetPixelFormat(retro_pixel_format pixelFormat)
+void CRetroPlayer::OnSetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat)
 {
   m_retroPlayer->m_video.SetPixelFormat(pixelFormat);
 }
 
 /* static */
-void CRetroPlayer::OnSetKeyboardCallback(retro_keyboard_event_t callback)
+void CRetroPlayer::OnSetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback)
 {
   m_keyboardCallback = callback;
 }

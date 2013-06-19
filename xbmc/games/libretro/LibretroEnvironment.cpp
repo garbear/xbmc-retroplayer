@@ -131,7 +131,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // RETRO_ENVIRONMENT_GET_VARIABLE was changed in the libretro API to function slightly
       // differently. Warn the user that the game client is still using the old functionality.
-      retro_variable *var = reinterpret_cast<retro_variable*>(data);
+      LIBRETRO::retro_variable *var = reinterpret_cast<LIBRETRO::retro_variable*>(data);
       CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
       var->value = NULL;
       break;
@@ -140,7 +140,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // RETRO_ENVIRONMENT_SET_VARIABLES was changed in the libretro API to function slightly
       // differently. Warn the user that the game client is still using the old functionality.
-      const retro_variable *vars = reinterpret_cast<const retro_variable*>(data);
+      const LIBRETRO::retro_variable *vars = reinterpret_cast<const LIBRETRO::retro_variable*>(data);
       CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
       while (vars && vars->key)
       {
@@ -153,7 +153,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
   case RETRO_ENVIRONMENT_SET_MESSAGE:
     {
       // Sets a message to be displayed. Generally not for trivial messages.
-      const retro_message *msg = reinterpret_cast<const retro_message*>(data);
+      const LIBRETRO::retro_message *msg = reinterpret_cast<const LIBRETRO::retro_message*>(data);
       if (msg->msg && msg->frames)
         CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: display msg \"%s\" for %d frames", cmd, msg->msg, msg->frames);
       break;
@@ -270,15 +270,15 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
   case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
     {
       // Get the internal pixel format used by the core. The default pixel format is
-      // RETRO_PIXEL_FORMAT_0RGB1555 (see libretro.h). Returning false lets the core
+      // LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555 (see libretro.h). Returning false lets the core
       // know that XBMC does not support the pixel format.
-      retro_pixel_format pix_fmt = *reinterpret_cast<const retro_pixel_format*>(data);
+      LIBRETRO::retro_pixel_format pix_fmt = *reinterpret_cast<const LIBRETRO::retro_pixel_format*>(data);
       // Validate the format
       switch (pix_fmt)
       {
-      case RETRO_PIXEL_FORMAT_0RGB1555: // 5 bit color, high bit must be zero
-      case RETRO_PIXEL_FORMAT_XRGB8888: // 8 bit color, high byte is ignored
-      case RETRO_PIXEL_FORMAT_RGB565:   // 5/6/5 bit color
+      case LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555: // 5 bit color, high bit must be zero
+      case LIBRETRO::RETRO_PIXEL_FORMAT_XRGB8888: // 8 bit color, high byte is ignored
+      case LIBRETRO::RETRO_PIXEL_FORMAT_RGB565:   // 5/6/5 bit color
         {
           static const char *fmts[] = {"RETRO_PIXEL_FORMAT_0RGB1555",
                                        "RETRO_PIXEL_FORMAT_XRGB8888",
@@ -299,7 +299,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Describes the internal input bind through a human-readable string.
       // This string can be used to better let a user configure input. The array
       // is terminated by retro_input_descriptor::description being set to NULL.
-      const retro_input_descriptor *descriptor = reinterpret_cast<const retro_input_descriptor*>(data);
+      const LIBRETRO::retro_input_descriptor *descriptor = reinterpret_cast<const LIBRETRO::retro_input_descriptor*>(data);
 
       if (!descriptor->description)
         CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no descriptors given", cmd);
@@ -318,7 +318,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Sets a callback function, called by XBMC, used to notify core about
       // keyboard events.
-      const retro_keyboard_callback *callback_struct = reinterpret_cast<const retro_keyboard_callback*>(data);
+      const LIBRETRO::retro_keyboard_callback *callback_struct = reinterpret_cast<const LIBRETRO::retro_keyboard_callback*>(data);
       if (callback_struct->callback && fn_SetKeyboardCallback)
         fn_SetKeyboardCallback(callback_struct->callback);
       break;
@@ -327,7 +327,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Sets an interface to eject and insert disk images. This is used for games which
       // consist of multiple images and must be manually swapped out by the user (e.g. PSX).
-      const retro_disk_control_callback *disk_control_cb = reinterpret_cast<const retro_disk_control_callback*>(data);
+      const LIBRETRO::retro_disk_control_callback *disk_control_cb = reinterpret_cast<const LIBRETRO::retro_disk_control_callback*>(data);
       if (fn_SetDiskControlCallback)
         fn_SetDiskControlCallback(disk_control_cb);
       break;
@@ -336,7 +336,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Sets an interface to let a libretro core render with hardware acceleration.
       // This call is currently very experimental
-      const retro_hw_render_callback *hw_render_cb = reinterpret_cast<const retro_hw_render_callback*>(data);
+      const LIBRETRO::retro_hw_render_callback *hw_render_cb = reinterpret_cast<const LIBRETRO::retro_hw_render_callback*>(data);
       if (fn_SetRenderCallback)
         fn_SetRenderCallback(hw_render_cb);
       break;
@@ -346,7 +346,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Interface to acquire user-defined information from environment that
       // cannot feasibly be supported in a multi-system way. Mostly used for
       // obscure, specific features that the user can tap into when necessary.
-      retro_variable *var = reinterpret_cast<retro_variable*>(data);
+      LIBRETRO::retro_variable *var = reinterpret_cast<LIBRETRO::retro_variable*>(data);
       if (var->key && var->value)
       {
         // m_varMap provides both a static layer for returning persistent strings,
@@ -379,7 +379,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Allows an implementation to define its configuration options. 'data' points
       // to an array of retro_variable structs terminated by a { NULL, NULL } element.
-      const retro_variable *vars = reinterpret_cast<const retro_variable*>(data);
+      const LIBRETRO::retro_variable *vars = reinterpret_cast<const LIBRETRO::retro_variable*>(data);
       m_varMap.clear();
       if (vars->key)
       {
@@ -412,7 +412,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
   return true;
 }
 
-bool CLibretroEnvironment::ParseVariable(const retro_variable &var, CStdString &strDefault)
+bool CLibretroEnvironment::ParseVariable(const LIBRETRO::retro_variable &var, CStdString &strDefault)
 {
   // Variable parsing follows a very procedural approach heavily grounded in C-think:
   // the value contains a description, a delimiting semicolon, a pipe-separated

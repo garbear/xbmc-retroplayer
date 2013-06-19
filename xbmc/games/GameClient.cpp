@@ -161,7 +161,7 @@ bool CGameClient::Init()
     return false;
   }
 
-  retro_system_info info = { };
+  LIBRETRO::retro_system_info info = { };
   m_dll.retro_get_system_info(&info);
   m_clientName         = info.library_name ? info.library_name : "Unknown";
   m_clientVersion      = info.library_version ? info.library_version : "v0.0";
@@ -255,7 +255,7 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
   }
 
   // Ensure the default values
-  callbacks.SetPixelFormat(RETRO_PIXEL_FORMAT_0RGB1555);
+  callbacks.SetPixelFormat(LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555);
   callbacks.SetKeyboardCallback(NULL);
 
   // Install the hooks. These are called by CLibretroEnvironment::EnvironmentCallback()
@@ -274,7 +274,7 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
     m_bIsInited = true;
   }
 
-  retro_game_info info;
+  LIBRETRO::retro_game_info info;
 
   CGameFileLoaderUseHD        hd;
   CGameFileLoaderUseParentZip outerzip;
@@ -355,7 +355,7 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
 
   // Get information about system audio/video timings and geometry
   // Can be called only after retro_load_game()
-  retro_system_av_info av_info = {};
+  LIBRETRO::retro_system_av_info av_info = {};
   m_dll.retro_get_system_av_info(&av_info);
 
   unsigned int baseWidth  = av_info.geometry.base_width; // 256

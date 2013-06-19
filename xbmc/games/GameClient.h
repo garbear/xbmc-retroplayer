@@ -24,6 +24,7 @@
 #include "FileItem.h"
 #include "GameClientDLL.h"
 #include "GameFileLoader.h"
+#include "games/libretro/libretro_wrapped.h"
 #include "games/savegames/Savestate.h"
 #include "games/tags/GameInfoTagLoader.h"
 #include "SerialState.h"
@@ -77,8 +78,8 @@ namespace ADDON
       typedef size_t  (*AudioSampleBatch_t)    (const int16_t *data, size_t frames);
       // Actually a "data sender", but who's looking
       typedef int16_t (*GetInputState_t)       (unsigned port, unsigned device, unsigned index, unsigned id);
-      typedef void    (*SetPixelFormat_t)      (retro_pixel_format format); // retro_pixel_format defined in libretro.h
-      typedef void    (*SetKeyboardCallback_t) (retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
+      typedef void    (*SetPixelFormat_t)      (LIBRETRO::retro_pixel_format format); // retro_pixel_format defined in libretro.h
+      typedef void    (*SetKeyboardCallback_t) (LIBRETRO::retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
 
       VideoFrame_t          VideoFrame;
       AudioSample_t         AudioSample;

@@ -21,7 +21,7 @@
 
 #include "GameFileLoader.h"
 #include "GameClient.h"
-#include "games/libretro/libretro.h"
+#include "games/libretro/libretro_wrapped.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
@@ -128,7 +128,7 @@ bool CGameFileLoader::IsExtensionValid(const CStdString &ext, const std::set<CSt
   return setExts.find(ext2) != setExts.end();
 }
 
-bool CGameFileLoader::GetGameInfo(retro_game_info &info) const
+bool CGameFileLoader::GetGameInfo(LIBRETRO::retro_game_info &info) const
 {
   // Always return path. If info.data is set, then info.path must be set back to NULL
   info.path = m_path.c_str();

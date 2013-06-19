@@ -20,19 +20,19 @@
  */
 #pragma once
 
-#include "libretro/libretro.h"
+#include "games/libretro/libretro_wrapped.h"
 #include "DynamicDll.h"
 
 class GameClientDLLInterface
 {
 public:
     virtual ~GameClientDLLInterface() {}
-    virtual void retro_set_environment(retro_environment_t env_func) = 0;
-    virtual void retro_set_video_refresh(retro_video_refresh_t frame_func) = 0;
-    virtual void retro_set_audio_sample(retro_audio_sample_t sample_func) = 0;
-    virtual void retro_set_audio_sample_batch(retro_audio_sample_batch_t samples_func) = 0;
-    virtual void retro_set_input_poll(retro_input_poll_t poll_func) = 0;
-    virtual void retro_set_input_state(retro_input_state_t state_func) = 0;
+    virtual void retro_set_environment(LIBRETRO::retro_environment_t env_func) = 0;
+    virtual void retro_set_video_refresh(LIBRETRO::retro_video_refresh_t frame_func) = 0;
+    virtual void retro_set_audio_sample(LIBRETRO::retro_audio_sample_t sample_func) = 0;
+    virtual void retro_set_audio_sample_batch(LIBRETRO::retro_audio_sample_batch_t samples_func) = 0;
+    virtual void retro_set_input_poll(LIBRETRO::retro_input_poll_t poll_func) = 0;
+    virtual void retro_set_input_state(LIBRETRO::retro_input_state_t state_func) = 0;
 
     virtual void retro_init(void) = 0;
     virtual void retro_deinit(void) = 0;
@@ -40,8 +40,8 @@ public:
     virtual void retro_run(void) = 0;
 
     virtual unsigned int retro_api_version(void) = 0;
-    virtual void retro_get_system_info(struct retro_system_info *info) = 0;
-    virtual void retro_get_system_av_info(struct retro_system_av_info *info) = 0;
+    virtual void retro_get_system_info(LIBRETRO::retro_system_info *info) = 0;
+    virtual void retro_get_system_av_info(LIBRETRO::retro_system_av_info *info) = 0;
     virtual void retro_set_controller_port_device(unsigned int port, unsigned int device) = 0;
 
     virtual size_t retro_serialize_size(void) = 0;
@@ -51,8 +51,8 @@ public:
     virtual void retro_cheat_reset(void) = 0;
     virtual void retro_cheat_set(unsigned int index, bool enabled, const char *code) = 0;
 
-    virtual bool retro_load_game(const struct retro_game_info *game) = 0;
-    virtual bool retro_load_game_special(unsigned int game_type, const struct retro_game_info *info, size_t num_info) = 0;
+    virtual bool retro_load_game(const LIBRETRO::retro_game_info *game) = 0;
+    virtual bool retro_load_game_special(unsigned int game_type, const LIBRETRO::retro_game_info *info, size_t num_info) = 0;
     virtual void retro_unload_game(void) = 0;
 
     virtual unsigned int retro_get_region(void) = 0;
@@ -64,12 +64,12 @@ public:
 class GameClientDLL : public DllDynamic, GameClientDLLInterface
 {
   DECLARE_DLL_WRAPPER(GameClientDLL, /* Call SetFile() later */ )
-  DEFINE_METHOD1(void, retro_set_environment, (retro_environment_t p1))
-  DEFINE_METHOD1(void, retro_set_video_refresh, (retro_video_refresh_t p1))
-  DEFINE_METHOD1(void, retro_set_audio_sample, (retro_audio_sample_t p1))
-  DEFINE_METHOD1(void, retro_set_audio_sample_batch, (retro_audio_sample_batch_t p1))
-  DEFINE_METHOD1(void, retro_set_input_poll, (retro_input_poll_t p1))
-  DEFINE_METHOD1(void, retro_set_input_state, (retro_input_state_t p1))
+  DEFINE_METHOD1(void, retro_set_environment, (LIBRETRO::retro_environment_t p1))
+  DEFINE_METHOD1(void, retro_set_video_refresh, (LIBRETRO::retro_video_refresh_t p1))
+  DEFINE_METHOD1(void, retro_set_audio_sample, (LIBRETRO::retro_audio_sample_t p1))
+  DEFINE_METHOD1(void, retro_set_audio_sample_batch, (LIBRETRO::retro_audio_sample_batch_t p1))
+  DEFINE_METHOD1(void, retro_set_input_poll, (LIBRETRO::retro_input_poll_t p1))
+  DEFINE_METHOD1(void, retro_set_input_state, (LIBRETRO::retro_input_state_t p1))
 
   DEFINE_METHOD0(void, retro_init)
   DEFINE_METHOD0(void, retro_deinit)
@@ -77,8 +77,8 @@ class GameClientDLL : public DllDynamic, GameClientDLLInterface
   DEFINE_METHOD0(void, retro_run)
 
   DEFINE_METHOD0(unsigned int, retro_api_version)
-  DEFINE_METHOD1(void, retro_get_system_info, (struct retro_system_info *p1))
-  DEFINE_METHOD1(void, retro_get_system_av_info, (struct retro_system_av_info *p1))
+  DEFINE_METHOD1(void, retro_get_system_info, (LIBRETRO::retro_system_info *p1))
+  DEFINE_METHOD1(void, retro_get_system_av_info, (LIBRETRO::retro_system_av_info *p1))
   DEFINE_METHOD2(void, retro_set_controller_port_device, (unsigned int p1, unsigned int p2))
 
   DEFINE_METHOD0(size_t, retro_serialize_size)
@@ -88,8 +88,8 @@ class GameClientDLL : public DllDynamic, GameClientDLLInterface
   DEFINE_METHOD0(void, retro_cheat_reset)
   DEFINE_METHOD3(void, retro_cheat_set, (unsigned int p1, bool p2, const char *p3))
 
-  DEFINE_METHOD1(bool, retro_load_game, (const struct retro_game_info *p1))
-  DEFINE_METHOD3(bool, retro_load_game_special, (unsigned int p1, const struct retro_game_info *p2, size_t p3))
+  DEFINE_METHOD1(bool, retro_load_game, (const LIBRETRO::retro_game_info *p1))
+  DEFINE_METHOD3(bool, retro_load_game_special, (unsigned int p1, const LIBRETRO::retro_game_info *p2, size_t p3))
   DEFINE_METHOD0(void, retro_unload_game)
 
   DEFINE_METHOD0(unsigned int, retro_get_region)

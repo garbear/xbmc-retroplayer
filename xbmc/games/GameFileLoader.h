@@ -26,7 +26,10 @@
 
 // Forward declarations
 class CFileItem;
-struct retro_game_info;
+namespace LIBRETRO
+{
+  struct retro_game_info;
+}
 namespace ADDON
 {
   struct GameClientConfig;
@@ -59,7 +62,7 @@ namespace GAMES
     /**
       * Populates retro_game_info with results.
       */
-    bool GetGameInfo(retro_game_info &info) const;
+    bool GetGameInfo(LIBRETRO::retro_game_info &info) const;
 
     /**
       * Perform the gamut of checks on the file: "gameclient" property, platform,

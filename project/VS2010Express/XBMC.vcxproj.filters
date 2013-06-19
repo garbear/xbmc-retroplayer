@@ -6129,6 +6129,9 @@
     <ClInclude Include="..\..\xbmc\games\savegames\GUIDialogGameSaves.h">
       <Filter>games\savegames</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\libretro\libretro_wrapped.h">
+      <Filter>games\libretro</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">

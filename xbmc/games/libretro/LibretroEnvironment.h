@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "libretro.h"
+#include "libretro_wrapped.h"
 #include "games/GameClient.h"
 #include "utils/StdString.h"
 
@@ -30,10 +30,10 @@ namespace GAMES
   class CLibretroEnvironment
   {
   public:
-    typedef void (*SetPixelFormat_t)         (retro_pixel_format format); // retro_pixel_format defined in libretro.h
-    typedef void (*SetKeyboardCallback_t)    (retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
-    typedef void (*SetDiskControlCallback_t) (const retro_disk_control_callback *callback_struct); // retro_disk_control_callback defined in libretro.h
-    typedef void (*SetRenderCallback_t)      (const retro_hw_render_callback *callback_struct); // retro_hw_render_callback defined in libretro.h
+    typedef void (*SetPixelFormat_t)         (LIBRETRO::retro_pixel_format format); // retro_pixel_format defined in libretro.h
+    typedef void (*SetKeyboardCallback_t)    (LIBRETRO::retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
+    typedef void (*SetDiskControlCallback_t) (const LIBRETRO::retro_disk_control_callback *callback_struct); // retro_disk_control_callback defined in libretro.h
+    typedef void (*SetRenderCallback_t)      (const LIBRETRO::retro_hw_render_callback *callback_struct); // retro_hw_render_callback defined in libretro.h
 
     // Libretro interface
     static bool EnvironmentCallback(unsigned cmd, void *data);
@@ -44,7 +44,7 @@ namespace GAMES
     static void ResetCallbacks();
 
     static bool Abort() { return m_bAbort; }
-    static bool ParseVariable(const retro_variable &var, CStdString &strDefault);
+    static bool ParseVariable(const LIBRETRO::retro_variable &var, CStdString &strDefault);
 
   private:
     static SetPixelFormat_t         fn_SetPixelFormat;
