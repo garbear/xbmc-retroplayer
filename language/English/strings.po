@@ -6361,17 +6361,60 @@ msgctxt "#15015"
 msgid "Remove"
 msgstr ""
 
+#: system/settings/settings.xml
 msgctxt "#15016"
 msgid "Games"
 msgstr ""
 
-#empty strings from id 15017 to 15018
+#empty string with id 15017
+
+#: system/settings/settings.xml
+msgctxt "#15018"
+msgid "Prefer loading files from memory (debug)"
+msgstr ""
 
 msgctxt "#15019"
 msgid "Add"
 msgstr ""
 
-#empty strings from id 15020 to 15051
+#: system/settings/settings.xml
+msgctxt "#15020"
+msgid "Allow emulators to load .zip files (debug)"
+msgstr ""
+
+#empty strings from id 15021 to 15022
+
+#: xbmc/games/GameManager.cpp
+msgctxt "#15023"
+msgid "Incompatible DLL"
+msgstr ""
+
+#: xbmc/games/GameManager.cpp
+msgctxt "#15024"
+msgid "A compatible emulator was installed for:"
+msgstr ""
+
+#: xbmc/games/GameClient.cpp
+msgctxt "#15025"
+msgid "Emulator setup"
+msgstr ""
+
+#: xbmc/games/GameClient.cpp
+msgctxt "#15026"
+msgid "External system directory"
+msgstr ""
+
+#: xbmc/games/libretro/LibretroEnvironment.cpp
+msgctxt "#15027"
+msgid "Choose system directory"
+msgstr ""
+
+#: xbmc/games/libretro/LibretroEnvironment.cpp
+msgctxt "#15028"
+msgid "Skip and try game directory"
+msgstr ""
+
+#empty strings from id 15029 to 15051
 
 msgctxt "#15052"
 msgid "Password"
@@ -8559,6 +8602,7 @@ msgctxt "#20012"
 msgid "Video playlists"
 msgstr ""
 
+#: xbmc/games/GameManager.cpp
 msgctxt "#20013"
 msgid "Do you wish to launch the game?"
 msgstr ""
@@ -11321,7 +11365,18 @@ msgctxt "#24023"
 msgid "Add-on disabled"
 msgstr ""
 
-#empty strings from id 24024 to 24026
+#: xbmc/addons/Addon.cpp
+msgctxt "#24024"
+msgid "Emulators"
+msgstr ""
+
+#: system/settings/settings.xml
+#: xbmc/games/GameManager.cpp
+msgctxt "#24025"
+msgid "Manage emulators..."
+msgstr ""
+
+#empty string with id 24026
 
 #: xbmc/addons/addon.cpp
 msgctxt "#24027"
@@ -11427,7 +11482,10 @@ msgctxt "#24048"
 msgid "Rollback"
 msgstr ""
 
-#empty string with id 24049
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
+msgctxt "#24049"
+msgid "Add-on manager"
+msgstr ""
 
 msgctxt "#24050"
 msgid "Available Add-ons"
@@ -14132,7 +14190,39 @@ msgctxt "#36420"
 msgid "No info available yet."
 msgstr ""
 
-#empty strings from id 36421 to 36999
+#empty strings from id 36421 to 36499
+
+#: system/settings/settings.xml
+msgctxt "#36500"
+msgid "All your base are belong[CR]to us"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36501"
+msgid "No info available yet."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36502"
+msgid "No info available yet."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36503"
+msgid "No info available yet."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36504"
+msgid "Some emulators can only load game files on the local hard drive. If the emulator also supports loading files from memory, this is the tie-breaker."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36505"
+msgid "Some emulators crash when loading .zip files. However, if the emulator can load files from memory, XBMC will safely load games from within zips."
+msgstr ""
+
+#empty strings from id 36506 to 36999
 #end reservation
 
 #: xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamNavigator.cpp

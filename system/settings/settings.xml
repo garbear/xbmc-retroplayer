@@ -1525,6 +1525,27 @@
       </group>
     </category>
   </section>
+  <section id="games" label="15016" help="36500">
+    <category id="gamesgeneral" label="16000" help="36501">
+      <group id="1">
+        <setting id="gamesgeneral.manageaddons" type="action" label="24025" help="36502">
+          <level>0</level>
+        </setting>
+      </group>
+    </category>
+    <category id="gamesdebug" label="14092" help="36503">
+      <group id="1">
+        <setting id="gamesdebug.prefervfs" type="boolean" label="15018" help="36504">
+          <level>2</level>
+          <default>true</default>
+        </setting>
+        <setting id="gamesdebug.allowzip" type="boolean" label="15020" help="36505">
+          <level>2</level>
+          <default>true</default>
+        </setting>
+      </group>
+    </category>
+  </section>
   <section id="pictures" label="1" help="36304">
     <category id="pictures" label="14081" help="36305">
       <group id="1">
