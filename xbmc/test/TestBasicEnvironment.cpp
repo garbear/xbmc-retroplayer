@@ -25,6 +25,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "powermanagement/PowerManager.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/GUISettings.h"
 #include "settings/Settings.h"
 #include "Util.h"
 
@@ -36,7 +37,10 @@ void TestBasicEnvironment::SetUp()
 {
   char *tmp;
   CStdString xbmcTempPath;
+  CStdString xbmcTempProfilePath;
   XFILE::CFile *f;
+
+  CSettings::Get().Initialize();
 
   /* NOTE: The below is done to fix memleak warning about unitialized variable
    * in xbmcutil::GlobalsSingleton<CAdvancedSettings>::getInstance().
@@ -59,7 +63,7 @@ void TestBasicEnvironment::SetUp()
    * that the initialization of these components won't be needed.
    */
   g_powerManager.Initialize();
-  CSettings::Get().Initialize();
+  g_guiSettings.Initialize();
 
   /* Create a temporary directory and set it to be used throughout the
    * test suite run.
@@ -84,6 +88,32 @@ void TestBasicEnvironment::SetUp()
   CSpecialProtocol::SetTempPath(tmp);
 #endif
 
+  /* Create a temporary master profile directory.
+   */
+#ifndef _LINUX
+  TCHAR lpTempProfilePathBuffer[MAX_PATH];
+  (void)tmp;
+  if (!GetTempPath(MAX_PATH, lpTempProfilePathBuffer))
+    SetUpError();
+  xbmcTempProfilePath = lpTempProfilePathBuffer;
+  if (!GetTempFileName(xbmcTempProfilePath.c_str(), "xbmcprofiledir", 0, lpTempProfilePathBuffer))
+    SetUpError();
+  DeleteFile(lpTempProfilePathBuffer);
+  if (!CreateDirectory(lpTempProfilePathBuffer, NULL))
+    SetUpError();
+  CSpecialProtocol::SetMasterProfilePath(lpTempProfilePathBuffer);
+#else
+  char buf2[MAX_PATH];
+  (void)xbmcTempProfilePath;
+  strcpy(buf2, "/tmp/xbmcprofiledirXXXXXX");
+  if ((tmp = mkdtemp(buf2)) == NULL)
+    SetUpError();
+  CSpecialProtocol::SetMasterProfilePath(tmp);
+#endif
+
+  // To resolve special://masterprofile/
+  CSettings::Get().LoadProfiles(PROFILES_FILE);
+
   /* Create and delete a tempfile to initialize the VFS (really to initialize
    * CLibcdio). This is done so that the initialization of the VFS does not
    * affect the performance results of the test cases.
@@ -103,6 +133,8 @@ void TestBasicEnvironment::TearDown()
 {
   CStdString xbmcTempPath = CSpecialProtocol::TranslatePath("special://temp/");
   XFILE::CDirectory::Remove(xbmcTempPath);
+  CStdString xbmcTempProfilePath = CSpecialProtocol::TranslatePath("special://masterprofile/");
+  XFILE::CDirectory::Remove(xbmcTempProfilePath);
 }
 
 void TestBasicEnvironment::SetUpError()
