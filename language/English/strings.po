@@ -417,6 +417,7 @@ msgid "Update failed"
 msgstr ""
 
 #: xbmc/addons/addoninstaller.cpp
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 msgctxt "#114"
 msgid "Installation failed"
 msgstr ""
@@ -3542,6 +3543,7 @@ msgctxt "#1222"
 msgid "Music & video & pictures & files"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 msgctxt "#1223"
 msgid "Disabled"
 msgstr ""
@@ -5364,6 +5366,7 @@ msgctxt "#13328"
 msgid "%s not found"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 msgctxt "#13329"
 msgid "Error opening %s"
 msgstr ""
@@ -6366,7 +6369,10 @@ msgctxt "#15016"
 msgid "Games"
 msgstr ""
 
-#empty string with id 15017
+#: system/settings/settings.xml
+msgctxt "#15017"
+msgid "Audio delay"
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#15018"
@@ -6651,7 +6657,10 @@ msgctxt "#16022"
 msgid "Bob (inverted)"
 msgstr ""
 
-#empty string with id 16023
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
+msgctxt "#16023"
+msgid "No compatible emulators found for file:"
+msgstr ""
 
 #: xbmc/dialogs/GUIDialogProgress.cpp
 msgctxt "#16024"
@@ -6662,10 +6671,12 @@ msgctxt "#16025"
 msgid "Enter the artist name"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 msgctxt "#16026"
 msgid "Playback failed"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 msgctxt "#16027"
 msgid "One or more items failed to play."
 msgstr ""
@@ -6674,6 +6685,7 @@ msgctxt "#16028"
 msgid "Enter value"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 msgctxt "#16029"
 msgid "Check the log file for details."
 msgstr ""
@@ -11379,12 +11391,16 @@ msgid "Emulators"
 msgstr ""
 
 #: system/settings/settings.xml
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 #: xbmc/games/GameManager.cpp
 msgctxt "#24025"
 msgid "Manage emulators..."
 msgstr ""
 
-#empty string with id 24026
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
+msgctxt "#24026"
+msgid "Install emulator"
+msgstr ""
 
 #: xbmc/addons/addon.cpp
 msgctxt "#24027"
@@ -14240,7 +14256,12 @@ msgctxt "#36507"
 msgid "No info available yet."
 msgstr ""
 
-#empty strings from id 36508 to 36999
+#: system/settings/settings.xml
+msgctxt "#36508"
+msgid "Change the audio delay. Lower values might cause buffer underruns."
+msgstr ""
+
+#empty strings from id 36509 to 36999
 #end reservation
 
 #: xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamNavigator.cpp
