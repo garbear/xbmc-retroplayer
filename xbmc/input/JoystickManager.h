@@ -59,6 +59,8 @@ private:
   // Allows Wakeup() to perform another wakeup check
   void ResetWakeup() { m_bWakeupChecked = false; }
 
+  inline bool IsGameControl(int actionID);
+
   JoystickArray m_joysticks;
   SJoystick     m_states[GAMEPAD_MAX_CONTROLLERS];
   bool          m_bEnabled;
