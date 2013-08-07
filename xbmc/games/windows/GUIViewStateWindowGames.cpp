@@ -34,12 +34,12 @@ using namespace GAMES;
 
 CGUIViewStateWindowGames::CGUIViewStateWindowGames(const CFileItemList& items) : CGUIViewState(items)
 {
-  AddSortMethod(SORT_METHOD_NONE, 551, LABEL_MASKS("%F", "%I", "%L", ""));  // Filename, Size | Label, empty
-  SetSortMethod(SORT_METHOD_NONE);
+  AddSortMethod(SORT_METHOD_FILE, 561, LABEL_MASKS("%F", "%I", "%L", ""));  // Filename, Size | Label, empty
+  SetSortMethod(SORT_METHOD_FILE);
 
-  SetViewAsControl(DEFAULT_VIEW_LIST);
-
-  SetSortOrder(SortOrderNone);
+  const CViewState *viewState = CViewStateSettings::Get().Get("games");
+  SetViewAsControl(viewState->m_viewMode);
+  SetSortOrder(viewState->m_sortOrder);
 
   LoadViewState(items.GetPath(), WINDOW_GAMES);
 }
