@@ -19,6 +19,13 @@
  */
 #pragma once
 
+// Included by libretro.h, include guards mean these need to be first
+// encountered outside of LIBRETRO namespace. Update this list as libretro.h
+// includes additional files.
+#include <stdint.h>
+#include <stddef.h>
+#include <limits.h>
+
 namespace LIBRETRO
 {
   #include "libretro.h"
