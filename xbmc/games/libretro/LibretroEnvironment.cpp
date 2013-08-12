@@ -389,7 +389,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
           {
             CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key, vars->value);
             if (!ParseVariable(*vars, m_varMap[vars->key])) // m_varMap[vars->key] is always created
-              CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: error parsing variable");
+              CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: error parsing variable", cmd);
           }
           else
             CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: var %s has no value", cmd, vars->key);
