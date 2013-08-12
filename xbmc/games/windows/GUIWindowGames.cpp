@@ -265,9 +265,6 @@ bool CGUIWindowGames::PlayGame(const CFileItem &item)
   CURL url(item.GetPath());
   if (url.GetProtocol() == "zip" && url.GetFileName() == "")
   {
-    // Zip file masquerading as a zip directory
-    if (!CSettings::Get().GetBool("gamesdebug.allowzip"))
-      return false;
     gameFile = CFileItem(url.GetHostName(), false);
   }
 

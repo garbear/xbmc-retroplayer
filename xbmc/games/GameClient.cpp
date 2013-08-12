@@ -54,10 +54,6 @@ namespace GAMES
       if (ext.at(0) != '.')
         ext = "." + ext;
 
-      // Zip crashes some emulators, allow users to disable zips for problematic emulators
-      if (ext == ".zip" && !CSettings::Get().GetBool("gamesdebug.allowzip"))
-        continue;
-
       extensions.insert(ext);
     }
   }

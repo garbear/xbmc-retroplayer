@@ -1584,10 +1584,6 @@
           <level>2</level>
           <default>true</default>
         </setting>
-        <setting id="gamesdebug.allowzip" type="boolean" label="15020" help="36505">
-          <level>2</level>
-          <default>true</default>
-        </setting>
       </group>
     </category>
   </section>
