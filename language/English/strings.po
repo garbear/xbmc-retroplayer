@@ -14323,7 +14323,7 @@ msgid "No info available yet."
 msgstr ""
 
 #: system/settings/settings.xml
-msgctxt "#365010"
+msgctxt "#36510"
 msgid "No info available yet."
 msgstr ""
 
