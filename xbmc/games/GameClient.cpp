@@ -326,9 +326,9 @@ void CGameClient::GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParent
   }
 }
 
-bool CGameClient::CanOpen(const CFileItem &file, bool useStrategies /* = false */) const
+bool CGameClient::CanOpen(const CFileItem &file) const
 {
-  return CGameFileLoader::CanOpen(file, m_config, useStrategies);
+  return CGameFileLoader::CanOpen(file, m_config);
 }
 
 bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)

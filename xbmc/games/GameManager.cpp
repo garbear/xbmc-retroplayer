@@ -296,7 +296,7 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, CStdStringArray &cand
       continue;
 
     CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->id.c_str());
-    if (CGameFileLoader::CanOpen(file, *it, true))
+    if (CGameFileLoader::CanOpen(file, *it))
     {
       CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", it->id.c_str());
       candidates.push_back(it->id);

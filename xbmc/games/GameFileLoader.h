@@ -67,12 +67,9 @@ namespace GAMES
     /**
       * Perform the gamut of checks on the file: "gameclient" property, platform,
       * extension, and a positive match on at least one of the CGameFileLoader
-      * strategies. If config.bAllowVFS and config.bRequireZip are provided, then
-      * useStrategies=true can be used to allow more lenient/accurate testing,
-      * especially for files inside zips (when .zip isn't supported) and files on
-      * the VFS.
+      * strategies.
       */
-    static bool CanOpen(const CFileItem &file, const ADDON::GameClientConfig &config, bool useStrategies = false);
+    static bool CanOpen(const CFileItem &file, const ADDON::GameClientConfig &config);
 
     /**
       * HELPER FUNCTION: If zipPath is a zip file, this will enumerate its contents

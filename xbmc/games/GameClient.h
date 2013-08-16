@@ -111,7 +111,7 @@ namespace ADDON
 
     /**
      * Load the DLL and query basic parameters. After Init() is called, the
-     * Get*() and CanOpen() functions may be called.
+     * Get*() functions may be called.
      */
     bool Init();
 
@@ -121,12 +121,9 @@ namespace ADDON
     /**
      * Perform the gamut of checks on the file: "gameclient" property, platform,
      * extension, and a positive match on at least one of the CGameFileLoader
-     * strategies. If config.bAllowVFS and config.bRequireZip are provided, then
-     * useStrategies=true can be used to allow more lenient/accurate testing,
-     * especially for files inside zips (when .zip isn't supported) and files
-     * on the VFS.
+     * strategies.
      */
-    bool CanOpen(const CFileItem &file, bool useStrategies = false) const;
+    bool CanOpen(const CFileItem &file) const;
 
     bool OpenFile(const CFileItem &file, const DataReceiver &callbacks);
     void CloseFile();

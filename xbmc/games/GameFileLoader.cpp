@@ -38,7 +38,7 @@ using namespace XFILE;
 
 
 /* static */
-bool CGameFileLoader::CanOpen(const CFileItem &file, const GameClientConfig &config, bool useStrategies /* = false */)
+bool CGameFileLoader::CanOpen(const CFileItem &file, const GameClientConfig &config)
 {
   // Check gameclient
   if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != config.id)
@@ -56,34 +56,17 @@ bool CGameFileLoader::CanOpen(const CFileItem &file, const GameClientConfig &con
         return false;
   }
 
-  // If we don't do thorough screening, at least check inside the zip for valid files
-  if (!useStrategies)
-  {
-    // Get the file extension (we want .zip if the file is a top-level zip directory)
-    CStdString ext(URIUtils::GetExtension(file.GetAsUrl().GetFileNameWithoutPath()));
-    if (ext == ".zip")
-    {
-      // If .zip is not valid, see if there is a file inside that is
-      CStdString path2;
-      return IsExtensionValid(ext, config.extensions) || GetEffectiveRomPath(file.GetPath(), config.extensions, path2);
-    }
-    // If the game client lists extensions, check those as well
-    return config.extensions.empty() || config.extensions.find(ext) != config.extensions.end();
-  }
-  else
-  {
-    CGameFileLoaderUseHD        hd;
-    CGameFileLoaderUseParentZip outerzip;
-    CGameFileLoaderUseVFS       vfs;
-    CGameFileLoaderEnterZip     innerzip;
+  CGameFileLoaderUseHD        hd;
+  CGameFileLoaderUseParentZip outerzip;
+  CGameFileLoaderUseVFS       vfs;
+  CGameFileLoaderEnterZip     innerzip;
 
-    CGameFileLoader *strategy[4] = { &hd, &outerzip, &vfs, &innerzip };
+  CGameFileLoader *strategies[] = { &hd, &outerzip, &vfs, &innerzip };
 
-    for (unsigned int i = 0; i < sizeof(strategy) / sizeof(strategy[0]); i++)
-      if (strategy[i]->CanLoad(config, file))
-        return true;
-    return false;
-  }
+  for (unsigned int i = 0; i < sizeof(strategies) / sizeof(strategies[0]); i++)
+    if (strategies[i]->CanLoad(config, file))
+      return true;
+  return false;
 }
 
 /* static */
