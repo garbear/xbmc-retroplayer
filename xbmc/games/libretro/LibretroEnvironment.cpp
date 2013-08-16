@@ -347,7 +347,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // cannot feasibly be supported in a multi-system way. Mostly used for
       // obscure, specific features that the user can tap into when necessary.
       LIBRETRO::retro_variable *var = reinterpret_cast<LIBRETRO::retro_variable*>(data);
-      if (var->key && var->value)
+      if (var->key)
       {
         // m_varMap provides both a static layer for returning persistent strings,
         // and a way of detecting stale data for RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE
@@ -392,7 +392,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
               CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: error parsing variable", cmd);
           }
           else
-            CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: var %s has no value", cmd, vars->key);
+            CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: var %s has no value", cmd, vars->key);
           vars++;
         }
       }
