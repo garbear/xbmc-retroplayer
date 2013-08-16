@@ -45,20 +45,20 @@ namespace ADDON
    */
   struct GameClientConfig
   {
-    CStdString                   id;          // Set from addon.xml
-    std::set<CStdString>         extensions;  // Set from addon.xml. Updated when the DLL is loaded
-    GAME_INFO::GamePlatformArray platforms;   // Set from addon.xml
-    bool                         bAllowVFS;   // Set when the DLL is loaded
+    CStdString                   id;
+    std::set<CStdString>         extensions;
+    GAME_INFO::GamePlatformArray platforms;
+    bool                         bAllowVFS;
     /**
      * If false, and ROM is in a zip, ROM file must be loaded from within the
      * zip instead of extracted to a temporary cache. In XBMC's case, loading
      * from the VFS is like extraction because the relative paths to the
      * ROM's other files are not available to the emulator.
      */
-    bool                         bRequireZip; // Set when the DLL is loaded
+    bool                         bRequireZip;
 
-    GameClientConfig()                     :         bAllowVFS(true), bRequireZip(false) { }
-    GameClientConfig(const CStdString &id) : id(id), bAllowVFS(true), bRequireZip(false) { }
+    GameClientConfig()                     :         bAllowVFS(false), bRequireZip(false) { }
+    GameClientConfig(const CStdString &id) : id(id), bAllowVFS(false), bRequireZip(false) { }
   };
 
   class CGameClient;

@@ -106,7 +106,7 @@ void CGameManager::RegisterAddon(GameClientPtr clientAddon, bool launchQueued /*
   if (!clientAddon->Init())
   {
     CLog::Log(LOGERROR, "CGameManager: failed to load DLL for %s, disabling in database", clientAddon->ID().c_str());
-    CGUIDialogKaiToast::QueueNotification(clientAddon->Icon(), clientAddon->Name(), g_localizeStrings.Get(15023)); // Incompatible DLL
+    CGUIDialogKaiToast::QueueNotification(clientAddon->Icon(), clientAddon->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
     CAddonDatabase database;
     if (database.Open())
       database.DisableAddon(clientAddon->ID());

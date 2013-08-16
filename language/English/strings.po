@@ -6407,7 +6407,7 @@ msgstr ""
 
 #: xbmc/games/GameManager.cpp
 msgctxt "#15023"
-msgid "Incompatible DLL"
+msgid "Error loading DLL"
 msgstr ""
 
 #: xbmc/games/GameManager.cpp

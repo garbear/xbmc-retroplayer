@@ -34,6 +34,52 @@ using namespace ADDON;
 using namespace GAME_INFO;
 using namespace GAMES;
 
+namespace GAMES
+{
+  // Helper functions
+  void toExtensionSet(const CStdString strExtensionList, std::set<CStdString> &extensions)
+  {
+    extensions.clear();
+    CStdStringArray vecExtensions;
+    StringUtils::SplitString(strExtensionList, "|", vecExtensions);
+    for (CStdStringArray::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
+    {
+      CStdString &ext = *it;
+      if (ext.empty())
+        continue;
+
+      ext.ToLower();
+
+      // Make sure extension starts with "."
+      if (ext.at(0) != '.')
+        ext = "." + ext;
+
+      // Zip crashes some emulators, allow users to disable zips for problematic emulators
+      if (ext == ".zip" && !CSettings::Get().GetBool("gamesdebug.allowzip"))
+        continue;
+
+      extensions.insert(ext);
+    }
+  }
+
+  // Returns true if lhs and rhs are equal sets
+  bool operator==(const std::set<CStdString> &lhs, const std::set<CStdString> &rhs)
+  {
+    if (lhs.size() != rhs.size())
+      return false;
+    for (std::set<CStdString>::const_iterator itl = lhs.begin(), itr = rhs.begin(); itl != lhs.end(); itl++, itr++)
+    {
+      if ((*itl) != (*itr))
+        return false;
+    }
+    return true;
+  }
+
+  bool operator!=(const std::set<CStdString> &lhs, const std::set<CStdString> &rhs)
+  {
+    return !(lhs == rhs);
+  }
+} // namespace GAMES
 
 CGameClient::CGameClient(const AddonProps &props) : CAddon(props)
 {
@@ -44,6 +90,10 @@ CGameClient::CGameClient(const AddonProps &props) : CAddon(props)
     SetPlatforms(it->second);
   if ((it = props.extrainfo.find("extensions")) != props.extrainfo.end())
     SetExtensions(it->second);
+  if ((it = props.extrainfo.find("allowvfs")) != props.extrainfo.end())
+    m_config.bAllowVFS = (it->second == "true");
+  if ((it = props.extrainfo.find("blockextract")) != props.extrainfo.end())
+    m_config.bRequireZip = (it->second == "true");
 }
 
 CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
@@ -53,20 +103,32 @@ CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
   if (!ext)
     return;
 
-  CStdString platforms;
-  platforms = CAddonMgr::Get().GetExtValue(ext->configuration, "platforms");
+  CStdString platforms = CAddonMgr::Get().GetExtValue(ext->configuration, "platforms");
   if (!platforms.IsEmpty())
   {
     Props().extrainfo.insert(make_pair("platforms", platforms));
     SetPlatforms(platforms);
   }
 
-  CStdString extensions;
-  extensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
+  CStdString extensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
   if (!extensions.IsEmpty())
   {
     Props().extrainfo.insert(make_pair("extensions", extensions));
     SetExtensions(extensions);
+  }
+
+  CStdString allowvfs = CAddonMgr::Get().GetExtValue(ext->configuration, "allowvfs");
+  if (!allowvfs.IsEmpty())
+  {
+    Props().extrainfo.insert(make_pair("allowvfs", allowvfs));
+    m_config.bAllowVFS = (allowvfs == "true");
+  }
+
+  CStdString blockextract = CAddonMgr::Get().GetExtValue(ext->configuration, "blockextract");
+  if (!blockextract.IsEmpty())
+  {
+    Props().extrainfo.insert(make_pair("blockextract", blockextract));
+    m_config.bRequireZip = (blockextract == "true");
   }
 
   // If library attribute isn't present, look for a system-dependent one
@@ -163,17 +225,48 @@ bool CGameClient::Init()
 
   LIBRETRO::retro_system_info info = { };
   m_dll.retro_get_system_info(&info);
-  m_clientName         = info.library_name ? info.library_name : "Unknown";
-  m_clientVersion      = info.library_version ? info.library_version : "v0.0";
-  m_config.bAllowVFS   = !info.need_fullpath;
-  m_config.bRequireZip = info.block_extract;
-  SetExtensions(info.valid_extensions ? info.valid_extensions : "");
+  m_clientName    = info.library_name ? info.library_name : "Unknown";
+  m_clientVersion = info.library_version ? info.library_version : "v0.0";
+  bool allowVFS   = !info.need_fullpath;
+  bool requireZip = info.block_extract;
+
+  std::set<CStdString> extensions;
+  toExtensionSet(info.valid_extensions ? info.valid_extensions : "", extensions);
+
   CLog::Log(LOGINFO, "GameClient: Loaded %s core at version %s", m_clientName.c_str(), m_clientVersion.c_str());
+
+  // Verify the DLL's reported values match those in addon.xml
+  // This is to catch any mistakes uploaded to add-on repos
+  bool success = true;
+  if (m_config.bAllowVFS != allowVFS)
+  {
+    CLog::Log(LOGERROR, "GameClient: <allowvfs> tag in addon.xml doesn't match DLL value (%s)",
+        allowVFS ? "true" : "false");
+    success = false;
+  }
+  if (m_config.bRequireZip != requireZip)
+  {
+    CLog::Log(LOGERROR, "GameClient: <blockextract> tag in addon.xml doesn't match DLL value (%s)",
+        requireZip ? "true" : "false");
+    success = false;
+  }
+  if (m_config.extensions != extensions) // != operator defined above
+  {
+    CLog::Log(LOGERROR, "GameClient: <extensions> tag in addon.xml doesn't match the set from DLL value (%s)",
+        info.valid_extensions ? info.valid_extensions : "");
+    success = false;
+  }
 
   // Verify API versions
   if (m_dll.retro_api_version() != RETRO_API_VERSION)
   {
-    CLog::Log(LOGERROR, "GameClient: API version error: XBMC is at version %d, %s is at version %d", RETRO_API_VERSION, m_clientName.c_str(), m_dll.retro_api_version());
+    CLog::Log(LOGERROR, "GameClient: API version error: XBMC is at version %d, %s is at version %d",
+        RETRO_API_VERSION, m_clientName.c_str(), m_dll.retro_api_version());
+    success = false;
+  }
+
+  if (!success)
+  {
     DeInit();
     return false;
   }
@@ -775,25 +868,7 @@ void CGameClient::SetExtensions(const CStdString &strExtensionList)
   if (strExtensionList.empty())
     return;
 
-  m_config.extensions.clear();
-  CStdStringArray extensions;
-  StringUtils::SplitString(strExtensionList, "|", extensions);
-  for (CStdStringArray::const_iterator it = extensions.begin(); it != extensions.end(); it++)
-  {
-    CStdString ext(*it);
-    if (ext.empty())
-      continue;
-
-    ext.ToLower();
-    if (ext.at(0) != '.')
-      ext = "." + ext;
-
-    // Zip crashes some emulators, allow users to disable zips for problematic emulators
-    if (ext == ".zip" && !CSettings::Get().GetBool("gamesdebug.allowzip"))
-      continue;
-
-    m_config.extensions.insert(ext);
-  }
+  toExtensionSet(strExtensionList, m_config.extensions);
 }
 
 void CGameClient::SetPlatforms(const CStdString &strPlatformList)
