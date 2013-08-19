@@ -76,13 +76,13 @@ namespace GAMES
       * and return the first file inside with a valid extension. If this returns
       * false, effectivePath will be set to zipPath.
       */
-    static bool GetEffectiveRomPath(const CStdString &zipPath, const std::set<CStdString> &validExts, CStdString &effectivePath);
+    static bool GetEffectiveRomPath(const CStdString &zipPath, const std::set<std::string> &validExts, CStdString &effectivePath);
 
     /**
       * HELPER FUNCTION: If the game client was a bad boy and provided no
       * extensions, this will optimistically return true.
       */
-    static bool IsExtensionValid(const CStdString &ext, const std::set<CStdString> &setExts);
+    static bool IsExtensionValid(const std::string &ext, const std::set<std::string> &setExts);
 
   protected:
     // Member variables populated with results from CanLoad()

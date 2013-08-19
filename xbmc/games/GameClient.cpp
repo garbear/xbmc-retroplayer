@@ -33,37 +33,37 @@
 using namespace ADDON;
 using namespace GAME_INFO;
 using namespace GAMES;
+using namespace std;
 
 namespace GAMES
 {
   // Helper functions
-  void toExtensionSet(const CStdString strExtensionList, std::set<CStdString> &extensions)
+  void toExtensionSet(const CStdString strExtensionList, set<string> &extensions)
   {
     extensions.clear();
-    CStdStringArray vecExtensions;
-    StringUtils::SplitString(strExtensionList, "|", vecExtensions);
-    for (CStdStringArray::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
+    vector<string> vecExtensions = StringUtils::Split(strExtensionList, "|");
+    for (vector<string>::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
     {
-      CStdString &ext = *it;
+      string &ext = *it;
       if (ext.empty())
         continue;
 
-      ext.ToLower();
+      StringUtils::ToLower(ext);
 
       // Make sure extension starts with "."
-      if (ext.at(0) != '.')
-        ext = "." + ext;
+      if (ext[0] != '.')
+        ext.insert(0, ".");
 
       extensions.insert(ext);
     }
   }
 
   // Returns true if lhs and rhs are equal sets
-  bool operator==(const std::set<CStdString> &lhs, const std::set<CStdString> &rhs)
+  bool operator==(const set<string> &lhs, const set<string> &rhs)
   {
     if (lhs.size() != rhs.size())
       return false;
-    for (std::set<CStdString>::const_iterator itl = lhs.begin(), itr = rhs.begin(); itl != lhs.end(); itl++, itr++)
+    for (set<string>::const_iterator itl = lhs.begin(), itr = rhs.begin(); itl != lhs.end(); itl++, itr++)
     {
       if ((*itl) != (*itr))
         return false;
@@ -71,7 +71,7 @@ namespace GAMES
     return true;
   }
 
-  bool operator!=(const std::set<CStdString> &lhs, const std::set<CStdString> &rhs)
+  bool operator!=(const set<string> &lhs, const set<string> &rhs)
   {
     return !(lhs == rhs);
   }
@@ -226,7 +226,7 @@ bool CGameClient::Init()
   bool allowVFS   = !info.need_fullpath;
   bool requireZip = info.block_extract;
 
-  std::set<CStdString> extensions;
+  set<string> extensions;
   toExtensionSet(info.valid_extensions ? info.valid_extensions : "", extensions);
 
   CLog::Log(LOGINFO, "GameClient: Loaded %s core at version %s", m_clientName.c_str(), m_clientVersion.c_str());
@@ -693,7 +693,7 @@ bool CGameClient::Load(unsigned int slot)
   return Load();
 }
 
-bool CGameClient::Load(const CStdString &saveStatePath)
+bool CGameClient::Load(const std::string &saveStatePath)
 {
   CSingleLock lock(m_critSection);
 
@@ -709,7 +709,7 @@ bool CGameClient::Load()
   // Load the savestate into a copy, and assign the copy into our member
   // variable if the deserialization succeeds
   CSavestate savestate(m_saveState);
-  std::vector<uint8_t> data;
+  vector<uint8_t> data;
 
   CSavestateDatabase db;
   if (db.Open() && db.Load(savestate, data))
@@ -770,7 +770,7 @@ bool CGameClient::Save(unsigned int slot)
   return Save();
 }
 
-bool CGameClient::Save(const CStdString &label)
+bool CGameClient::Save(const string &label)
 {
   CSingleLock lock(m_critSection);
 
@@ -858,7 +858,7 @@ void CGameClient::SetFrameRate(double framerate)
     m_serialState.SetMaxFrames((size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * m_frameRate));
 }
 
-void CGameClient::SetExtensions(const CStdString &strExtensionList)
+void CGameClient::SetExtensions(const string &strExtensionList)
 {
   // If no extensions are provided, don't erase the ones we are already tracking
   if (strExtensionList.empty())
@@ -867,25 +867,24 @@ void CGameClient::SetExtensions(const CStdString &strExtensionList)
   toExtensionSet(strExtensionList, m_config.extensions);
 }
 
-void CGameClient::SetPlatforms(const CStdString &strPlatformList)
+void CGameClient::SetPlatforms(const string &strPlatformList)
 {
   // If no platforms are provided, don't erase the ones we are already tracking
   if (strPlatformList.empty())
     return;
 
   m_config.platforms.clear();
-  CStdStringArray platforms;
-  StringUtils::SplitString(strPlatformList, "|", platforms);
-  for (CStdStringArray::iterator it = platforms.begin(); it != platforms.end(); it++)
+  vector<string> platforms = StringUtils::Split(strPlatformList, "|");
+  for (vector<string>::iterator it = platforms.begin(); it != platforms.end(); it++)
   {
-    it->Trim();
+    StringUtils::Trim(*it);
     GamePlatform id = CGameInfoTagLoader::GetPlatformByName(*it).id;
     if (id != PLATFORM_UNKNOWN)
       m_config.platforms.push_back(id);
   }
 }
 
-bool CGameClient::IsExtensionValid(const CStdString &ext) const
+bool CGameClient::IsExtensionValid(const string &ext) const
 {
   return CGameFileLoader::IsExtensionValid(ext, m_config.extensions);
 }

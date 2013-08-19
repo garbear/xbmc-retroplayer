@@ -26,6 +26,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
 
@@ -70,7 +71,7 @@ bool CGameFileLoader::CanOpen(const CFileItem &file, const GameClientConfig &con
 }
 
 /* static */
-bool CGameFileLoader::GetEffectiveRomPath(const CStdString &zipPath, const std::set<CStdString> &validExts, CStdString &effectivePath)
+bool CGameFileLoader::GetEffectiveRomPath(const CStdString &zipPath, const std::set<std::string> &validExts, CStdString &effectivePath)
 {
   // Default case: effective zip file is the zip file itself
   effectivePath = zipPath;
@@ -84,7 +85,7 @@ bool CGameFileLoader::GetEffectiveRomPath(const CStdString &zipPath, const std::
   URIUtils::CreateArchivePath(strUrl, "zip", zipPath, "");
 
   CStdString strValidExts;
-  for (std::set<CStdString>::const_iterator it = validExts.begin(); it != validExts.end(); it++)
+  for (std::set<std::string>::const_iterator it = validExts.begin(); it != validExts.end(); it++)
     strValidExts += *it + "|";
 
   CFileItemList itemList;
@@ -98,16 +99,16 @@ bool CGameFileLoader::GetEffectiveRomPath(const CStdString &zipPath, const std::
 }
 
 /* static */
-bool CGameFileLoader::IsExtensionValid(const CStdString &ext, const std::set<CStdString> &setExts)
+bool CGameFileLoader::IsExtensionValid(const std::string &ext, const std::set<std::string> &setExts)
 {
   if (setExts.empty())
     return true; // Be optimistic :)
   if (ext.empty())
     return false;
-  CStdString ext2(ext);
-  ext2.ToLower();
-  if (ext2.at(0) != '.')
-    ext2 = "." + ext2;
+  std::string ext2(ext);
+  StringUtils::ToLower(ext2);
+  if (ext2[0] != '.')
+    ext2.insert(0, ".");
   return setExts.find(ext2) != setExts.end();
 }
 

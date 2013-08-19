@@ -31,6 +31,7 @@
 #include "threads/CriticalSection.h"
 
 #include <set>
+#include <string>
 
 #define GAMECLIENT_MAX_PLAYERS  8
 
@@ -46,7 +47,7 @@ namespace ADDON
   struct GameClientConfig
   {
     CStdString                   id;
-    std::set<CStdString>         extensions;
+    std::set<std::string>        extensions;
     GAME_INFO::GamePlatformArray platforms;
     bool                         bAllowVFS;
     /**
@@ -128,7 +129,7 @@ namespace ADDON
     bool OpenFile(const CFileItem &file, const DataReceiver &callbacks);
     void CloseFile();
 
-    const CStdString &GetFilePath() const { return m_gamePath; }
+    const std::string &GetFilePath() const { return m_gamePath; }
 
     // Returns true after Init() is called and until DeInit() is called.
     bool IsInitialized() const { return m_dll.IsLoaded(); }
@@ -136,10 +137,10 @@ namespace ADDON
     const GameClientConfig &GetConfig() const { return m_config; }
 
     // Precondition: Init() must be called first and return true.
-    const CStdString &GetClientName() const { return m_clientName; }
+    const std::string &GetClientName() const { return m_clientName; }
 
     // Precondition: Init() must be called first and return true.
-    const CStdString &GetClientVersion() const { return m_clientVersion; }
+    const std::string &GetClientVersion() const { return m_clientVersion; }
 
     /**
      * Find the region of a currently running game. The return value will be
@@ -188,7 +189,7 @@ namespace ADDON
     /**
      * Load the serialized state from the specified path.
      */
-    bool Load(const CStdString &saveStatePath);
+    bool Load(const std::string &saveStatePath);
 
     /**
      * Commit the current serialized state to the local drive (filename looks
@@ -207,7 +208,7 @@ namespace ADDON
      * label is concatenated to the CRC of the game file, and the resulting
      * filename looks like feba62c2_bdcb488a.sav
      */
-    bool Save(const CStdString &label);
+    bool Save(const std::string &label);
 
     /**
      * Rewind gameplay 'frames' frames.
@@ -235,7 +236,7 @@ namespace ADDON
      * If the game client was a bad boy and provided no extensions, this will
      * optimistically return true.
      */
-    bool IsExtensionValid(const CStdString &ext) const;
+    bool IsExtensionValid(const std::string &ext) const;
 
   protected:
     virtual bool LoadSettings(bool bForce = false);
@@ -270,19 +271,19 @@ namespace ADDON
      * array. The extensions list can contain both upper and lower case
      * extensions; only lower-case extensions are stored in m_validExtensions.
      */
-    void SetExtensions(const CStdString &strExtensionList);
-    void SetPlatforms(const CStdString &strPlatformList);
+    void SetExtensions(const std::string &strExtensionList);
+    void SetPlatforms(const std::string &strPlatformList);
 
     GameClientConfig m_config;
 
     GameClientDLL    m_dll;
     bool             m_bIsInited; // Keep track of whether m_dll.retro_init() has been called
     bool             m_bIsPlaying; // This is true between retro_load_game() and retro_unload_game()
-    CStdString       m_gamePath; // path of the current playing file
+    std::string      m_gamePath; // path of the current playing file
 
     // Returned by m_dll:
-    CStdString       m_clientName;
-    CStdString       m_clientVersion;
+    std::string      m_clientName;
+    std::string      m_clientVersion;
     double           m_frameRate; // Video framerate
     double           m_sampleRate; // Audio frequency
     int              m_region; // Region of the loaded game
