@@ -41,7 +41,7 @@ public:
     unsigned int         height;
     size_t               pitch;
     bool                 isRendered;
-    Frame::Frame() : width(0), height(0), pitch(0), isRendered(false) { }
+    Frame() : width(0), height(0), pitch(0), isRendered(false) { }
   };
 
   CRetroPlayerVideo();
