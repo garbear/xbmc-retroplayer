@@ -20,6 +20,7 @@
  */
 #pragma once
 
+#include "addons/AddonDatabase.h"
 #include "GameClient.h"
 #include "FileItem.h"
 #include "threads/CriticalSection.h"
@@ -37,14 +38,14 @@ namespace GAMES
    * querying it directly, so it is desirable to only do this once and cache the
    * information.
    */
-  class CGameManager : public ISettingCallback
+  class CGameManager : public ISettingCallback, public IAddonDatabaseCallback
   {
   private:
-    CGameManager() { }
+    CGameManager();
 
   public:
     static CGameManager &Get();
-    virtual ~CGameManager() { }
+    virtual ~CGameManager();
 
     /**
      * Create and maintain a cache of game client add-on information. If a file
@@ -52,7 +53,7 @@ namespace GAMES
      * compatible emulator is registered.
      */
     void RegisterAddons(const ADDON::VECADDONS &addons);
-    void RegisterAddon(ADDON::GameClientPtr clientAddon, bool launchQueued = true);
+    void RegisterAddon(ADDON::GameClientPtr clientAddon);
     void UnregisterAddonByID(const CStdString &ID);
 
     /**
@@ -75,6 +76,7 @@ namespace GAMES
      * Queue a file to be launched when the current game client is installed.
      */
     void QueueFile(const CFileItem &file);
+    void UnqueueFile();
 
     /**
      * Resolve a file item to a list of game client IDs. If the file forces a
@@ -90,11 +92,16 @@ namespace GAMES
 
     void GetExtensions(std::vector<CStdString> &exts);
 
+    // Inherited from ISettingCallback
     virtual bool OnSettingChanging(const CSetting *setting);
     virtual void OnSettingChanged(const CSetting *setting);
     virtual void OnSettingAction(const CSetting *setting);
     virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
     virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
+
+    // Inherited from IAddonDatabaseCallback
+    virtual void EnableAddon(ADDON::AddonPtr addon, bool bDisabled);
+    virtual void DisableAddon(ADDON::AddonPtr addon);
 
   private:
     /**
@@ -108,6 +115,6 @@ namespace GAMES
     std::vector<ADDON::GameClientConfig> m_gameClients;
     CCriticalSection m_critSection;
     std::set<CStdString> m_gameExtensions;
-    CFileItem m_queuedFile;
+    CFileItemPtr m_queuedFile;
   };
 } // namespace GAMES

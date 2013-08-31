@@ -68,6 +68,16 @@ static const PortMapping ports[] =
 };
 */
 
+CGameManager::CGameManager()
+{
+  CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_GAMEDLL, this);
+}
+
+CGameManager::~CGameManager()
+{
+  CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_GAMEDLL);
+}
+
 /* static */
 CGameManager &CGameManager::Get()
 {
@@ -81,7 +91,7 @@ void CGameManager::RegisterAddons(const VECADDONS &addons)
     RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it));
 }
 
-void CGameManager::RegisterAddon(GameClientPtr clientAddon, bool launchQueued /* = true */)
+void CGameManager::RegisterAddon(GameClientPtr clientAddon)
 {
   // Sanity check
   if (!clientAddon)
@@ -120,16 +130,16 @@ void CGameManager::RegisterAddon(GameClientPtr clientAddon, bool launchQueued /*
 
   // If a file was queued by RetroPlayer, test to see if we should launch the
   // newly installed game client
-  if (launchQueued && !m_queuedFile.GetPath().empty())
+  if (m_queuedFile && !m_queuedFile->GetPath().empty())
   {
     // Test if the new client can launch the file
     CStdStringArray candidates;
-    GetGameClientIDs(m_queuedFile, candidates);
+    GetGameClientIDs(*m_queuedFile, candidates);
     if (std::find(candidates.begin(), candidates.end(), clientAddon->ID()) != candidates.end())
     {
-      LaunchFile(m_queuedFile, clientAddon->ID());
+      LaunchFile(*m_queuedFile, clientAddon->ID());
       // Don't ask the user twice
-      m_queuedFile = CFileItem();
+      UnqueueFile();
     }
   }
 
@@ -199,7 +209,7 @@ bool CGameManager::IsGame(CStdString path)
 
   // Reset the queued file. IsGame() is called often enough that leaving the
   // add-on browser should reset the file.
-  m_queuedFile = CFileItem();
+  UnqueueFile();
 
   // If RegisterRemoteAddons() hasn't been called yet, initialize
   // m_gameExtensions with addons from the database.
@@ -235,7 +245,13 @@ void CGameManager::GetExtensions(std::vector<CStdString> &exts)
 void CGameManager::QueueFile(const CFileItem &file)
 {
   CSingleLock lock(m_critSection);
-  m_queuedFile = file;
+  m_queuedFile = CFileItemPtr(new CFileItem(file));
+}
+
+void CGameManager::UnqueueFile()
+{
+  CSingleLock lock(m_critSection);
+  m_queuedFile = CFileItemPtr();
 }
 
 void CGameManager::LaunchFile(CFileItem file, const CStdString &strGameClient) const
@@ -247,8 +263,8 @@ void CGameManager::LaunchFile(CFileItem file, const CStdString &strGameClient) c
   if (pDialog)
   {
     CStdString title(file.GetGameInfoTag()->GetTitle());
-    if (title.empty())
-      title = URIUtils::GetFileName(m_queuedFile.GetPath());
+    if (title.empty() && m_queuedFile)
+      title = URIUtils::GetFileName(m_queuedFile->GetPath());
 
     pDialog->SetHeading(24025); // Manage emulators...
     pDialog->SetLine(0, 15024); // A compatible emulator was installed for:
@@ -349,4 +365,23 @@ void CGameManager::OnSettingPropertyChanged(const CSetting *setting, const char 
   if (setting == NULL)
     return;
 
+}
+
+void CGameManager::EnableAddon(ADDON::AddonPtr addon, bool bDisabled)
+{
+  if (!addon)
+    return;
+  
+  // If the addon is a game client, register it
+  RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
+}
+
+void CGameManager::DisableAddon(ADDON::AddonPtr addon)
+{
+  // If the addon is a service, stop it
+  if (!addon)
+    return;
+  
+  // If the addon isn't a game client, UnregisterAddon() will still do the right thing
+  UnregisterAddonByID(addon->ID());
 }

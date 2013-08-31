@@ -26,6 +26,7 @@
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
+#include "games/GameManager.h"
 #include "GUIDialogAddonSettings.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogTextViewer.h"
@@ -207,9 +208,10 @@ void CGUIDialogAddonInfo::OnUninstall()
   }
 
   // ensure the addon isn't disabled in our database
+  GAMES::CGameManager::Get().UnqueueFile(); // Enabling before uninstalling might launch a queued game
   CAddonDatabase database;
   database.Open();
-  database.DisableAddon(m_localAddon->ID(), false, false);
+  database.DisableAddon(m_localAddon->ID(), false);
   CJobManager::GetInstance().AddJob(new CAddonUnInstallJob(m_localAddon),
                                     &CAddonInstaller::Get());
   CAddonMgr::Get().RemoveAddon(m_localAddon->ID());

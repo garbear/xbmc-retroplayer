@@ -289,11 +289,12 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
         }
         else if (addon)
         {
-          CLog::Log(LOGDEBUG, "RetroPlayer: Game client %s installed but disabled, enabling it", id.c_str());
           // TODO: Prompt the user to enable it
+          CLog::Log(LOGDEBUG, "RetroPlayer: Game client %s installed but disabled, enabling it", id.c_str());
+          GAMES::CGameManager::Get().UnqueueFile(); // Don't auto-launch queued game when the add-on is enabled
           CAddonDatabase database;
           database.Open();
-          database.DisableAddon(id, false, false);
+          database.DisableAddon(id, false);
           CAddonMgr::Get().GetAddon(id, addon);
         }
         else
