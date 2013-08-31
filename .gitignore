@@ -117,6 +117,8 @@ config.log
 /addons/visualization.fishbmc/fishbmc.vis
 /addons/script.module.pil/
 /addons/pvr.*
+/addons/repository.libretro-linux32/addon.xml
+/addons/repository.libretro-linux64/addon.xml
 
 # /lib/
 /lib/Makefile
