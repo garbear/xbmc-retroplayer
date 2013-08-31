@@ -141,10 +141,15 @@ void CGUIWindowGames::GetContextButtons(int itemNumber, CContextButtons &buttons
     }
     else if (!m_vecItems->IsVirtualDirectoryRoot())
     {
-      buttons.Add(CONTEXT_BUTTON_PLAY_ITEM, 208); // Play
-      // Let RetroPlayer handle this one
-      //buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213); // Play With...
-      
+      if (item->IsGame())
+      {
+        buttons.Add(CONTEXT_BUTTON_PLAY_ITEM, 208); // Play
+        // Let RetroPlayer handle this one
+        //buttons.Add(CONTEXT_BUTTON_PLAY_WITH, 15213); // Play With...
+
+        buttons.Add(CONTEXT_BUTTON_MANAGE_SAVE_STATES, 15045); // Manage save states
+      }
+
       if (!m_vecItems->IsPlugin() && (item->IsPlugin() || item->IsScript()))
         buttons.Add(CONTEXT_BUTTON_INFO, 24003); // Add-on info
       /*
@@ -191,6 +196,10 @@ bool CGUIWindowGames::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_PLAY_ITEM:
   case CONTEXT_BUTTON_PLAY_WITH:
     return item && PlayGame(*item);
+  case CONTEXT_BUTTON_MANAGE_SAVE_STATES:
+    if (item)
+      g_windowManager.ActivateWindow(WINDOW_DIALOG_GAME_SAVES, item->GetPath());
+    return true;
   case CONTEXT_BUTTON_INFO:
     OnInfo(itemNumber);
     return true;
