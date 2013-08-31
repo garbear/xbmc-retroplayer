@@ -20,6 +20,7 @@
 
 #include "ApplicationPlayer.h"
 #include "cores/IPlayer.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
 
 #define VOLUME_MINIMUM 0.0f        // -60dB
 #define VOLUME_MAXIMUM 1.0f        // 0dB
@@ -492,6 +493,14 @@ void CApplicationPlayer::GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &i
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
     player->GetAudioStreamInfo(index, info);
+}
+
+CRetroPlayerInput *CApplicationPlayer::GetJoystickHandler()
+{
+  boost::shared_ptr<CRetroPlayer> rp;
+  if (IsPlayingGame())
+    rp = boost::dynamic_pointer_cast<CRetroPlayer>(GetInternal());
+  return rp ? &rp->GetInput() : NULL;
 }
 
 bool CApplicationPlayer::OnAction(const CAction &action)

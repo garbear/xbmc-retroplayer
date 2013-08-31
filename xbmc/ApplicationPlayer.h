@@ -40,6 +40,7 @@ class IAudioCallback;
 class CAction;
 class CPlayerOptions;
 class CStreamDetails;
+class CRetroPlayerInput;
 
 struct SPlayerAudioStreamInfo;
 struct SPlayerVideoStreamInfo;
@@ -113,6 +114,7 @@ public:
   int64_t GetTotalTime() const;
   void  GetVideoInfo( CStdString& strVideoInfo);
   void  GetVideoStreamInfo(SPlayerVideoStreamInfo &info);
+  CRetroPlayerInput *GetJoystickHandler();
   bool  HasAudio() const;
   bool  HasMenu() const;
   bool  HasVideo() const;

@@ -139,6 +139,7 @@
 #define WINDOW_SLIDESHOW                  12007
 #define WINDOW_DIALOG_FILESTACKING        12008
 #define WINDOW_KARAOKELYRICS              12009
+#define WINDOW_FULLSCREEN_GAME            12010 // alias for WINDOW_FULLSCREEN_VIDEO to receive tailored keypresses
 #define WINDOW_WEATHER                    12600
 #define WINDOW_SCREENSAVER                12900
 #define WINDOW_DIALOG_VIDEO_OSD           12901

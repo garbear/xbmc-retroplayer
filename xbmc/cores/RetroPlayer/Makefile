@@ -1,5 +1,6 @@
 SRCS=RetroPlayer.cpp \
      RetroPlayerAudio.cpp \
+     RetroPlayerInput.cpp \
      RetroPlayerVideo.cpp
 
 LIB=retroplayer.a
