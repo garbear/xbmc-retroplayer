@@ -19,9 +19,26 @@
  *
  */
 #include "Addon.h"
+#include "AddonDatabase.h"
 
 namespace ADDON
 {
+  class CServiceManager: public IAddonDatabaseCallback
+  {
+    virtual void DisableAddon(ADDON::AddonPtr addon);
+    virtual void EnableAddon(ADDON::AddonPtr addon, bool bDisabled);
+
+  protected:
+    CServiceManager();
+    virtual ~CServiceManager();
+
+  private:
+     // non-copyable
+    CServiceManager(const CServiceManager&);
+    CServiceManager &operator=(const CServiceManager&);
+
+    static CServiceManager _instance;
+  };
 
   class CService: public CAddon
   {
