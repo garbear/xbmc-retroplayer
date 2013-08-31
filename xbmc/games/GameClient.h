@@ -30,6 +30,7 @@
 #include "SerialState.h"
 #include "threads/CriticalSection.h"
 
+#include <boost/shared_ptr.hpp>
 #include <set>
 #include <string>
 
