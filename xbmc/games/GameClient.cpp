@@ -293,7 +293,7 @@ void CGameClient::DeInit()
     {
       m_dll.Unload();
     }
-    catch (std::exception &e)
+    catch (exception &e)
     {
       CLog::Log(LOGERROR, "GameClient: Error unloading DLL: %s", e.what());
     }
@@ -693,7 +693,7 @@ bool CGameClient::Load(unsigned int slot)
   return Load();
 }
 
-bool CGameClient::Load(const std::string &saveStatePath)
+bool CGameClient::Load(const string &saveStatePath)
 {
   CSingleLock lock(m_critSection);
 
