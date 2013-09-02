@@ -38,7 +38,6 @@
 #define ARRAY_LENGTH(x)  (sizeof((x)) / sizeof((x)[0]))
 #endif
 
-using namespace ADDON;
 using namespace GAMES;
 using namespace XFILE;
 using namespace std;

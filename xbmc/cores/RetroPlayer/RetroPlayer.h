@@ -30,6 +30,8 @@
 #include "threads/Thread.h"
 
 #include <stdint.h>
+#include <string>
+#include <vector>
 
 class CRetroPlayer : public IPlayer, public CThread
 {
@@ -40,8 +42,8 @@ public:
   virtual bool OpenFile(const CFileItem& file, const CPlayerOptions& options);
   virtual bool CloseFile();
 
-  bool InstallGameClient(CFileItem file, ADDON::GameClientPtr &result) const;
-  bool ChooseAddon(const CFileItem &file, const CStdStringArray &clients, ADDON::GameClientPtr &result) const;
+  bool InstallGameClient(CFileItem file, GAMES::GameClientPtr &result) const;
+  bool ChooseAddon(const CFileItem &file, const std::vector<std::string> &clients, GAMES::GameClientPtr &result) const;
 
   virtual bool OnAction(const CAction &action);
 
@@ -130,13 +132,13 @@ private:
 
   // So that the static functions above may invoke audio, video and input callbacks
   static CRetroPlayer *m_retroPlayer;
-  static ADDON::CGameClient::DataReceiver m_callbacks;
+  static GAMES::CGameClient::DataReceiver m_callbacks;
   static LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // unused
 
   CRetroPlayerVideo    m_video;
   CRetroPlayerAudio    m_audio;
   CRetroPlayerInput    m_input;
-  ADDON::GameClientPtr m_gameClient;
+  GAMES::GameClientPtr m_gameClient;
 
   CFileItem            m_file;
   CPlayerOptions       m_PlayerOptions;

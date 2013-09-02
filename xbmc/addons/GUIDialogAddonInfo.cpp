@@ -49,6 +49,7 @@
 
 using namespace std;
 using namespace ADDON;
+using namespace GAMES;
 using namespace XFILE;
 
 CGUIDialogAddonInfo::CGUIDialogAddonInfo(void)
@@ -208,7 +209,7 @@ void CGUIDialogAddonInfo::OnUninstall()
   }
 
   // ensure the addon isn't disabled in our database
-  GAMES::CGameManager::Get().UnqueueFile(); // Enabling before uninstalling might launch a queued game
+  CGameManager::Get().UnqueueFile(); // Enabling before uninstalling might launch a queued game
   CAddonDatabase database;
   database.Open();
   database.DisableAddon(m_localAddon->ID(), false);

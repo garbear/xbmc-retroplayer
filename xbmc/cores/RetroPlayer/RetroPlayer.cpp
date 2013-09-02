@@ -112,7 +112,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   }
 
   // Now we need to see how many game clients contend for this file
-  CStdStringArray candidates;
+  std::vector<std::string> candidates;
   CGameManager::Get().GetGameClientIDs(file, candidates);
   if (candidates.empty())
   {
@@ -291,7 +291,7 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
         {
           // TODO: Prompt the user to enable it
           CLog::Log(LOGDEBUG, "RetroPlayer: Game client %s installed but disabled, enabling it", id.c_str());
-          GAMES::CGameManager::Get().UnqueueFile(); // Don't auto-launch queued game when the add-on is enabled
+          CGameManager::Get().UnqueueFile(); // Don't auto-launch queued game when the add-on is enabled
           CAddonDatabase database;
           database.Open();
           database.DisableAddon(id, false);
@@ -337,9 +337,9 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
   return true;
 }
 
-bool CRetroPlayer::ChooseAddon(const CFileItem &file, const CStdStringArray &addonIds, GameClientPtr &result) const
+bool CRetroPlayer::ChooseAddon(const CFileItem &file, const std::vector<std::string> &addonIds, GameClientPtr &result) const
 {
-  CLog::Log(LOGDEBUG, "RetroPlayer: Multiple clients found: %s", StringUtils::JoinString(addonIds, ", ").c_str());
+  CLog::Log(LOGDEBUG, "RetroPlayer: Multiple clients found: %s", StringUtils::Join(addonIds, ", ").c_str());
   std::vector<GameClientPtr> clients;
   CContextButtons choices;
   for (unsigned int i = 0; i < addonIds.size(); i++)

@@ -40,7 +40,7 @@ namespace GAMES
 
     static void SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc,
                              SetDiskControlCallback_t sdcc, SetRenderCallback_t src,
-                             ADDON::GameClientPtr activeClient);
+                             GameClientPtr activeClient);
     static void ResetCallbacks();
 
     static bool Abort() { return m_bAbort; }
@@ -51,7 +51,7 @@ namespace GAMES
     static SetKeyboardCallback_t    fn_SetKeyboardCallback;
     static SetDiskControlCallback_t fn_SetDiskControlCallback;
     static SetRenderCallback_t      fn_SetRenderCallback;
-    static ADDON::GameClientPtr     m_activeClient;
+    static GameClientPtr            m_activeClient;
     static CStdString               m_systemDirectory;
     static bool                     m_bAbort;
     static std::map<CStdString, CStdString> m_varMap;

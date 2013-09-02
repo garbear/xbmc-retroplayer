@@ -36,7 +36,7 @@
 
 #define GAMECLIENT_MAX_PLAYERS  8
 
-namespace ADDON
+namespace GAMES
 {
   /**
    * The core configuration parameters of game clients have been put in a self-
@@ -66,7 +66,7 @@ namespace ADDON
   class CGameClient;
   typedef boost::shared_ptr<CGameClient> GameClientPtr;
 
-  class CGameClient : public CAddon
+  class CGameClient : public ADDON::CAddon
   {
   public:
     /**
@@ -94,7 +94,7 @@ namespace ADDON
         : VideoFrame(vf), AudioSample(as), AudioSampleBatch(asb), GetInputState(is), SetPixelFormat(spf), SetKeyboardCallback(skc) { }
     };
 
-    CGameClient(const AddonProps &props);
+    CGameClient(const ADDON::AddonProps &props);
 
     CGameClient(const cp_extension_t *props);
 
@@ -264,8 +264,8 @@ namespace ADDON
      * Given the strategies above, order them in the way that respects
      * CSettings::Get().GetBool("gamesdebug.prefervfs").
      */
-    static void GetStrategy(GAMES::CGameFileLoaderUseHD &hd, GAMES::CGameFileLoaderUseParentZip &outerzip,
-        GAMES::CGameFileLoaderUseVFS &vfs, GAMES::CGameFileLoaderEnterZip &innerzip, GAMES::CGameFileLoader *strategies[4]);
+    static void GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParentZip &outerzip,
+        CGameFileLoaderUseVFS &vfs, CGameFileLoaderEnterZip &innerzip, CGameFileLoader *strategies[4]);
 
     /**
      * Parse a pipe-separated list, returned from the game client, into an

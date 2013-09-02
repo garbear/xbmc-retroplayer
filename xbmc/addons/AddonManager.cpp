@@ -53,6 +53,7 @@
 #include "Util.h"
 
 using namespace std;
+using namespace GAMES;
 using namespace PVR;
 
 namespace ADDON
@@ -302,7 +303,7 @@ void CAddonMgr::RegisterGameClientAddons()
 {
   VECADDONS gameClients;
   GetAddons(ADDON_GAMEDLL, gameClients, true);
-  GAMES::CGameManager::Get().RegisterAddons(gameClients);
+  CGameManager::Get().RegisterAddons(gameClients);
 }
 
 void CAddonMgr::DeInit()
@@ -438,6 +439,16 @@ bool CAddonMgr::GetAddons(const TYPE &type, VECADDONS &addons, bool enabled /* =
         if (g_PVRClients->GetClient(props->plugin->identifier, pvrAddon))
         {
           addons.push_back(pvrAddon);
+          continue;
+        }
+      }
+
+      if (enabled && TranslateType(props->ext_point_id) == ADDON_GAMEDLL)
+      {
+        GameClientPtr gameClient;
+        if (CGameManager::Get().GetClient(props->plugin->identifier, gameClient))
+        {
+          addons.push_back(gameClient);
           continue;
         }
       }
@@ -581,7 +592,7 @@ void CAddonMgr::RemoveAddon(const CStdString& ID)
     NotifyObservers(ObservableMessageAddons);
   }
   // Let the game manager update the information associated with this addon
-  GAMES::CGameManager::Get().UnregisterAddonByID(ID);
+  CGameManager::Get().UnregisterAddonByID(ID);
 }
 
 const char *CAddonMgr::GetTranslatedString(const cp_cfg_element_t *root, const char *tag)

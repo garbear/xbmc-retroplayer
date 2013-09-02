@@ -30,13 +30,11 @@ namespace LIBRETRO
 {
   struct retro_game_info;
 }
-namespace ADDON
-{
-  struct GameClientConfig;
-}
 
 namespace GAMES
 {
+  struct GameClientConfig;
+
   /**
     * Loading a file in libretro cores is a complicated process. Game clients
     * support different extensions, some support loading from the VFS, and
@@ -57,7 +55,7 @@ namespace GAMES
       * is filled with the file that should be loaded, either the original file or
       * a preferred substitute file.
       */
-    virtual bool CanLoad(const ADDON::GameClientConfig &gc, const CFileItem& file) = 0;
+    virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file) = 0;
 
     /**
       * Populates retro_game_info with results.
@@ -69,7 +67,7 @@ namespace GAMES
       * extension, and a positive match on at least one of the CGameFileLoader
       * strategies.
       */
-    static bool CanOpen(const CFileItem &file, const ADDON::GameClientConfig &config);
+    static bool CanOpen(const CFileItem &file, const GameClientConfig &config);
 
     /**
       * HELPER FUNCTION: If zipPath is a zip file, this will enumerate its contents
@@ -96,7 +94,7 @@ namespace GAMES
   class CGameFileLoaderUseHD : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const ADDON::GameClientConfig &gc, const CFileItem& file);
+    virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
   };
 
   /**
@@ -105,7 +103,7 @@ namespace GAMES
   class CGameFileLoaderUseVFS : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const ADDON::GameClientConfig &gc, const CFileItem& file);
+    virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
   };
 
   /**
@@ -116,7 +114,7 @@ namespace GAMES
   class CGameFileLoaderUseParentZip : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const ADDON::GameClientConfig &gc, const CFileItem& file);
+    virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
   };
 
   /**
@@ -126,6 +124,6 @@ namespace GAMES
   class CGameFileLoaderEnterZip : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const ADDON::GameClientConfig &gc, const CFileItem& file);
+    virtual bool CanLoad(const GameClientConfig &gc, const CFileItem& file);
   };
 } // namespace GAMES

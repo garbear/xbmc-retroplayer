@@ -38,6 +38,7 @@
 
 using namespace XFILE;
 using namespace ADDON;
+using namespace GAMES;
 
 AddonPtr CRepository::Clone(const AddonPtr &self) const
 {
@@ -199,7 +200,7 @@ bool CRepositoryUpdateJob::DoWork()
     return false;
 
   // Allow game manager to update its cache of valid game extensions
-  GAMES::CGameManager::Get().RegisterRemoteAddons(addons);
+  CGameManager::Get().RegisterRemoteAddons(addons);
 
   // check for updates
   CAddonDatabase database;

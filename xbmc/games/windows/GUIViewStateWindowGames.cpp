@@ -56,9 +56,9 @@ CStdString CGUIViewStateWindowGames::GetLockType()
 
 CStdString CGUIViewStateWindowGames::GetExtensions()
 {
-  CStdStringArray exts;
+  std::vector<std::string> exts;
   CGameManager::Get().GetExtensions(exts);
-  return StringUtils::JoinString(exts, "|");
+  return StringUtils::Join(exts, "|");
 }
 
 VECSOURCES& CGUIViewStateWindowGames::GetSources()
