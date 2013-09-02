@@ -633,7 +633,7 @@ void CAddonDatabase::OnEnable(const ADDON::AddonPtr &addon, bool bDisabled)
   
   IAddonDatabaseCallback *cb = GetCallbackForType(addon->Type());
   if (cb)
-    cb->EnableAddon(addon, bDisabled);
+    cb->AddonEnabled(addon, bDisabled);
 }
 
 void CAddonDatabase::OnDisable(const ADDON::AddonPtr &addon)
@@ -643,7 +643,7 @@ void CAddonDatabase::OnDisable(const ADDON::AddonPtr &addon)
   
   IAddonDatabaseCallback *cb = GetCallbackForType(addon->Type());
   if (cb)
-    cb->DisableAddon(addon);
+    cb->AddonDisabled(addon);
 }
 
 bool CAddonDatabase::BreakAddon(const CStdString &addonID, const CStdString& reason)

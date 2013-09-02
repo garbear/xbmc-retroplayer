@@ -111,8 +111,8 @@ namespace PVR
     virtual void OnSettingAction(const CSetting *setting);
 
     // Inherited from IAddonDatabaseCallback
-    virtual void EnableAddon(ADDON::AddonPtr addon, bool bDisabled);
-    virtual void DisableAddon(ADDON::AddonPtr addon);
+    virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
+    virtual void AddonDisabled(ADDON::AddonPtr addon);
 
     /*!
      * @brief Get the channel groups container.

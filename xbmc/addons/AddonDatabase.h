@@ -39,12 +39,12 @@ class IAddonDatabaseCallback
      * @param addon - a pointer to the add-on
      * @param bDisabled - whether the add-on was disabled prior to being enabled
      */
-    virtual void EnableAddon(ADDON::AddonPtr addon, bool bDisabled) = 0;
+    virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled) = 0;
     /**
      * Called when an add-on is disabled in the database.
      * @param addon - a pointer to the add-on
      */
-    virtual void DisableAddon(ADDON::AddonPtr addon) = 0;
+    virtual void AddonDisabled(ADDON::AddonPtr addon) = 0;
 };
 
 class CAddonDatabase : public CDatabase

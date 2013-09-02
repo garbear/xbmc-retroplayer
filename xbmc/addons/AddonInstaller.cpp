@@ -743,7 +743,7 @@ void CAddonInstallJob::OnPostInstall(bool reloadAddon)
   {
     IAddonDatabaseCallback *cb = CAddonDatabase::GetCallbackForType(ADDON_GAMEDLL);
     if (cb)
-      cb->EnableAddon(m_addon, false);
+      cb->AddonEnabled(m_addon, false);
   }
 }
 

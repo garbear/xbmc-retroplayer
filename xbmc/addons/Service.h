@@ -25,8 +25,8 @@ namespace ADDON
 {
   class CServiceManager: public IAddonDatabaseCallback
   {
-    virtual void DisableAddon(ADDON::AddonPtr addon);
-    virtual void EnableAddon(ADDON::AddonPtr addon, bool bDisabled);
+    virtual void AddonDisabled(ADDON::AddonPtr addon);
+    virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
 
   protected:
     CServiceManager();

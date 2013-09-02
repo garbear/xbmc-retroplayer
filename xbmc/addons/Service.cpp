@@ -119,7 +119,7 @@ CServiceManager::~CServiceManager()
   CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_SERVICE);
 }
 
-void CServiceManager::EnableAddon(ADDON::AddonPtr addon, bool bDisabled)
+void CServiceManager::AddonEnabled(ADDON::AddonPtr addon, bool bDisabled)
 {
   if (!addon)
     return;
@@ -133,7 +133,7 @@ void CServiceManager::EnableAddon(ADDON::AddonPtr addon, bool bDisabled)
   }
 }
 
-void CServiceManager::DisableAddon(ADDON::AddonPtr addon)
+void CServiceManager::AddonDisabled(ADDON::AddonPtr addon)
 {
   // If the addon is a service, stop it
   if (!addon)
