@@ -38,7 +38,7 @@ namespace GAMES
    * querying it directly, so it is desirable to only do this once and cache the
    * information.
    */
-  class CGameManager : public ISettingCallback, public IAddonDatabaseCallback
+  class CGameManager : public IAddonDatabaseCallback
   {
   private:
     CGameManager();
@@ -91,13 +91,6 @@ namespace GAMES
     void GetGameClientIDs(const CFileItem& file, CStdStringArray &candidates) const;
 
     void GetExtensions(std::vector<CStdString> &exts);
-
-    // Inherited from ISettingCallback
-    virtual bool OnSettingChanging(const CSetting *setting);
-    virtual void OnSettingChanged(const CSetting *setting);
-    virtual void OnSettingAction(const CSetting *setting);
-    virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
-    virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
 
     // Inherited from IAddonDatabaseCallback
     virtual void EnableAddon(ADDON::AddonPtr addon, bool bDisabled);

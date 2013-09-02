@@ -28,9 +28,7 @@
 #include "GameFileLoader.h"
 #include "games/savegames/Savestate.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/WindowIDs.h"
 #include "profiles/ProfilesManager.h"
-#include "settings/Setting.h"
 //#include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
@@ -321,50 +319,6 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, CStdStringArray &cand
     if (!gameclient.empty())
       break; // If the game client isn't installed, it's not a valid candidate
   }
-}
-
-bool CGameManager::OnSettingChanging(const CSetting *setting)
-{
-  if (setting == NULL)
-    return false;
-
-  return true;
-}
-
-void CGameManager::OnSettingChanged(const CSetting *setting)
-{
-  if (setting == NULL)
-    return;
-
-}
-
-void CGameManager::OnSettingAction(const CSetting *setting)
-{
-  if (setting == NULL)
-    return;
-
-  const std::string &settingId = setting->GetId();
-  if (settingId == "gamesgeneral.manageaddons")
-  {
-    CStdStringArray params;
-    params.push_back("addons://all/xbmc.gameclient");
-    g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
-  }
-}
-
-bool CGameManager::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
-{
-  if (setting == NULL)
-    return false;
-
-  return false;
-}
-
-void CGameManager::OnSettingPropertyChanged(const CSetting *setting, const char *propertyName)
-{
-  if (setting == NULL)
-    return;
-
 }
 
 void CGameManager::EnableAddon(ADDON::AddonPtr addon, bool bDisabled)

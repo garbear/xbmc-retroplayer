@@ -3153,6 +3153,9 @@
     <ClCompile Include="..\..\xbmc\games\savegames\GUIDialogGameSaves.cpp">
       <Filter>games\savegames</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameSettings.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6166,6 +6169,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\savegames\GUIDialogGameSaves.h">
       <Filter>games\savegames</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameSettings.h">
+      <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
