@@ -81,7 +81,7 @@ void CJoystickDX::Initialize(JoystickArray &joysticks)
     if (FAILED(hr = context.pDirectInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback,
         &context, DIEDFL_ATTACHEDONLY)) || context.joystickItems.size() == 0)
     {
-      CLog::Log(LOGERROR, __FUNCTION__" : No Joystick found");
+      CLog::Log(LOGINFO, __FUNCTION__" : No Joystick found");
     }
     else
     {
