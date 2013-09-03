@@ -19,41 +19,47 @@
  */
 #pragma once
 
-#include "libretro_wrapped.h"
 #include "games/GameClient.h"
 #include "utils/StdString.h"
-
 #include <map>
 
 namespace GAMES
 {
+  class ILibretroCallbacksDLL;
+
   class CLibretroEnvironment
   {
   public:
-    typedef void (*SetPixelFormat_t)         (LIBRETRO::retro_pixel_format format); // retro_pixel_format defined in libretro.h
-    typedef void (*SetKeyboardCallback_t)    (LIBRETRO::retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
-    typedef void (*SetDiskControlCallback_t) (const LIBRETRO::retro_disk_control_callback *callback_struct); // retro_disk_control_callback defined in libretro.h
-    typedef void (*SetRenderCallback_t)      (const LIBRETRO::retro_hw_render_callback *callback_struct); // retro_hw_render_callback defined in libretro.h
-
-    // Libretro interface
+    // XBMC's interface for libretro 
     static bool EnvironmentCallback(unsigned cmd, void *data);
 
-    static void SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc,
-                             SetDiskControlCallback_t sdcc, SetRenderCallback_t src,
-                             GameClientPtr activeClient);
+    /**
+     * Set callbacks and CGameClient object for loading a libretro DLL. The
+     * CGameClient object is used when loading and running the game to
+     * communicate with XBMC (such as querying or updating settings).
+     */
+    static void SetDLLCallbacks(ILibretroCallbacksDLL *callbacks, GameClientPtr activeClient);
+
+    /**
+     * Called after the active game cient is unloaded.
+     */
     static void ResetCallbacks();
 
+    /**
+     * Abort() returns true if the game client currently loading should be aborted.
+     */
     static bool Abort() { return m_bAbort; }
+
+    /**
+     * Process a libretro variable, then then process it a little more.
+     */
     static bool ParseVariable(const LIBRETRO::retro_variable &var, CStdString &strDefault);
 
   private:
-    static SetPixelFormat_t         fn_SetPixelFormat;
-    static SetKeyboardCallback_t    fn_SetKeyboardCallback;
-    static SetDiskControlCallback_t fn_SetDiskControlCallback;
-    static SetRenderCallback_t      fn_SetRenderCallback;
-    static GameClientPtr            m_activeClient;
-    static CStdString               m_systemDirectory;
-    static bool                     m_bAbort;
+    static ILibretroCallbacksDLL            *m_callbacksDLL;
+    static GameClientPtr                    m_activeClient;
     static std::map<CStdString, CStdString> m_varMap;
+    static CStdString                       m_systemDirectory;
+    static bool                             m_bAbort;
   };
 } // namespace GAMES

@@ -23,6 +23,7 @@
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "filesystem/Directory.h"
+#include "games/libretro/LibretroCallbacks.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
@@ -42,34 +43,22 @@ using namespace GAMES;
 using namespace XFILE;
 using namespace std;
 
-CLibretroEnvironment::SetPixelFormat_t         CLibretroEnvironment::fn_SetPixelFormat         = NULL;
-CLibretroEnvironment::SetKeyboardCallback_t    CLibretroEnvironment::fn_SetKeyboardCallback    = NULL;
-CLibretroEnvironment::SetDiskControlCallback_t CLibretroEnvironment::fn_SetDiskControlCallback = NULL;
-CLibretroEnvironment::SetRenderCallback_t      CLibretroEnvironment::fn_SetRenderCallback      = NULL;
-
-GameClientPtr CLibretroEnvironment::m_activeClient;
-CStdString    CLibretroEnvironment::m_systemDirectory;
-bool          CLibretroEnvironment::m_bAbort = false;
+ILibretroCallbacksDLL            *CLibretroEnvironment::m_callbacksDLL = NULL;
+GameClientPtr                    CLibretroEnvironment::m_activeClient;
 std::map<CStdString, CStdString> CLibretroEnvironment::m_varMap;
+CStdString                       CLibretroEnvironment::m_systemDirectory;
+bool                             CLibretroEnvironment::m_bAbort = false;
 
-void CLibretroEnvironment::SetCallbacks(SetPixelFormat_t spf, SetKeyboardCallback_t skc,
-                                        SetDiskControlCallback_t sdcc, SetRenderCallback_t src,
-                                        GameClientPtr activeClient)
+void CLibretroEnvironment::SetDLLCallbacks(ILibretroCallbacksDLL *callbacks, GameClientPtr activeClient)
 {
-  fn_SetPixelFormat = spf;
-  fn_SetKeyboardCallback = skc;
-  fn_SetDiskControlCallback = sdcc;
-  fn_SetRenderCallback = src;
+  m_callbacksDLL = callbacks;
   m_activeClient = activeClient;
   m_bAbort = false;
 }
 
 void CLibretroEnvironment::ResetCallbacks()
 {
-  fn_SetPixelFormat = NULL;
-  fn_SetKeyboardCallback = NULL;
-  fn_SetDiskControlCallback = NULL;
-  fn_SetRenderCallback = NULL;
+  m_callbacksDLL = NULL;
   m_activeClient.reset();
 }
 
@@ -283,8 +272,8 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
                                        "RETRO_PIXEL_FORMAT_XRGB8888",
                                        "RETRO_PIXEL_FORMAT_RGB565"};
           CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set pixel format: %d, %s", cmd, pix_fmt, fmts[pix_fmt]);
-          if (fn_SetPixelFormat)
-            fn_SetPixelFormat(pix_fmt);
+          if (m_callbacksDLL)
+            m_callbacksDLL->SetPixelFormat(pix_fmt);
           break;
         }
       default:
@@ -318,8 +307,8 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Sets a callback function, called by XBMC, used to notify core about
       // keyboard events.
       const LIBRETRO::retro_keyboard_callback *callback_struct = reinterpret_cast<const LIBRETRO::retro_keyboard_callback*>(data);
-      if (callback_struct->callback && fn_SetKeyboardCallback)
-        fn_SetKeyboardCallback(callback_struct->callback);
+      if (m_callbacksDLL && callback_struct->callback)
+        m_callbacksDLL->SetKeyboardCallback(callback_struct->callback);
       break;
     }
   case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
@@ -327,8 +316,8 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Sets an interface to eject and insert disk images. This is used for games which
       // consist of multiple images and must be manually swapped out by the user (e.g. PSX).
       const LIBRETRO::retro_disk_control_callback *disk_control_cb = reinterpret_cast<const LIBRETRO::retro_disk_control_callback*>(data);
-      if (fn_SetDiskControlCallback)
-        fn_SetDiskControlCallback(disk_control_cb);
+      if (m_callbacksDLL)
+        m_callbacksDLL->SetDiskControlCallback(disk_control_cb);
       break;
     }
   case RETRO_ENVIRONMENT_SET_HW_RENDER:
@@ -336,8 +325,8 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Sets an interface to let a libretro core render with hardware acceleration.
       // This call is currently very experimental
       const LIBRETRO::retro_hw_render_callback *hw_render_cb = reinterpret_cast<const LIBRETRO::retro_hw_render_callback*>(data);
-      if (fn_SetRenderCallback)
-        fn_SetRenderCallback(hw_render_cb);
+      if (m_callbacksDLL)
+        m_callbacksDLL->SetRenderCallback(hw_render_cb);
       break;
     }
   case RETRO_ENVIRONMENT_GET_VARIABLE:

@@ -1121,6 +1121,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">Retrieving the git revision</Message>
     </CustomBuild>
     <ClInclude Include="..\..\xbmc\games\GameSettings.h" />
+    <ClInclude Include="..\..\xbmc\games\libretro\LibretroCallbacks.h" />
     <ClInclude Include="..\..\xbmc\guilib\cximage.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameboyTag.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h" />

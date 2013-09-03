@@ -24,7 +24,7 @@
 #include "FileItem.h"
 #include "GameClientDLL.h"
 #include "GameFileLoader.h"
-#include "games/libretro/libretro_wrapped.h"
+#include "games/libretro/LibretroCallbacks.h"
 #include "games/savegames/Savestate.h"
 #include "games/tags/GameInfoTagLoader.h"
 #include "SerialState.h"
@@ -66,38 +66,11 @@ namespace GAMES
   class CGameClient;
   typedef boost::shared_ptr<CGameClient> GameClientPtr;
 
-  class CGameClient : public ADDON::CAddon
+  class CGameClient : public ILibretroCallbacksDLL, public ADDON::CAddon
   {
   public:
-    /**
-     * Callback container. Data is passed in and out of the game client through
-     * these callbacks.
-     */
-    struct DataReceiver
-    {
-      typedef void    (*VideoFrame_t)          (const void *data, unsigned width, unsigned height, size_t pitch);
-      typedef void    (*AudioSample_t)         (int16_t left, int16_t right);
-      typedef size_t  (*AudioSampleBatch_t)    (const int16_t *data, size_t frames);
-      // Actually a "data sender", but who's looking
-      typedef int16_t (*GetInputState_t)       (unsigned port, unsigned device, unsigned index, unsigned id);
-      typedef void    (*SetPixelFormat_t)      (LIBRETRO::retro_pixel_format format); // retro_pixel_format defined in libretro.h
-      typedef void    (*SetKeyboardCallback_t) (LIBRETRO::retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
-
-      VideoFrame_t          VideoFrame;
-      AudioSample_t         AudioSample;
-      AudioSampleBatch_t    AudioSampleBatch;
-      GetInputState_t       GetInputState;
-      SetPixelFormat_t      SetPixelFormat;
-      SetKeyboardCallback_t SetKeyboardCallback;
-
-      DataReceiver(VideoFrame_t vf, AudioSample_t as, AudioSampleBatch_t asb, GetInputState_t is, SetPixelFormat_t spf, SetKeyboardCallback_t skc)
-        : VideoFrame(vf), AudioSample(as), AudioSampleBatch(asb), GetInputState(is), SetPixelFormat(spf), SetKeyboardCallback(skc) { }
-    };
-
     CGameClient(const ADDON::AddonProps &props);
-
     CGameClient(const cp_extension_t *props);
-
     virtual ~CGameClient() { DeInit(); }
 
     /**
@@ -127,7 +100,7 @@ namespace GAMES
      */
     bool CanOpen(const CFileItem &file) const;
 
-    bool OpenFile(const CFileItem &file, const DataReceiver &callbacks);
+    bool OpenFile(const CFileItem &file, ILibretroCallbacksAV *callbacks);
     void CloseFile();
 
     const std::string &GetFilePath() const { return m_gamePath; }
@@ -239,6 +212,18 @@ namespace GAMES
      */
     bool IsExtensionValid(const std::string &ext) const;
 
+    // Inherited from ILibretroCallbacksDLL
+    virtual void SetPixelFormat(LIBRETRO::retro_pixel_format format);
+    virtual void SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback);
+    virtual void SetDiskControlCallback(const LIBRETRO::retro_disk_control_callback *callback_struct) { } // TODO
+    virtual void SetRenderCallback(const LIBRETRO::retro_hw_render_callback *callback_struct) { } // TODO
+
+    // Static wrappers for ILibretroCallbacksAV
+    static void VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch);
+    static void AudioSample(int16_t left, int16_t right);
+    static size_t AudioSampleBatch(const int16_t *data, size_t frames);
+    static int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
+
   protected:
     virtual bool LoadSettings(bool bForce = false);
 
@@ -276,6 +261,7 @@ namespace GAMES
     void SetPlatforms(const std::string &strPlatformList);
 
     GameClientConfig m_config;
+    static ILibretroCallbacksAV *m_callbacks;
 
     GameClientDLL    m_dll;
     bool             m_bIsInited; // Keep track of whether m_dll.retro_init() has been called

@@ -26,14 +26,14 @@
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "games/GameClient.h"
-#include "games/libretro/libretro_wrapped.h"
+#include "games/libretro/LibretroCallbacks.h"
 #include "threads/Thread.h"
 
 #include <stdint.h>
 #include <string>
 #include <vector>
 
-class CRetroPlayer : public IPlayer, public CThread
+class CRetroPlayer : public IPlayer, public GAMES::ILibretroCallbacksAV, public CThread
 {
 public:
   CRetroPlayer(IPlayerCallback& callback);
@@ -122,18 +122,19 @@ protected:
   virtual void Process();
 
 private:
-  // Static functions used to send and receive data from the game clients
-  static void    OnVideoFrame(const void *data, unsigned width, unsigned height, size_t pitch);
-  static void    OnAudioSample(int16_t left, int16_t right);
-  static size_t  OnAudioSampleBatch(const int16_t *data, size_t frames);
-  static int16_t OnInputState(unsigned port, unsigned device, unsigned index, unsigned id);
-  static void    OnSetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat); // retro_pixel_format defined in libretro.h
-  static void    OnSetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback); // retro_keyboard_event_t defined in libretro.h
+  /*
+   * Inherited from ILibretroCallbacksAV. Used to send and receive data from
+   * the game clients.
+   */
+  virtual void VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch);
+  virtual void AudioSample(int16_t left, int16_t right);
+  virtual size_t AudioSampleBatch(const int16_t *data, size_t frames);
+  virtual int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
+  virtual void SetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat);
+  virtual void SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback);
 
   // So that the static functions above may invoke audio, video and input callbacks
-  static CRetroPlayer *m_retroPlayer;
-  static GAMES::CGameClient::DataReceiver m_callbacks;
-  static LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // unused
+  LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // TODO
 
   CRetroPlayerVideo    m_video;
   CRetroPlayerAudio    m_audio;

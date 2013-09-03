@@ -6173,6 +6173,9 @@
     <ClInclude Include="..\..\xbmc\games\GameSettings.h">
       <Filter>games</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\libretro\LibretroCallbacks.h">
+      <Filter>games\libretro</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">
