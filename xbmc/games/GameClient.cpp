@@ -77,6 +77,8 @@ namespace GAMES
   }
 } // namespace GAMES
 
+ILibretroCallbacksAV *CGameClient::m_callbacks = NULL;
+
 CGameClient::CGameClient(const AddonProps &props) : CAddon(props)
 {
   Initialize();
@@ -147,6 +149,7 @@ CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
 void CGameClient::Initialize()
 {
   m_config = GameClientConfig(ID());
+  m_callbacks = NULL;
   m_bIsInited = false;
   m_bIsPlaying = false;
   m_frameRate = 0.0;
@@ -327,7 +330,7 @@ bool CGameClient::CanOpen(const CFileItem &file) const
   return CGameFileLoader::CanOpen(file, m_config);
 }
 
-bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
+bool CGameClient::OpenFile(const CFileItem& file, ILibretroCallbacksAV *callbacks)
 {
   CSingleLock lock(m_critSection);
 
@@ -343,13 +346,14 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
     return false;
   }
 
+  m_callbacks = callbacks;
+
   // Ensure the default values
-  callbacks.SetPixelFormat(LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555);
-  callbacks.SetKeyboardCallback(NULL);
+  m_callbacks->SetPixelFormat(LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555);
+  m_callbacks->SetKeyboardCallback(NULL);
 
   // Install the hooks. These are called by CLibretroEnvironment::EnvironmentCallback()
-  CLibretroEnvironment::SetCallbacks(callbacks.SetPixelFormat, callbacks.SetKeyboardCallback,
-    NULL, NULL, GameClientPtr(new CGameClient(Props())));
+  CLibretroEnvironment::SetDLLCallbacks(this, GameClientPtr(new CGameClient(Props())));
 
   // Because we call m_dll.retro_init() here instead of in Init(), keep track
   // of this. Note that if we return false later, m_bIsInited will still be
@@ -528,11 +532,11 @@ bool CGameClient::OpenFile(const CFileItem& file, const DataReceiver &callbacks)
     break;
   }
 
-  // Install callbacks
-  m_dll.retro_set_video_refresh(callbacks.VideoFrame);
-  m_dll.retro_set_audio_sample(callbacks.AudioSample);
-  m_dll.retro_set_audio_sample_batch(callbacks.AudioSampleBatch);
-  m_dll.retro_set_input_state(callbacks.GetInputState);
+  // Install callbacks (static wrappers for ILibretroCallbacksAV)
+  m_dll.retro_set_video_refresh(VideoFrame);
+  m_dll.retro_set_audio_sample(AudioSample);
+  m_dll.retro_set_audio_sample_batch(AudioSampleBatch);
+  m_dll.retro_set_input_state(GetInputState);
   m_dll.retro_set_input_poll(NoopPoop);
 
   // TODO: Use CGameInfoTagLoader::GetPlatformByName(file.GetInfoTag().GetPlatform()).ports
@@ -559,6 +563,7 @@ void CGameClient::CloseFile()
     m_dll.retro_unload_game();
     m_bIsPlaying = false;
   }
+  m_callbacks = NULL;
   m_gamePath.clear();
   m_saveState.Reset();
   CLibretroEnvironment::ResetCallbacks();
@@ -887,4 +892,46 @@ void CGameClient::SetPlatforms(const string &strPlatformList)
 bool CGameClient::IsExtensionValid(const string &ext) const
 {
   return CGameFileLoader::IsExtensionValid(ext, m_config.extensions);
+}
+
+void CGameClient::SetPixelFormat(LIBRETRO::retro_pixel_format format)
+{
+  if (m_callbacks)
+    m_callbacks->SetPixelFormat(format);
+}
+
+void CGameClient::SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback)
+{
+  if (m_callbacks)
+    m_callbacks->SetKeyboardCallback(callback);
+}
+
+/* static */
+void CGameClient::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
+{
+  if (m_callbacks)
+    m_callbacks->VideoFrame(data, width, height, pitch);
+}
+
+/* static */
+void CGameClient::AudioSample(int16_t left, int16_t right)
+{
+  if (m_callbacks)
+    m_callbacks->AudioSample(left, right);
+}
+
+/* static */
+size_t CGameClient::AudioSampleBatch(const int16_t *data, size_t frames)
+{
+  if (m_callbacks)
+    return m_callbacks->AudioSampleBatch(data, frames);
+  return frames;
+}
+
+/* static */
+int16_t CGameClient::GetInputState(unsigned port, unsigned device, unsigned index, unsigned id)
+{
+  if (m_callbacks)
+    return m_callbacks->GetInputState(port, device, index, id);
+  return 0;
 }

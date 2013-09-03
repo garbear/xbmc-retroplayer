@@ -45,20 +45,8 @@
 using namespace ADDON;
 using namespace GAMES;
 
-CRetroPlayer *CRetroPlayer::m_retroPlayer = NULL;
-
-// Callback installation
-CGameClient::DataReceiver CRetroPlayer::m_callbacks(OnVideoFrame,
-                                                    OnAudioSample,
-                                                    OnAudioSampleBatch,
-                                                    OnInputState,
-                                                    OnSetPixelFormat,
-                                                    OnSetKeyboardCallback);
-
-LIBRETRO::retro_keyboard_event_t CRetroPlayer::m_keyboardCallback = NULL;
-
 CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
-  : IPlayer(callback), CThread("RetroPlayer"), m_playSpeed(PLAYSPEED_NORMAL)
+  : IPlayer(callback), CThread("RetroPlayer"), m_keyboardCallback(NULL), m_playSpeed(PLAYSPEED_NORMAL)
 {
 }
 
@@ -155,8 +143,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
     m_gameClient->GetClientVersion().c_str());
 
   // We need to store a pointer to ourself before sending the callbacks to the game client
-  m_retroPlayer = this;
-  if (!m_gameClient->OpenFile(file, m_callbacks))
+  if (!m_gameClient->OpenFile(file, this))
   {
     CLog::Log(LOGERROR, "RetroPlayer: Error opening file");
     CStdString errorOpening;
@@ -547,42 +534,36 @@ void CRetroPlayer::Process()
   m_audio.StopThread(true);
 }
 
-/* static */
-void CRetroPlayer::OnVideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
+void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
 {
   // Verify all game client data. You don't know where that code's been.
   if (data && width && height && pitch)
-    m_retroPlayer->m_video.SendVideoFrame(data, width, height, pitch);
+    m_video.SendVideoFrame(data, width, height, pitch);
 }
 
-/* static */
-void CRetroPlayer::OnAudioSample(int16_t left, int16_t right)
+void CRetroPlayer::AudioSample(int16_t left, int16_t right)
 {
-  m_retroPlayer->m_audio.SendAudioFrame(left, right);
+  m_audio.SendAudioFrame(left, right);
 }
 
-/* static */
-size_t CRetroPlayer::OnAudioSampleBatch(const int16_t *data, size_t frames)
+size_t CRetroPlayer::AudioSampleBatch(const int16_t *data, size_t frames)
 {
-  if (data && frames && m_retroPlayer->m_playSpeed == PLAYSPEED_NORMAL)
-    m_retroPlayer->m_audio.SendAudioFrames(data, frames);
+  if (data && frames && m_playSpeed == PLAYSPEED_NORMAL)
+    m_audio.SendAudioFrames(data, frames);
   return frames;
 }
 
-/* static */
-int16_t CRetroPlayer::OnInputState(unsigned port, unsigned device, unsigned index, unsigned id)
+int16_t CRetroPlayer::GetInputState(unsigned port, unsigned device, unsigned index, unsigned id)
 {
-  return m_retroPlayer->m_input.GetInput(port, device, index, id);
+  return m_input.GetInput(port, device, index, id);
 }
 
-/* static */
-void CRetroPlayer::OnSetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat)
+void CRetroPlayer::SetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat)
 {
-  m_retroPlayer->m_video.SetPixelFormat(pixelFormat);
+  m_video.SetPixelFormat(pixelFormat);
 }
 
-/* static */
-void CRetroPlayer::OnSetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback)
+void CRetroPlayer::SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback)
 {
   m_keyboardCallback = callback;
 }
