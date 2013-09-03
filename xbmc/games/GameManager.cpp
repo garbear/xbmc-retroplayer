@@ -26,7 +26,9 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "GameFileLoader.h"
+#include "games/savegames/Savestate.h"
 #include "guilib/GUIWindowManager.h"
+#include "profiles/ProfilesManager.h"
 //#include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
@@ -38,6 +40,7 @@
 using namespace ADDON;
 using namespace GAME_INFO;
 using namespace GAMES;
+using namespace XFILE;
 using namespace std;
 
 
@@ -145,6 +148,14 @@ bool CGameManager::RegisterAddon(const GameClientPtr &clientAddon)
   {
     // Unload the loaded and inited DLL
     client->DeInit();
+
+    // Check to see if the savegame folder for this game client exists
+    CStdString dir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetSavegamesFolder(), clientAddon->ID()));
+    if (!CDirectory::Exists(dir))
+    {
+      CLog::Log(LOGINFO, "Create new savegames folder: %s", dir.c_str());
+      CDirectory::Create(dir);
+    }
 
     // If a file was queued by RetroPlayer, test to see if we should launch the
     // newly installed game client

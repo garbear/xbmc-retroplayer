@@ -362,6 +362,7 @@ void CProfilesManager::CreateProfileFolders()
   CDirectory::Create(GetThumbnailsFolder());
   CDirectory::Create(GetVideoThumbFolder());
   CDirectory::Create(GetBookmarksThumbFolder());
+  CDirectory::Create(GetSavegamesFolder());
   for (size_t hex = 0; hex < 16; hex++)
     CDirectory::Create(URIUtils::AddFileToFolder(GetThumbnailsFolder(), StringUtils::Format("%x", hex)));
 
@@ -506,6 +507,14 @@ std::string CProfilesManager::GetLibraryFolder() const
     return URIUtils::AddFileToFolder(GetProfileUserDataFolder(), "library");
 
   return URIUtils::AddFileToFolder(GetUserDataFolder(), "library");
+}
+
+std::string CProfilesManager::GetSavegamesFolder() const
+{
+  if (GetCurrentProfile().hasDatabases())
+    return URIUtils::AddFileToFolder(GetProfileUserDataFolder(), "Savegames");
+
+  return URIUtils::AddFileToFolder(GetUserDataFolder(), "Savegames");
 }
 
 std::string CProfilesManager::GetSettingsFile() const
