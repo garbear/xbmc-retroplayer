@@ -27,7 +27,6 @@
 #include "pictures/Picture.h"
 #include "profiles/ProfilesManager.h"
 #include "settings/AdvancedSettings.h"
-//#include "settings/Settings.h"
 #include "utils/Crc32.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -308,35 +307,6 @@ void CSavestate::SetSaveTypeLabel(const CStdString &label)
   m_bAutoSave = false;
   m_slot = 0;
   m_label = label;
-}
-
-void CSavestate::SetGameCRCFromFile(const CStdString &filename, bool forceFilename /* = false */)
-{
-  std::vector<char> buffer;
-  CFile file;
-  int64_t length;
-  if (file.Open(filename) && (length = file.GetLength()) > 0)
-  {
-    if (length > MAX_SAVESTATE_CRC_LENGTH || forceFilename)
-    {
-      Crc32 crc;
-      crc.ComputeFromLowerCase(filename);
-      m_gameCRC.Format("%08x", (unsigned __int32)crc);
-    }
-    else
-    {
-      buffer.resize((size_t)length);
-      file.Read(buffer.data(), length);
-      SetGameCRCFromFile(buffer.data(), buffer.size());
-    }
-  }
-}
-
-void CSavestate::SetGameCRCFromFile(const char *data, size_t length)
-{
-  Crc32 crc;
-  crc.Compute(data, length);
-  m_gameCRC.Format("%08x", (unsigned __int32)crc);
 }
 
 void CSavestate::SetTimestamp(const CStdString &strTimestamp /* = empty */)

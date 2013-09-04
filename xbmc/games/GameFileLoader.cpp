@@ -25,17 +25,156 @@
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "utils/Crc32.h"
 #include "utils/log.h"
+#include "utils/StdString.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
 
 #include <limits>
 
+#define MAX_SAVESTATE_CRC_LENGTH   40 * 1024 * 1024 // 40 MiB
+
 using namespace ADDON;
 using namespace GAME_INFO;
 using namespace GAMES;
 using namespace XFILE;
+using namespace std;
+
+CGameFile::CGameFile()
+  : m_type(TYPE_INVALID),
+    m_bIsLoaded(false),
+    m_bIsCRCed(false)
+{
+}
+
+CGameFile::CGameFile(TYPE type, const string &originalPath, const string &translatedPath /* = "" */)
+  : m_type(type),
+    m_strOriginalPath(originalPath),
+    m_strTranslatedPath(translatedPath),
+    m_bIsLoaded(false),
+    m_bIsCRCed(false)
+{
+  if (m_strTranslatedPath.empty())
+    m_strTranslatedPath = m_strOriginalPath; // no translation, just use original path
+}
+
+const std::vector<uint8_t> &CGameFile::Buffer()
+{
+  if (!m_bIsLoaded)
+  {
+    m_bIsLoaded = true;
+    if (m_type == TYPE_DATA)
+      Read(m_strTranslatedPath, m_data);
+    else
+      CLog::Log(LOGERROR, "CGameFile: Not loading %s, absolute path requested!", m_strTranslatedPath.c_str());
+  }
+  return m_data;
+}
+
+const string &CGameFile::CRC()
+{
+  if (!m_bIsCRCed)
+  {
+    Crc32 crc;
+    if (m_type == TYPE_PATH)
+    {
+      /*
+       * Loosely tests if CGameFileLoaderUseParentZip was the chosen strategy. If
+       * this returns true, the original path is a better CRC candidate because
+       * it lets us CRC the actual game file instead of a zip.
+       */
+      bool useOriginalPath = (StringUtils::EqualsNoCase(URIUtils::GetExtension(m_strTranslatedPath), ".zip") &&
+                              !StringUtils::EqualsNoCase(URIUtils::GetExtension(m_strOriginalPath), ".zip"));
+      vector<uint8_t> data;
+      if (useOriginalPath)
+        Read(m_strOriginalPath, data);
+      else
+        Read(m_strTranslatedPath, data);
+
+      if (!data.empty() && data.size() <= MAX_SAVESTATE_CRC_LENGTH)
+      {
+        m_bIsCRCed = true;
+        crc.Compute(reinterpret_cast<char*>(data.data()), data.size());
+      }
+    }
+    else
+    {
+      // If we're loading from a buffer, then CRC that data
+      if (!Buffer().empty() && Buffer().size() <= MAX_SAVESTATE_CRC_LENGTH)
+      {
+        m_bIsCRCed = true;
+        crc.Compute(reinterpret_cast<char*>(m_data.data()), m_data.size());
+      }
+    }
+
+    if (m_bIsCRCed)
+      m_strCRC = StringUtils::Format("%08x", (unsigned __int32)crc);
+    
+    m_bIsCRCed = true; // don't try again
+  }
+  return m_strCRC;
+}
+
+/* static */
+void CGameFile::Read(const std::string &path, std::vector<uint8_t> &data)
+{
+  // Load the file from the vfs
+  CFile vfsFile;
+  if (!vfsFile.Open(path))
+  {
+    CLog::Log(LOGERROR, "CGameFile: XBMC cannot open file \"%s\"", path.c_str());
+    return;
+  }
+
+  int64_t length = vfsFile.GetLength();
+
+  // Check for file size overflow (libretro accepts files <= size_t max)
+  if (length <= 0 || (uint64_t)length > (uint64_t)std::numeric_limits<size_t>::max())
+  {
+    CLog::Log(LOGERROR, "CGameFile: Invalid file size: %"PRId64" bytes", length);
+    return;
+  }
+
+  data.resize((size_t)length);
+
+  if (vfsFile.Read(data.data(), length) != length)
+  {
+    CLog::Log(LOGERROR, "CGameFile: XBMC failed to read game data");
+    // Fullfill post-condition: m_data.size() must return zero
+    data.clear();
+    return;
+  }
+
+  CLog::Log(LOGDEBUG, "CGameFile: loaded file from VFS (filesize: %lu KiB)", data.size() / 1024);
+}
+
+bool CGameFile::ToInfo(LIBRETRO::retro_game_info &info)
+{
+  switch (m_type)
+  {
+  case TYPE_PATH:
+    info.path = m_strTranslatedPath.c_str();
+    info.data = NULL;
+    info.size = 0;
+    info.meta = NULL;
+    return true;
+  case TYPE_DATA:
+    if (!Buffer().empty())
+    {
+      info.path = NULL; // NULL forces the game client to load from memory
+      info.data = m_data.data();
+      info.size = m_data.size();
+      info.meta = NULL;
+      return true;
+    }
+    break;
+  default:
+    break;
+  }
+  return false;
+}
 
 /* static */
 bool CGameFileLoader::CanOpen(const CGameClient &gc, const CFileItem &file)
@@ -62,15 +201,16 @@ bool CGameFileLoader::CanOpen(const CGameClient &gc, const CFileItem &file)
   CGameFileLoaderEnterZip     innerzip;
 
   CGameFileLoader *strategies[] = { &hd, &outerzip, &vfs, &innerzip };
+  CGameFile dummy;
 
   for (unsigned int i = 0; i < sizeof(strategies) / sizeof(strategies[0]); i++)
-    if (strategies[i]->CanLoad(gc, file))
+    if (strategies[i]->CanLoad(gc, file, dummy))
       return true;
   return false;
 }
 
 /* static */
-bool CGameFileLoader::GetEffectiveRomPath(const CStdString &zipPath, const std::set<std::string> &validExts, CStdString &effectivePath)
+bool CGameFileLoader::GetEffectiveRomPath(const string &zipPath, const set<string> &validExts, string &effectivePath)
 {
   // Default case: effective zip file is the zip file itself
   effectivePath = zipPath;
@@ -84,7 +224,7 @@ bool CGameFileLoader::GetEffectiveRomPath(const CStdString &zipPath, const std::
   URIUtils::CreateArchivePath(strUrl, "zip", zipPath, "");
 
   CStdString strValidExts;
-  for (std::set<std::string>::const_iterator it = validExts.begin(); it != validExts.end(); it++)
+  for (set<string>::const_iterator it = validExts.begin(); it != validExts.end(); it++)
     strValidExts += *it + "|";
 
   CFileItemList itemList;
@@ -98,71 +238,22 @@ bool CGameFileLoader::GetEffectiveRomPath(const CStdString &zipPath, const std::
 }
 
 /* static */
-bool CGameFileLoader::IsExtensionValid(const std::string &ext, const std::set<std::string> &setExts)
+bool CGameFileLoader::IsExtensionValid(const string &ext, const set<string> &setExts)
 {
   if (setExts.empty())
     return true; // Be optimistic :)
   if (ext.empty())
     return false;
-  std::string ext2(ext);
+
+  // Convert to lower case and canonicalize with a leading "."
+  string ext2(ext);
   StringUtils::ToLower(ext2);
   if (ext2[0] != '.')
     ext2.insert(0, ".");
   return setExts.find(ext2) != setExts.end();
 }
 
-bool CGameFileLoader::GetGameInfo(LIBRETRO::retro_game_info &info) const
-{
-  // Always return path. If info.data is set, then info.path must be set back to NULL
-  info.path = m_path.c_str();
-  info.data = NULL;
-  info.size = 0;
-  info.meta = NULL;
-
-  if (!m_useVfs)
-  {
-    CLog::Log(LOGDEBUG, "GameClient: Strategy is valid, client is loading file %s", info.path);
-  }
-  else
-  {
-    uint8_t *data;
-    int64_t length;
-
-    // Load the file from the vfs
-    CFile vfsFile;
-    if (!vfsFile.Open(m_path))
-    {
-      CLog::Log(LOGERROR, "GameClient::CStrategyUseVFS: XBMC cannot open file");
-      return false; // XBMC can't load it, don't expect the game client to
-    }
-
-    length = vfsFile.GetLength();
-
-    // Check for file size overflow (libretro accepts files <= size_t max)
-    if (length <= 0 || (uint64_t)length > (uint64_t)std::numeric_limits<size_t>::max())
-    {
-      CLog::Log(LOGERROR, "GameClient: Invalid file size: %"PRId64" bytes", length);
-      return false;
-    }
-
-    data = new uint8_t[(size_t)length];
-
-    // Verify the allocation and read in the data
-    if (!(data && vfsFile.Read(data, length) == length))
-    {
-      CLog::Log(LOGERROR, "GameClient: XBMC failed to read game data");
-      delete[] data;
-      return false;
-    }
-
-    info.data = data;
-    info.size = (size_t)length;
-    CLog::Log(LOGDEBUG, "GameClient: Strategy is valid, client is loading file from VFS (filesize: %lu KB)", info.size);
-  }
-  return true;
-}
-
-bool CGameFileLoaderUseHD::CanLoad(const CGameClient &gc, const CFileItem& file)
+bool CGameFileLoaderUseHD::CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyUseHD: Testing if we can load game from hard drive");
 
@@ -180,12 +271,11 @@ bool CGameFileLoaderUseHD::CanLoad(const CGameClient &gc, const CFileItem& file)
     return false;
   }
 
-  m_path = file.GetPath();
-  m_useVfs = false;
+  result = CGameFile(CGameFile::TYPE_PATH, file.GetPath());
   return true;
 }
 
-bool CGameFileLoaderUseVFS::CanLoad(const CGameClient &gc, const CFileItem& file)
+bool CGameFileLoaderUseVFS::CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyUseVFS: Testing if we can load game from VFS");
 
@@ -204,12 +294,11 @@ bool CGameFileLoaderUseVFS::CanLoad(const CGameClient &gc, const CFileItem& file
     return false;
   }
 
-  m_path = file.GetPath();
-  m_useVfs = true;
+  result = CGameFile(CGameFile::TYPE_DATA, file.GetPath());
   return true;
 }
 
-bool CGameFileLoaderUseParentZip::CanLoad(const CGameClient &gc, const CFileItem& file)
+bool CGameFileLoaderUseParentZip::CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyUseParentZip: Testing if the game is in a zip");
 
@@ -249,12 +338,11 @@ bool CGameFileLoaderUseParentZip::CanLoad(const CGameClient &gc, const CFileItem
   }
 
   // Found our file
-  m_path = parentURL.GetHostName();
-  m_useVfs = false;
+  result = CGameFile(CGameFile::TYPE_PATH, file.GetPath(), parentURL.GetHostName());
   return true;
 }
 
-bool CGameFileLoaderEnterZip::CanLoad(const CGameClient &gc, const CFileItem& file)
+bool CGameFileLoaderEnterZip::CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyEnterZip: Testing if the file is a zip containing a game");
 
@@ -280,7 +368,6 @@ bool CGameFileLoaderEnterZip::CanLoad(const CGameClient &gc, const CFileItem& fi
     return false;
   }
 
-  m_path = internalFile;
-  m_useVfs = true;
+  result = CGameFile(CGameFile::TYPE_DATA, file.GetPath(), internalFile);
   return true;
 }

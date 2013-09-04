@@ -48,6 +48,8 @@ namespace GAMES
     CGameClient(const cp_extension_t *props);
     virtual ~CGameClient() { DeInit(); }
 
+    virtual ADDON::AddonPtr Clone() const;
+
     /**
      * Load the DLL and query basic parameters. After Init() is called, the
      * Get*() functions may be called.
@@ -82,7 +84,7 @@ namespace GAMES
     bool                               AllowVFS() const { return m_bAllowVFS; }
     bool                               RequireZip() const { return m_bRequireZip; }
 
-    const std::string                  &GetFilePath() const { return m_gamePath; }
+    const std::string                  &GetFilePath() const { return m_gameFile.Path(); }
     // Returns true after Init() is called and until DeInit() is called.
     bool                               IsInitialized() const { return m_dll.IsLoaded(); }
     // Precondition: Init() must be called first and return true.
@@ -198,19 +200,37 @@ namespace GAMES
     static int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
 
   protected:
+    CGameClient(const CGameClient &other);
     virtual bool LoadSettings(bool bForce = false);
 
   private:
     void Initialize();
 
     /**
-     * Init the savestate file by setting the game path, game client and game
-     * CRC. Most field, such as playtime, are preserved.
-     *
-     * gameBuffer and length are convenience variables to avoid hitting the
-     * disk for CRC calculation when the game file is already loaded in RAM.
+     * Perform the actual loading of the game by the DLL. The resulting CGameFile
+     * is placed in m_gameFile.
      */
-    bool InitSaveState(const void *gameBuffer = NULL, size_t length = 0);
+    bool OpenInternal(const CFileItem& file);
+
+    /**
+     * Calls retro_get_system_av_info() and prints the game/environment info on
+     * the screen. The framerate and samplerate are stored in m_frameRate and
+     * m_sampleRate.
+     */
+    void LoadGameInfo();
+
+    /**
+     * Set up the game client for save state and rewind functionality.
+     * @param startSaveState - The value of CFileItem::m_startSaveState from
+     *        the file being opened.
+     */
+    void InitSaveStateSystem(const std::string &startSaveState);
+
+    /**
+     * Reset the savestate file by setting the game path, game client and game
+     * CRC. Most fields, such as playtime, are preserved.
+     */
+    bool InitSaveState();
 
     // Internal load function. 
     bool Load();
@@ -256,7 +276,7 @@ namespace GAMES
     static ILibretroCallbacksAV  *m_callbacks;
     bool                         m_bIsInited; // Keep track of whether m_dll.retro_init() has been called
     bool                         m_bIsPlaying; // This is true between retro_load_game() and retro_unload_game()
-    std::string                  m_gamePath; // path of the current playing file
+    CGameFile                    m_gameFile; // the current playing file
 
     // Returned by m_dll
     std::string                  m_clientName;

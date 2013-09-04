@@ -22,11 +22,11 @@
 
 #include "settings/ISettingCallback.h"
 
-#include <boost/noncopyable.hpp>
+class CSetting;
 
 namespace GAMES
 {
-  class CGameSettings : public ISettingCallback, boost::noncopyable
+  class CGameSettings : public ISettingCallback
   {
   public:
     static CGameSettings &Get();
@@ -39,7 +39,11 @@ namespace GAMES
     virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
 
   protected:
-    CGameSettings() { }
     virtual ~CGameSettings() { }
+
+  private:
+    CGameSettings() { }
+    CGameSettings(const CGameSettings&);
+    CGameSettings& operator=(const CGameSettings&);
   };
 } // namespace GAMES

@@ -26,8 +26,6 @@
 #include <stdint.h>
 #include <vector>
 
-#define MAX_SAVESTATE_CRC_LENGTH   40 * 1024 * 1024 // MiB
-
 class CDateTime;
 
 class CSavestate : public ISerializable, public IDeserializable
@@ -97,16 +95,8 @@ public:
   const CStdString &GetGameClient() const { return m_gameClient; }
   void SetGameClient(const CStdString &gameClient) { m_gameClient = gameClient; }
 
-  /**
-   * The game file CRC is used to achieve path-independence. However, to avoid
-   * taking CRCs of really large files, we fall back to CRCing the path name at
-   * the expense of path-independence. Outside of CSavestate, the file size
-   * limit should be tested using MAX_SAVESTATE_CRC_LENGTH.
-   */
   const CStdString &GetGameCRC() const { return m_gameCRC; }
   void SetGameCRC(const CStdString &gameCRC) { m_gameCRC = gameCRC; }
-  void SetGameCRCFromFile(const CStdString &filename, bool forceFilename = false);
-  void SetGameCRCFromFile(const char *data, size_t length);
 
   uint64_t GetPlaytimeFrames() const { return m_playtimeFrames; }
   void SetPlaytimeFrames(uint64_t playtimeFrames) { m_playtimeFrames = playtimeFrames; }

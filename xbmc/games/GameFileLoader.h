@@ -20,10 +20,10 @@
  */
 #pragma once
 
-#include "utils/StdString.h"
-
 #include <set>
+#include <stdint.h>
 #include <string>
+#include <vector>
 
 // Forward declarations
 class CFileItem;
@@ -32,6 +32,66 @@ namespace GAMES { class CGameClient; }
 
 namespace GAMES
 {
+  /**
+   * Game clients can load files in one of two ways: by path, or by a buffer of
+   * the file's data. This class is a container that allows both ways, and also
+   * stores a copy of the game file's data.
+   */
+  class CGameFile
+  {
+  public:
+    enum TYPE
+    {
+      TYPE_INVALID,
+      TYPE_PATH,
+      TYPE_DATA
+    };
+
+    CGameFile();
+    CGameFile(TYPE type, const std::string &originalPath, const std::string &translatedPath = "");
+
+    TYPE Type() const { return m_type; }
+
+    // The path to be sent to the game client.
+    const std::string &Path() const { return m_strTranslatedPath; }
+
+    /**
+     * Returns the game file loaded into memory. CGameFile implements lazy
+     * loading, so the data isn't loaded until the first call to this function.
+     */
+    const std::vector<uint8_t> &Buffer();
+
+    /**
+     * Returns the CRC of the file's data. If the type is TYPE_PATH and
+     * CGameFileLoaderUseParentZip was chosen, we take the CRC of the original
+     * path instead of the translated path. We don't want to CRC a .zip file if
+     * we can help it. This allows users to zip a game file without loosing
+     * their save states.
+     */
+    const std::string &CRC();
+
+    /**
+     * Dump game file info to a retro_game_info struct. Libretro cores will
+     * know whether to load using path or data.
+     */
+    bool ToInfo(LIBRETRO::retro_game_info &info);
+
+  private:
+    /**
+     * Load the file specified by m_path into the buffer. Subsequent calls to
+     * Read() are ignored. If this succeeds, m_data will have a non-zero size().
+     */
+    static void Read(const std::string &path, std::vector<uint8_t> &data);
+
+    TYPE                 m_type;
+    std::string          m_strOriginalPath;
+    std::string          m_strTranslatedPath;
+    std::vector<uint8_t> m_data;
+    bool                 m_bIsLoaded;
+    std::string          m_strCRC;
+    bool                 m_bIsCRCed;
+  };
+
   /**
     * Loading a file in libretro cores is a complicated process. Game clients
     * support different extensions, some support loading from the VFS, and
@@ -43,21 +103,14 @@ namespace GAMES
   class CGameFileLoader
   {
   public:
-    CGameFileLoader() : m_useVfs(false) { }
-
     virtual ~CGameFileLoader() { }
 
     /**
-      * Returns true if this strategy is a viable option. CGameFileLoader::strPath
-      * is filled with the file that should be loaded, either the original file or
-      * a preferred substitute file.
+      * Returns true if this strategy is a viable option. In this case, result
+      * is a valid CGameFile, representing the original file or a preferred
+      * substitute file.
       */
-    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file) = 0;
-
-    /**
-      * Populates retro_game_info with results.
-      */
-    bool GetGameInfo(LIBRETRO::retro_game_info &info) const;
+    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result) = 0;
 
     /**
       * Perform the gamut of checks on the file: "gameclient" property, platform,
@@ -71,18 +124,13 @@ namespace GAMES
       * and return the first file inside with a valid extension. If this returns
       * false, effectivePath will be set to zipPath.
       */
-    static bool GetEffectiveRomPath(const CStdString &zipPath, const std::set<std::string> &validExts, CStdString &effectivePath);
+    static bool GetEffectiveRomPath(const std::string &zipPath, const std::set<std::string> &validExts, std::string &effectivePath);
 
     /**
       * HELPER FUNCTION: If the game client was a bad boy and provided no
       * extensions, this will optimistically return true.
       */
     static bool IsExtensionValid(const std::string &ext, const std::set<std::string> &setExts);
-
-  protected:
-    // Member variables populated with results from CanLoad()
-    CStdString m_path;
-    bool       m_useVfs;
   };
 
   /**
@@ -91,7 +139,7 @@ namespace GAMES
   class CGameFileLoaderUseHD : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file);
+    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result);
   };
 
   /**
@@ -100,7 +148,7 @@ namespace GAMES
   class CGameFileLoaderUseVFS : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file);
+    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result);
   };
 
   /**
@@ -111,7 +159,7 @@ namespace GAMES
   class CGameFileLoaderUseParentZip : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file);
+    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result);
   };
 
   /**
@@ -121,6 +169,6 @@ namespace GAMES
   class CGameFileLoaderEnterZip : public CGameFileLoader
   {
   public:
-    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file);
+    virtual bool CanLoad(const CGameClient &gc, const CFileItem& file, CGameFile &result);
   };
 } // namespace GAMES
