@@ -1,4 +1,3 @@
-#pragma once
 /*
  *      Copyright (C) 2007-2013 Team XBMC
  *      http://www.xbmc.org
