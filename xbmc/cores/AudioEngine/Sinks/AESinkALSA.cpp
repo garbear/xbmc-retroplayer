@@ -327,7 +327,7 @@ bool CAESinkALSA::InitializeHW(AEAudioFormat &format)
   snd_pcm_hw_params_get_buffer_size_max(hw_params, &bufferSize);
   snd_pcm_hw_params_get_period_size_max(hw_params, &periodSize, NULL);
 
-  if (!g_application.IsPlayingGame())
+  if (!g_application.m_pPlayer->IsPlayingGame())
   {
   /* 
    We want to make sure, that we have max 200 ms Buffer with 
