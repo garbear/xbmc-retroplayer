@@ -34,9 +34,11 @@
 #include "URL.h"
 #include "pvr/PVRManager.h"
 #include "filesystem/PluginDirectory.h"
+#include "games/GameManager.h"
 
 using namespace XFILE;
 using namespace ADDON;
+using namespace GAMES;
 
 AddonPtr CRepository::Clone() const
 {
@@ -196,6 +198,9 @@ bool CRepositoryUpdateJob::DoWork()
   }
   if (addons.empty())
     return false;
+
+  // Allow game manager to update its cache of valid game extensions
+  CGameManager::Get().RegisterRemoteAddons(addons);
 
   // check for updates
   CAddonDatabase database;

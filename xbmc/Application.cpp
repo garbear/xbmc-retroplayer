@@ -3216,6 +3216,7 @@ bool CApplication::Cleanup()
     g_windowManager.Remove(WINDOW_SETTINGS_SERVICE);
     g_windowManager.Remove(WINDOW_SETTINGS_APPEARANCE);
     g_windowManager.Remove(WINDOW_SETTINGS_MYPVR);
+    g_windowManager.Remove(WINDOW_SETTINGS_MYGAMES);
     g_windowManager.Remove(WINDOW_DIALOG_KAI_TOAST);
 
     g_windowManager.Remove(WINDOW_DIALOG_SEEK_BAR);
