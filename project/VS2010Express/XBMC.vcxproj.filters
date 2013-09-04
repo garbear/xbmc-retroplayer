@@ -3130,6 +3130,9 @@
     <ClCompile Include="..\..\xbmc\games\GameSettings.cpp">
       <Filter>games</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\SerialState.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6134,6 +6137,9 @@
       <Filter>games\libretro</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameSettings.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\SerialState.h">
       <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>

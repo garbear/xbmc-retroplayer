@@ -1,7 +1,8 @@
 SRCS=GameClient.cpp \
      GameFileLoader.cpp \
      GameManager.cpp \
-     GameSettings.cpp
+     GameSettings.cpp \
+     SerialState.cpp
 
 LIB=games.a
 
