@@ -114,7 +114,7 @@ void CRetroPlayerVideo::Process()
 
     // Colorspace conversion
     uint8_t *src[] = { frame.data.data(), 0, 0, 0 };
-    int      srcStride[] = { frame.pitch, 0, 0, 0 };
+    int      srcStride[] = { (int)frame.pitch, 0, 0, 0 };
     uint8_t *dst[] = { pPicture->data[0], pPicture->data[1], pPicture->data[2], 0 };
     int      dstStride[] = { pPicture->iLineSize[0], pPicture->iLineSize[1], pPicture->iLineSize[2], 0 };
 

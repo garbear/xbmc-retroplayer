@@ -222,7 +222,7 @@ void CRetroPlayerInput::ProcessAxis(unsigned int controllerID, unsigned int axis
     if (0 <= id && id < (int)(RETRO_ARRAY_LENGTH(m_joypadState[0])))
     {
       // Record the axis ID to update the joypad state later
-      DeviceItem item = {controllerID, 0, 0, 0, 0, axisID};
+      DeviceItem item = {controllerID, 0, 0, 0, 0, (unsigned char)axisID};
       // Axis events are fired rapidly, but insertion here should be quick
       // enough as no elements are usually added or removed, and no rebalancing
       // of the map is needed.
@@ -232,7 +232,7 @@ void CRetroPlayerInput::ProcessAxis(unsigned int controllerID, unsigned int axis
   }
   else
   {
-    DeviceItem item = {controllerID, 0, 0, 0, 0, axisID};
+    DeviceItem item = {controllerID, 0, 0, 0, 0, (unsigned char)axisID};
     // Axis cented events are usually only fired once, so the deletion here
     // won't be performed rapidly
     std::map<DeviceItem, int>::iterator it = m_deviceItems.find(item);
