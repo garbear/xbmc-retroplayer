@@ -227,7 +227,7 @@ bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) cons
       GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(*itRemote);
       // Require extensions to be provided by the game client to filter ones
       // that are probably unneccessary
-      if (gc && !gc->GetConfig().extensions.empty() && gc->CanOpen(file))
+      if (gc && !gc->GetExtensions().empty() && gc->CanOpen(file))
       {
         AddonPtr addon;
         // If the game client is already installed and enabled, exclude it from the list

@@ -89,9 +89,9 @@ CGameClient::CGameClient(const AddonProps &props) : CAddon(props)
   if ((it = props.extrainfo.find("extensions")) != props.extrainfo.end())
     SetExtensions(it->second);
   if ((it = props.extrainfo.find("allowvfs")) != props.extrainfo.end())
-    m_config.bAllowVFS = (it->second == "true");
+    m_bAllowVFS = (it->second == "true" || it->second == "yes");
   if ((it = props.extrainfo.find("blockextract")) != props.extrainfo.end())
-    m_config.bRequireZip = (it->second == "true");
+    m_bRequireZip = (it->second == "true" || it->second == "yes");
 }
 
 CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
@@ -119,14 +119,14 @@ CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
   if (!allowvfs.IsEmpty())
   {
     Props().extrainfo.insert(make_pair("allowvfs", allowvfs));
-    m_config.bAllowVFS = (allowvfs == "true");
+    m_bAllowVFS = (allowvfs == "true" || allowvfs == "yes");
   }
 
   CStdString blockextract = CAddonMgr::Get().GetExtValue(ext->configuration, "blockextract");
   if (!blockextract.IsEmpty())
   {
     Props().extrainfo.insert(make_pair("blockextract", blockextract));
-    m_config.bRequireZip = (blockextract == "true");
+    m_bRequireZip = (blockextract == "true" || allowvfs == "yes");
   }
 
   // If library attribute isn't present, look for a system-dependent one
@@ -148,7 +148,8 @@ CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
 
 void CGameClient::Initialize()
 {
-  m_config = GameClientConfig(ID());
+  m_bAllowVFS = false;
+  m_bRequireZip = false;
   m_callbacks = NULL;
   m_bIsInited = false;
   m_bIsPlaying = false;
@@ -237,19 +238,19 @@ bool CGameClient::Init()
   // Verify the DLL's reported values match those in addon.xml
   // This is to catch any mistakes uploaded to add-on repos
   bool success = true;
-  if (m_config.bAllowVFS != allowVFS)
+  if (m_bAllowVFS != allowVFS)
   {
     CLog::Log(LOGERROR, "GameClient: <allowvfs> tag in addon.xml doesn't match DLL value (%s)",
         allowVFS ? "true" : "false");
     success = false;
   }
-  if (m_config.bRequireZip != requireZip)
+  if (m_bRequireZip != requireZip)
   {
     CLog::Log(LOGERROR, "GameClient: <blockextract> tag in addon.xml doesn't match DLL value (%s)",
         requireZip ? "true" : "false");
     success = false;
   }
-  if (m_config.extensions != extensions) // != operator defined above
+  if (m_extensions != extensions) // != operator defined above
   {
     CLog::Log(LOGERROR, "GameClient: <extensions> tag in addon.xml doesn't match the set from DLL value (%s)",
         info.valid_extensions ? info.valid_extensions : "");
@@ -274,8 +275,8 @@ bool CGameClient::Init()
   CLog::Log(LOGINFO, "GameClient: Loaded DLL for %s", ID().c_str());
   CLog::Log(LOGINFO, "GameClient: Client: %s at version %s", m_clientName.c_str(), m_clientVersion.c_str());
   CLog::Log(LOGINFO, "GameClient: Valid extensions: %s", info.valid_extensions ? info.valid_extensions : "-");
-  CLog::Log(LOGINFO, "GameClient: Allow VFS: %s, require zip (block extract): %s", m_config.bAllowVFS ? "yes" : "no",
-      m_config.bRequireZip ? "yes" : "no");
+  CLog::Log(LOGINFO, "GameClient: Allow VFS: %s, require zip (block extract): %s", m_bAllowVFS ? "yes" : "no",
+      m_bRequireZip ? "yes" : "no");
   CLog::Log(LOGINFO, "GameClient: ------------------------------------");
 
   return true;
@@ -327,7 +328,7 @@ void CGameClient::GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParent
 
 bool CGameClient::CanOpen(const CFileItem &file) const
 {
-  return CGameFileLoader::CanOpen(file, m_config);
+  return CGameFileLoader::CanOpen(*this, file);
 }
 
 bool CGameClient::OpenFile(const CFileItem& file, ILibretroCallbacksAV *callbacks)
@@ -380,7 +381,7 @@ bool CGameClient::OpenFile(const CFileItem& file, ILibretroCallbacksAV *callback
   bool success = false;
   for (unsigned int i = 0; i < sizeof(strategy) / sizeof(strategy[0]) && !success; i++)
   {
-    if (strategy[i]->CanLoad(m_config, file) && strategy[i]->GetGameInfo(info))
+    if (strategy[i]->CanLoad(*this, file) && strategy[i]->GetGameInfo(info))
     {
       // Use the path of the discovered game file UNLESS CGameFileLoaderUseParentZip
       // was chosen. We don't want to CRC a .zip file (for e.g. save states) if we
@@ -869,7 +870,7 @@ void CGameClient::SetExtensions(const string &strExtensionList)
   if (strExtensionList.empty())
     return;
 
-  toExtensionSet(strExtensionList, m_config.extensions);
+  toExtensionSet(strExtensionList, m_extensions);
 }
 
 void CGameClient::SetPlatforms(const string &strPlatformList)
@@ -878,20 +879,20 @@ void CGameClient::SetPlatforms(const string &strPlatformList)
   if (strPlatformList.empty())
     return;
 
-  m_config.platforms.clear();
+  m_platforms.clear();
   vector<string> platforms = StringUtils::Split(strPlatformList, "|");
   for (vector<string>::iterator it = platforms.begin(); it != platforms.end(); it++)
   {
     StringUtils::Trim(*it);
     GamePlatform id = CGameInfoTagLoader::GetPlatformByName(*it).id;
     if (id != PLATFORM_UNKNOWN)
-      m_config.platforms.push_back(id);
+      m_platforms.push_back(id);
   }
 }
 
 bool CGameClient::IsExtensionValid(const string &ext) const
 {
-  return CGameFileLoader::IsExtensionValid(ext, m_config.extensions);
+  return CGameFileLoader::IsExtensionValid(ext, m_extensions);
 }
 
 void CGameClient::SetPixelFormat(LIBRETRO::retro_pixel_format format)

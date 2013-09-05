@@ -37,23 +37,22 @@ using namespace GAME_INFO;
 using namespace GAMES;
 using namespace XFILE;
 
-
 /* static */
-bool CGameFileLoader::CanOpen(const CFileItem &file, const GameClientConfig &config)
+bool CGameFileLoader::CanOpen(const CGameClient &gc, const CFileItem &file)
 {
   // Check gameclient
-  if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != config.id)
+  if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != gc.ID())
     return false;
 
-  if (config.extensions.empty() && config.platforms.empty())
+  if (gc.GetExtensions().empty() && gc.GetPlatforms().empty())
     return true; // Client provided us with *no* useful information. Be optimistic.
 
   // Check platform
-  if (!config.platforms.empty() && file.GetGameInfoTag())
+  if (!gc.GetPlatforms().empty() && file.GetGameInfoTag())
   {
     GamePlatform id = CGameInfoTagLoader::GetPlatformByName(file.GetGameInfoTag()->GetPlatform()).id;
     if (id != PLATFORM_UNKNOWN)
-      if (std::find(config.platforms.begin(), config.platforms.end(), id) == config.platforms.end())
+      if (std::find(gc.GetPlatforms().begin(), gc.GetPlatforms().end(), id) == gc.GetPlatforms().end())
         return false;
   }
 
@@ -65,7 +64,7 @@ bool CGameFileLoader::CanOpen(const CFileItem &file, const GameClientConfig &con
   CGameFileLoader *strategies[] = { &hd, &outerzip, &vfs, &innerzip };
 
   for (unsigned int i = 0; i < sizeof(strategies) / sizeof(strategies[0]); i++)
-    if (strategies[i]->CanLoad(config, file))
+    if (strategies[i]->CanLoad(gc, file))
       return true;
   return false;
 }
@@ -163,7 +162,7 @@ bool CGameFileLoader::GetGameInfo(LIBRETRO::retro_game_info &info) const
   return true;
 }
 
-bool CGameFileLoaderUseHD::CanLoad(const GameClientConfig &gc, const CFileItem& file)
+bool CGameFileLoaderUseHD::CanLoad(const CGameClient &gc, const CFileItem& file)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyUseHD: Testing if we can load game from hard drive");
 
@@ -175,7 +174,7 @@ bool CGameFileLoaderUseHD::CanLoad(const GameClientConfig &gc, const CFileItem& 
   }
 
   // Make sure the extension is valid
-  if (!IsExtensionValid(URIUtils::GetExtension(file.GetPath()), gc.extensions))
+  if (!IsExtensionValid(URIUtils::GetExtension(file.GetPath()), gc.GetExtensions()))
   {
     CLog::Log(LOGDEBUG, "GameClient::CStrategyUseHD: Extension %s is not valid", URIUtils::GetExtension(file.GetPath()).c_str());
     return false;
@@ -186,12 +185,12 @@ bool CGameFileLoaderUseHD::CanLoad(const GameClientConfig &gc, const CFileItem& 
   return true;
 }
 
-bool CGameFileLoaderUseVFS::CanLoad(const GameClientConfig &gc, const CFileItem& file)
+bool CGameFileLoaderUseVFS::CanLoad(const CGameClient &gc, const CFileItem& file)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyUseVFS: Testing if we can load game from VFS");
 
   // Obvious check
-  if (!gc.bAllowVFS)
+  if (!gc.AllowVFS())
   {
     CLog::Log(LOGDEBUG, "GameClient::CStrategyUseVFS: Game client does not allow VFS");
     return false;
@@ -199,7 +198,7 @@ bool CGameFileLoaderUseVFS::CanLoad(const GameClientConfig &gc, const CFileItem&
 
   // Make sure the extension is valid
   CStdString ext = URIUtils::GetExtension(file.GetPath());
-  if (!IsExtensionValid(ext, gc.extensions))
+  if (!IsExtensionValid(ext, gc.GetExtensions()))
   {
     CLog::Log(LOGDEBUG, "GameClient::CStrategyUseVFS: Extension %s is not valid", ext.c_str());
     return false;
@@ -210,7 +209,7 @@ bool CGameFileLoaderUseVFS::CanLoad(const GameClientConfig &gc, const CFileItem&
   return true;
 }
 
-bool CGameFileLoaderUseParentZip::CanLoad(const GameClientConfig &gc, const CFileItem& file)
+bool CGameFileLoaderUseParentZip::CanLoad(const CGameClient &gc, const CFileItem& file)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyUseParentZip: Testing if the game is in a zip");
 
@@ -221,7 +220,7 @@ bool CGameFileLoaderUseParentZip::CanLoad(const GameClientConfig &gc, const CFil
     return false;
   }
 
-  if (!IsExtensionValid(".zip", gc.extensions))
+  if (!IsExtensionValid(".zip", gc.GetExtensions()))
   {
     CLog::Log(LOGDEBUG, "GameClient::CStrategyUseParentZip: This game client does not support zip files");
     return false;
@@ -243,7 +242,7 @@ bool CGameFileLoaderUseParentZip::CanLoad(const GameClientConfig &gc, const CFil
   }
 
   // Make sure the extension is valid
-  if (!IsExtensionValid(URIUtils::GetExtension(file.GetPath()), gc.extensions))
+  if (!IsExtensionValid(URIUtils::GetExtension(file.GetPath()), gc.GetExtensions()))
   {
     CLog::Log(LOGDEBUG, "GameClient::CStrategyUseParentZip: Extension %s is not valid", URIUtils::GetExtension(file.GetPath()).c_str());
     return false;
@@ -255,7 +254,7 @@ bool CGameFileLoaderUseParentZip::CanLoad(const GameClientConfig &gc, const CFil
   return true;
 }
 
-bool CGameFileLoaderEnterZip::CanLoad(const GameClientConfig &gc, const CFileItem& file)
+bool CGameFileLoaderEnterZip::CanLoad(const CGameClient &gc, const CFileItem& file)
 {
   CLog::Log(LOGDEBUG, "GameClient::CStrategyEnterZip: Testing if the file is a zip containing a game");
 
@@ -267,7 +266,7 @@ bool CGameFileLoaderEnterZip::CanLoad(const GameClientConfig &gc, const CFileIte
   }
 
   // Must support loading from the vfs
-  if (!gc.bAllowVFS)
+  if (!gc.AllowVFS())
   {
     CLog::Log(LOGDEBUG, "GameClient::CStrategyEnterZip: Game client does not allow VFS");
     return false;
@@ -275,7 +274,7 @@ bool CGameFileLoaderEnterZip::CanLoad(const GameClientConfig &gc, const CFileIte
 
   // Look for an internal file. This will screen against valid extensions.
   CStdString internalFile;
-  if (!GetEffectiveRomPath(file.GetPath(), gc.extensions, internalFile))
+  if (!GetEffectiveRomPath(file.GetPath(), gc.GetExtensions(), internalFile))
   {
     CLog::Log(LOGINFO, "GameClient::CStrategyEnterZip: Zip does not contain a file with a valid extension");
     return false;

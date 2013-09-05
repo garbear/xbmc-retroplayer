@@ -106,8 +106,9 @@ void CGameManager::Process(void)
   while (!m_bStop)
   {
     UpdateAndInitialiseClients();
-    // Wait for StopThread() to be called (no need for our own CEvent)
-    AbortableWait(CEvent());
+    // Wait for StopThread() to be called (uses its own event)
+    CEvent dummy;
+    AbortableWait(dummy);
   }
 
   CAddonMgr::Get().UnregisterAddonMgrCallback(ADDON_GAMEDLL);
@@ -233,7 +234,7 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons)
   // IsGame() is tested against them as well
   for (map<string, GameClientPtr>::iterator itLocal = m_gameClients.begin(); itLocal != m_gameClients.end(); itLocal++)
   {
-    const set<string> &extensions = itLocal->second->GetConfig().extensions;
+    const set<string> &extensions = itLocal->second->GetExtensions();
     m_gameExtensions.insert(extensions.begin(), extensions.end());
   }
 
@@ -249,13 +250,12 @@ void CGameManager::RegisterRemoteAddons(const VECADDONS &addons)
       gc = GameClientPtr(new CGameClient(remote->Props()));
 
     bool bIsRemoteBroken = !gc->Props().broken.empty();
-    bool bHasExtensions = !gc->GetConfig().extensions.empty();
+    bool bHasExtensions = !gc->GetExtensions().empty();
 
     if (bHasExtensions && !bIsRemoteBroken)
     {
       // Extensions were specified in (unbroken) addon.xml
-      const set<string> &extensions = gc->GetConfig().extensions;
-      m_gameExtensions.insert(extensions.begin(), extensions.end());
+      m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
     }
     else
     {
@@ -364,13 +364,11 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string> &candi
     if (!requestedClient.empty() && requestedClient != it->first)
       continue;
 
-    const GameClientConfig &config = it->second->GetConfig();
-
-    CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", config.id.c_str());
-    if (CGameFileLoader::CanOpen(file, config))
+    CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->second->ID().c_str());
+    if (CGameFileLoader::CanOpen(*it->second, file))
     {
-      CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", config.id.c_str());
-      candidates.push_back(config.id);
+      CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", it->second->ID().c_str());
+      candidates.push_back(it->second->ID());
     }
 
     if (!requestedClient.empty())
