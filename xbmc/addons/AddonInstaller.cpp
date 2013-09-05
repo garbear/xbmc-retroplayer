@@ -751,18 +751,7 @@ void CAddonInstallJob::OnPostInstall(bool reloadAddon)
   }
 
   if (m_addon->Type() == ADDON_SERVICE)
-  {
     CAddonMgr::Get().DisableAddon(m_addon->ID(),!reloadAddon); //return it into state it was before OnPreInstall()
-    if (reloadAddon) // reload/start it if it was running
-    {
-      // regrab from manager to have the correct path set
-      AddonPtr addon; 
-      CAddonMgr::Get().GetAddon(m_addon->ID(), addon);
-      boost::shared_ptr<CService> service = boost::dynamic_pointer_cast<CService>(addon);
-      if (service)
-        service->Start();
-    }
-  }
 
   if (m_addon->Type() == ADDON_REPOSITORY)
   {
@@ -771,10 +760,11 @@ void CAddonInstallJob::OnPostInstall(bool reloadAddon)
     CJobManager::GetInstance().AddJob(new CRepositoryUpdateJob(addons), &CAddonInstaller::Get());
   }
 
-  if (m_addon->Type() == ADDON_PVRDLL)
+  IAddonDatabaseCallback* cb = CAddonDatabase::GetCallbackForType(m_addon->Type());
+  if (cb)
   {
-    // (re)start the pvr manager
-    PVR::CPVRManager::Get().Start(true);
+    if (!cb->AddonEnabled(m_addon, reloadAddon))
+      CAddonMgr::Get().DisableAddon(m_addon->ID());
   }
 }
 

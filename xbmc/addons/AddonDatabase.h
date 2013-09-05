@@ -21,8 +21,32 @@
 
 #include "dbwrappers/Database.h"
 #include "addons/Addon.h"
+#include "threads/CriticalSection.h"
 #include "utils/StdString.h"
 #include "FileItem.h"
+
+/**
+* Class - IAddonDatabaseCallback
+* This callback should be inherited by any class which requires notification
+* when an add-on's database status is changed.
+*/
+class IAddonDatabaseCallback
+{
+public:
+  virtual ~IAddonDatabaseCallback() {}
+  /**
+    * Called when an add-on is enabled in the database.
+    * @param addon - a pointer to the add-on
+    * @param bDisabled - whether the add-on was disabled prior to being enabled
+    * @return False if add-on should remain disabled
+    */
+  virtual bool AddonEnabled(ADDON::AddonPtr addon, bool bDisabled) = 0;
+  /**
+    * Called when an add-on is disabled in the database.
+    * @param addon - a pointer to the add-on
+    */
+  virtual void AddonDisabled(ADDON::AddonPtr addon) = 0;
+};
 
 class CAddonDatabase : public CDatabase
 {
@@ -30,6 +54,10 @@ public:
   CAddonDatabase();
   virtual ~CAddonDatabase();
   virtual bool Open();
+
+  static IAddonDatabaseCallback* GetCallbackForType(ADDON::TYPE type);
+  static bool RegisterAddonDatabaseCallback(ADDON::TYPE type, IAddonDatabaseCallback* cb);
+  static void UnregisterAddonDatabaseCallback(ADDON::TYPE type);
 
   int AddAddon(const ADDON::AddonPtr& item, int idRepo);
   bool GetAddon(const CStdString& addonID, ADDON::AddonPtr& addon);
@@ -169,5 +197,24 @@ protected:
     dependencies_version,
     dependencies_optional
   } AddonFields;
+
+private:
+  /**
+   * Called when add-ons are enabled in the database.
+   * @param addon - a pointer to the add-on
+   * @param bDisabled - whether the add-on was disabled prior to being enabled
+   * @return False if the add-on should remain 
+   */
+  bool OnEnable(const ADDON::AddonPtr &addon, bool bDisabled);
+
+  /**
+   * Called when add-ons are disabled in the database.
+   * @param addon - a pointer to the add-on
+   */
+  void OnDisable(const ADDON::AddonPtr &addon);
+
+  // Map of database callbacks
+  static std::map<ADDON::TYPE, IAddonDatabaseCallback*> m_observers;
+  static CCriticalSection                               m_critSection;
 };
 
