@@ -120,9 +120,10 @@ void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
 {
   // Get game info tag (from a mutable file item, if necessary)
   const GAME_INFO::CGameInfoTag *tag = file.GetGameInfoTag();
+  CFileItem temp;
   if (!tag)
   {
-    CFileItem temp = file;
+    temp = file;
     if (temp.LoadGameTag())
       tag = temp.GetGameInfoTag();
   }
