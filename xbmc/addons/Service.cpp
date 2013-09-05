@@ -113,4 +113,47 @@ void CService::BuildServiceType()
   }
 }
 
+CServiceManager::CServiceManager()
+{
+  CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_SERVICE, this);
 }
+
+CServiceManager::~CServiceManager()
+{
+  CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_SERVICE);
+}
+
+CServiceManager &CServiceManager::Get()
+{
+  static CServiceManager _singleton;
+  return _singleton;
+}
+
+bool CServiceManager::AddonEnabled(AddonPtr addon, bool bDisabled)
+{
+  if (!addon)
+    return false;
+
+  // If the addon is a service, start it
+  if (bDisabled)
+  {
+    boost::shared_ptr<CService> service = boost::dynamic_pointer_cast<CService>(addon);
+    if (service)
+      service->Start();
+  }
+
+  return true;
+}
+
+void CServiceManager::AddonDisabled(AddonPtr addon)
+{
+  // If the addon is a service, stop it
+  if (!addon)
+    return;
+
+  boost::shared_ptr<CService> service = boost::dynamic_pointer_cast<CService>(addon);
+  if (service)
+    service->Stop();
+}
+
+} // namespace ADDON
