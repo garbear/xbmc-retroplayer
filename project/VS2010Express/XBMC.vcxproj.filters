@@ -3190,6 +3190,9 @@
     <ClCompile Include="..\..\xbmc\games\savegames\GUIDialogGameSaves.cpp">
       <Filter>games\savegames</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerDialogs.cpp">
+      <Filter>cores\RetroPlayer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6240,6 +6243,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\libretro\LibretroCallbacks.h">
       <Filter>games\libretro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerDialogs.h">
+      <Filter>cores\RetroPlayer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

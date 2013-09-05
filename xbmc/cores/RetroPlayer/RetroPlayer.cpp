@@ -20,23 +20,18 @@
  */
 
 #include "RetroPlayer.h"
-#include "addons/AddonDatabase.h"
-#include "addons/AddonInstaller.h"
-#include "addons/AddonManager.h"
 #include "cores/dvdplayer/DVDClock.h"
+#include "cores/RetroPlayer/RetroPlayerDialogs.h"
 #include "cores/VideoRenderers/RenderManager.h"
-#include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogOK.h"
-#include "games/GameManager.h"
 #include "games/tags/GameInfoTag.h"
-#include "guilib/GUIWindowManager.h"
 #include "guilib/Key.h"
 #include "settings/Settings.h"
 #include "threads/SystemClock.h" // Should auto-save tracking be in GameClient.cpp?
 #include "URL.h"
 #include "utils/log.h"
-#include "utils/StringUtils.h"
-#include "utils/URIUtils.h"
+
+#include <assert.h>
 
 #define PLAYSPEED_PAUSED    0
 #define PLAYSPEED_NORMAL    1000
@@ -44,6 +39,7 @@
 
 using namespace ADDON;
 using namespace GAMES;
+using namespace std;
 
 CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
   : IPlayer(callback), CThread("RetroPlayer"), m_keyboardCallback(NULL), m_playSpeed(PLAYSPEED_NORMAL)
@@ -73,12 +69,61 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
     CloseFile();
   }
 
+  PrintGameInfo(file);
+
+  // Resolve the file into the appropriate game client. This will open dialogs
+  // for user input if necessary.
+  GameClientPtr gameClient;
+  if (!CRetroPlayerDialogs::GetGameClient(file, gameClient))
+    return false;
+  assert((bool)gameClient);
+
+  // Load the DLL and retrieve system info from the game client
+  if (!gameClient->Init())
+  {
+    CLog::Log(LOGERROR, "RetroPlayer: Failed to init game client %s", gameClient->ID().c_str());
+    return false;
+  }
+
+  CLog::Log(LOGINFO, "RetroPlayer: Using game client %s at version %s", gameClient->GetClientName().c_str(),
+    gameClient->GetClientVersion().c_str());
+
+  // We need to store a pointer to ourself before sending the callbacks to the game client
+  if (!gameClient->OpenFile(file, this))
+  {
+    CLog::Log(LOGERROR, "RetroPlayer: Error opening file");
+    CStdString errorOpening;
+    errorOpening.Format(g_localizeStrings.Get(13329).c_str(), file.GetAsUrl().GetFileNameWithoutPath().c_str());
+    CGUIDialogOK::ShowAndGetInput(gameClient->Name(), errorOpening, 0, 0); // Error opening %s
+    return false;
+  }
+
+  // Validate the reported framerate
+  if (gameClient->GetFrameRate() < 5.0 || gameClient->GetFrameRate() > 100.0)
+  {
+    CLog::Log(LOGERROR, "RetroPlayer: Game client reported invalid framerate: %f", gameClient->GetFrameRate());
+    return false;
+  }
+
+  // Success. We use m_file.GetPath() to check if a file is playing in IsPlaying()
+  m_gameClient = gameClient;
+  m_file = file;
+  m_file.SetPath(m_gameClient->GetFilePath());
+  m_PlayerOptions = options;
+  
+  g_renderManager.PreInit();
+  Create();
+  CLog::Log(LOGDEBUG, "RetroPlayer: File opened successfully");
+  return true;
+}
+
+void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
+{
   // Get game info tag (from a mutable file item, if necessary)
   const GAME_INFO::CGameInfoTag *tag = file.GetGameInfoTag();
-  CFileItem temp;
   if (!tag)
   {
-    temp = file;
+    CFileItem temp = file;
     if (temp.LoadGameTag())
       tag = temp.GetGameInfoTag();
   }
@@ -98,275 +143,6 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
     CLog::Log(LOGDEBUG, "RetroPlayer: Cartridge Type: %s", tag->GetCartridgeType().c_str());
     CLog::Log(LOGDEBUG, "RetroPlayer: ---------------------------------------");
   }
-
-  // Now we need to see how many game clients contend for this file
-  std::vector<std::string> candidates;
-  CGameManager::Get().GetGameClientIDs(file, candidates);
-  if (candidates.empty())
-  {
-    // No compatible game clients. Enable just-in-time game client installation
-    // by asking the user if they would like to download and install a client
-    // and then use it to play the game.
-    if (!InstallGameClient(file, m_gameClient))
-      return false;
-  }
-  else if (candidates.size() == 1)
-  {
-    AddonPtr addon;
-    CAddonMgr::Get().GetAddon(candidates[0], addon, ADDON_GAMEDLL);
-    m_gameClient = boost::dynamic_pointer_cast<CGameClient>(addon);
-  }
-  else
-  {
-    if (!ChooseAddon(file, candidates, m_gameClient))
-      return false;
-  }
-
-  if (!m_gameClient)
-  {
-    CLog::Log(LOGERROR, "RetroPlayer: No game client");
-    // "Playback failed"
-    // "One or more items failed to play."
-    // "Check the log file for details."
-    CGUIDialogOK::ShowAndGetInput(16026, 16027, 16029, 0);
-    return false;
-  }
-
-  // Load the DLL and retrieve system info from the game client
-  if (!m_gameClient->Init())
-  {
-    CLog::Log(LOGERROR, "RetroPlayer: Failed to init game client %s", m_gameClient->ID().c_str());
-    return false;
-  }
-
-  CLog::Log(LOGINFO, "RetroPlayer: Using game client %s at version %s", m_gameClient->GetClientName().c_str(),
-    m_gameClient->GetClientVersion().c_str());
-
-  // We need to store a pointer to ourself before sending the callbacks to the game client
-  if (!m_gameClient->OpenFile(file, this))
-  {
-    CLog::Log(LOGERROR, "RetroPlayer: Error opening file");
-    CStdString errorOpening;
-    errorOpening.Format(g_localizeStrings.Get(13329).c_str(), file.GetAsUrl().GetFileNameWithoutPath().c_str());
-    CGUIDialogOK::ShowAndGetInput(m_gameClient->Name(), errorOpening, 0, 0); // Error opening %s
-    m_gameClient.reset();
-    return false;
-  }
-
-  // Validate the reported framerate
-  if (m_gameClient->GetFrameRate() < 5.0 || m_gameClient->GetFrameRate() > 100.0)
-  {
-    CLog::Log(LOGERROR, "RetroPlayer: Game client reported invalid framerate: %f", m_gameClient->GetFrameRate());
-    m_gameClient.reset();
-    return false;
-  }
-
-  // Success. We use m_file.GetPath() to check if a file is playing in IsPlaying()
-  m_file = file;
-  m_file.SetPath(m_gameClient->GetFilePath());
-  m_PlayerOptions = options;
-
-  g_renderManager.PreInit();
-  Create();
-  CLog::Log(LOGDEBUG, "RetroPlayer: File opened successfully");
-  return true;
-}
-
-bool CRetroPlayer::InstallGameClient(CFileItem file, GameClientPtr &result) const
-{
-  // If an explicit game client was specified, try to download that
-  if (file.HasProperty("gameclient"))
-  {
-    // First, make sure the game client isn't installed
-    CStdString id(file.GetProperty("gameclient").asString());
-    CLog::Log(LOGDEBUG, "RetroPlayer: Trying to install game client %s", id.c_str());
-    AddonPtr addon;
-    bool installed = CAddonMgr::Get().GetAddon(id, addon, ADDON_GAMEDLL, false);
-    if (!installed || !addon)
-    {
-      // Now make sure it exists in a remote repository
-      CStdStringArray candidates;
-      GameClientPtr gc;
-      CAddonDatabase database;
-      database.Open();
-      if (database.GetAddon(id, addon) && (gc = boost::dynamic_pointer_cast<CGameClient>(addon)) &&
-          gc->CanOpen(file))
-      {
-        CLog::Log(LOGDEBUG, "RetroPlayer: Installing game client %s", id.c_str());
-        addon.reset();
-        if (CAddonInstaller::Get().PromptForInstall(id, addon) && addon && addon->Type() == ADDON_GAMEDLL)
-        {
-          result = boost::dynamic_pointer_cast<CGameClient>(addon);
-          return true;
-        }
-      }
-    }
-    file.ClearProperty("gameclient"); // don't want this to interfere later on
-  }
-
-  // First, ask the user if they would like to install a game client or go to
-  // the add-on manager
-  CContextButtons choices;
-  choices.Add(0, 24026); // Install emulator
-  choices.Add(1, 24049); // Add-on manager
-
-  int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choices);
-  if (btnid == 0) // Install emulator
-  {
-    CContextButtons emuChoices;
-
-    VECADDONS addons;
-    CStdStringArray candidates;
-    CAddonDatabase database;
-    database.Open();
-    database.GetAddons(addons);
-    for (VECADDONS::const_iterator itRemote = addons.begin(); itRemote != addons.end(); itRemote++)
-    {
-      if (!(*itRemote)->IsType(ADDON_GAMEDLL))
-        continue;
-      GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(*itRemote);
-      // Require extensions to be provided by the game client to filter ones
-      // that are probably unneccessary
-      if (gc && !gc->GetExtensions().empty() && gc->CanOpen(file))
-      {
-        AddonPtr addon;
-        // If the game client is already installed and enabled, exclude it from the list
-        if (CAddonMgr::Get().GetAddon(gc->ID(), addon, ADDON_GAMEDLL, true))
-          continue;
-        // If GetAddon() returns false, but the add-on still exists, then the
-        // add-on is disabled; include it and mark it as such
-        if (addon) // NAME (disabled)
-          emuChoices.Add(candidates.size(), gc->Name() + " (" + g_localizeStrings.Get(1223) + ")");
-        else
-        {
-          // Don't include broken remote add-ons
-          if (!(*itRemote)->Props().broken.empty())
-            continue;
-          emuChoices.Add(candidates.size(), gc->Name());
-        }
-        candidates.push_back(gc->ID());
-      }
-    }
-
-    if (candidates.empty())
-    {
-      CLog::Log(LOGDEBUG, "RetroPlayer: No compatible game clients for installation");
-      // "Playback failed"
-      // "No compatible emulators found for file:"
-      // "FILENAME"
-      CGUIDialogOK::ShowAndGetInput(16026, 16023, URIUtils::GetFileName(file.GetPath()), 0);
-      return false;
-    }
-    else
-    {
-      int btnid2 = CGUIDialogContextMenu::ShowAndGetChoice(emuChoices);
-      if (btnid2 < 0 || btnid2 >= (int)candidates.size())
-      {
-        CLog::Log(LOGDEBUG, "RetroPlayer: User canceled game client installation selection");
-        return false;
-      }
-      else
-      {
-        AddonPtr addon;
-        CStdString id(candidates[btnid2]);
-        if (CAddonMgr::Get().GetAddon(id, addon, ADDON_GAMEDLL, true))
-        {
-          // We continued earlier, shouldn't be here now
-          CLog::Log(LOGDEBUG, "RetroPlayer: Game client %s already installed, using it", id.c_str());
-        }
-        else if (addon)
-        {
-          // TODO: Prompt the user to enable it
-          CLog::Log(LOGDEBUG, "RetroPlayer: Game client %s installed but disabled, enabling it", id.c_str());
-          CGameManager::Get().UnqueueFile(); // Don't auto-launch queued game when the add-on is enabled
-          CAddonDatabase database;
-          database.Open();
-          database.DisableAddon(id, false);
-          CAddonMgr::Get().GetAddon(id, addon);
-        }
-        else
-        {
-          CLog::Log(LOGDEBUG, "RetroPlayer: Installing game client %s", id.c_str());
-          if (!(CAddonInstaller::Get().PromptForInstall(id, addon) && addon && addon->Type() == ADDON_GAMEDLL))
-          {
-            CLog::Log(LOGDEBUG, "RetroPlayer: Game client installation canceled/failed");
-            // "id"
-            // "Installation failed"
-            // "Check the log file for details."
-            CGUIDialogOK::ShowAndGetInput(id.c_str(), 114, 16029, 0);
-            return false;
-          }
-        }
-        result = boost::dynamic_pointer_cast<CGameClient>(addon);
-        return true;
-      }
-    }
-  }
-  else if (btnid == 1) // Add-on manager
-  {
-    // Queue the file so that if a compatible game client is installed, the
-    // user will be asked to launch the file.
-    CGameManager::Get().QueueFile(file);
-    CLog::Log(LOGDEBUG, "RetroPlayer: User chose to go to the add-on manager");
-    CStdStringArray params;
-    params.push_back("addons://all/xbmc.gameclient");
-    g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
-    return false;
-  }
-  else
-  {
-    CLog::Log(LOGDEBUG, "RetroPlayer: User canceled game client selection");
-    return false;
-  }
-
-  // We shouldn't fall through, but if so, this will trigger a failed open
-  result = GameClientPtr();
-  return true;
-}
-
-bool CRetroPlayer::ChooseAddon(const CFileItem &file, const std::vector<std::string> &addonIds, GameClientPtr &result) const
-{
-  CLog::Log(LOGDEBUG, "RetroPlayer: Multiple clients found: %s", StringUtils::Join(addonIds, ", ").c_str());
-  std::vector<GameClientPtr> clients;
-  CContextButtons choices;
-  for (unsigned int i = 0; i < addonIds.size(); i++)
-  {
-    AddonPtr addon;
-    // TODO: Sort by add-on name
-    CAddonMgr::Get().GetAddon(addonIds[i], addon, ADDON_GAMEDLL);
-    GameClientPtr client = boost::dynamic_pointer_cast<CGameClient>(addon);
-    if (client)
-    {
-      clients.push_back(client);
-      choices.Add(i, client->Name());
-    }
-  }
-
-  // Choice to go to the add-on manager
-  choices.Add(choices.size(), 24025); // "Manage emulators..."
-
-  int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choices);
-  if (0 <= btnid && btnid < (int)clients.size())
-  {
-    CLog::Log(LOGDEBUG, "RetroPlayer: Using %s", clients[btnid]->ID().c_str());
-    result = clients[btnid];
-    return true;
-  }
-  else if (btnid == (int)clients.size())
-  {
-    // Queue the file so that if a compatible game client is installed, the
-    // user will be asked to launch the file.
-    CGameManager::Get().QueueFile(file);
-
-    CLog::Log(LOGDEBUG, "RetroPlayer: User chose to go to the add-on manager");
-    CStdStringArray params;
-    params.push_back("addons://all/xbmc.gameclient");
-    g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
-  }
-  else
-    CLog::Log(LOGDEBUG, "RetroPlayer: User cancelled game client selection");
-
-  return false;
 }
 
 bool CRetroPlayer::CloseFile()

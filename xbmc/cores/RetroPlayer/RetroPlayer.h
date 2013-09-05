@@ -42,9 +42,6 @@ public:
   virtual bool OpenFile(const CFileItem& file, const CPlayerOptions& options);
   virtual bool CloseFile();
 
-  bool InstallGameClient(CFileItem file, GAMES::GameClientPtr &result) const;
-  bool ChooseAddon(const CFileItem &file, const std::vector<std::string> &clients, GAMES::GameClientPtr &result) const;
-
   virtual bool OnAction(const CAction &action);
 
   // Upon successful open, m_file is set to the opened file
@@ -87,25 +84,14 @@ public:
   //virtual float GetAVDelay() { return 0.0f;};
 
   virtual void ToFFRW(int iSpeed = 0);
-  // In the future, a "back buffer" will store game history to enable rewinding
-  // Braid-style. The size of this back buffer will be known, from which the
-  // time can be computed, or perhaps a set time like 30s from which the buffer
-  // size is computed. Regardless, the "duration" of the item will be equal to
-  // this buffer, and will allow seeking and rewinding. Fast-forwarding will
-  // simply play the game at a faster speed, and will cause this buffer to fill
-  // faster. When the buffer is full, the progress bar will reach 100% (30s),
-  // which will look like a track being finished, but instead of exiting the
-  // game will continue to play. We will need these functions then:
-  // CanSeek()
-  // Seek()
-  // SeekPercentage()
-  // GetPercentage()
-  // SeekTime()
-  // GetTime()
-  // GetTotalTime()
-  // GetActualFPS()
 
-  // Allows FF. (RW might not be possible depending on game.)
+  // A "back buffer" is used to store game history to enable rewinding Braid-style.
+  // The time is computed from the number of frames avaiable in the buffer, and
+  // allows seeking and rewinding over this time range. Fast-forwarding will
+  // simply play the game at a faster speed, and will cause this buffer to fill
+  // faster. When the buffer is full, the progress bar will reach 100% (60s by
+  // default), which will look like a track being finished, but instead of
+  // exiting the game will continue to play.
   virtual bool CanSeek() { return true; }
   virtual void Seek(bool bPlus = true, bool bLargeStep = false);
   virtual void SeekPercentage(float fPercent = 0);
@@ -118,10 +104,6 @@ public:
   bool Save(const CStdString &label) { return m_gameClient && m_gameClient->Save(label); }
   bool Load(const CStdString &saveStatePath) { return m_gameClient && m_gameClient->Load(saveStatePath); }
 
-protected:
-  virtual void Process();
-
-private:
   /*
    * Inherited from ILibretroCallbacksAV. Used to send and receive data from
    * the game clients.
@@ -133,7 +115,15 @@ private:
   virtual void SetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat);
   virtual void SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback);
 
-  // So that the static functions above may invoke audio, video and input callbacks
+protected:
+  virtual void Process();
+
+private:
+  /**
+   * Dump game information (if any) to the debug log.
+   */
+  void PrintGameInfo(const CFileItem &file) const;
+
   LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // TODO
 
   CRetroPlayerVideo    m_video;
