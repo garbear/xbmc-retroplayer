@@ -59,7 +59,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   if (IsRunning())
   {
     // If the same file was provided, load the appropriate save state
-    if (m_gameClient && file.GetPath().Equals(m_file.GetPath()))
+    if (m_gameClient && file.GetPath().Equals(m_file->GetPath()))
     {
       if (!file.m_startSaveState.empty())
         return m_gameClient->Load(file.m_startSaveState);
@@ -105,10 +105,9 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
     return false;
   }
 
-  // Success. We use m_file.GetPath() to check if a file is playing in IsPlaying()
   m_gameClient = gameClient;
-  m_file = file;
-  m_file.SetPath(m_gameClient->GetFilePath());
+  m_file = CFileItemPtr(new CFileItem(file));
+  m_file->SetPath(m_gameClient->GetFilePath());
   m_PlayerOptions = options;
   
   g_renderManager.PreInit();
@@ -155,7 +154,7 @@ bool CRetroPlayer::CloseFile()
 
   // Set the abort request so that other threads can finish up
   m_bStop = true;
-  m_file = CFileItem();
+  m_file.reset();
 
   // Set m_video.m_bStop to false before triggering the event
   m_video.StopThread(false);

@@ -84,10 +84,10 @@ bool CGUIDialogGameSaves::OnMessage(CGUIMessage& message)
         if (message.GetNumStringParams())
         {
           CStdString pathParam(message.GetStringParam());
-          if (pathParam.Equals(g_application.CurrentFile()) || (rp && pathParam.Equals(rp->GetFilePath())))
+          if (pathParam.Equals(g_application.CurrentFile()) || (rp && pathParam.Equals(rp->GetFile()->GetPath())))
           {
-            m_gamePath = rp->GetFilePath();
-            m_gameClient = rp->GetGameClient();
+            m_gamePath = rp->GetFile()->GetPath();
+            m_gameClient = rp->GetGameClient()->ID();
           }
           else
           {
@@ -97,8 +97,8 @@ bool CGUIDialogGameSaves::OnMessage(CGUIMessage& message)
         }
         else if (rp)
         {
-          m_gamePath = rp->GetFilePath();
-          m_gameClient = rp->GetGameClient();
+          m_gamePath = rp->GetFile()->GetPath();
+          m_gameClient = rp->GetGameClient()->ID();
         }
       }
       else
@@ -317,8 +317,8 @@ void CGUIDialogGameSaves::LoadSaveState(const CFileItemPtr &savefile)
     if (rp)
     {
       // If game path and game client match, just load the save state
-      if (m_gamePath.Equals(rp->GetFilePath()) &&
-          m_gameClient.Equals(rp->GetGameClient()))
+      if (m_gamePath.Equals(rp->GetFile()->GetPath()) &&
+          m_gameClient.Equals(rp->GetGameClient()->ID()))
       {
         if (rp->Load(savefile->GetPath()))
           Close();

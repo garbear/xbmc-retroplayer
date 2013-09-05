@@ -45,12 +45,12 @@ public:
   virtual bool OnAction(const CAction &action);
 
   // Upon successful open, m_file is set to the opened file
-  virtual bool IsPlaying() const { return !m_bStop && !m_file.GetPath().empty(); }
+  virtual bool IsPlaying() const { return !m_bStop && m_file; }
   virtual void Pause();
   virtual bool IsPaused() const { return m_playSpeed == 0; }
 
-  const CStdString &GetFilePath() { return m_file.GetPath(); }
-  CStdString GetGameClient() { return m_gameClient ? m_gameClient->ID() : ""; }
+  CFileItemPtr GetFile() const { return m_file; }
+  GAMES::GameClientPtr GetGameClient() const { return m_gameClient; }
 
   virtual bool HasVideo() const { return true; }
   virtual bool HasAudio() const { return true; }
@@ -131,7 +131,7 @@ private:
   CRetroPlayerInput    m_input;
   GAMES::GameClientPtr m_gameClient;
 
-  CFileItem            m_file;
+  CFileItemPtr         m_file;
   CPlayerOptions       m_PlayerOptions;
   int                  m_playSpeed; // Normal play speed is PLAYSPEED_NORMAL (1000)
   CEvent               m_pauseEvent;
