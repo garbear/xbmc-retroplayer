@@ -40,8 +40,8 @@ public:
     unsigned int         width;
     unsigned int         height;
     size_t               pitch;
-    bool                 isRendered;
-    Frame() : width(0), height(0), pitch(0), isRendered(false) { }
+    bool                 isRendered; // Default to true so we don't try to render an empty frame
+    Frame() : width(0), height(0), pitch(0), isRendered(true) { }
   };
 
   CRetroPlayerVideo();

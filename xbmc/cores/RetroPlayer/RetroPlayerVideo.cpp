@@ -75,7 +75,8 @@ void CRetroPlayerVideo::Process()
     {
       CSingleLock lock(m_critSection);
 
-      // Only proceed if we have a frame to render
+      // Only proceed if we have a frame to render (remember, isRendered defauts
+      // to true and is set to false by SendVideoFrame())
       if (m_queuedFrame.isRendered)
         continue;
 
@@ -221,10 +222,10 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
 
 void CRetroPlayerVideo::SendVideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
 {
-  CSingleLock lock(m_critSection);
-
   if (!m_bStop && IsRunning())
   {
+    CSingleLock lock(m_critSection);
+
     const size_t NEW_SIZE = pitch * height;
     if (m_queuedFrame.data.size() != NEW_SIZE)
       m_queuedFrame.data.resize(NEW_SIZE);
