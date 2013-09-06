@@ -62,7 +62,7 @@ int16_t CRetroPlayerInput::GetInput(unsigned port, unsigned device, unsigned ind
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "CRetroPlayerInput: RETRO_DEVICE_JOYPAD id out of bounds (%u)", id);
+        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_JOYPAD id out of bounds (%u)", id);
       break;
 
     case RETRO_DEVICE_MOUSE:
@@ -72,7 +72,7 @@ int16_t CRetroPlayerInput::GetInput(unsigned port, unsigned device, unsigned ind
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "CRetroPlayerInput: RETRO_DEVICE_MOUSE id out of bounds (%u)", id);
+        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_MOUSE id out of bounds (%u)", id);
       break;
 
     case RETRO_DEVICE_LIGHTGUN:
@@ -82,7 +82,7 @@ int16_t CRetroPlayerInput::GetInput(unsigned port, unsigned device, unsigned ind
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "CRetroPlayerInput: RETRO_DEVICE_LIGHTGUN id out of bounds (%u)", id);
+        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_LIGHTGUN id out of bounds (%u)", id);
       break;
 
     case RETRO_DEVICE_ANALOG:
@@ -95,11 +95,11 @@ int16_t CRetroPlayerInput::GetInput(unsigned port, unsigned device, unsigned ind
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "CRetroPlayerInput: RETRO_DEVICE_ANALOG id/index out of bounds (%u/%u)", id, index);
+        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_ANALOG id/index out of bounds (%u/%u)", id, index);
       break;
 
     case RETRO_DEVICE_KEYBOARD:
-      CLog::Log(LOGERROR, "CRetroPlayerInput: RETRO_DEVICE_KEYBOARD not supported!");
+      CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_KEYBOARD not supported!");
       break;
 
     default:

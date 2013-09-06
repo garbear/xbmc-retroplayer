@@ -114,10 +114,10 @@ void CGameManager::UpdateRemoteAddons(const ADDON::VECADDONS &addons)
       if (bHasExtensions)
         m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
       else
-        CLog::Log(LOGDEBUG, "CGameManager - No extensions for %s version %s", gc->ID().c_str(), gc->Version().c_str());
+        CLog::Log(LOGDEBUG, "GameManager - No extensions for %s version %s", gc->ID().c_str(), gc->Version().c_str());
     }
   }
-  CLog::Log(LOGDEBUG, "CGameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
+  CLog::Log(LOGDEBUG, "GameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
 }
 
 bool CGameManager::UpdateAddons()
@@ -146,7 +146,7 @@ void CGameManager::RegisterAddons(const VECADDONS &addons)
 
 bool CGameManager::RegisterAddon(const GameClientPtr &client)
 {
-#if 0
+#if 0 // TODO
   if (!client || !client->Enabled())
     return false;
 #else
@@ -169,13 +169,13 @@ bool CGameManager::RegisterAddon(const GameClientPtr &client)
   GameClientPtr &registeredClient = m_gameClients[client->ID()];
   if (registeredClient)
   {
-    CLog::Log(LOGDEBUG, "CGameManager: Already registered: %s!", client->ID().c_str());
+    CLog::Log(LOGDEBUG, "GameManager: Already registered: %s!", client->ID().c_str());
     return true;
   }
 
   if (!client->Init())
   {
-    CLog::Log(LOGERROR, "CGameManager: failed to load DLL for %s, disabling in database", client->ID().c_str());
+    CLog::Log(LOGERROR, "GameManager: failed to load DLL for %s, disabling in database", client->ID().c_str());
     CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
 
     // Removes the game client from m_gameClients via CAddonDatabase callback
@@ -188,7 +188,7 @@ bool CGameManager::RegisterAddon(const GameClientPtr &client)
   client->DeInit();
 
   registeredClient = client;
-  CLog::Log(LOGDEBUG, "CGameManager: Registered add-on %s", client->ID().c_str());
+  CLog::Log(LOGDEBUG, "GameManager: Registered add-on %s", client->ID().c_str());
 
   CreateDirectories(client->ID());
 
@@ -221,7 +221,7 @@ void CGameManager::UnregisterAddonByID(const string &strId)
   }
   else
   {
-    CLog::Log(LOGERROR, "CGameManager: can't unregister %s - not registered!", strId.c_str());
+    CLog::Log(LOGERROR, "GameManager: can't unregister %s - not registered!", strId.c_str());
   }
   m_gameClients.erase(m_gameClients.find(strId));
 }

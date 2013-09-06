@@ -83,17 +83,17 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
                                "GET_VARIABLE_UPDATE"};
 
   if (0 <= cmd && cmd < ARRAY_LENGTH(cmds))
-    CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: %s", cmd, cmds[cmd - 1]);
+    CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: %s", cmd, cmds[cmd - 1]);
   else
   {
-    CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid query", cmd);
+    CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: invalid query", cmd);
     return false;
   }
 
   // Note: SHUTDOWN doesn't use data
   if (!data && cmd != RETRO_ENVIRONMENT_SHUTDOWN)
   {
-    CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no data! naughty core?", cmd);
+    CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: no data! naughty core?", cmd);
     return false;
   }
 
@@ -103,7 +103,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Whether or not the game client should use overscan (true) or crop away overscan (false)
       *reinterpret_cast<bool*>(data) = false;
-      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: %s", cmd,
+      CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: %s", cmd,
         *reinterpret_cast<bool*>(data) ? "use overscan" : "crop away overscan");
       break;
     }
@@ -111,7 +111,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       // Boolean value whether or not we support frame duping, passing NULL to video frame callback
       *reinterpret_cast<bool*>(data) = true;
-      CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: frame duping is %s", cmd,
+      CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: frame duping is %s", cmd,
         *reinterpret_cast<bool*>(data) ? "enabled" : "disabled");
       break;
     }
@@ -120,7 +120,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // RETRO_ENVIRONMENT_GET_VARIABLE was changed in the libretro API to function slightly
       // differently. Warn the user that the game client is still using the old functionality.
       LIBRETRO::retro_variable *var = reinterpret_cast<LIBRETRO::retro_variable*>(data);
-      CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
+      CLog::Log(LOGWARNING, "LibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
       var->value = NULL;
       break;
     }
@@ -129,10 +129,10 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // RETRO_ENVIRONMENT_SET_VARIABLES was changed in the libretro API to function slightly
       // differently. Warn the user that the game client is still using the old functionality.
       const LIBRETRO::retro_variable *vars = reinterpret_cast<const LIBRETRO::retro_variable*>(data);
-      CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
+      CLog::Log(LOGWARNING, "LibretroEnvironment query ID=%d: deprecated query. Update game client to new libretro API!", cmd);
       while (vars && vars->key)
       {
-        CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key,
+        CLog::Log(LOGWARNING, "LibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key,
           vars->value ? vars->value : "error: no value!");
         vars++;
       }
@@ -143,7 +143,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // Sets a message to be displayed. Generally not for trivial messages.
       const LIBRETRO::retro_message *msg = reinterpret_cast<const LIBRETRO::retro_message*>(data);
       if (msg->msg && msg->frames)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: display msg \"%s\" for %d frames", cmd, msg->msg, msg->frames);
+        CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: display msg \"%s\" for %d frames", cmd, msg->msg, msg->frames);
       break;
     }
   case RETRO_ENVIRONMENT_SET_ROTATION:
@@ -152,15 +152,15 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // by 0, 90, 180, 270 degrees counter-clockwise respectively.
       unsigned int rotation = *reinterpret_cast<const unsigned int*>(data);
       if (0 <= rotation && rotation <= 3)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set screen rotation to %d degrees", cmd, rotation * 90);
+        CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: set screen rotation to %d degrees", cmd, rotation * 90);
       else
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid rotation %d", cmd, rotation);
+        CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: invalid rotation %d", cmd, rotation);
       break;
     }
   case RETRO_ENVIRONMENT_SHUTDOWN:
     // Game has been shut down. Should only be used if game has a specific way to shutdown
     // the game from a menu item or similar.
-    CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: game signaled shutdown event", cmd);
+    CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: game signaled shutdown event", cmd);
 
     g_application.StopPlaying();
 
@@ -177,9 +177,9 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       // 4: High-end desktops with very powerful CPUs.
       unsigned int performanceLevel = *reinterpret_cast<const unsigned int*>(data);
       if (0 <= performanceLevel && performanceLevel <= 3)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: performance hint: %d", cmd, performanceLevel);
+        CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: performance hint: %d", cmd, performanceLevel);
       else if (performanceLevel == 4)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: performance hint: I hope you have a badass computer...", cmd);
+        CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: performance hint: I hope you have a badass computer...", cmd);
       else
         CLog::Log(LOGERROR, "GameClient environment query ID=%d: invalid performance hint: %d", cmd, performanceLevel);
       break;
@@ -250,9 +250,9 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         *strData = m_systemDirectory.c_str();
 
       if (*strData)
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: using system directory %s", cmd, m_systemDirectory.c_str());
+        CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: using system directory %s", cmd, m_systemDirectory.c_str());
       else
-        CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: no system directory passed to game client", cmd);
+        CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: no system directory passed to game client", cmd);
       break;
     }
   case RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
@@ -271,13 +271,13 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
           static const char *fmts[] = {"RETRO_PIXEL_FORMAT_0RGB1555",
                                        "RETRO_PIXEL_FORMAT_XRGB8888",
                                        "RETRO_PIXEL_FORMAT_RGB565"};
-          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: set pixel format: %d, %s", cmd, pix_fmt, fmts[pix_fmt]);
+          CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: set pixel format: %d, %s", cmd, pix_fmt, fmts[pix_fmt]);
           if (m_callbacksDLL)
             m_callbacksDLL->SetPixelFormat(pix_fmt);
           break;
         }
       default:
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: invalid pixel format: %d", cmd, pix_fmt);
+        CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: invalid pixel format: %d", cmd, pix_fmt);
         return false;
       }
       break;
@@ -290,12 +290,12 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const LIBRETRO::retro_input_descriptor *descriptor = reinterpret_cast<const LIBRETRO::retro_input_descriptor*>(data);
 
       if (!descriptor->description)
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no descriptors given", cmd);
+        CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: no descriptors given", cmd);
       else
       {
         while (descriptor && descriptor->description)
         {
-          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of input %s (port=%d, device=%d, index=%d, id=%d)",
+          CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: notified of input %s (port=%d, device=%d, index=%d, id=%d)",
             cmd, descriptor->description, descriptor->port, descriptor->device, descriptor->index, descriptor->id);
           descriptor++;
         }
@@ -347,19 +347,19 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         if (!m_varMap[var->key].empty())
         {
           var->value = m_varMap[var->key].c_str();
-          CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: variable %s set to %s", cmd, var->key, var->value);
+          CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: variable %s set to %s", cmd, var->key, var->value);
         }
         else
         {
           var->value = NULL;
-          CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: undefined variable %s", cmd, var->key);
+          CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: undefined variable %s", cmd, var->key);
         }
       }
       else
       {
         if (var->value)
           var->value = NULL;
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variable given", cmd);
+        CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: no variable given", cmd);
       }
       break;
     }
@@ -375,17 +375,17 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         {
           if (vars->value)
           {
-            CLog::Log(LOGINFO, "CLibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key, vars->value);
+            CLog::Log(LOGINFO, "LibretroEnvironment query ID=%d: notified of var %s (%s)", cmd, vars->key, vars->value);
             if (!ParseVariable(*vars, m_varMap[vars->key])) // m_varMap[vars->key] is always created
-              CLog::Log(LOGWARNING, "CLibretroEnvironment query ID=%d: error parsing variable", cmd);
+              CLog::Log(LOGWARNING, "LibretroEnvironment query ID=%d: error parsing variable", cmd);
           }
           else
-            CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: var %s has no value", cmd, vars->key);
+            CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: var %s has no value", cmd, vars->key);
           vars++;
         }
       }
       else
-        CLog::Log(LOGERROR, "CLibretroEnvironment query ID=%d: no variables given", cmd);
+        CLog::Log(LOGERROR, "LibretroEnvironment query ID=%d: no variables given", cmd);
       break;
     }
   case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:

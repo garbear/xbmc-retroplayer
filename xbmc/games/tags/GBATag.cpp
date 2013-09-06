@@ -60,7 +60,7 @@ void CGBATag::Load(const CStdString& strPath, CGameInfoTag &gameInfoTag)
       !AllASCII(data + 0xac, 4) ||
       !AllASCII(data + 0xb0, 2))
   {
-    CLog::Log(LOGERROR, "CGBATag: Non-ASCII data encountered while reading image parameters");
+    CLog::Log(LOGERROR, "GBATag: Non-ASCII data encountered while reading image parameters");
     return;
   }
 

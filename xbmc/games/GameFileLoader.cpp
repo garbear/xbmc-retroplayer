@@ -68,7 +68,7 @@ const std::vector<uint8_t> &CGameFile::Buffer()
     if (m_type == TYPE_DATA)
       Read(m_strTranslatedPath, m_data);
     else
-      CLog::Log(LOGERROR, "CGameFile: Not loading %s, absolute path requested!", m_strTranslatedPath.c_str());
+      CLog::Log(LOGERROR, "GameFile: Not loading %s, absolute path requested!", m_strTranslatedPath.c_str());
   }
   return m_data;
 }
@@ -124,7 +124,7 @@ void CGameFile::Read(const std::string &path, std::vector<uint8_t> &data)
   CFile vfsFile;
   if (!vfsFile.Open(path))
   {
-    CLog::Log(LOGERROR, "CGameFile: XBMC cannot open file \"%s\"", path.c_str());
+    CLog::Log(LOGERROR, "GameFile: XBMC cannot open file \"%s\"", path.c_str());
     return;
   }
 
@@ -133,7 +133,7 @@ void CGameFile::Read(const std::string &path, std::vector<uint8_t> &data)
   // Check for file size overflow (libretro accepts files <= size_t max)
   if (length <= 0 || (uint64_t)length > (uint64_t)std::numeric_limits<size_t>::max())
   {
-    CLog::Log(LOGERROR, "CGameFile: Invalid file size: %"PRId64" bytes", length);
+    CLog::Log(LOGERROR, "GameFile: Invalid file size: %"PRId64" bytes", length);
     return;
   }
 
@@ -141,13 +141,13 @@ void CGameFile::Read(const std::string &path, std::vector<uint8_t> &data)
 
   if (vfsFile.Read(data.data(), length) != length)
   {
-    CLog::Log(LOGERROR, "CGameFile: XBMC failed to read game data");
+    CLog::Log(LOGERROR, "GameFile: XBMC failed to read game data");
     // Fullfill post-condition: m_data.size() must return zero
     data.clear();
     return;
   }
 
-  CLog::Log(LOGDEBUG, "CGameFile: loaded file from VFS (filesize: %lu KiB)", data.size() / 1024);
+  CLog::Log(LOGDEBUG, "GameFile: loaded file from VFS (filesize: %lu KiB)", data.size() / 1024);
 }
 
 bool CGameFile::ToInfo(LIBRETRO::retro_game_info &info)

@@ -56,7 +56,7 @@ void CGameboyTag::Load(const CStdString& strPath, CGameInfoTag &gameInfoTag)
   {
     if ((0 < data[i] && data[i] < 32) || 126 < data[i]) // zero is ok
     {
-      CLog::Log(LOGINFO, "CGameboyTag: Non-ASCII data encountered, assuming it's not a game image");
+      CLog::Log(LOGINFO, "GameboyTag: Non-ASCII data encountered, assuming it's not a game image");
       return;
     }
   }

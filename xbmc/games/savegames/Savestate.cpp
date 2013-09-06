@@ -84,7 +84,7 @@ const CSavestate& CSavestate::operator=(const CSavestate& rhs)
 bool CSavestate::Read(std::vector<uint8_t> &data)
 {
   CStdString path(GetPath());
-  CLog::Log(LOGDEBUG, "CSavestate: Reading \"%s\"", path.c_str());
+  CLog::Log(LOGDEBUG, "Savestate: Reading \"%s\"", path.c_str());
   if (path.empty())
     return false;
 
@@ -97,7 +97,7 @@ bool CSavestate::Read(std::vector<uint8_t> &data)
   }
   else
   {
-    CLog::Log(LOGDEBUG, "CSavestate: Can't read \"%s\"", path.c_str());
+    CLog::Log(LOGDEBUG, "Savestate: Can't read \"%s\"", path.c_str());
   }
   return false;
 }
@@ -106,7 +106,7 @@ bool CSavestate::Write(const std::vector<uint8_t> &data, bool bThumbnail /* = tr
 {
   CStdString path(GetPath());
   m_bHasThumbnail = false;
-  CLog::Log(LOGDEBUG, "CSavestate: Writing \"%s\"", path.c_str());
+  CLog::Log(LOGDEBUG, "Savestate: Writing \"%s\"", path.c_str());
   if (path.empty())
     return false;
 
@@ -115,7 +115,7 @@ bool CSavestate::Write(const std::vector<uint8_t> &data, bool bThumbnail /* = tr
   CFile file;
   if (!file.OpenForWrite(path, true) || file.Write(data.data(), data.size()) != (int)data.size())
   {
-    CLog::Log(LOGERROR, "CSavestate: Error writing \"%s\"", path.c_str());
+    CLog::Log(LOGERROR, "Savestate: Error writing \"%s\"", path.c_str());
     return false;
   }
 
@@ -150,9 +150,9 @@ bool CSavestate::Write(const std::vector<uint8_t> &data, bool bThumbnail /* = tr
       else
       {
         if (g_application.IsCurrentThread())
-          CLog::Log(LOGERROR, "CSavestate: failed to capture thumbnail in app thread");
+          CLog::Log(LOGERROR, "Savestate: failed to capture thumbnail in app thread");
         else
-          CLog::Log(LOGDEBUG, "CSavestate: failed to capture thumbnail");
+          CLog::Log(LOGDEBUG, "Savestate: failed to capture thumbnail");
       }
 
       g_renderManager.ReleaseRenderCapture(thumbnail);
@@ -167,23 +167,23 @@ bool CSavestate::Rename(const CStdString &newLabel)
   CStdString oldPath(GetPath());
   SetSaveTypeLabel(newLabel);
   CStdString newPath(GetPath());
-  CLog::Log(LOGDEBUG, "CSavestate: Renaming \"%s\"", oldPath.c_str());
-  CLog::Log(LOGDEBUG, "CSavestate:    to \"%s\"", newPath.c_str());
+  CLog::Log(LOGDEBUG, "Savestate: Renaming \"%s\"", oldPath.c_str());
+  CLog::Log(LOGDEBUG, "Savestate:    to \"%s\"", newPath.c_str());
   if (oldPath.empty() || newPath.empty())
     return false;
 
   bool success;
   if (!(success = CFile::Rename(oldPath, newPath)))
-    CLog::Log(LOGERROR, "CSavestate: Error renaming save state");
+    CLog::Log(LOGERROR, "Savestate: Error renaming save state");
   
   if (success && m_bHasThumbnail)
   {
     CStdString oldThumbnail = URIUtils::ReplaceExtension(oldPath, ".png");
     CStdString newThumbnail = URIUtils::ReplaceExtension(newPath, ".png");
     if (CFile::Rename(oldThumbnail, newThumbnail))
-      CLog::Log(LOGDEBUG, "CSavestate: Renamed save state thumbnail");
+      CLog::Log(LOGDEBUG, "Savestate: Renamed save state thumbnail");
     else
-      CLog::Log(LOGDEBUG, "CSavestate: Error renaming save state thumbnail");
+      CLog::Log(LOGDEBUG, "Savestate: Error renaming save state thumbnail");
   }
 
   return success;
@@ -192,18 +192,18 @@ bool CSavestate::Rename(const CStdString &newLabel)
 bool CSavestate::Delete()
 {
   CStdString path(GetPath());
-  CLog::Log(LOGDEBUG, "CSavestate: Deleting \"%s\"", path.c_str());
+  CLog::Log(LOGDEBUG, "Savestate: Deleting \"%s\"", path.c_str());
   if (path.empty())
     return false;
 
   bool success; // Success is determined by primary file deletion
   if (!(success = CFile::Delete(path)))
-    CLog::Log(LOGERROR, "CSavestate: Can't delete \"%s\"", path.c_str());
+    CLog::Log(LOGERROR, "Savestate: Can't delete \"%s\"", path.c_str());
 
   CStdString thumbPath(GetThumbnail());
-  CLog::Log(LOGDEBUG, "CSavestate: Deleting thumbnail \"%s\"", thumbPath.c_str());
+  CLog::Log(LOGDEBUG, "Savestate: Deleting thumbnail \"%s\"", thumbPath.c_str());
   if (!CFile::Delete(thumbPath))
-    CLog::Log(LOGDEBUG, "CSavestate: Can't delete \"%s\"", thumbPath.c_str());
+    CLog::Log(LOGDEBUG, "Savestate: Can't delete \"%s\"", thumbPath.c_str());
 
   return success;
 }
