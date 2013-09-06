@@ -107,7 +107,7 @@ bool CRetroPlayerDialogs::GameLauchDialog(const CFileItem &file, GameClientPtr &
   {
     // Queue the file so that if a compatible game client is installed, the
     // user will be asked to launch the file.
-    CGameManager::Get().QueueFile(fileCopy);
+    CGameManager::Get().SetAutoLaunch(fileCopy);
     CLog::Log(LOGDEBUG, "RetroPlayer: User chose to go to the add-on manager");
     CStdStringArray params;
     params.push_back("addons://all/xbmc.gameclient");
@@ -211,7 +211,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GAMES::
   {
     // TODO: Prompt the user to enable it
     CLog::Log(LOGDEBUG, "RetroPlayer: Game client %s installed but disabled, enabling it", gc->ID().c_str());
-    CGameManager::Get().UnqueueFile(); // Don't auto-launch queued game when the add-on is enabled
+    CGameManager::Get().ClearAutoLaunch(); // Don't auto-launch queued game when the add-on is enabled
     database.DisableAddon(gc->ID(), false);
 
     // Retrieve the newly-enabled add-on
@@ -324,7 +324,7 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
   {
     // Queue the file so that if a compatible game client is installed, the
     // user will be asked to launch the file.
-    CGameManager::Get().QueueFile(file);
+    CGameManager::Get().SetAutoLaunch(file);
 
     CLog::Log(LOGDEBUG, "RetroPlayer: User chose to go to the add-on manager");
     CStdStringArray params;

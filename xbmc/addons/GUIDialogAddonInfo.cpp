@@ -209,7 +209,7 @@ void CGUIDialogAddonInfo::OnUninstall()
   }
 
   // ensure the addon isn't disabled in our database
-  CGameManager::Get().UnqueueFile(); // Enabling before uninstalling might launch a queued game
+  CGameManager::Get().ClearAutoLaunch(); // Enabling before uninstalling might launch a queued game
   CAddonDatabase database;
   database.Open();
   database.DisableAddon(m_localAddon->ID(), false);

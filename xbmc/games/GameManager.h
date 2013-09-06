@@ -23,6 +23,7 @@
 #include "addons/AddonDatabase.h"
 #include "addons/AddonManager.h"
 #include "GameClient.h"
+#include "GameFileAutoLauncher.h"
 #include "FileItem.h"
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
@@ -43,10 +44,10 @@ namespace GAMES
    * information.
    */
   class CGameManager :
-    public ADDON::IAddonMgrCallback, public IAddonDatabaseCallback, public Observer, protected CThread
+    public ADDON::IAddonMgrCallback, public IAddonDatabaseCallback, public Observer
   {
   protected:
-    CGameManager();
+    CGameManager() { }
 
   public:
     static CGameManager &Get();
@@ -55,23 +56,32 @@ namespace GAMES
     virtual void Start();
     virtual void Stop();
 
-    //** Functions to notify CGameManager about stuff it manages
+    //** Functions to notify CGameManager about stuff it manages **//
 
     /**
      * Create and maintain a cache of game client add-on information. If a file
-     * has been placed in the queue via QueueFile(), it will be launched if a
+     * has been placed in the queue via SetAutolaunch(), it will be launched if a
      * compatible emulator is registered.
      */
     void RegisterAddons(const ADDON::VECADDONS &addons);
-    bool RegisterAddon(const GameClientPtr &clientAddon);
+    bool RegisterAddon(const GAMES::GameClientPtr &client);
     void UnregisterAddonByID(const std::string &strId);
 
     /**
-     * Register the supported extensions of remote add-ons for use by IsGame().
-     * m_gameExtensions is cleared first, then populated with extensions of
-     * tracked game clients and the addon vector.
+     * Register the supported extensions of game clients in the add-on database
+     * (including remote ones) for use by IsGame().
      */
-    void RegisterRemoteAddons(const ADDON::VECADDONS &addons);
+    void RegisterExtensions();
+
+    /**
+     * Notify the game manager of add-ons in the database (including remote
+     * add-ons). Called on Start() and when the Repository Updated action is
+     * complete (see Repository.cpp). We must call this after the Repository
+     * Updated action so that the game manager's knowledge of file extensions
+     * (which it uses to determine whether files are games) contains the
+     * extensions supported by the game clients of new repositories.
+     */
+    void UpdateRemoteAddons(const ADDON::VECADDONS &addons);
 
     // Inherited from IAddonDatabaseCallback
     virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
@@ -83,10 +93,10 @@ namespace GAMES
     /**
      * Queue a file to be launched when the next game client is installed.
      */
-    void QueueFile(const CFileItem &file);
-    void UnqueueFile();
+    void SetAutoLaunch(const CFileItem &file) { m_fileLauncher.SetAutoLaunch(file); }
+    void ClearAutoLaunch() { m_fileLauncher.ClearAutoLaunch(); }
 
-    //** Functions to get info for stuff that CGameManager manages
+    //** Functions to get info for stuff that CGameManager manages **//
 
     virtual bool GetClient(const std::string &strClientId, GameClientPtr &addon) const;
     virtual bool GetConnectedClient(const std::string &strClientId, GameClientPtr &addon) const;
@@ -94,32 +104,32 @@ namespace GAMES
     virtual bool IsConnectedClient(const ADDON::AddonPtr addon) const;
 
     /**
-     * Resolve a file item to a list of game client IDs. If the file forces a
-     * particular game client via file.SetProperty("gameclient", id), the result
-     * will contain no more than one possible candidate. If the file's game info
-     * tag provides a "platform", the available game clients will be filtered by
-     * this platform (given the <platform> tag in their addon.xml). If file is a
-     * zip file, the contents of that zip will be used to find suitable
-     * candidates (which may yield multiple if there are several different kinds
-     * of ROMs inside).
+     * Resolve a file item to a list of game client IDs.
+     *
+     *   # If the file forces a particular game client via file.SetProperty("gameclient", id),
+     *     the result will contain no more than one possible candidate.
+     *   # If the file's game info tag provides a "platform", the available game
+     *     clients will be filtered by this platform (given the <platform> tag
+     *     in their addon.xml).
+     *   # If file is a zip file, the contents of that zip will be used to find
+     *     suitable candidates (which may yield multiple if there are several
+     *     different kinds of ROMs inside).
      */
     void GetGameClientIDs(const CFileItem& file, std::vector<std::string> &candidates) const;
 
-    void GetExtensions(std::vector<std::string> &exts);
+    /**
+     * Get a list of valid game client extensions (as determined by the tag in
+     * addon.xml). Includes game clients in remote repositories.
+     */
+    void GetExtensions(std::vector<std::string> &exts) const;
 
     /**
      * Returns true if the file extension is supported by an add-on in an enabled
      * repository.
-     *
-     * This function causes the queued file to be reset. The purpose of this is
-     * to only invoke the file inside the add-on manager, and IsGame() is called
-     * often enough that leaving the add-on manager will eventually reset it.
-     * This fuzzy approach should be approximate enough to what the user expects
-     * (whether or not the game should be launched).
      */
-     bool IsGame(CStdString path);
+    bool IsGame(const std::string &path) const;
 
-    //** Functions that operate on the clients
+    //** Functions that operate on the clients **//
 
     virtual bool StopClient(ADDON::AddonPtr client, bool bRestart);
 
@@ -127,25 +137,20 @@ namespace GAMES
     virtual bool RequestRestart(ADDON::AddonPtr addon, bool datachanged) { return StopClient(addon, true); }
     virtual bool RequestRemoval(ADDON::AddonPtr addon)                   { return StopClient(addon, false); }
 
-  protected:
-    // Inherited from CThread
-    virtual void Process(void);
+  private:
+    // Initialize m_gameClients with enabled game clients
+    virtual bool UpdateAddons();
 
     /**
-     * If we can launch the file with gameClient, ask the user if they would
-     * like to do so.
+     * If the save directory doesn't exist for the given add-on, a directory
+     * will be created in the save games folder.
+     * @param strId - the game client ID, used as the name of the directory
      */
-    void LaunchFile(CFileItem file, const CStdString &strGameClient) const;
+    void CreateDirectories(const std::string &strId);
 
-    void LoadExtensionsFromDB();
-
-    virtual bool UpdateAddons(void) { return true; }
-    virtual bool UpdateAndInitialiseClients();
-
-    std::map<std::string, GameClientPtr> m_gameClients; // may not contain empty shared pointers
+    std::map<std::string, GameClientPtr> m_gameClients;
     std::set<std::string>                m_gameExtensions;
-    CFileItemPtr                         m_queuedFile;
+    CGameFileAutoLauncher                m_fileLauncher;
     CCriticalSection                     m_critSection;
-    CAddonDatabase                       m_addonDb;
   };
 } // namespace GAMES

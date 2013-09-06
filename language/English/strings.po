@@ -6430,7 +6430,7 @@ msgctxt "#15023"
 msgid "Error loading DLL"
 msgstr ""
 
-#: xbmc/games/GameManager.cpp
+#: xbmc/games/GameFileLauncher.cpp
 msgctxt "#15024"
 msgid "A compatible emulator was installed for:"
 msgstr ""
@@ -8705,7 +8705,7 @@ msgctxt "#20012"
 msgid "Video playlists"
 msgstr ""
 
-#: xbmc/games/GameManager.cpp
+#: xbmc/games/GameFileLauncher.cpp
 msgctxt "#20013"
 msgid "Do you wish to launch the game?"
 msgstr ""
@@ -11481,7 +11481,7 @@ msgstr ""
 
 #: system/settings/settings.xml
 #: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
-#: xbmc/games/GameManager.cpp
+#: xbmc/games/GameFileLauncher.cpp
 msgctxt "#24025"
 msgid "Manage emulators..."
 msgstr ""

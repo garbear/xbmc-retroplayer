@@ -20,16 +20,13 @@
  */
 
 #include "GameManager.h"
-#include "addons/AddonManager.h"
+#include "addons/AddonDatabase.h"
 #include "Application.h"
 #include "dialogs/GUIDialogKaiToast.h"
-#include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
 #include "GameFileLoader.h"
 #include "games/savegames/Savestate.h"
-#include "guilib/GUIWindowManager.h"
 #include "profiles/ProfilesManager.h"
-//#include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
 #include "utils/log.h"
@@ -68,10 +65,6 @@ static const PortMapping ports[] =
 */
 
 
-CGameManager::CGameManager() : CThread("game client updater")
-{
-}
-
 /* static */
 CGameManager &CGameManager::Get()
 {
@@ -79,38 +72,64 @@ CGameManager &CGameManager::Get()
   return _instance;
 }
 
-void CGameManager::Start(void)
-{
-  Stop();
-  m_addonDb.Open();
-  Create();
-  SetPriority(-1);
-}
-
-void CGameManager::Stop(void)
-{
-  StopThread();
-  CSingleLock lock(m_critSection);
-  for (map<string, GameClientPtr>::const_iterator itr = m_gameClients.begin(); itr != m_gameClients.end(); itr++)
-    itr->second->DeInit();
-  m_addonDb.Close();
-}
-
-void CGameManager::Process(void)
+void CGameManager::Start()
 {
   CAddonMgr::Get().RegisterAddonMgrCallback(ADDON_GAMEDLL, this);
   CAddonMgr::Get().RegisterObserver(this);
   CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_GAMEDLL, this);
-  UpdateAddons();
 
-  while (!m_bStop)
+  CAddonDatabase database;
+  if (database.Open())
   {
-    UpdateAndInitialiseClients();
-    // Wait for StopThread() to be called (uses its own event)
-    CEvent dummy;
-    AbortableWait(dummy);
+    VECADDONS addons;
+    database.GetAddons(addons); // TODO: Filter by type ADDON_GAMEDLL
+    // TODO: either rename this function to UpdateExtensions(), which is more
+    // transparent to what it actually does, or abstract it further by creating
+    // a callback interface for the Repository Updated action (see Repository.cpp).
+    // For now, compromise and pretend that they are remote add-ons.
+    UpdateRemoteAddons(addons);
   }
 
+  UpdateAddons();
+}
+
+void CGameManager::UpdateRemoteAddons(const ADDON::VECADDONS &addons)
+{
+  CSingleLock lock(m_critSection);
+
+  for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
+  {
+    const AddonPtr &addon = *it;
+    if (!addon->IsType(ADDON_GAMEDLL))
+      continue;
+
+    GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(addon);
+    if (!gc)
+      continue;
+
+    bool bIsBroken = !gc->Props().broken.empty();
+    if (!bIsBroken)
+    {
+      bool bHasExtensions = !gc->GetExtensions().empty();
+      if (bHasExtensions)
+        m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
+      else
+        CLog::Log(LOGDEBUG, "CGameManager - No extensions for %s version %s", gc->ID().c_str(), gc->Version().c_str());
+    }
+  }
+  CLog::Log(LOGDEBUG, "CGameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
+}
+
+bool CGameManager::UpdateAddons()
+{
+  VECADDONS gameClients;
+  CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, gameClients);
+  RegisterAddons(gameClients);
+  return true;
+}
+
+void CGameManager::Stop()
+{
   CAddonMgr::Get().UnregisterAddonMgrCallback(ADDON_GAMEDLL);
   CAddonMgr::Get().UnregisterObserver(this);
   CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_GAMEDLL);
@@ -119,91 +138,74 @@ void CGameManager::Process(void)
 void CGameManager::RegisterAddons(const VECADDONS &addons)
 {
   for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); it++)
-    RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it));
+  {
+    if ((*it)->Type() == ADDON_GAMEDLL)
+      RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it));
+  }
 }
 
-bool CGameManager::RegisterAddon(const GameClientPtr &clientAddon)
+bool CGameManager::RegisterAddon(const GameClientPtr &client)
 {
-  if (!clientAddon)
+#if 0
+  if (!client || !client->Enabled())
+    return false;
+#else
+  if (!client)
     return false;
 
-  CLog::Log(LOGDEBUG, "CGameManager: registering add-on %s", clientAddon->ID().c_str());
+  CAddonDatabase database;
+  if (!database.Open())
+    return false;
+
+  // It's possible for game clients to be enabled but not enabled in the
+  // database when they're installed but not configured yet.
+  bool bEnabled = client->Enabled() && !database.IsAddonDisabled(client->ID());
+  if (!bEnabled)
+    return false;
+#endif
 
   CSingleLock lock(m_critSection);
 
-  // Add the client to m_gameClients
-  GameClientPtr &client = m_gameClients[clientAddon->ID()];
-  if (client)
-    CLog::Log(LOGERROR, "CGameManager: Refreshing information for add-on %s!", clientAddon->ID().c_str());
-  client = clientAddon;
+  GameClientPtr &registeredClient = m_gameClients[client->ID()];
+  if (registeredClient)
+  {
+    CLog::Log(LOGDEBUG, "CGameManager: Already registered: %s!", client->ID().c_str());
+    return true;
+  }
 
   if (!client->Init())
   {
     CLog::Log(LOGERROR, "CGameManager: failed to load DLL for %s, disabling in database", client->ID().c_str());
     CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
-    // Removes the game client from m_gameClients
-    m_addonDb.DisableAddon(client->ID());
+
+    // Removes the game client from m_gameClients via CAddonDatabase callback
+    CAddonDatabase database;
+    if (database.Open())
+      database.DisableAddon(client->ID());
     return false;
   }
-  else
-  {
-    // Unload the loaded and inited DLL
-    client->DeInit();
 
-    // Check to see if the savegame folder for this game client exists
-    CStdString dir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetSavegamesFolder(), clientAddon->ID()));
-    if (!CDirectory::Exists(dir))
-    {
-      CLog::Log(LOGINFO, "Create new savegames folder: %s", dir.c_str());
-      CDirectory::Create(dir);
-    }
+  client->DeInit();
 
-    // If a file was queued by RetroPlayer, test to see if we should launch the
-    // newly installed game client
-    if (m_queuedFile)
-    {
-      // Test if the new client can launch the file
-      vector<string> candidates;
-      GetGameClientIDs(*m_queuedFile, candidates);
-      if (find(candidates.begin(), candidates.end(), clientAddon->ID()) != candidates.end())
-      {
-        LaunchFile(*m_queuedFile, clientAddon->ID());
-        // Don't ask the user twice
-        UnqueueFile();
-      }
-    }
-    return true;
-  }
+  registeredClient = client;
+  CLog::Log(LOGDEBUG, "CGameManager: Registered add-on %s", client->ID().c_str());
+
+  CreateDirectories(client->ID());
+
+  // If a file was queued by RetroPlayer, try to launch the newly installed game client
+  m_fileLauncher.Launch(client);
+
+  return true;
 }
 
-void CGameManager::LaunchFile(CFileItem file, const CStdString &strGameClient) const
+void CGameManager::CreateDirectories(const string &strId)
 {
-  // This makes sure we aren't prompted again by PlayMedia()
-  file.SetProperty("gameclient", strGameClient);
-
-  CGUIDialogYesNo *pDialog = dynamic_cast<CGUIDialogYesNo*>(g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO));
-  if (pDialog)
+  // Check to see if the savegame folder for this game client exists
+  CStdString dir(URIUtils::AddFileToFolder(CProfilesManager::Get().GetSavegamesFolder(), strId));
+  if (!CDirectory::Exists(dir))
   {
-    CStdString title(file.GetGameInfoTag()->GetTitle());
-    if (title.empty() && m_queuedFile)
-      title = URIUtils::GetFileName(m_queuedFile->GetPath());
-
-    pDialog->SetHeading(24025); // Manage emulators...
-    pDialog->SetLine(0, 15024); // A compatible emulator was installed for:
-    pDialog->SetLine(1, title);
-    pDialog->SetLine(2, 20013); // Do you wish to launch the game?
-    pDialog->DoModal();
-
-    if (pDialog->IsConfirmed())
-    {
-      // Close the add-on info dialog, if open
-      int iWindow = g_windowManager.GetTopMostModalDialogID(true);
-      CGUIWindow *window = g_windowManager.GetWindow(iWindow);
-      if (window)
-        window->Close();
-
-      g_application.PlayMedia(file);
-    }
+    CLog::Log(LOGINFO, "Create new savegames folder: %s", dir.c_str());
+    CDirectory::Create(dir);
   }
 }
 
@@ -224,49 +226,6 @@ void CGameManager::UnregisterAddonByID(const string &strId)
   m_gameClients.erase(m_gameClients.find(strId));
 }
 
-void CGameManager::RegisterRemoteAddons(const VECADDONS &addons)
-{
-  CSingleLock lock(m_critSection);
-
-  m_gameExtensions.clear();
-
-  // First, populate the extensions list with our local extensions so that
-  // IsGame() is tested against them as well
-  for (map<string, GameClientPtr>::iterator itLocal = m_gameClients.begin(); itLocal != m_gameClients.end(); itLocal++)
-  {
-    const set<string> &extensions = itLocal->second->GetExtensions();
-    m_gameExtensions.insert(extensions.begin(), extensions.end());
-  }
-
-  for (VECADDONS::const_iterator itRemote = addons.begin(); itRemote != addons.end(); itRemote++)
-  {
-    const AddonPtr &remote = *itRemote;
-    if (!remote->IsType(ADDON_GAMEDLL))
-      continue;
-
-    GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(remote);
-    // If it wasn't created polymorphically, do so now
-    if (!gc)
-      gc = GameClientPtr(new CGameClient(remote->Props()));
-
-    bool bIsRemoteBroken = !gc->Props().broken.empty();
-    bool bHasExtensions = !gc->GetExtensions().empty();
-
-    if (bHasExtensions && !bIsRemoteBroken)
-    {
-      // Extensions were specified in (unbroken) addon.xml
-      m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
-    }
-    else
-    {
-      // No extensions listed in addon.xml. If installed, get the extensions from
-      // the DLL. If the add-on is broken, also try to get extensions from the DLL.
-      CLog::Log(LOGDEBUG, "CGameManager - No extensions for %s v%s", gc->ID().c_str(), gc->Version().c_str());
-    }
-  }
-  CLog::Log(LOGDEBUG, "CGameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
-}
-
 void CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
 {
   if (!addon)
@@ -278,30 +237,17 @@ void CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
 
 void CGameManager::AddonDisabled(AddonPtr addon)
 {
-  // If the disabled addon is a service, stop it
   if (!addon)
     return;
 
-  // If the disabled addon isn't a game client, UnregisterAddon() will still do the right thing
-  UnregisterAddonByID(addon->ID());
+  if (addon->Type() == ADDON_GAMEDLL)
+    UnregisterAddonByID(addon->ID());
 }
 
 void CGameManager::Notify(const Observable &obs, const ObservableMessage msg)
 {
   if (msg == ObservableMessageAddons)
     UpdateAddons();
-}
-
-void CGameManager::QueueFile(const CFileItem &file)
-{
-  CSingleLock lock(m_critSection);
-  m_queuedFile = CFileItemPtr(new CFileItem(file));
-}
-
-void CGameManager::UnqueueFile()
-{
-  CSingleLock lock(m_critSection);
-  m_queuedFile = CFileItemPtr();
 }
 
 bool CGameManager::GetClient(const string &strClientId, GameClientPtr &addon) const
@@ -376,41 +322,23 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string> &candi
   }
 }
 
-void CGameManager::GetExtensions(vector<string> &exts)
+void CGameManager::GetExtensions(vector<string> &exts) const
 {
-  if (m_gameExtensions.empty())
-    LoadExtensionsFromDB();
   exts.insert(exts.end(), m_gameExtensions.begin(), m_gameExtensions.end());
 }
 
-bool CGameManager::IsGame(CStdString path)
+bool CGameManager::IsGame(const std::string &path) const
 {
   CSingleLock lock(m_critSection);
 
-  // Reset the queued file. IsGame() is called often enough that leaving the
-  // add-on browser should reset the file.
-  UnqueueFile();
-
-  // If RegisterRemoteAddons() hasn't been called yet, initialize
-  // m_gameExtensions with addons from the database.
-  if (m_gameExtensions.empty())
-    LoadExtensionsFromDB();
-
-  // Get the file extension (we want .zip if the file is a top-level zip directory)
-  CStdString extension(URIUtils::GetExtension(CURL(path).GetFileNameWithoutPath()));
-  extension.ToLower();
+  // Get the file extension (must use a CURL, if the string is top-level zip
+  // directory it might not end in .zip)
+  string extension(URIUtils::GetExtension(CURL(path).GetFileNameWithoutPath()));
+  StringUtils::ToLower(extension);
   if (extension.empty())
     return false;
 
   return m_gameExtensions.find(extension) != m_gameExtensions.end();
-}
-
-void CGameManager::LoadExtensionsFromDB()
-{
-    CLog::Log(LOGDEBUG, "CGameManager: Initializing remote extensions cache from database");
-    VECADDONS addons;
-    m_addonDb.GetAddons(addons);
-    RegisterRemoteAddons(addons);
 }
 
 bool CGameManager::StopClient(AddonPtr client, bool bRestart)
@@ -432,38 +360,4 @@ bool CGameManager::StopClient(AddonPtr client, bool bRestart)
   }
 
   return false;
-}
-
-bool CGameManager::UpdateAndInitialiseClients()
-{
-  VECADDONS addons;
-  {
-    if (m_gameClients.empty())
-      return false;
-
-    CSingleLock lock(m_critSection);
-    addons.reserve(m_gameClients.size());
-    for (map<string, GameClientPtr>::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); ++it)
-      addons.push_back(it->second);
-  }
-
-  for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); it++)
-  {
-    const AddonPtr& addon = *it;
-
-    // It's possible for PVR add-ons to be enabled but not enabled in the
-    // database when they're installed but not configured yet.
-    bool bEnabled = addon->Enabled() && !m_addonDb.IsAddonDisabled(addon->ID());
-
-    if (!bEnabled)
-    {
-      StopClient(addon, false);
-      CSingleLock lock(m_critSection);
-      map<string, GameClientPtr>::iterator addonPtr = m_gameClients.find(addon->ID());
-      if (addonPtr != m_gameClients.end())
-        m_gameClients.erase(addonPtr);
-    }
-  }
-
-  return true;
 }

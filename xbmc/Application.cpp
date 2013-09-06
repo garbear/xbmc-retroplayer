@@ -279,6 +279,7 @@
 
 /* Game-related include files */
 #include "cores/RetroPlayer/RetroPlayer.h"
+#include "games/GameManager.h"
 #include "games/windows/GUIWindowGames.h"
 #include "games/savegames/GUIDialogGameSaves.h"
 
@@ -1479,6 +1480,8 @@ bool CApplication::Initialize()
   CJoystickManager::Get().SetEnabled(CSettings::Get().GetBool("input.enablejoystick") &&
                     CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0);
 #endif
+
+  GAMES::CGameManager::Get().Start();
 
   return true;
 }
@@ -3364,6 +3367,7 @@ void CApplication::Stop(int exitCode)
     CApplicationMessenger::Get().Cleanup();
 
     StopPVRManager();
+    GAMES::CGameManager::Get().Stop();
     StopServices();
     //Sleep(5000);
 

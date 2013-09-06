@@ -3193,6 +3193,9 @@
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerDialogs.cpp">
       <Filter>cores\RetroPlayer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6246,6 +6249,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerDialogs.h">
       <Filter>cores\RetroPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h">
+      <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

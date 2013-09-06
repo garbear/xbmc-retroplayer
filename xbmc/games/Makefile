@@ -1,4 +1,5 @@
 SRCS=GameClient.cpp \
+     GameFileAutoLauncher.cpp \
      GameFileLoader.cpp \
      GameManager.cpp \
      GameSettings.cpp \
