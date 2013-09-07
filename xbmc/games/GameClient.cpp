@@ -165,7 +165,6 @@ void CGameClient::Initialize()
 {
   m_bAllowVFS = false;
   m_bRequireZip = false;
-  m_callbacks = NULL;
   m_bIsPlaying = false;
   m_bIsInited = false;
   m_frameRate = 0.0;
