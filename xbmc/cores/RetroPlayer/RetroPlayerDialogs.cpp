@@ -325,11 +325,10 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
   choicesInt.Add(iAddonMgr, 24025); // "Manage emulators..."
 
   int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choicesInt);
-  if (0 <= btnid && btnid < (int)iAddonMgr)
+  if (btnid < 0 || btnid > (int)iAddonMgr)
   {
-    result = clients[choicesStr[btnid]];
-    CLog::Log(LOGDEBUG, "RetroPlayer: Using %s", result->ID().c_str());
-    return true;
+    CLog::Log(LOGDEBUG, "RetroPlayer: User cancelled game client selection");
+    return false;
   }
   else if (btnid == (int)iAddonMgr)
   {
@@ -341,11 +340,13 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
     CStdStringArray params;
     params.push_back("addons://all/xbmc.gameclient");
     g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
+    return false;
   }
   else
   {
-    CLog::Log(LOGDEBUG, "RetroPlayer: User cancelled game client selection");
+    result = clients[choicesStr[btnid]];
+    CLog::Log(LOGDEBUG, "RetroPlayer: Using %s", result->ID().c_str());
   }
 
-  return false;
+  return true;
 }

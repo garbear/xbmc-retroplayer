@@ -31,8 +31,9 @@ class CRetroPlayerDialogs
 {
 public:
   /**
-   * Called when a game is first launched, this is responsible for resolving
-   * the appropriate game client (installing just-in-time, if necessary).
+   * When a game is first launched, this is responsible for resolving the
+   * appropriate game client by presenting the user with a series of menus and
+   * dialogs (installing the client just-in-time, if necessary).
    * @param  file - the file being launched
    * @param  result - a pointer to the game client that will be used to run the game
    *         (valid pointer if function returns true, untouched if function returns false)
@@ -72,7 +73,7 @@ private:
 
   /**
    * Present the user with a list of game clients and an option to go to the
-   * Add-on Manager.
+   * add-on manager.
    * @param  clientIds - list of game client IDs
    * @param  file - game file being launched
    * @param  result - pointer to the game client that will be used to run the game
