@@ -21,8 +21,6 @@
 
 #include "libretro_wrapped.h"
 
-#include <boost/shared_ptr.hpp>
-
 namespace GAMES
 {
   /**
