@@ -113,13 +113,7 @@ void CRetroPlayerVideo::Process()
       break;
     }
 
-    // Colorspace conversion
-    uint8_t *src[] = { frame.data.data(), 0, 0, 0 };
-    int      srcStride[] = { (int)frame.pitch, 0, 0, 0 };
-    uint8_t *dst[] = { pPicture->data[0], pPicture->data[1], pPicture->data[2], 0 };
-    int      dstStride[] = { pPicture->iLineSize[0], pPicture->iLineSize[1], pPicture->iLineSize[2], 0 };
-
-    m_dllSwScale.sws_scale(m_swsContext, src, srcStride, 0, frame.height, dst, dstStride);
+    ColorspaceConversion(frame, *pPicture);
 
     // Get ready to drop the picture off on RenderManger's doorstep
     if (!g_renderManager.IsStarted())
@@ -146,7 +140,6 @@ void CRetroPlayerVideo::Process()
   // Don't want to allocate more data in SendVideoFrame()
   m_bStop = true;
 
-  // In case we hit a break above
   if (pPicture)
     CDVDCodecUtils::FreePicture(pPicture);
 
@@ -210,7 +203,6 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
     if (m_swsContext)
       m_dllSwScale.sws_freeContext(m_swsContext);
 
-    // Colorspace conversion
     m_swsContext = m_dllSwScale.sws_getContext(
       picture.iWidth, picture.iHeight, format,
       picture.iWidth, picture.iHeight, PIX_FMT_YUV420P,
@@ -218,6 +210,19 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
     );
   }
   return true;
+}
+
+void CRetroPlayerVideo::ColorspaceConversion(const Frame &frame, const DVDVideoPicture &picture)
+{
+  uint8_t *data = const_cast<uint8_t*>(frame.data.data());
+
+  // Colorspace conversion
+  uint8_t *src[] =       { data,                 0,                    0,                    0 };
+  int      srcStride[] = { (int)frame.pitch,     0,                    0,                    0 };
+  uint8_t *dst[] =       { picture.data[0],      picture.data[1],      picture.data[2],      0 };
+  int      dstStride[] = { picture.iLineSize[0], picture.iLineSize[1], picture.iLineSize[2], 0 };
+
+  m_dllSwScale.sws_scale(m_swsContext, src, srcStride, 0, frame.height, dst, dstStride);
 }
 
 void CRetroPlayerVideo::SendVideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)

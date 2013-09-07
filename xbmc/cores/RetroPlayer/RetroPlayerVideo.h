@@ -20,15 +20,15 @@
  */
 #pragma once
 
-#include "linux/PlatformDefs.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "DllSwScale.h"
 #include "games/libretro/libretro_wrapped.h"
+#include "linux/PlatformDefs.h"
 #include "threads/Thread.h"
 
 #include <stdint.h>
-#include <queue>
 
+struct DVDVideoPicture;
 struct SwsContext;
 
 class CRetroPlayerVideo : public CThread
@@ -72,6 +72,7 @@ protected:
 
 private:
   bool CheckConfiguration(const DVDVideoPicture &picture);
+  void ColorspaceConversion(const Frame &frame, const DVDVideoPicture &picture);
 
   Frame              m_queuedFrame;
   CEvent             m_frameEvent;  // Set immediately when a new frame is queued
@@ -82,6 +83,7 @@ private:
 
   bool               m_bAllowFullscreen;
   double             m_framerate;
+
   // Output variables are used to store the current output configuration. Each
   // frame the picture's configuration is compared to the output configuration,
   // and a discrepancy will reconfigure the render manager, as well as saving

@@ -20,37 +20,41 @@
  */
 #pragma once
 
-#include "RetroPlayerVideo.h"
 #include "RetroPlayerAudio.h"
 #include "RetroPlayerInput.h"
+#include "RetroPlayerVideo.h"
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "games/GameClient.h"
 #include "games/libretro/LibretroCallbacks.h"
 #include "threads/Thread.h"
+#include "threads/Event.h"
 
 #include <stdint.h>
 #include <string>
-#include <vector>
 
 class CRetroPlayer : public IPlayer, public GAMES::ILibretroCallbacksAV, public CThread
 {
 public:
   CRetroPlayer(IPlayerCallback& callback);
-  virtual ~CRetroPlayer();
+  virtual ~CRetroPlayer() { CloseFile(); }
 
+  CFileItemPtr GetFile() const { return m_file; }
+  GAMES::GameClientPtr GetGameClient() const { return m_gameClient; }
+
+  bool Save(unsigned int slot) { return m_gameClient && m_gameClient->Save(slot); }
+  bool Save(const std::string &label) { return m_gameClient && m_gameClient->Save(label); }
+  bool Load(const std::string &saveStatePath) { return m_gameClient && m_gameClient->Load(saveStatePath); }
+
+  // Inherited from IPlayer
   virtual bool OpenFile(const CFileItem& file, const CPlayerOptions& options);
   virtual bool CloseFile();
 
   virtual bool OnAction(const CAction &action);
 
-  // Upon successful open, m_file is set to the opened file
-  virtual bool IsPlaying() const { return !m_bStop && m_file; }
+  virtual bool IsPlaying() const { return !m_bStop && m_file && m_gameClient; }
   virtual void Pause();
   virtual bool IsPaused() const { return m_playSpeed == 0; }
-
-  CFileItemPtr GetFile() const { return m_file; }
-  GAMES::GameClientPtr GetGameClient() const { return m_gameClient; }
 
   virtual bool HasVideo() const { return true; }
   virtual bool HasAudio() const { return true; }
@@ -61,24 +65,19 @@ public:
   virtual void GetVideoInfo(CStdString& strVideoInfo) { strVideoInfo = "CRetroPlayer:GetVideoInfo"; }
   virtual void GetGeneralInfo(CStdString& strGeneralInfo) { strGeneralInfo = "CRetroPlayer:GetGeneralInfo"; }
 
-  //virtual CStdString GetAudioCodecName() { return ""; }
-  //virtual CStdString GetVideoCodecName() { return ""; }
-  //virtual int  GetAudioBitrate() { return 0; }
-  //virtual int  GetChannels() { return 0; }
-  //virtual int  GetBitsPerSample() { return 0; }
-  //virtual int  GetSampleRate() { return 0; }
+  //virtual int GetSourceBitrate() { return 0; }
+  virtual int  GetBitsPerSample() { return 8 * 2 * sizeof(int16_t); }
+  virtual int  GetSampleRate() { return m_samplerate; }
 
-  //virtual void GetVideoRect(CRect& SrcRect, CRect& DestRect) { }
-  //virtual void GetVideoAspectRatio(float& fAR) { fAR = 1.0f; }
   //virtual int  GetPictureWidth() { return 0; }
   //virtual int  GetPictureHeight() { return 0; }
   //virtual bool GetStreamDetails(CStreamDetails &details) { return false; }
+  //virtual void GetVideoStreamInfo(SPlayerVideoStreamInfo &info) { }
 
   //virtual int  GetAudioStreamCount() { return 0; }
   //virtual int  GetAudioStream() { return -1; }
-  //virtual void GetAudioStreamName(int iStream, CStdString &strStreamName) { }
   //virtual void SetAudioStream(int iStream) { }
-  //virtual void GetAudioStreamLanguage(int iStream, CStdString &strLanguage) { }
+  //virtual void GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &info) { }
 
   //virtual void  SetAVDelay(float fValue = 0.0f) { return; }
   //virtual float GetAVDelay() { return 0.0f;};
@@ -100,10 +99,6 @@ public:
   virtual int64_t GetTime();
   virtual int64_t GetTotalTime();
 
-  bool Save(unsigned int slot) { return m_gameClient && m_gameClient->Save(slot); }
-  bool Save(const CStdString &label) { return m_gameClient && m_gameClient->Save(label); }
-  bool Load(const CStdString &saveStatePath) { return m_gameClient && m_gameClient->Load(saveStatePath); }
-
   /*
    * Inherited from ILibretroCallbacksAV. Used to send and receive data from
    * the game clients.
@@ -124,15 +119,30 @@ private:
    */
   void PrintGameInfo(const CFileItem &file) const;
 
-  LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // TODO
+  /**
+   * Create the audio component. Chooses a compatible samplerate and returns
+   * a multiplier representing the framerate adjustment factor, allowing us to
+   * sync the video clock to the audio.
+   * @param  samplerate - the game client's reported audio sample rate
+   * @return the framerate multiplier (chosen samplerate / specified samplerate)
+   *         or 1.0 if no audio.
+   */
+  double CreateAudio(double samplerate);
+  void   CreateVideo(double framerate);
 
   CRetroPlayerVideo    m_video;
   CRetroPlayerAudio    m_audio;
   CRetroPlayerInput    m_input;
-  GAMES::GameClientPtr m_gameClient;
 
   CFileItemPtr         m_file;
+  GAMES::GameClientPtr m_gameClient;
+
+  LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // TODO
+
   CPlayerOptions       m_PlayerOptions;
   int                  m_playSpeed; // Normal play speed is PLAYSPEED_NORMAL (1000)
   CEvent               m_pauseEvent;
+  CCriticalSection     m_critSection;
+
+  unsigned int m_samplerate;
 };

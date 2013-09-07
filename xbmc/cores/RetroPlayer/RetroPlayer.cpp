@@ -27,28 +27,36 @@
 #include "games/tags/GameInfoTag.h"
 #include "guilib/Key.h"
 #include "settings/Settings.h"
-#include "threads/SystemClock.h" // Should auto-save tracking be in GameClient.cpp?
+#include "threads/SingleLock.h"
+#include "threads/SystemClock.h"
 #include "URL.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 #include <assert.h>
 
 #define PLAYSPEED_PAUSED    0
 #define PLAYSPEED_NORMAL    1000
-#define REWIND_SCALE        4 // 2x rewind is 1/2 speed of play
+#define REWIND_SCALE        4 // rewind 4 times slower than speed of play
+
+// Allowable framerates reported by game clients
+#define MINIMUM_VALID_FRAMERATE    5
+#define MAXIMUM_VALID_FRAMERATE    100
+
+// TODO: Move to CGameClient
+#define AUTOSAVE_MS   30000 // autosave every 30 seconds
 
 using namespace ADDON;
 using namespace GAMES;
 using namespace std;
 
 CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
-  : IPlayer(callback), CThread("RetroPlayer"), m_keyboardCallback(NULL), m_playSpeed(PLAYSPEED_NORMAL)
+  : IPlayer(callback),
+    CThread("RetroPlayer"),
+    m_keyboardCallback(NULL),
+    m_playSpeed(PLAYSPEED_NORMAL),
+    m_samplerate(0)
 {
-}
-
-CRetroPlayer::~CRetroPlayer()
-{
-  CloseFile();
 }
 
 bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options)
@@ -56,10 +64,12 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   CLog::Log(LOGINFO, "RetroPlayer: Opening: %s", file.GetPath().c_str());
   m_bStop = false;
 
-  if (IsRunning())
+  CSingleLock lock(m_critSection);
+
+  if (IsPlaying())
   {
     // If the same file was provided, load the appropriate save state
-    if (m_gameClient && file.GetPath().Equals(m_file->GetPath()))
+    if (StringUtils::EqualsNoCase(file.GetPath(), m_file->GetPath()))
     {
       if (!file.m_startSaveState.empty())
         return m_gameClient->Load(file.m_startSaveState);
@@ -85,21 +95,20 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
     return false;
   }
 
-  CLog::Log(LOGINFO, "RetroPlayer: Using game client %s at version %s", gameClient->GetClientName().c_str(),
-    gameClient->GetClientVersion().c_str());
+  CLog::Log(LOGINFO, "RetroPlayer: Using game client %s at version %s",
+    gameClient->GetClientName().c_str(), gameClient->GetClientVersion().c_str());
 
-  // We need to store a pointer to ourself before sending the callbacks to the game client
   if (!gameClient->OpenFile(file, this))
   {
     CLog::Log(LOGERROR, "RetroPlayer: Error opening file");
-    CStdString errorOpening;
-    errorOpening.Format(g_localizeStrings.Get(13329).c_str(), file.GetAsUrl().GetFileNameWithoutPath().c_str());
+    const string errorOpening = StringUtils::Format(g_localizeStrings.Get(13329).c_str(),
+                                                    file.GetAsUrl().GetFileNameWithoutPath().c_str());
     CGUIDialogOK::ShowAndGetInput(gameClient->Name(), errorOpening, 0, 0); // Error opening %s
     return false;
   }
 
   // Validate the reported framerate
-  if (gameClient->GetFrameRate() < 5.0 || gameClient->GetFrameRate() > 100.0)
+  if (gameClient->GetFrameRate() < MINIMUM_VALID_FRAMERATE || gameClient->GetFrameRate() > MAXIMUM_VALID_FRAMERATE)
   {
     CLog::Log(LOGERROR, "RetroPlayer: Game client reported invalid framerate: %f", gameClient->GetFrameRate());
     return false;
@@ -107,10 +116,11 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
 
   m_gameClient = gameClient;
   m_file = CFileItemPtr(new CFileItem(file));
-  m_file->SetPath(m_gameClient->GetFilePath());
   m_PlayerOptions = options;
-  
-  g_renderManager.PreInit();
+
+  // Update path if it was translated (load containing zip, or load file inside a zip)
+  m_file->SetPath(m_gameClient->GetFilePath());
+
   Create();
   CLog::Log(LOGDEBUG, "RetroPlayer: File opened successfully");
   return true;
@@ -148,6 +158,9 @@ void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
 bool CRetroPlayer::CloseFile()
 {
   CLog::Log(LOGDEBUG, "RetroPlayer: Closing file");
+
+  CSingleLock lock(m_critSection);
+
   if (m_gameClient)
     m_gameClient->CloseFile();
 
@@ -157,7 +170,7 @@ bool CRetroPlayer::CloseFile()
   m_bStop = true;
   m_file.reset();
 
-  // Set m_video.m_bStop to false before triggering the event
+  // Stop m_video before triggering the pause event
   m_video.StopThread(false);
   m_pauseEvent.Set();
 
@@ -213,46 +226,26 @@ bool CRetroPlayer::OnAction(const CAction &action)
 
 void CRetroPlayer::Process()
 {
-  // Calculate the framerate (how often RunFrame() should be called)
-  double framerate = m_gameClient->GetFrameRate();
+  g_renderManager.PreInit();
 
-  // We want to sync the video clock to the audio. The creation of the audio
-  // thread will return the decided-upon sample rate.
-  unsigned int samplerate = 0;
-  double allegedSamplerate = m_gameClient->GetSampleRate();
+  const double speedFactor = CreateAudio(m_gameClient->GetSampleRate());
+  const double framerate = m_gameClient->GetFrameRate() * speedFactor;
 
-  // No sound if invalid sample rate
-  if (allegedSamplerate > 0)
-  {
-    // The audio thread will return the sample rate decided by the audio stream
-    samplerate = m_audio.GoForth(allegedSamplerate);
-    if (samplerate)
-    {
-      CLog::Log(LOGDEBUG, "RetroPlayer: Created audio stream with sample rate %u from reported rate of %f",
-        samplerate, (float)allegedSamplerate);
-
-      // If audio is playing, use that as the reference clock and adjust our framerate accordingly
-      double oldFramerate = framerate; // for logging purposes
-      framerate *= samplerate / allegedSamplerate;
-      CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate changed from %f to %f", (float)oldFramerate, (float)framerate);
-    }
-    else
-      CLog::Log(LOGERROR, "RetroPlayer: Error creating audio stream with sample rate %f", (float)allegedSamplerate);
-  }
+  if (speedFactor == 1.0)
+    CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate set to %f", (float)framerate);
   else
-    CLog::Log(LOGERROR, "RetroPlayer: Error, invalid sample rate %f, continuing without sound", (float)allegedSamplerate);
+    CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate changed from %f to %f",
+      (float)m_gameClient->GetFrameRate(), (float)framerate);
 
-  // Got our final framerate. Record it back in our game client so that our
-  // savestate buffer can be resized accordingly.
-  m_gameClient->SetFrameRate(framerate);
-
-  m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
-
-  unsigned int saveTimer = XbmcThreads::SystemClockMillis();
+  CreateVideo(framerate);
 
   const double frametime = 1000 * 1000 / framerate; // microseconds
-  double nextpts = CDVDClock::GetAbsoluteClock() + frametime;
+
+  // TODO: Should auto-save tracking be in GameClient.cpp?
+  XbmcThreads::EndTime saveTimeout(AUTOSAVE_MS);
+
   CLog::Log(LOGDEBUG, "RetroPlayer: Beginning loop de loop");
+  double nextpts = CDVDClock::GetAbsoluteClock() + frametime;
   while (!m_bStop)
   {
     if (m_playSpeed == PLAYSPEED_PAUSED)
@@ -260,38 +253,38 @@ void CRetroPlayer::Process()
       // No need to pause audio or video, the absence of frames will pause it
       // 1s should be a good failsafe if the event isn't triggered (shouldn't happen)
       m_pauseEvent.WaitMSec(1000);
-
-      // Reset the clock
-      nextpts = CDVDClock::GetAbsoluteClock() + frametime;
-
+      nextpts = CDVDClock::GetAbsoluteClock() + frametime; // Reset the clock
       continue;
     }
-    else if (m_playSpeed < PLAYSPEED_PAUSED)
+
+    if (m_playSpeed < PLAYSPEED_PAUSED)
     {
-      // Need to rewind 2 frames, so that RunFrame() will update the screen
+      // Need to rewind 2 frames so that RunFrame() will update the screen
       m_gameClient->RewindFrames(2);
     }
 
     // Run the game client for the next frame
     if (!m_gameClient->RunFrame())
+    {
+      m_bStop = true;
       break;
+    }
 
     // If the game client uses single frame audio, render those now
     m_audio.Flush();
 
-    if (CSettings::Get().GetBool("gamesgeneral.autosave") &&
-      XbmcThreads::SystemClockMillis() - saveTimer > 30000) // every 30 seconds
+    if (CSettings::Get().GetBool("gamesgeneral.autosave") && saveTimeout.IsTimePast())
     {
       m_gameClient->AutoSave();
-      saveTimer = XbmcThreads::SystemClockMillis();
+      saveTimeout.Set(AUTOSAVE_MS);
     }
 
     // Slow down (increase nextpts) if we're playing catchup after stalling
     if (nextpts < CDVDClock::GetAbsoluteClock())
       nextpts = CDVDClock::GetAbsoluteClock();
 
-    double realFrameTime = frametime * PLAYSPEED_NORMAL /
-      (m_playSpeed > PLAYSPEED_PAUSED ? m_playSpeed : -m_playSpeed / REWIND_SCALE);
+    const double realFrameTime = frametime * PLAYSPEED_NORMAL /
+        (m_playSpeed > PLAYSPEED_PAUSED ? m_playSpeed : -m_playSpeed / REWIND_SCALE);
 
     // Slow down to 0.5x (an extra frame) if the audio is delayed
     //if (m_audio.GetDelay() * 1000 > CSettings::Get().GetInt("gamesgeneral.audiodelay"))
@@ -301,13 +294,55 @@ void CRetroPlayer::Process()
     nextpts += realFrameTime;
   }
 
-  m_bStop = true;
-
   // Save the game before the video cuts out
-  m_gameClient->CloseFile();
+  {
+    CSingleLock lock(m_critSection);
+    if (m_gameClient)
+      m_gameClient->CloseFile();
+  }
 
   m_video.StopThread(true);
   m_audio.StopThread(true);
+}
+
+double CRetroPlayer::CreateAudio(double samplerate)
+{
+  // Default: no change in framerate
+  double framerateFactor = 1.0;
+
+  // No sound if invalid sample rate
+  if (samplerate > 0)
+  {
+    // We want to sync the video clock to the audio. The creation of the audio
+    // thread will return the sample rate decided by the audio stream.
+    m_samplerate = m_audio.GoForth(samplerate);
+    if (m_samplerate)
+    {
+      CLog::Log(LOGDEBUG, "RetroPlayer: Created audio stream with sample rate %u from reported rate of %f",
+        m_samplerate, (float)samplerate);
+
+      // If audio is playing, use that as the reference clock and adjust our framerate accordingly
+      framerateFactor = m_samplerate / samplerate;
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "RetroPlayer: Error creating audio stream with sample rate %f", (float)samplerate);
+    }
+  }
+  else
+  {
+    CLog::Log(LOGERROR, "RetroPlayer: Error, invalid sample rate %f, continuing without sound", (float)samplerate);
+  }
+
+  return framerateFactor;
+}
+
+void CRetroPlayer::CreateVideo(double framerate)
+{
+  // Record final framerate back in our game client so that our savestate buffer
+  // can be resized accordingly.
+  m_gameClient->SetFrameRate(framerate);
+  m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
 }
 
 void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
@@ -352,13 +387,19 @@ void CRetroPlayer::Pause()
     m_pauseEvent.Set();
   }
   else
+  {
     m_playSpeed = PLAYSPEED_PAUSED;
+  }
 }
 
 void CRetroPlayer::ToFFRW(int iSpeed /* = 0 */)
 {
-  bool unpause = (m_playSpeed == PLAYSPEED_PAUSED && iSpeed != PLAYSPEED_PAUSED);
+  bool unpause = false;
+  if (m_playSpeed == PLAYSPEED_PAUSED && iSpeed != PLAYSPEED_PAUSED)
+    unpause = true;
+
   m_playSpeed = iSpeed * PLAYSPEED_NORMAL;
+
   if (unpause)
     m_pauseEvent.Set();
 }
@@ -368,7 +409,7 @@ void CRetroPlayer::Seek(bool bPlus, bool bLargeStep)
   if (bPlus) // Cannot seek forward in time.
     return;
 
-  if (!m_gameClient)
+  if (!IsPlaying())
     return;
 
   int seek_seconds = bLargeStep ? 10 : 1; // Seem like good values, probably depends on max rewind, needs testing
@@ -385,11 +426,11 @@ void CRetroPlayer::SeekPercentage(float fPercent)
   else if (fPercent > 100.0f)
     fPercent = 100.0f;
 
-  int max_buffer     = m_gameClient->GetMaxFrames();
-  int current_buffer = m_gameClient->GetAvailableFrames();
+  const int max_buffer     = m_gameClient->GetMaxFrames();
+  const int current_buffer = m_gameClient->GetAvailableFrames();
 
-  int target_buffer  = (int)(max_buffer * fPercent / 100.0f);
-  int rewind_frames  = current_buffer - target_buffer;
+  const int target_buffer  = (int)(max_buffer * fPercent / 100.0f);
+  const int rewind_frames  = current_buffer - target_buffer;
 
   if (rewind_frames > 0)
     m_gameClient->RewindFrames(rewind_frames);

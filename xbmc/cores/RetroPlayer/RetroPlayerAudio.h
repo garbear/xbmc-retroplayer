@@ -35,6 +35,8 @@ public:
 
   /**
    * Rev up the engines and start the thread.
+   * @param  allegedSamplerate - the desired samplerate
+   * @return the chosen samplerate, or 0 if failure
    */
   unsigned int GoForth(double allegedSamplerate);
 
