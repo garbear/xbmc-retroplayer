@@ -162,8 +162,10 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GAMES::
 
     // Append "(disabled)" to the name if the add-on is disabled
     string strName = gc->Name();
+    // Make lower case for sorting purposes
+    StringUtils::ToLower(strName);
     if (disabled)
-      strName += " (" + g_localizeStrings.Get(1223) + ")"; // disabled
+      strName = StringUtils::Format("%s (%s)", strName.c_str(), g_localizeStrings.Get(1223).c_str());
 
     candidates[strName] = gc;
   }
@@ -187,8 +189,10 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GAMES::
   
   for (map<string, GameClientPtr>::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
   {
-    const string &strName = it->second->Name();
+    string strName = it->second->Name();
     choicesInt.Add(i++, strName);
+    // Remember, our map keys are lower case
+    StringUtils::ToLower(strName);
     choicesStr.push_back(strName);
   }
 
@@ -290,7 +294,12 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
     {
       gc = boost::dynamic_pointer_cast<CGameClient>(addon);
       if (gc)
-        clients[gc->Name()] = gc;
+      {
+        string strName = gc->Name();
+        // Make lower case for sorting purposes
+        StringUtils::ToLower(strName);
+        clients[strName] = gc;
+      }
     }
   }
 
@@ -304,8 +313,10 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
 
   for (map<string, GameClientPtr>::const_iterator it = clients.begin(); it != clients.end(); ++it)
   {
-    const string &strName = it->second->Name();
+    string strName = it->second->Name();
     choicesInt.Add(i++, strName);
+    // Remember, our map keys are lower case
+    StringUtils::ToLower(strName);
     choicesStr.push_back(strName);
   }
 
