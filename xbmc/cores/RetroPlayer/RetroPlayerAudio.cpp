@@ -26,14 +26,15 @@
 #include "cores/AudioEngine/Utils/AEConvert.h"
 #include "cores/dvdplayer/DVDClock.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 // Temporary - notify users about unsupported samplerate
 #include "dialogs/GUIDialogOK.h"
 
-#include <vector>
-
 // Pre-convert audio to float to avoid additional buffer in AE stream
 #define FRAMESIZE  (2 * sizeof(float)) // L (float) + R (float)
+
+using namespace std;
 
 CRetroPlayerAudio::CRetroPlayerAudio()
   : CThread("RetroPlayerAudio"), m_pAudioStream(NULL), m_bSingleFrames(false),
@@ -46,34 +47,16 @@ CRetroPlayerAudio::~CRetroPlayerAudio()
   StopThread();
 }
 
-unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
+unsigned int CRetroPlayerAudio::GoForth(double samplerate)
 {
   if (m_pAudioStream)
     { CAEFactory::FreeStream(m_pAudioStream); m_pAudioStream = NULL; }
 
-  unsigned int samplerate = 0;
+  const unsigned int newsamplerate = SelectSampleRate(samplerate);
 
-  // List comes from AESinkALSA.cpp
-  static unsigned int sampleRateList[] = {5512, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 0};
-  for (unsigned int *rate = sampleRateList; ; rate++)
-  {
-    if (*(rate + 1) == 0)
-    {
-      // Reached the end of our list
-      samplerate = *rate;
-      break;
-    }
-    if ((unsigned int)allegedSamplerate < (*rate + *(rate + 1)) / 2)
-    {
-      // allegedSamplerate is between this rate and the next, so use this rate
-      samplerate = *rate;
-      break;
-    }
-  }
-
-  CLog::Log(LOGINFO, "RetroPlayerAudio: Creating audio stream, sample rate hint = %u", samplerate);
+  CLog::Log(LOGINFO, "RetroPlayerAudio: Creating audio stream, sample rate hint = %u", newsamplerate);
   static enum AEChannel map[3] = {AE_CH_FL, AE_CH_FR, AE_CH_NULL};
-  m_pAudioStream = CAEFactory::MakeStream(AE_FMT_FLOAT, samplerate, samplerate, CAEChannelInfo(map),
+  m_pAudioStream = CAEFactory::MakeStream(AE_FMT_FLOAT, newsamplerate, newsamplerate, CAEChannelInfo(map),
       AESTREAM_AUTOSTART | AESTREAM_LOW_LATENCY);
 
   if (!m_pAudioStream)
@@ -81,20 +64,36 @@ unsigned int CRetroPlayerAudio::GoForth(double allegedSamplerate)
     CLog::Log(LOGERROR, "RetroPlayerAudio: Failed to create audio stream");
     return 0;
   }
-  else if (samplerate != m_pAudioStream->GetSampleRate())
+  else if (newsamplerate != m_pAudioStream->GetSampleRate())
   {
     // For real-time (ish) audio, we need to avoid resampling
     CLog::Log(LOGERROR, "RetroPlayerAudio: sink sample rate (%u) doesn't match", m_pAudioStream->GetSampleRate());
     // Temporary: Notify the user via GUI box
-    CStdString msg;
-    msg.Format("Sample rate not supported by audio device: %uHz", samplerate);
+    string msg = StringUtils::Format("Sample rate not supported by audio device: %uHz", samplerate);
     CGUIDialogOK::ShowAndGetInput(257, msg.c_str(), "Continuing without sound", 0);
     return 0;
   }
-  else
+
+  Create();
+  return newsamplerate;
+}
+
+unsigned int CRetroPlayerAudio::SelectSampleRate(double samplerate)
+{
+  // List comes from AESinkALSA.cpp
+  static unsigned int sampleRateList[] = {5512, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 0};
+  for (unsigned int *rate = sampleRateList; ; rate++)
   {
-    Create();
-    return samplerate;
+    if (*(rate + 1) == 0)
+    {
+      // Reached the end of our list
+      return *rate;
+    }
+    if ((unsigned int)samplerate < (*rate + *(rate + 1)) / 2)
+    {
+      // samplerate is between this rate and the next, so use this rate
+      return *rate;
+    }
   }
 }
 
@@ -106,37 +105,38 @@ void CRetroPlayerAudio::Process()
     return;
   }
 
-  AudioMultiBuffer::Window *window;
-
   while (!m_bStop)
   {
+    Packet packet;
     {
       CSingleLock lock(m_critSection);
 
-      // Greedy - try to keep m_buffer drained
-      if (!(window = m_buffer.GetWindow()))
+      // Greedy - try to keep m_packets drained
+      if (m_packets.empty())
       {
         lock.Leave();
-        m_packetReady.WaitMSec(17); // ~1 video frame @ 60fps
-        // If event timed out, we might be done, so check m_bStop again
+        if (AbortableWait(m_packetReady, 17) == WAIT_INTERRUPTED) // ~1 video frame @ 60fps
+          break;
         continue;
       }
+
+      packet = m_packets.front();
+      m_packets.pop();
     }
 
     // Calculate a timeout when this definitely should be done
     double timeout;
-    timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + window->frames / m_pAudioStream->GetSampleRate());
+    timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + packet.size / FRAMESIZE / (double)m_pAudioStream->GetSampleRate());
     timeout += DVD_SEC_TO_TIME(1.0);
     timeout += CDVDClock::GetAbsoluteClock();
 
     // Keep track of how much data has been added to the stream
-    unsigned char  *dataPtr = window->window.data();
-    unsigned int   size     = window->frames * FRAMESIZE;
-    unsigned int   copied;
+    uint8_t *dataPtr = packet.data.get();
+    unsigned int size = packet.size;
     do
     {
       // Fast-forward packet data on successful add
-      copied = m_pAudioStream->AddData(dataPtr, size);
+      unsigned int copied = m_pAudioStream->AddData(dataPtr, size);
       dataPtr += copied;
       size -= copied;
 
@@ -156,8 +156,6 @@ void CRetroPlayerAudio::Process()
     // Discard extra data
     if (size > 0 && !m_bStop)
       CLog::Log(LOGNOTICE, "RetroPlayerAudio: %u bytes left over after rendering, discarding", size);
-
-    m_buffer.Free(window);
   }
 
   m_bStop = true;
@@ -175,21 +173,24 @@ void CRetroPlayerAudio::SendAudioFrames(const int16_t *data, size_t frames)
 {
   CSingleLock lock(m_critSection);
 
-  AudioMultiBuffer::Window *window = m_buffer.GetTheNextWindow();
-  if (window)
+  // Queue up to 4 packets (TODO)
+  if (m_packets.size() < 4)
   {
-    if (window->window.size() < frames * FRAMESIZE)
-      window->window.resize(frames * FRAMESIZE);
+    const size_t SIZE = frames * FRAMESIZE;
+    Packet packet;
+    packet.data = boost::shared_array<uint8_t>(new uint8_t[SIZE]);
+    packet.size = SIZE;
 
     // Batch-convert our audio samples to floats here using AE converters. We
     // do this to avoid conversion in AE, which reqiures another buffer and
     // another source of delay.
     uint8_t *source = reinterpret_cast<uint8_t*>(const_cast<int16_t*>(data));
-    float   *dest   = reinterpret_cast<float*>(window->window.data());
+    float   *dest   = reinterpret_cast<float*>(packet.data.get());
     static CAEConvert::AEConvertToFn convertFn = CAEConvert::ToFloat(AE_FMT_S16NE);
 
     convertFn(source, frames * 2, dest); // L + R
-    window->frames = frames;
+
+    m_packets.push(packet);
 
     m_packetReady.Set();
   }
@@ -225,34 +226,4 @@ void CRetroPlayerAudio::SendAudioFrame(int16_t left, int16_t right)
     SendAudioFrames(m_singleFrameBuffer.data(), m_singleFrameSamples / 2);
     m_singleFrameSamples = 0;
   }
-}
-
-CRetroPlayerAudio::AudioMultiBuffer::Window *CRetroPlayerAudio::AudioMultiBuffer::GetWindow()
-{
-  // Return the window indicated by the m_pos index if it has frames
-  if (windows[m_pos].frames != 0)
-  {
-    // Advance m_pos so that GetTheNextWindow() starts at the correct window
-    m_pos = (m_pos + 1) % WINDOW_COUNT;
-    return &windows[m_pos];
-  }
-  return NULL;
-}
-
-CRetroPlayerAudio::AudioMultiBuffer::Window *CRetroPlayerAudio::AudioMultiBuffer::GetTheNextWindow()
-{
-  // Start at the current window, and progress until we find one with no frames
-  for (unsigned int i = m_pos; i < m_pos + WINDOW_COUNT; i++)
-  {
-    if (windows[i % WINDOW_COUNT].frames == 0)
-      return &windows[i % WINDOW_COUNT];
-  }
-  return NULL;
-}
-
-void CRetroPlayerAudio::AudioMultiBuffer::ResizeAll(unsigned int size)
-{
-  // Start at the current window, and progress until we find one with no frames
-  for (unsigned int i = 0; i < WINDOW_COUNT; i++)
-    windows[i].window.resize(size);
 }

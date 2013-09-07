@@ -22,6 +22,8 @@
 
 #include "threads/Thread.h"
 
+#include <boost/shared_array.hpp>
+#include <queue>
 #include <stdint.h>
 #include <vector>
 
@@ -35,10 +37,10 @@ public:
 
   /**
    * Rev up the engines and start the thread.
-   * @param  allegedSamplerate - the desired samplerate
+   * @param  samplerate - the desired samplerate
    * @return the chosen samplerate, or 0 if failure
    */
-  unsigned int GoForth(double allegedSamplerate);
+  unsigned int GoForth(double samplerate);
 
   /**
    * Send audio samples to be processed by this class. Data format is:
@@ -71,43 +73,23 @@ protected:
   virtual void Process();
 
 private:
-  /**
-   * Operate several std::vector buffers in a ring-like fashion. This avoids
-   * the problem of blocking on a single buffer, and also allows the buffer
-   * queue to get backed up several video frames.
-   */
-  class AudioMultiBuffer
+  struct Packet
   {
-  public:
-    AudioMultiBuffer() : m_pos(0) { }
-    // A Window is a collection of audio data, usually corresponding to a frame of video
-    struct Window
-    {
-      Window() : frames(0) { }
-      std::vector<unsigned char> window;
-      // Number of audio frames in the window
-      unsigned int frames;
-    };
-    // Return the queued buffer containing the most recent data. Null if no data
-    Window *GetWindow();
-    // Return the next unused buffer. Null if AudioMultiBuffer is full
-    Window *GetTheNextWindow(); // GetNextWindow() is reserved on Windows
-    // Set the size of all buffers
-    void ResizeAll(unsigned int size);
-    // Delcare a buffer unused
-    void Free(Window *window) { window->frames = 0; }
-
-  private:
-    // If buffer gets backed up, start dropping audio after 4 windows
-    static const unsigned int WINDOW_COUNT = 4;
-    Window windows[WINDOW_COUNT];
-    // Index of the current window to be returned by GetWindow()
-    int m_pos;
+    boost::shared_array<uint8_t> data;
+    size_t                       size;
   };
+
+  /**
+   * Given a desired samplerate, this will choose an appropriate sample rate
+   * depending on the user's hardware.
+   * @param  samplerate - the desired samplerate
+   * @return the chosen samplerate
+   */
+  unsigned int SelectSampleRate(double samplerate);
 
   IAEStream            *m_pAudioStream;
   // Process() is greedy and will try to keep m_buffer drained
-  AudioMultiBuffer     m_buffer;
+  std::queue<Packet>   m_packets;
   // Set to true if SendAudioFrame() is called
   bool                 m_bSingleFrames;
   std::vector<int16_t> m_singleFrameBuffer;
