@@ -20,10 +20,10 @@
  */
 #pragma once
 
+#include "linux/PlatformDefs.h" // Must be included before RenderManager.h
 #include "cores/VideoRenderers/RenderManager.h"
 #include "DllSwScale.h"
 #include "games/libretro/libretro_wrapped.h"
-#include "linux/PlatformDefs.h"
 #include "threads/Thread.h"
 
 #include <stdint.h>
