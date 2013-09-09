@@ -47,8 +47,9 @@ namespace GAMES
       TYPE_DATA
     };
 
-    CGameFile();
+    CGameFile() { Reset(); }
     CGameFile(TYPE type, const std::string &originalPath, const std::string &translatedPath = "");
+    void Reset();
 
     TYPE Type() const { return m_type; }
 

@@ -177,8 +177,8 @@ namespace GAMES
     void Reset();
 
     // Video framerate is used to calculate savestate wall time
-    double GetFrameRate() const { return m_frameRate; }
-    void SetFrameRate(double framerate);
+    double GetFrameRate() const { return m_frameRate * m_frameRateCorrection; }
+    void SetFrameRateCorrection(double correctionFactor);
     double GetSampleRate() const { return m_sampleRate; }
 
     /**
@@ -282,6 +282,7 @@ namespace GAMES
     std::string                  m_clientName;
     std::string                  m_clientVersion;
     double                       m_frameRate; // Video framerate
+    double                       m_frameRateCorrection; // Framerate correction factor (to sync to audio)
     double                       m_sampleRate; // Audio frequency
     int                          m_region; // Region of the loaded game
 

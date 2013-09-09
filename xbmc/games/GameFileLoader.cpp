@@ -42,13 +42,6 @@ using namespace GAMES;
 using namespace XFILE;
 using namespace std;
 
-CGameFile::CGameFile()
-  : m_type(TYPE_INVALID),
-    m_bIsLoaded(false),
-    m_bIsCRCed(false)
-{
-}
-
 CGameFile::CGameFile(TYPE type, const string &originalPath, const string &translatedPath /* = "" */)
   : m_type(type),
     m_strOriginalPath(originalPath),
@@ -58,6 +51,17 @@ CGameFile::CGameFile(TYPE type, const string &originalPath, const string &transl
 {
   if (m_strTranslatedPath.empty())
     m_strTranslatedPath = m_strOriginalPath; // no translation, just use original path
+}
+
+void CGameFile::Reset()
+{
+  m_type = TYPE_INVALID;
+  m_strOriginalPath.clear();
+  m_strTranslatedPath.clear();
+  m_data.clear();
+  m_bIsLoaded = false;
+  m_strCRC.clear();
+  m_bIsCRCed = false;
 }
 
 const std::vector<uint8_t> &CGameFile::Buffer()

@@ -333,14 +333,15 @@ double CRetroPlayer::CreateAudio(double samplerate)
     CLog::Log(LOGERROR, "RetroPlayer: Error, invalid sample rate %f, continuing without sound", (float)samplerate);
   }
 
+  // Record framerate correction factor back in our game client so that our
+  // savestate buffer can be resized accordingly
+  m_gameClient->SetFrameRateCorrection(framerateFactor);
+
   return framerateFactor;
 }
 
 void CRetroPlayer::CreateVideo(double framerate)
 {
-  // Record final framerate back in our game client so that our savestate buffer
-  // can be resized accordingly.
-  m_gameClient->SetFrameRate(framerate);
   m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
 }
 

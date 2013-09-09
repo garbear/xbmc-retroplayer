@@ -168,6 +168,7 @@ void CGameClient::Initialize()
   m_bIsPlaying = false;
   m_bIsInited = false;
   m_frameRate = 0.0;
+  m_frameRateCorrection = 1.0;
   m_sampleRate = 0.0;
   m_region = -1; // invalid
   m_serialSize = 0;
@@ -552,7 +553,7 @@ void CGameClient::InitSaveStateSystem(const string &startSaveState)
   // Set up rewind functionality
   if (m_bRewindEnabled)
   {
-    m_serialState.Init(m_serialSize, (size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * m_frameRate));
+    m_serialState.Init(m_serialSize, (size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
 
     if (m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
       CLog::Log(LOGDEBUG, "GameClient: Rewind is enabled");
@@ -577,10 +578,11 @@ void CGameClient::CloseFile()
     m_dll.retro_unload_game();
     m_bIsPlaying = false;
   }
+
   m_callbacks = NULL;
-  m_gameFile = CGameFile();
-  m_saveState.Reset();
   CLibretroEnvironment::ResetCallbacks();
+  m_gameFile.Reset();
+  m_saveState.Reset();
 }
 
 void CGameClient::SetDevice(unsigned int port, unsigned int device)
@@ -620,7 +622,7 @@ bool CGameClient::RunFrame()
     }
 
     m_saveState.SetPlaytimeFrames(m_saveState.GetPlaytimeFrames() + 1);
-    m_saveState.SetPlaytimeWallClock(m_saveState.GetPlaytimeWallClock() + 1.0 / m_frameRate);
+    m_saveState.SetPlaytimeWallClock(m_saveState.GetPlaytimeWallClock() + 1.0 / GetFrameRate());
 
     // Append a new state delta to the rewind buffer
     if (m_bRewindEnabled)
@@ -734,7 +736,7 @@ bool CGameClient::Load()
     // Reset rewind buffer if rewinding is enabled
     if (m_bRewindEnabled && m_serialState.IsInited())
     {
-      m_serialState.Init(data.size(), (size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * m_frameRate));
+      m_serialState.Init(data.size(), (size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
       memcpy(m_serialState.GetState(), data.data(), data.size());
     }
     m_saveState = savestate;
@@ -833,7 +835,7 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
       m_saveState.SetPlaytimeFrames(frames > rewound ? frames - rewound : 0);
 
       double wallclock = m_saveState.GetPlaytimeWallClock();
-      m_saveState.SetPlaytimeWallClock(wallclock > rewound / m_frameRate ? wallclock - rewound / m_frameRate : 0.0);
+      m_saveState.SetPlaytimeWallClock(wallclock > rewound / GetFrameRate() ? wallclock - rewound / GetFrameRate() : 0.0);
     }
   }
   return rewound;
@@ -863,11 +865,12 @@ void CGameClient::Reset()
   }
 }
 
-void CGameClient::SetFrameRate(double framerate)
+void CGameClient::SetFrameRateCorrection(double correctionFactor)
 {
-  m_frameRate = framerate;
+  if (correctionFactor != 0.0)
+    m_frameRateCorrection = correctionFactor;
   if (m_bRewindEnabled)
-    m_serialState.SetMaxFrames((size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * m_frameRate));
+    m_serialState.SetMaxFrames((size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
 }
 
 void CGameClient::SetExtensions(const string &strExtensionList)
