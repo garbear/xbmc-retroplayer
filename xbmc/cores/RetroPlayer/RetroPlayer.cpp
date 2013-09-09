@@ -20,6 +20,7 @@
  */
 
 #include "RetroPlayer.h"
+#include "ApplicationMessenger.h"
 #include "cores/dvdplayer/DVDClock.h"
 #include "cores/RetroPlayer/RetroPlayerDialogs.h"
 #include "cores/VideoRenderers/RenderManager.h"
@@ -62,13 +63,13 @@ CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
 bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options)
 {
   CLog::Log(LOGINFO, "RetroPlayer: Opening: %s", file.GetPath().c_str());
-  m_bStop = false;
 
   CSingleLock lock(m_critSection);
 
   if (IsPlaying())
   {
     // If the same file was provided, load the appropriate save state
+    // TODO: Resolve file into translated path
     if (StringUtils::EqualsNoCase(file.GetPath(), m_file->GetPath()))
     {
       if (!file.m_startSaveState.empty())
@@ -161,22 +162,25 @@ bool CRetroPlayer::CloseFile()
 
   CSingleLock lock(m_critSection);
 
-  if (m_gameClient)
-    m_gameClient->CloseFile();
+  if (!m_file)
+    return true; // Already closed
 
   m_playSpeed = PLAYSPEED_NORMAL;
 
-  // Set the abort request so that other threads can finish up
-  m_bStop = true;
+  // Save the game before the video cuts out
+  if (m_gameClient)
+    m_gameClient->CloseFile();
+
   m_file.reset();
 
-  // Stop m_video before triggering the pause event
-  m_video.StopThread(false);
+  // Set the abort request so the thread can finish up
+  StopThread(false);
+
   m_pauseEvent.Set();
 
-  // Wait for the main thread to finish up. Since this main thread cleans up
-  // all other resources and threads we are done after the StopThread call.
-  StopThread(true);
+  // Wait for AV threads to stop
+  m_audio.StopThread(true);
+  m_video.StopThread(true);
 
   g_renderManager.UnInit();
 
@@ -252,7 +256,9 @@ void CRetroPlayer::Process()
     {
       // No need to pause audio or video, the absence of frames will pause it
       // 1s should be a good failsafe if the event isn't triggered (shouldn't happen)
-      m_pauseEvent.WaitMSec(1000);
+      if (AbortableWait(m_pauseEvent, 1000) == WAIT_INTERRUPTED)
+        break;
+
       nextpts = CDVDClock::GetAbsoluteClock() + frametime; // Reset the clock
       continue;
     }
@@ -294,15 +300,8 @@ void CRetroPlayer::Process()
     nextpts += realFrameTime;
   }
 
-  // Save the game before the video cuts out
-  {
-    CSingleLock lock(m_critSection);
-    if (m_gameClient)
-      m_gameClient->CloseFile();
-  }
-
-  m_video.StopThread(true);
-  m_audio.StopThread(true);
+  // Tell application to close file
+  CApplicationMessenger::Get().MediaStop(false);
 }
 
 double CRetroPlayer::CreateAudio(double samplerate)
@@ -349,7 +348,7 @@ void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height,
 {
   // Verify all game client data. You don't know where that code's been.
   if (data && width && height && pitch)
-    m_video.SendVideoFrame(data, width, height, pitch);
+    m_video.SendVideoFrame(reinterpret_cast<const uint8_t*>(data), width, height, pitch);
 }
 
 void CRetroPlayer::AudioSample(int16_t left, int16_t right)

@@ -65,6 +65,7 @@ public:
   virtual void GetVideoInfo(CStdString& strVideoInfo) { strVideoInfo = "CRetroPlayer:GetVideoInfo"; }
   virtual void GetGeneralInfo(CStdString& strGeneralInfo) { strGeneralInfo = "CRetroPlayer:GetGeneralInfo"; }
 
+  //virtual float GetActualFPS() { return 0.0f; }
   //virtual int GetSourceBitrate() { return 0; }
   virtual int  GetBitsPerSample() { return 8 * 2 * sizeof(int16_t); }
   virtual int  GetSampleRate() { return m_samplerate; }
@@ -82,6 +83,10 @@ public:
   //virtual void  SetAVDelay(float fValue = 0.0f) { return; }
   //virtual float GetAVDelay() { return 0.0f;};
 
+  //virtual bool CanRecord() { return false; }
+  //virtual bool IsRecording() { return false; }
+  //virtual bool Record(bool bOnOff) { return false; }
+
   virtual void ToFFRW(int iSpeed = 0);
 
   // A "back buffer" is used to store game history to enable rewinding Braid-style.
@@ -98,6 +103,9 @@ public:
   virtual void SeekTime(int64_t iTime = 0);
   virtual int64_t GetTime();
   virtual int64_t GetTotalTime();
+
+  // TODO: Skip to next disk in multi-disc games (e.g. PSX)
+  virtual bool SkipNext() { return false; }
 
   /*
    * Inherited from ILibretroCallbacksAV. Used to send and receive data from
@@ -142,7 +150,7 @@ private:
   CPlayerOptions       m_PlayerOptions;
   int                  m_playSpeed; // Normal play speed is PLAYSPEED_NORMAL (1000)
   CEvent               m_pauseEvent;
-  CCriticalSection     m_critSection;
+  CCriticalSection     m_critSection; // For synchronization of Open() and Close() calls
 
   unsigned int m_samplerate;
 };

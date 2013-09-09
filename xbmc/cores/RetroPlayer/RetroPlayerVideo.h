@@ -20,6 +20,7 @@
  */
 #pragma once
 
+#include "RetroPlayerBuffer.h"
 #include "linux/PlatformDefs.h" // Must be included before RenderManager.h
 #include "cores/VideoRenderers/RenderManager.h"
 #include "DllSwScale.h"
@@ -33,17 +34,26 @@ struct SwsContext;
 
 class CRetroPlayerVideo : public CThread
 {
-public:
-  struct Frame
+  struct VideoInfo
   {
-    std::vector<uint8_t> data;
-    unsigned int         width;
-    unsigned int         height;
-    size_t               pitch;
-    bool                 isRendered; // Default to true so we don't try to render an empty frame
-    Frame() : width(0), height(0), pitch(0), isRendered(true) { }
+    unsigned int width;
+    unsigned int height;
+    size_t       pitch;
   };
 
+  class CRetroPlayerVideoBuffer : public CRetroPlayerBuffer
+  {
+  protected:
+    // We only buffer a single video frame
+    virtual bool IsFull() const { return GetCount() > 0; }
+
+  public:
+    virtual ~CRetroPlayerVideoBuffer() { }
+  };
+
+  typedef CRetroPlayerPacket<VideoInfo> VideoFrame;
+
+public:
   CRetroPlayerVideo();
   ~CRetroPlayerVideo();
 
@@ -52,13 +62,11 @@ public:
    */
   void GoForth(double framerate, bool fullscreen);
 
-  void StopThread(bool bWait = true);
-
   /**
    * Send a video frame to be rendered by this class. The pixel format is
    * specified by m_pixelFormat.
    */
-  void SendVideoFrame(const void *data, unsigned width, unsigned height, size_t pitch);
+  void SendVideoFrame(const uint8_t *data, unsigned width, unsigned height, size_t pitch);
 
   /**
    * Set the m_pixelFormat to match the format used by the game client. If this
@@ -71,24 +79,25 @@ protected:
   virtual void Process();
 
 private:
+  bool ProcessFrame(const VideoFrame &frame);
   bool CheckConfiguration(const DVDVideoPicture &picture);
-  void ColorspaceConversion(const Frame &frame, const DVDVideoPicture &picture);
+  void ColorspaceConversion(const VideoFrame &input, const DVDVideoPicture &output);
+  
+  DllSwScale              m_dllSwScale;
+  SwsContext              *m_swsContext;
 
-  Frame              m_queuedFrame;
-  CEvent             m_frameEvent;  // Set immediately when a new frame is queued
-  CCriticalSection   m_critSection; // Guard m_queuedFrame
-  LIBRETRO::retro_pixel_format m_pixelFormat;
-  DllSwScale         m_dllSwScale;
-  SwsContext         *m_swsContext;
+  CRetroPlayerVideoBuffer m_buffer;
+  CEvent                  m_frameEvent;  // Set immediately when a new frame is queued
 
-  bool               m_bAllowFullscreen;
-  double             m_framerate;
+  bool                    m_bAllowFullscreen;
+  double                  m_framerate;
 
   // Output variables are used to store the current output configuration. Each
   // frame the picture's configuration is compared to the output configuration,
   // and a discrepancy will reconfigure the render manager, as well as saving
   // the new state to these variables.
-  unsigned int       m_outputWidth;
-  unsigned int       m_outputHeight;
-  double             m_outputFramerate;
+  unsigned int            m_outputWidth;
+  unsigned int            m_outputHeight;
+  double                  m_outputFramerate;
+  LIBRETRO::retro_pixel_format m_pixelFormat;
 };

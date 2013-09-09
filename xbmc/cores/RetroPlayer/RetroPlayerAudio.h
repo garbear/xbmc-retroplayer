@@ -20,17 +20,39 @@
  */
 #pragma once
 
+#include "RetroPlayerBuffer.h"
+#include "threads/Event.h"
 #include "threads/Thread.h"
 
-#include <boost/shared_array.hpp>
-#include <queue>
 #include <stdint.h>
 #include <vector>
+
+#define AUDIO_BUFFER_LENGTH_MS  70 // Buffer up to 70ms of audio (~4 frames @ 60fps)
 
 class IAEStream;
 
 class CRetroPlayerAudio : public CThread
 {
+  struct AudioInfo { };
+
+  class CRetroPlayerAudioBuffer : public CRetroPlayerBuffer
+  {
+  public:
+    CRetroPlayerAudioBuffer() : m_samplerate(0) { }
+    virtual ~CRetroPlayerAudioBuffer() { }
+
+    void SetSamplerate(unsigned int samplerate) { m_samplerate = samplerate; }
+
+  protected:
+    virtual bool IsFull() const { return (m_samplerate != 0) && (1000 * GetSize() / 4 / m_samplerate > AUDIO_BUFFER_LENGTH_MS); }
+
+  private:
+    unsigned int m_samplerate;
+  };
+
+  // No audio metadata, so just use CRetroPlayerPacketBase
+  typedef CRetroPlayerPacket<AudioInfo> AudioPacket;
+
 public:
   CRetroPlayerAudio();
   ~CRetroPlayerAudio();
@@ -73,11 +95,15 @@ protected:
   virtual void Process();
 
 private:
-  struct Packet
+  // libretro cores can send audio samples in a batch, or frame-by-frame
+  enum AUDIO_FRAME_TYPE
   {
-    boost::shared_array<uint8_t> data;
-    size_t                       size;
+    FRAME_TYPE_UNKNOWN, // Initial state
+    FRAME_TYPE_SINGLE,  // Audio arrives via SendAudioFrame()
+    FRAME_TYPE_SAMPLES  // Audio arrives via SendAudioFrames()
   };
+
+  void ProcessPacket(const AudioPacket &packet);
 
   /**
    * Given a desired samplerate, this will choose an appropriate sample rate
@@ -85,18 +111,11 @@ private:
    * @param  samplerate - the desired samplerate
    * @return the chosen samplerate
    */
-  unsigned int SelectSampleRate(double samplerate);
+  static unsigned int GetSampleRate(double samplerate);
 
-  IAEStream            *m_pAudioStream;
-  // Process() is greedy and will try to keep m_buffer drained
-  std::queue<Packet>   m_packets;
-  // Set to true if SendAudioFrame() is called
-  bool                 m_bSingleFrames;
-  std::vector<int16_t> m_singleFrameBuffer;
-  // Count of samples in m_singleFrameBuffer
-  unsigned int         m_singleFrameSamples;
-  // Set to true if Flush() is called, reset inside SendAudioFrame()
-  bool                 m_bFlushSingleFrames;
-  CCriticalSection     m_critSection;
-  CEvent               m_packetReady;
+  IAEStream               *m_pAudioStream;
+  CRetroPlayerAudioBuffer m_buffer; // Process() is greedy and will try to keep m_buffer drained
+  AUDIO_FRAME_TYPE        m_frameType; // Set when SendAudioFrame[s]() is first called
+  CEvent                  m_packetReady;
+  bool                    m_bFlushSingleFrames; // Set to true if Flush() is called, reset inside SendAudioFrame()
 };

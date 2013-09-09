@@ -32,13 +32,16 @@
 #include "dialogs/GUIDialogOK.h"
 
 // Pre-convert audio to float to avoid additional buffer in AE stream
-#define FRAMESIZE  (2 * sizeof(float)) // L (float) + R (float)
+#define CHANNELS      2 // L + R
+#define FRAMESIZE     (CHANNELS * sizeof(float))
 
 using namespace std;
 
 CRetroPlayerAudio::CRetroPlayerAudio()
-  : CThread("RetroPlayerAudio"), m_pAudioStream(NULL), m_bSingleFrames(false),
-    m_singleFrameSamples(0), m_bFlushSingleFrames(false)
+  : CThread("RetroPlayerAudio"), 
+    m_pAudioStream(NULL),
+    m_frameType(FRAME_TYPE_UNKNOWN),
+    m_bFlushSingleFrames(false)
 {
 }
 
@@ -52,7 +55,7 @@ unsigned int CRetroPlayerAudio::GoForth(double samplerate)
   if (m_pAudioStream)
     { CAEFactory::FreeStream(m_pAudioStream); m_pAudioStream = NULL; }
 
-  const unsigned int newsamplerate = SelectSampleRate(samplerate);
+  const unsigned int newsamplerate = GetSampleRate(samplerate);
 
   CLog::Log(LOGINFO, "RetroPlayerAudio: Creating audio stream, sample rate hint = %u", newsamplerate);
   static enum AEChannel map[3] = {AE_CH_FL, AE_CH_FR, AE_CH_NULL};
@@ -74,11 +77,14 @@ unsigned int CRetroPlayerAudio::GoForth(double samplerate)
     return 0;
   }
 
+  m_buffer.SetSamplerate(newsamplerate);
+
   Create();
   return newsamplerate;
 }
 
-unsigned int CRetroPlayerAudio::SelectSampleRate(double samplerate)
+/* static */
+unsigned int CRetroPlayerAudio::GetSampleRate(double samplerate)
 {
   // List comes from AESinkALSA.cpp
   static unsigned int sampleRateList[] = {5512, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 0};
@@ -107,61 +113,58 @@ void CRetroPlayerAudio::Process()
 
   while (!m_bStop)
   {
-    Packet packet;
+    // RetroPlayerAudio is greedy (consumes all available frames)
+    AudioPacket *packet = NULL;
+    m_buffer.GetPacket(packet);
+    if (!packet)
     {
-      CSingleLock lock(m_critSection);
-
-      // Greedy - try to keep m_packets drained
-      if (m_packets.empty())
-      {
-        lock.Leave();
-        if (AbortableWait(m_packetReady, 17) == WAIT_INTERRUPTED) // ~1 video frame @ 60fps
-          break;
-        continue;
-      }
-
-      packet = m_packets.front();
-      m_packets.pop();
+      if (AbortableWait(m_packetReady, 17) == WAIT_INTERRUPTED) // ~1 video frame @ 60fps
+        break;
     }
 
-    // Calculate a timeout when this definitely should be done
-    double timeout;
-    timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + packet.size / FRAMESIZE / (double)m_pAudioStream->GetSampleRate());
-    timeout += DVD_SEC_TO_TIME(1.0);
-    timeout += CDVDClock::GetAbsoluteClock();
-
-    // Keep track of how much data has been added to the stream
-    uint8_t *dataPtr = packet.data.get();
-    unsigned int size = packet.size;
-    do
-    {
-      // Fast-forward packet data on successful add
-      unsigned int copied = m_pAudioStream->AddData(dataPtr, size);
-      dataPtr += copied;
-      size -= copied;
-
-      // Test for incomplete frames remaining
-      if (size < FRAMESIZE)
-        break;
-
-      if (copied == 0 && timeout < CDVDClock::GetAbsoluteClock())
-      {
-        CLog::Log(LOGERROR, "RetroPlayerAudio: Timeout adding data to audio renderer");
-        break;
-      }
-
-      Sleep(1);
-    } while (!m_bStop);
-
-    // Discard extra data
-    if (size > 0 && !m_bStop)
-      CLog::Log(LOGNOTICE, "RetroPlayerAudio: %u bytes left over after rendering, discarding", size);
+    if (packet)
+      ProcessPacket(*packet);
   }
 
-  m_bStop = true;
-
+  // Clean up
   CAEFactory::FreeStream(m_pAudioStream);
   m_pAudioStream = NULL;
+}
+
+void CRetroPlayerAudio::ProcessPacket(const AudioPacket &packet)
+{
+  // Calculate a timeout when this definitely should be done
+  double timeout;
+  timeout  = DVD_SEC_TO_TIME(m_pAudioStream->GetDelay() + packet.buffer.size() / FRAMESIZE / (double)m_pAudioStream->GetSampleRate());
+  timeout += DVD_SEC_TO_TIME(1.0);
+  timeout += CDVDClock::GetAbsoluteClock();
+
+  // Keep track of how much data has been added to the stream
+  const uint8_t *dataPtr = packet.buffer.data();
+  unsigned int size = packet.buffer.size();
+  do
+  {
+    // Fast-forward packet data on successful add
+    unsigned int copied = m_pAudioStream->AddData(const_cast<uint8_t*>(dataPtr), size);
+    dataPtr += copied;
+    size -= copied;
+
+    // Test for incomplete frames remaining
+    if (size < FRAMESIZE)
+      break;
+
+    if (copied == 0 && timeout < CDVDClock::GetAbsoluteClock())
+    {
+      CLog::Log(LOGERROR, "RetroPlayerAudio: Timeout adding data to audio renderer");
+      break;
+    }
+
+    Sleep(1);
+  } while (!m_bStop);
+
+  // Discard extra data
+  if (size > 0 && !m_bStop)
+    CLog::Log(LOGNOTICE, "RetroPlayerAudio: %u bytes left over after rendering, discarding", size);
 }
 
 double CRetroPlayerAudio::GetDelay() const
@@ -171,29 +174,31 @@ double CRetroPlayerAudio::GetDelay() const
 
 void CRetroPlayerAudio::SendAudioFrames(const int16_t *data, size_t frames)
 {
-  CSingleLock lock(m_critSection);
-
-  // Queue up to 4 packets (TODO)
-  if (m_packets.size() < 4)
+  if (m_frameType == FRAME_TYPE_UNKNOWN)
   {
-    const size_t SIZE = frames * FRAMESIZE;
-    Packet packet;
-    packet.data = boost::shared_array<uint8_t>(new uint8_t[SIZE]);
-    packet.size = SIZE;
-
-    // Batch-convert our audio samples to floats here using AE converters. We
-    // do this to avoid conversion in AE, which reqiures another buffer and
-    // another source of delay.
-    uint8_t *source = reinterpret_cast<uint8_t*>(const_cast<int16_t*>(data));
-    float   *dest   = reinterpret_cast<float*>(packet.data.get());
-    static CAEConvert::AEConvertToFn convertFn = CAEConvert::ToFloat(AE_FMT_S16NE);
-
-    convertFn(source, frames * 2, dest); // L + R
-
-    m_packets.push(packet);
-
-    m_packetReady.Set();
+    CLog::Log(LOGNOTICE, "RetroPlayerAudio: Using multi-sample audio frames");
+    m_frameType = FRAME_TYPE_SAMPLES;
   }
+
+  const unsigned int SAMPLES = frames * CHANNELS;
+
+  // Use a static buffer for float conversion
+  static vector<float> dest;
+  if (dest.size() < SAMPLES)
+    dest.resize(SAMPLES);
+
+  // Batch-convert our audio samples to floats here using AE converters. We
+  // do this to avoid conversion in AE, which reqiures another buffer and
+  // another source of delay.
+  uint8_t *source = reinterpret_cast<uint8_t*>(const_cast<int16_t*>(data));
+  static CAEConvert::AEConvertToFn convertFn = CAEConvert::ToFloat(AE_FMT_S16NE);
+  convertFn(source, SAMPLES, dest.data());
+
+  AudioInfo info = { };
+
+  m_buffer.AddPacket(reinterpret_cast<const uint8_t*>(dest.data()), SAMPLES * sizeof(float), info);
+
+  m_packetReady.Set();
 }
 
 // TODO: Use parameters from RetroPlayer
@@ -203,27 +208,28 @@ void CRetroPlayerAudio::SendAudioFrames(const int16_t *data, size_t frames)
 #define SAMPLERATE     32000
 #define FPS            60
 #define SAFETYFACTOR   4 // video frames
-#define BUFFERSAMPLES  (SAMPLERATE * 2 * SAFETYFACTOR / FPS)
+#define BUFFERSAMPLES  (SAMPLERATE * CHANNELS * SAFETYFACTOR / FPS)
 
 void CRetroPlayerAudio::SendAudioFrame(int16_t left, int16_t right)
 {
-  if (!m_bSingleFrames)
+  static std::vector<int16_t> singleFrameBuffer;
+
+  if (m_frameType == FRAME_TYPE_SAMPLES)
+    return;
+
+  if (m_frameType == FRAME_TYPE_UNKNOWN)
   {
-    m_bSingleFrames = true;
-    CLog::Log(LOGNOTICE, "RetroPlayer (Audio): Using single-frame audio");
-    m_singleFrameBuffer.resize(BUFFERSAMPLES * sizeof(int16_t));
+    CLog::Log(LOGNOTICE, "RetroPlayerAudio: Using single-frame audio");
+    m_frameType = FRAME_TYPE_SINGLE;
+    singleFrameBuffer.resize(BUFFERSAMPLES * sizeof(int16_t));
   }
 
-  int16_t *dest = m_singleFrameBuffer.data() + m_singleFrameSamples;
-  *dest = left;
-  *(dest + 1) = right;
+  singleFrameBuffer.push_back(left);
+  singleFrameBuffer.push_back(right);
 
-  m_singleFrameSamples += 2;
-
-  if (m_bFlushSingleFrames || m_singleFrameSamples >= BUFFERSAMPLES)
+  if (m_bFlushSingleFrames || singleFrameBuffer.size() >= BUFFERSAMPLES)
   {
     m_bFlushSingleFrames = false;
-    SendAudioFrames(m_singleFrameBuffer.data(), m_singleFrameSamples / 2);
-    m_singleFrameSamples = 0;
+    SendAudioFrames(singleFrameBuffer.data(), singleFrameBuffer.size() * sizeof(int16_t));
   }
 }
