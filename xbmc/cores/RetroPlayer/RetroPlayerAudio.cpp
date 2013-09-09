@@ -31,6 +31,11 @@
 // Temporary - notify users about unsupported samplerate
 #include "dialogs/GUIDialogOK.h"
 
+#ifdef TARGET_WINDOWS // disable C4355: 'this' used in base member initializer list
+#pragma warning(push)
+#pragma warning(disable: 4355)
+#endif
+
 // Pre-convert audio to float to avoid additional buffer in AE stream
 #define CHANNELS      2 // L + R
 #define FRAMESIZE     (CHANNELS * sizeof(float))
@@ -40,6 +45,7 @@ using namespace std;
 CRetroPlayerAudio::CRetroPlayerAudio()
   : CThread("RetroPlayerAudio"), 
     m_pAudioStream(NULL),
+    m_buffer(this),
     m_frameType(FRAME_TYPE_UNKNOWN),
     m_bFlushSingleFrames(false)
 {
@@ -55,7 +61,7 @@ unsigned int CRetroPlayerAudio::GoForth(double samplerate)
   if (m_pAudioStream)
     { CAEFactory::FreeStream(m_pAudioStream); m_pAudioStream = NULL; }
 
-  const unsigned int newsamplerate = GetSampleRate(samplerate);
+  const unsigned int newsamplerate = FindSampleRate(samplerate);
 
   CLog::Log(LOGINFO, "RetroPlayerAudio: Creating audio stream, sample rate hint = %u", newsamplerate);
   static enum AEChannel map[3] = {AE_CH_FL, AE_CH_FR, AE_CH_NULL};
@@ -77,14 +83,12 @@ unsigned int CRetroPlayerAudio::GoForth(double samplerate)
     return 0;
   }
 
-  m_buffer.SetSamplerate(newsamplerate);
-
   Create();
   return newsamplerate;
 }
 
 /* static */
-unsigned int CRetroPlayerAudio::GetSampleRate(double samplerate)
+unsigned int CRetroPlayerAudio::FindSampleRate(double samplerate)
 {
   // List comes from AESinkALSA.cpp
   static unsigned int sampleRateList[] = {5512, 8000, 11025, 16000, 22050, 32000, 44100, 48000, 0};
@@ -172,6 +176,11 @@ double CRetroPlayerAudio::GetDelay() const
   return !m_bStop && m_pAudioStream ? m_pAudioStream->GetDelay() : 0.0;
 }
 
+unsigned int CRetroPlayerAudio::GetSampleRate() const
+{
+  return !m_bStop && m_pAudioStream ? m_pAudioStream->GetSampleRate() : 0;
+}
+
 void CRetroPlayerAudio::SendAudioFrames(const int16_t *data, size_t frames)
 {
   if (m_frameType == FRAME_TYPE_UNKNOWN)
@@ -233,3 +242,7 @@ void CRetroPlayerAudio::SendAudioFrame(int16_t left, int16_t right)
     SendAudioFrames(singleFrameBuffer.data(), singleFrameBuffer.size() * sizeof(int16_t));
   }
 }
+
+#ifdef TARGET_WINDOWS
+#pragma warning(pop)
+#endif

@@ -38,16 +38,21 @@ class CRetroPlayerAudio : public CThread
   class CRetroPlayerAudioBuffer : public CRetroPlayerBuffer
   {
   public:
-    CRetroPlayerAudioBuffer() : m_samplerate(0) { }
+    CRetroPlayerAudioBuffer(CRetroPlayerAudio *audio) : m_audio(audio) { }
     virtual ~CRetroPlayerAudioBuffer() { }
 
-    void SetSamplerate(unsigned int samplerate) { m_samplerate = samplerate; }
-
   protected:
-    virtual bool IsFull() const { return (m_samplerate != 0) && (1000 * GetSize() / 4 / m_samplerate > AUDIO_BUFFER_LENGTH_MS); }
+    virtual bool IsFull() const
+    {
+      const unsigned int NUM_CHANNELS = 2;
+      const unsigned int SIZE_FRAME = NUM_CHANNELS * sizeof(uint16_t);
+      const double buffertime = (m_audio && m_audio->GetSampleRate()) ?
+        1000.0 * GetSize() / SIZE_FRAME / m_audio->GetSampleRate() : 0.0; // ms
+      return buffertime > AUDIO_BUFFER_LENGTH_MS;
+    }
 
   private:
-    unsigned int m_samplerate;
+    CRetroPlayerAudio *m_audio;
   };
 
   // No audio metadata, so just use CRetroPlayerPacketBase
@@ -91,6 +96,8 @@ public:
    */
   double GetDelay() const;
 
+  unsigned int GetSampleRate() const;
+
 protected:
   virtual void Process();
 
@@ -111,7 +118,7 @@ private:
    * @param  samplerate - the desired samplerate
    * @return the chosen samplerate
    */
-  static unsigned int GetSampleRate(double samplerate);
+  static unsigned int FindSampleRate(double samplerate);
 
   IAEStream               *m_pAudioStream;
   CRetroPlayerAudioBuffer m_buffer; // Process() is greedy and will try to keep m_buffer drained
