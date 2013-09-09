@@ -20,7 +20,7 @@
 
 #include "RetroPlayerBuffer.h"
 
-void CRetroPlayerPacketBase::Assign(const uint8_t *data, size_t size)
+void CRetroPlayerPacketBase::Assign(const uint8_t *data, unsigned int size)
 {
   buffer.clear();
   buffer.insert(buffer.begin(), data, data + size);
@@ -34,11 +34,11 @@ CRetroPlayerBuffer::CRetroPlayerBuffer() : m_acquiredIndex(-1)
 
 CRetroPlayerBuffer::~CRetroPlayerBuffer()
 {
-  for (auto it = m_packets.begin(); it != m_packets.end(); ++it)
+  for (std::vector<CRetroPlayerPacketBase*>::iterator it = m_packets.begin(); it != m_packets.end(); ++it)
     delete *it;
 }
 
-size_t CRetroPlayerBuffer::GetSize() const
+unsigned int CRetroPlayerBuffer::GetSize() const
 {
   unsigned int size = 0;
   for (std::deque<unsigned int>::const_iterator it = m_indices.begin(); it != m_indices.end(); ++it)
@@ -50,7 +50,7 @@ size_t CRetroPlayerBuffer::GetSize() const
   return size;
 }
 
-size_t CRetroPlayerBuffer::GetCount() const
+unsigned int CRetroPlayerBuffer::GetCount() const
 {
   return m_indices.size();
 }

@@ -39,11 +39,11 @@ class CRetroPlayerPacketBase
 {
 public:
   CRetroPlayerPacketBase() { }
-  CRetroPlayerPacketBase(const uint8_t *data, size_t size) { Assign(data, size); }
+  CRetroPlayerPacketBase(const uint8_t *data, unsigned int size) { Assign(data, size); }
   virtual ~CRetroPlayerPacketBase() { }
 
   // Assign() lets us re-use buffer for new data and avoid allocation for every new packet
-  void Assign(const uint8_t *data, size_t size);
+  void Assign(const uint8_t *data, unsigned int size);
   void Clear() { buffer.clear(); }
   bool IsEmpty() const { return buffer.empty(); }
 
@@ -58,16 +58,16 @@ class CRetroPlayerPacket : public CRetroPlayerPacketBase
 {
 public:
   CRetroPlayerPacket() { }
-  CRetroPlayerPacket(const uint8_t *data, size_t size, const MetaType &meta) { Assign(data, size, meta); }
+  CRetroPlayerPacket(const uint8_t *data, unsigned int size, const MetaType &meta) { Assign(data, size, meta); }
   virtual ~CRetroPlayerPacket() { }
 
-  void Assign(const uint8_t *data, size_t size, const MetaType &meta);
+  void Assign(const uint8_t *data, unsigned int size, const MetaType &meta);
 
   MetaType             meta;
 };
 
 template <typename MetaType>
-void CRetroPlayerPacket<MetaType>::Assign(const uint8_t *data, size_t size, const MetaType &meta)
+void CRetroPlayerPacket<MetaType>::Assign(const uint8_t *data, unsigned int size, const MetaType &meta)
 {
   CRetroPlayerPacketBase::Assign(data, size);
   this->meta = meta;
@@ -102,7 +102,7 @@ public:
    * discarded until the buffer is no longer full.
    */
   template <typename MetaType>
-  void AddPacket(const uint8_t *data, size_t size, const MetaType &meta);
+  void AddPacket(const uint8_t *data, unsigned int size, const MetaType &meta);
 
 protected:
   /**
@@ -121,7 +121,7 @@ protected:
    * Returns the number of packets being tracked by the buffer (excluding the
    * acquired packet).
    */
-  size_t GetCount() const;
+  unsigned int GetCount() const;
 
 private:
   /**
@@ -154,7 +154,7 @@ void CRetroPlayerBuffer::GetPacket(PacketType *&pPacket)
   // Clear any packets previously "checked out"
   if (m_acquiredIndex >= 0)
   {
-    assert((size_t)m_acquiredIndex < m_packets.size());
+    assert((unsigned int)m_acquiredIndex < m_packets.size());
     m_packets[m_acquiredIndex]->Clear();
     m_acquiredIndex = -1;
   }
@@ -201,7 +201,7 @@ void CRetroPlayerBuffer::GetEmptyPacket(PacketType *&pPacket, unsigned int &inde
   for (std::vector<CRetroPlayerPacketBase*>::iterator it = m_packets.begin(); it != m_packets.end(); ++it, i++)
   {
     // Skip the acquired packet
-    if (i == m_acquiredIndex)
+    if ((int)i == m_acquiredIndex)
       continue;
 
     PacketType *packet = dynamic_cast<PacketType*>(*it);
