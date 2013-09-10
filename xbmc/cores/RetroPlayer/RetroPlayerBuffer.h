@@ -74,12 +74,18 @@ void CRetroPlayerPacket<MetaType>::Assign(const uint8_t *data, unsigned int size
 }
 
 /**
- * Audio and video buffers in RetroPlayer are paged ring buffers, where each
- * page holds a single AV packet. Packets are are operated in a ring-like
- * fashion to achieve single-copy and avoiding the need of constantly allocating
- * small blocks of memory for each packet. Subclasses provide IsFull() to
- * indicate that incoming packets should overwrite existing data, allowing them
- * to determine the size of the buffer (e.g. by packet count or buffer size).
+ * Audio and video buffers in RetroPlayer are out-of-order paged ring buffers,
+ * where each page holds a single AV packet. A separate queue structure is used
+ * to track the order of the packets, allowing for single-copy and avoiding the
+ * need to constantly allocate small blocks of memory for each packet. This
+ * strategy is well-suited for RetroPlayer, as game clients generally deliver
+ * identically-sized packets at a relatively uniform rate. All public methods
+ * are thread-safe, which removes the need for syncronization strategies in
+ * RetroPlayerAudio and RetroPlayerVideo.
+ *
+ * Subclasses provide IsFull() to indicate that incoming packets should
+ * overwrite existing data, allowing them to determine the size of the buffer
+ * (e.g. by packet count or buffer size). 
  */
 class CRetroPlayerBuffer
 {
@@ -213,7 +219,7 @@ void CRetroPlayerBuffer::GetEmptyPacket(PacketType *&pPacket, unsigned int &inde
     }
   }
 
-  // No empty packets found, allocate a new one (but don't assign it an index)
+  // No empty packets found, allocate a new one
   pPacket = new PacketType;
   if (pPacket)
   {
