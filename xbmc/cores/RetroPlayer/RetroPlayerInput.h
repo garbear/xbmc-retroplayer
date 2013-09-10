@@ -21,12 +21,13 @@
 #pragma once
 
 #include "guilib/Key.h" // for ACTION_GAME_CONTROL_START
-#include "input/IJoystick.h"
+#include "input/IInputHandler.h"
+#include "input/IJoystick.h" // for GAMEPAD_MAX_CONTROLLERS
 
 #include <map>
 #include <stdint.h>
 
-class CRetroPlayerInput
+class CRetroPlayerInput : public IInputHandler
 {
 public:
   CRetroPlayerInput() { Reset(); }
@@ -44,27 +45,24 @@ public:
    */
   int16_t GetInput(unsigned port, unsigned device, unsigned index, unsigned id);
 
-  /**
-   * Marks a key as pressed. This intercepts keys sent to CApplication::OnKey()
-   * before they are translated into actions.
-   */
-  void ProcessKeyDown(unsigned int controllerID, uint32_t key, const CAction &action);
+  // Inherited from IInputHandler
+  virtual void ProcessKeyDown(unsigned int controllerID, uint32_t key, const CAction &action);
+  virtual void ProcessKeyUp(unsigned int controllerID, uint32_t key);
+  virtual void ProcessButtonDown(unsigned int controllerID, unsigned int buttonID, const CAction &action);
+  virtual void ProcessButtonUp(unsigned int controllerID, unsigned int buttonID);
+  virtual void ProcessHatDown(unsigned int controllerID, unsigned int hatID, unsigned char dir, const CAction &action);
+  virtual void ProcessHatUp(unsigned int controllerID, unsigned int hatID, unsigned char dir);
+  virtual void ProcessAxis(unsigned int controllerID, unsigned int axisID, const CAction &action);
 
-  /**
-   * Marks a key as released. Because key releases aren't processed by
-   * CApplication and aren't translated into actions, these are intercepted
-   * at the raw event stage in CApplication::OnEvent().
-   */
-  void ProcessKeyUp(unsigned int controllerID, uint32_t key);
-
-  /**
-   * RetroPlayerInput is notified of joystick events by CJoystickManager.
-   */
-  void ProcessButtonDown(unsigned int controllerID, unsigned int buttonID, const CAction &action);
-  void ProcessButtonUp(unsigned int controllerID, unsigned int buttonID);
-  void ProcessHatDown(unsigned int controllerID, unsigned int hatID, unsigned char dir, const CAction &action);
-  void ProcessHatUp(unsigned int controllerID, unsigned int hatID, unsigned char dir);
-  void ProcessAxis(unsigned int controllerID, unsigned int axisID, const CAction &action);
+  struct DeviceItem
+  {
+    unsigned int controllerID;
+    unsigned int key;
+    unsigned int buttonID;
+    unsigned int hatID;
+    unsigned char hatDir;
+    unsigned char axisID;
+  };
 
 private:
   /**
@@ -77,17 +75,5 @@ private:
 
   int16_t m_joypadState[GAMEPAD_MAX_CONTROLLERS][ACTION_GAME_CONTROL_END - ACTION_GAME_CONTROL_START + 1];
 
-public:
-  struct DeviceItem
-  {
-    unsigned int controllerID;
-    unsigned int key;
-    unsigned int buttonID;
-    unsigned int hatID;
-    unsigned char hatDir;
-    unsigned char axisID;
-  };
-
-private:
   std::map<DeviceItem, int> m_deviceItems;
 };

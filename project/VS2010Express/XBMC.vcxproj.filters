@@ -6259,6 +6259,9 @@
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerBuffer.h">
       <Filter>cores\RetroPlayer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\IInputHandler.h">
+      <Filter>input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">

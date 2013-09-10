@@ -59,7 +59,7 @@ public:
   virtual bool HasVideo() const { return true; }
   virtual bool HasAudio() const { return true; }
 
-  CRetroPlayerInput &GetInput() { return m_input; }
+  virtual IInputHandler *GetInputHandler() { return &m_input; }
 
   virtual void GetAudioInfo(CStdString& strAudioInfo) { strAudioInfo = "CRetroPlayer:GetAudioInfo"; }
   virtual void GetVideoInfo(CStdString& strVideoInfo) { strVideoInfo = "CRetroPlayer:GetVideoInfo"; }

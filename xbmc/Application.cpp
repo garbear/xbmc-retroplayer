@@ -278,7 +278,7 @@
 #include "addons/AddonInstaller.h"
 
 /* Game-related include files */
-#include "cores/RetroPlayer/RetroPlayer.h"
+#include "input/IInputHandler.h"
 #include "games/GameManager.h"
 #include "games/windows/GUIWindowGames.h"
 #include "games/savegames/GUIDialogGameSaves.h"
@@ -480,9 +480,12 @@ bool CApplication::OnEvent(XBMC_Event& newEvent)
       break;
     case XBMC_KEYUP:
       {
-        CRetroPlayerInput *joystickHandler = g_application.m_pPlayer->GetJoystickHandler();
-        if (joystickHandler)
-          joystickHandler->ProcessKeyUp(0, CKeyboardStat::TranslateKey(newEvent.key.keysym).GetButtonCode());
+        IInputHandler *inputHandler = g_application.m_pPlayer->GetInputHandler();
+        if (inputHandler)
+        {
+          CKey key = CKeyboardStat::TranslateKey(newEvent.key.keysym);
+          inputHandler->ProcessKeyUp(0, key.GetButtonCode());
+        }
       }
       g_Keyboard.ProcessKeyUp();
       break;
@@ -2311,8 +2314,8 @@ bool CApplication::OnKey(const CKey& key)
       if (ACTION_GAME_CONTROL_START <= action.GetID() && action.GetID() <= ACTION_GAME_CONTROL_END)
       {
         // Notify RetroPlayer's input system of the pressed key
-        if (m_pPlayer->GetJoystickHandler())
-          m_pPlayer->GetJoystickHandler()->ProcessKeyDown(0, key.GetButtonCode(), action);
+        if (m_pPlayer->GetInputHandler())
+          m_pPlayer->GetInputHandler()->ProcessKeyDown(0, key.GetButtonCode(), action);
       }
     }
     else
