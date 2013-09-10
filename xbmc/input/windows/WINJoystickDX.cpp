@@ -41,6 +41,7 @@ extern HWND g_hWnd;
 #define JOY_POV_SW   (JOY_POVBACKWARD + JOY_POVLEFT) / 2
 #define JOY_POV_NW   (JOY_POVLEFT + JOY_POV_360) / 2
 
+using namespace JOYSTICK;
 
 // A context to hold our DirectInput handle and accumulated joystick objects
 struct JoystickEnumContext
@@ -56,10 +57,8 @@ CJoystickDX::CJoystickDX(LPDIRECTINPUTDEVICE8 joystickDevice, const std::string 
   : m_joystickDevice(joystickDevice), m_state()
 {
   // m_state.id is set in Initialize() before adding it to the joystick list
-  m_state.name        = name;
-  m_state.buttonCount = std::min(m_state.buttonCount, (unsigned int)devCaps.dwButtons);
-  m_state.hatCount    = std::min(m_state.hatCount, (unsigned int)devCaps.dwPOVs);
-  m_state.axisCount   = std::min(m_state.axisCount, (unsigned int)devCaps.dwAxes);
+  m_state.name = name;
+  m_state.ResetState(devCaps.dwButtons, devCaps.dwPOVs, devCaps.dwAxes);
 }
 
 /* static */
@@ -70,31 +69,29 @@ void CJoystickDX::Initialize(JoystickArray &joysticks)
   HRESULT hr;
   JoystickEnumContext context;
 
-  if (FAILED(hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8,
-      (VOID**)&m_pDirectInput, NULL)))
+  hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (VOID**)&m_pDirectInput, NULL);
+  if (FAILED(hr))
   {
-    CLog::Log(LOGERROR, __FUNCTION__" : Failed to create DirectInput");
+    CLog::Log(LOGERROR, "%s: Failed to create DirectInput", __FUNCTION__);
+    return;
   }
-  else
+
+  context.pDirectInput = m_pDirectInput;
+  hr = context.pDirectInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback, &context, DIEDFL_ATTACHEDONLY);
+  if (FAILED(hr) || context.joystickItems.size() == 0)
   {
-    context.pDirectInput = m_pDirectInput;
-    if (FAILED(hr = context.pDirectInput->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumJoysticksCallback,
-        &context, DIEDFL_ATTACHEDONLY)) || context.joystickItems.size() == 0)
+    CLog::Log(LOGINFO, "%s: No joysticks found", __FUNCTION__);
+    return;
+  }
+
+  for (JoystickArray::const_iterator it = context.joystickItems.begin(); it != context.joystickItems.end(); it++)
+  {
+    boost::shared_ptr<CJoystickDX> jdx = boost::dynamic_pointer_cast<CJoystickDX>(*it);
+    if (jdx && jdx->InitAxes())
     {
-      CLog::Log(LOGINFO, __FUNCTION__" : No Joystick found");
-    }
-    else
-    {
-      for (JoystickArray::const_iterator it = context.joystickItems.begin(); it != context.joystickItems.end(); it++)
-      {
-        boost::shared_ptr<CJoystickDX> jdx = boost::dynamic_pointer_cast<CJoystickDX>(*it);
-        if (jdx && jdx->InitAxes())
-        {
-          // Set the ID based on its position in the list
-          jdx->m_state.id = joysticks.size();
-          joysticks.push_back(jdx);
-        }
-      }
+      // Set the ID based on its position in the list
+      jdx->m_state.id = joysticks.size();
+      joysticks.push_back(jdx);
     }
   }
 }
@@ -102,53 +99,61 @@ void CJoystickDX::Initialize(JoystickArray &joysticks)
 BOOL CALLBACK CJoystickDX::EnumJoysticksCallback(const DIDEVICEINSTANCE *pdidInstance, VOID *pContext)
 {
   HRESULT hr;
+  const int result = DIENUM_CONTINUE;
 
   // Skip verified XInput devices
   if (IsXInputDevice(&pdidInstance->guidProduct))
-    return DIENUM_CONTINUE;
+    return result;
 
-  JoystickEnumContext *context = reinterpret_cast<JoystickEnumContext*>(pContext);
+  JoystickEnumContext *context = static_cast<JoystickEnumContext*>(pContext);
   LPDIRECTINPUTDEVICE8 pJoystick = NULL;
 
   // Obtain an interface to the enumerated joystick.
   hr = context->pDirectInput->CreateDevice(pdidInstance->guidInstance, &pJoystick, NULL);
   if (FAILED(hr))
-    CLog::Log(LOGERROR, __FUNCTION__" : Failed to CreateDevice: %s", pdidInstance->tszProductName);
-  else
   {
-    // Set the data format to "simple joystick" - a predefined data format.
-    //
-    // A data format specifies which controls on a device we are interested in,
-    // and how they should be reported. This tells DInput that we will be
-    // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
-    if (FAILED(hr = pJoystick->SetDataFormat(&c_dfDIJoystick2)))
-      CLog::Log(LOGERROR, __FUNCTION__" : Failed to SetDataFormat on: %s", pdidInstance->tszProductName);
-    else
-    {
-      // Set the cooperative level to let DInput know how this device should
-      // interact with the system and with other DInput applications.
-      if (FAILED(hr = pJoystick->SetCooperativeLevel(g_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)))
-        CLog::Log(LOGERROR, __FUNCTION__" : Failed to SetCooperativeLevel on: %s", pdidInstance->tszProductName);
-      else
-      {
-        DIDEVCAPS diDevCaps;
-        diDevCaps.dwSize = sizeof(DIDEVCAPS);
-        if (FAILED(hr = pJoystick->GetCapabilities(&diDevCaps)))
-          CLog::Log(LOGERROR, __FUNCTION__" : Failed to GetCapabilities for: %s", pdidInstance->tszProductName);
-        else
-        {
-          CLog::Log(LOGNOTICE, __FUNCTION__" : Enabled Joystick: \"%s\" (DirectInput)", pdidInstance->tszProductName);
-          CLog::Log(LOGNOTICE, __FUNCTION__" : Total Axes: %d Total Hats: %d Total Buttons: %d",
-              diDevCaps.dwAxes, diDevCaps.dwPOVs, diDevCaps.dwButtons);
-
-          context->joystickItems.push_back(boost::shared_ptr<IJoystick>(new CJoystickDX(pJoystick,
-              pdidInstance->tszProductName, diDevCaps)));
-        }
-      }
-    }
+    CLog::Log(LOGERROR, "%s: Failed to CreateDevice: %s", __FUNCTION__, pdidInstance->tszProductName);
+    return result;
   }
 
-  return DIENUM_CONTINUE;
+  // Set the data format to "simple joystick" - a predefined data format.
+  // A data format specifies which controls on a device we are interested in,
+  // and how they should be reported. This tells DInput that we will be
+  // passing a DIJOYSTATE2 structure to IDirectInputDevice::GetDeviceState().
+  hr = pJoystick->SetDataFormat(&c_dfDIJoystick2);
+  if (FAILED(hr))
+  {
+    CLog::Log(LOGERROR, "%s: Failed to SetDataFormat on: %s", __FUNCTION__, pdidInstance->tszProductName);
+    return result;
+  }
+
+  // Set the cooperative level to let DInput know how this device should
+  // interact with the system and with other DInput applications.
+  hr = pJoystick->SetCooperativeLevel(g_hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+  if (FAILED(hr))
+  {
+    CLog::Log(LOGERROR, "%s: Failed to SetCooperativeLevel on: %s", __FUNCTION__, pdidInstance->tszProductName);
+    return result;
+  }
+
+  DIDEVCAPS diDevCaps;
+  diDevCaps.dwSize = sizeof(DIDEVCAPS);
+  hr = pJoystick->GetCapabilities(&diDevCaps);
+  if (FAILED(hr))
+  {
+    CLog::Log(LOGERROR, "%s: Failed to GetCapabilities for: %s", __FUNCTION__, pdidInstance->tszProductName);
+    return result;
+  }
+
+  CLog::Log(LOGNOTICE, "%s: Enabled Joystick: \"%s\" (DirectInput)", __FUNCTION__, pdidInstance->tszProductName);
+  CLog::Log(LOGNOTICE, "%s: Total Axes: %d Total Hats: %d Total Buttons: %d", __FUNCTION__,
+    diDevCaps.dwAxes, diDevCaps.dwPOVs, diDevCaps.dwButtons);
+
+  CJoystickDX *joy = new CJoystickDX(pJoystick, pdidInstance->tszProductName, diDevCaps);
+  if (joy)
+    context->joystickItems.push_back(boost::shared_ptr<IJoystick>(joy));
+
+  return result;
 }
 
 //-----------------------------------------------------------------------------
@@ -177,72 +182,87 @@ bool CJoystickDX::IsXInputDevice(const GUID* pGuidProductFromDirectInput)
   hr = CoInitialize(NULL);
   bool bCleanupCOM = SUCCEEDED(hr);
 
-    // Create WMI
-  hr = CoCreateInstance(__uuidof(WbemLocator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IWbemLocator), (LPVOID*) &pIWbemLocator);
-  if (FAILED(hr) || pIWbemLocator == NULL)
-    goto LCleanup;
-
-  bstrNamespace = SysAllocString(L"\\\\.\\root\\cimv2" ); if (bstrNamespace == NULL) goto LCleanup;
-  bstrClassName = SysAllocString(L"Win32_PNPEntity" );    if (bstrClassName == NULL) goto LCleanup;
-  bstrDeviceID  = SysAllocString(L"DeviceID" );           if (bstrDeviceID == NULL)  goto LCleanup;
-    
-  // Connect to WMI 
-  hr = pIWbemLocator->ConnectServer(bstrNamespace, NULL, NULL, 0L, 0L, NULL, NULL, &pIWbemServices);
-  if (FAILED(hr) || pIWbemServices == NULL)
-      goto LCleanup;
-
-  // Switch security level to IMPERSONATE. 
-  CoSetProxyBlanket(pIWbemServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL,
-    RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
-
-  hr = pIWbemServices->CreateInstanceEnum(bstrClassName, 0, NULL, &pEnumDevices);
-  if (FAILED(hr) || pEnumDevices == NULL)
-    goto LCleanup;
-
-  // Loop over all devices
-  for( ;; )
+  try
   {
-    // Get 20 at a time
-    hr = pEnumDevices->Next(10000, 20, pDevices, &uReturned);
-    if (FAILED(hr))
-      goto LCleanup;
-    if (uReturned == 0)
-      break;
+    // Create WMI
+    hr = CoCreateInstance(__uuidof(WbemLocator), NULL, CLSCTX_INPROC_SERVER, __uuidof(IWbemLocator), (LPVOID*) &pIWbemLocator);
+    if (FAILED(hr) || pIWbemLocator == NULL)
+      throw hr;
 
-    for (iDevice = 0; iDevice < uReturned; iDevice++)
+    bstrNamespace = SysAllocString(L"\\\\.\\root\\cimv2");
+    if (bstrNamespace == NULL)
+      throw hr;
+
+    bstrClassName = SysAllocString(L"Win32_PNPEntity");
+    if (bstrClassName == NULL)
+      throw hr;
+
+    bstrDeviceID  = SysAllocString(L"DeviceID");
+    if (bstrDeviceID == NULL)
+      throw hr;
+    
+    // Connect to WMI
+    hr = pIWbemLocator->ConnectServer(bstrNamespace, NULL, NULL, 0L, 0L, NULL, NULL, &pIWbemServices);
+    if (FAILED(hr) || pIWbemServices == NULL)
+      throw hr;
+
+    // Switch security level to IMPERSONATE
+    CoSetProxyBlanket(pIWbemServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL,
+      RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
+
+    hr = pIWbemServices->CreateInstanceEnum(bstrClassName, 0, NULL, &pEnumDevices);
+    if (FAILED(hr) || pEnumDevices == NULL)
+      throw hr;
+
+    // Loop over all devices
+    do
     {
-      // For each device, get its device ID
-      hr = pDevices[iDevice]->Get(bstrDeviceID, 0L, &var, NULL, NULL);
-      if (SUCCEEDED(hr) && var.vt == VT_BSTR && var.bstrVal != NULL)
-      {
-        // Check if the device ID contains "IG_". If it does, then it's an XInput
-        // device. This information can not be found from DirectInput.
-        if (wcsstr(var.bstrVal, L"IG_"))
-        {
-          // If it does, then get the VID/PID from var.bstrVal
-          DWORD dwPid = 0;
-          DWORD dwVid = 0;
-          WCHAR *strVid = wcsstr(var.bstrVal, L"VID_");
-          if (strVid && swscanf(strVid, L"VID_%4X", &dwVid) != 1)
-            dwVid = 0;
-          WCHAR* strPid = wcsstr(var.bstrVal, L"PID_");
-          if (strPid && swscanf(strPid, L"PID_%4X", &dwPid) != 1)
-            dwPid = 0;
+      // Get 20 at a time
+      hr = pEnumDevices->Next(10000, 20, pDevices, &uReturned);
+      if (FAILED(hr))
+        throw hr;
 
-          // Compare the VID/PID to the DInput device
-          DWORD dwVidPid = MAKELONG(dwVid, dwPid);
-          if (dwVidPid == pGuidProductFromDirectInput->Data1)
+      for (iDevice = 0; iDevice < uReturned; iDevice++)
+      {
+        // Don't compare IDs if we already found our XInput device
+        if (!bIsXinputDevice)
+        {
+          // For each device, get its device ID
+          hr = pDevices[iDevice]->Get(bstrDeviceID, 0L, &var, NULL, NULL);
+          if (SUCCEEDED(hr) && var.vt == VT_BSTR && var.bstrVal != NULL)
           {
-            bIsXinputDevice = true;
-            goto LCleanup;
+            // Check if the device ID contains "IG_". If it does, then it's an XInput
+            // device. This information can not be found from DirectInput.
+            if (wcsstr(var.bstrVal, L"IG_"))
+            {
+              // If it does, then get the VID/PID from var.bstrVal
+              DWORD dwPid = 0;
+              DWORD dwVid = 0;
+              WCHAR *strVid = wcsstr(var.bstrVal, L"VID_");
+              if (strVid && swscanf(strVid, L"VID_%4X", &dwVid) != 1)
+                dwVid = 0;
+              WCHAR* strPid = wcsstr(var.bstrVal, L"PID_");
+              if (strPid && swscanf(strPid, L"PID_%4X", &dwPid) != 1)
+                dwPid = 0;
+
+              // Compare the VID/PID to the DInput device
+              DWORD dwVidPid = MAKELONG(dwVid, dwPid);
+              if (dwVidPid == pGuidProductFromDirectInput->Data1)
+                bIsXinputDevice = true;
+            }
           }
         }
+
+        SAFE_RELEASE(pDevices[iDevice]);
       }
-      SAFE_RELEASE(pDevices[iDevice]);
     }
+    while (uReturned);
+  }
+  catch (HRESULT hr_error)
+  {
+    CLog::Log(LOGERROR, "%s: Error while testing for XInput device! hr=%ld", __FUNCTION__, hr_error);
   }
 
-LCleanup:
   if (bstrNamespace)
     SysFreeString(bstrNamespace);
   if (bstrDeviceID)
@@ -270,9 +290,10 @@ bool CJoystickDX::InitAxes()
   // Enumerate the joystick objects. The callback function enabled user
   // interface elements for objects that are found, and sets the min/max
   // values properly for discovered axes.
-  if (FAILED(hr = pJoy->EnumObjects(EnumObjectsCallback, pJoy, DIDFT_ALL)))
+  hr = pJoy->EnumObjects(EnumObjectsCallback, pJoy, DIDFT_ALL);
+  if (FAILED(hr))
   {
-    CLog::Log(LOGERROR, __FUNCTION__" : Failed to enumerate objects");
+    CLog::Log(LOGERROR, "%s: Failed to enumerate objects", __FUNCTION__);
     return false;
   }
   return true;
@@ -286,7 +307,7 @@ bool CJoystickDX::InitAxes()
 //-----------------------------------------------------------------------------
 BOOL CALLBACK CJoystickDX::EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, VOID* pContext)
 {
-  LPDIRECTINPUTDEVICE8 pJoy = reinterpret_cast<LPDIRECTINPUTDEVICE8>(pContext);
+  LPDIRECTINPUTDEVICE8 pJoy = static_cast<LPDIRECTINPUTDEVICE8>(pContext);
 
   // For axes that are returned, set the DIPROP_RANGE property for the
   // enumerated axis in order to scale min/max values.
@@ -301,7 +322,8 @@ BOOL CALLBACK CJoystickDX::EnumObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdi
     diprg.lMax = AXIS_MAX;
 
     // Set the range for the axis
-    if (FAILED(pJoy->SetProperty(DIPROP_RANGE, &diprg.diph)))
+    HRESULT hr = pJoy->SetProperty(DIPROP_RANGE, &diprg.diph);
+    if (FAILED(hr))
       CLog::Log(LOGERROR, __FUNCTION__" : Failed to set property on %s", pdidoi->tszName);
   }
   return DIENUM_CONTINUE;
@@ -342,12 +364,12 @@ void CJoystickDX::Update()
     int i = 0;
     // DInput is telling us that the input stream has been interrupted. We
     // aren't tracking any state between polls, so we don't have any special
-    // reset that needs to be done. We just re-acquire and try again.
+    // reset that needs to be done. We just re-acquire and try again 10 times.
     do
     {
       hr = pJoy->Acquire();
     }
-    while ((hr == DIERR_INPUTLOST) && (i++ < 10));
+    while (hr == DIERR_INPUTLOST && i++ < 10);
 
     // hr may be DIERR_OTHERAPPHASPRIO or other errors. This may occur when the
     // app is minimized or in the process of switching, so just try again later.
@@ -355,34 +377,35 @@ void CJoystickDX::Update()
   }
 
   // Get the input's device state
-  if (FAILED(hr = pJoy->GetDeviceState(sizeof(DIJOYSTATE2), &js)))
+  hr = pJoy->GetDeviceState(sizeof(DIJOYSTATE2), &js);
+  if (FAILED(hr))
     return; // The device should have been acquired during the Poll()
 
   // Gamepad buttons
-  for (unsigned int b = 0; b < m_state.buttonCount; b++)
+  for (unsigned int b = 0; b < m_state.buttons.size(); b++)
     m_state.buttons[b] = ((js.rgbButtons[b] & 0x80) ? 1: 0);
 
   // Gamepad hats
-  for (unsigned int h = 0; h < m_state.hatCount; h++)
+  for (unsigned int h = 0; h < m_state.hats.size(); h++)
   {
     m_state.hats[h].Center();
     bool bCentered = ((js.rgdwPOV[h] & 0xFFFF) == 0xFFFF);
     if (!bCentered)
     {
       if ((JOY_POV_NW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_360) || js.rgdwPOV[h] <= JOY_POV_NE)
-        m_state.hats[h].up = 1;
+        m_state.hats[h].up = true;
       else if (JOY_POV_SE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SW)
-        m_state.hats[h].down = 1;
+        m_state.hats[h].down = true;
 
       if (JOY_POV_NE <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_SE)
-        m_state.hats[h].right = 1;
+        m_state.hats[h].right = true;
       else if (JOY_POV_SW <= js.rgdwPOV[h] && js.rgdwPOV[h] <= JOY_POV_NW)
-        m_state.hats[h].left = 1;
+        m_state.hats[h].left = true;
     }
   }
 
   // Gamepad axes
   long amounts[] = {js.lX, js.lY, js.lZ, js.lRx, js.lRy, js.lRz};
-  for (unsigned int a = 0; a < std::min(m_state.axisCount, 6U); a++)
-    m_state.NormalizeAxis(a, amounts[a], MAX_AXISAMOUNT);
+  for (unsigned int a = 0; a < std::min(m_state.axes.size(), 6U); a++)
+    m_state.SetAxis(a, amounts[a], MAX_AXISAMOUNT);
 }

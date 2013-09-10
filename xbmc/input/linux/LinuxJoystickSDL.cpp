@@ -30,18 +30,17 @@
 #define MAX_AXES          64
 #define MAX_AXISAMOUNT    32768
 
+using namespace JOYSTICK;
 
 CLinuxJoystickSDL::CLinuxJoystickSDL(std::string name, SDL_Joystick *pJoystick, unsigned int id) : m_pJoystick(pJoystick), m_state()
 {
   m_state.id          = id;
   m_state.name        = name;
-  m_state.buttonCount = std::min(m_state.buttonCount, (unsigned int)SDL_JoystickNumButtons(m_pJoystick));
-  m_state.hatCount    = std::min(m_state.hatCount, (unsigned int)SDL_JoystickNumButtons(m_pJoystick));
-  m_state.axisCount   = std::min(m_state.axisCount, (unsigned int)SDL_JoystickNumButtons(m_pJoystick));
+  m_state.ResetState(SDL_JoystickNumButtons(m_pJoystick), SDL_JoystickNumButtons(m_pJoystick), SDL_JoystickNumButtons(m_pJoystick));;
 
   CLog::Log(LOGNOTICE, "Enabled Joystick: \"%s\" (SDL)", name.c_str());
   CLog::Log(LOGNOTICE, "Details: Total Axes: %u Total Hats: %u Total Buttons: %u",
-    m_state.axisCount, m_state.hatCount, m_state.buttonCount);
+    (unsigned int)m_state.axes.size(), (unsigned int)m_state.hats.size(), (unsigned int)m_state.buttons.size());
 }
 
 /* static */
@@ -103,23 +102,23 @@ void CLinuxJoystickSDL::Update()
   SDL_JoystickUpdate();
 
   // Gamepad buttons
-  for (unsigned int b = 0; b < m_state.buttonCount; b++)
-    m_state.buttons[b] = (SDL_JoystickGetButton(m_pJoystick, b) ? 1 : 0);
+  for (unsigned int b = 0; b < m_state.buttons.size(); b++)
+    m_state.buttons[b] = (SDL_JoystickGetButton(m_pJoystick, b) ? true : false);
 
   // Gamepad hats
-  for (unsigned int h = 0; h < m_state.hatCount; h++)
+  for (unsigned int h = 0; h < m_state.hats.size(); h++)
   {
     m_state.hats[h].Center();
     uint8_t hat = SDL_JoystickGetHat(m_pJoystick, h);
-    if      (hat & SDL_HAT_UP)    m_state.hats[h].up = 1;
-    else if (hat & SDL_HAT_DOWN)  m_state.hats[h].down = 1;
-    if      (hat & SDL_HAT_RIGHT) m_state.hats[h].right = 1;
-    else if (hat & SDL_HAT_LEFT)  m_state.hats[h].left = 1;
+    if      (hat & SDL_HAT_UP)    m_state.hats[h].up = true;
+    else if (hat & SDL_HAT_DOWN)  m_state.hats[h].down = true;
+    if      (hat & SDL_HAT_RIGHT) m_state.hats[h].right = true;
+    else if (hat & SDL_HAT_LEFT)  m_state.hats[h].left = true;
   }
 
   // Gamepad axes
-  for (unsigned int a = 0; a < m_state.axisCount; a++)
-    m_state.NormalizeAxis(a, (long)SDL_JoystickGetAxis(m_pJoystick, a), MAX_AXISAMOUNT);
+  for (unsigned int a = 0; a < m_state.axes.size(); a++)
+    m_state.SetAxis(a, (long)SDL_JoystickGetAxis(m_pJoystick, a), MAX_AXISAMOUNT);
 }
 
 #endif // HAS_SDL_JOYSTICK

@@ -48,7 +48,7 @@ public:
 
   virtual void Update() = 0;
 
-  virtual const SJoystick &GetState() const = 0;
+  virtual const JOYSTICK::Joystick &GetState() const = 0;
 };
 
 typedef std::vector<boost::shared_ptr<IJoystick> > JoystickArray;

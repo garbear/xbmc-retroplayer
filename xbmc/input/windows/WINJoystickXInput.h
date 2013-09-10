@@ -23,6 +23,9 @@
 
 union SDL_Event;
 
+namespace JOYSTICK
+{
+
 class CJoystickXInput : public IJoystick
 {
 public:
@@ -31,12 +34,14 @@ public:
 
   virtual ~CJoystickXInput() { }
   virtual void Update();
-  virtual const SJoystick &GetState() const { return m_state; }
+  virtual const Joystick &GetState() const { return m_state; }
 
 private:
   CJoystickXInput(unsigned int controllerID, unsigned int id);
 
-  SJoystick    m_state;
+  Joystick     m_state;
   unsigned int m_controllerID; // XInput port, in the range (0, 3)
   DWORD        m_dwPacketNumber; // If unchanged, controller state hasn't changed
 };
+
+} // namespace JOYSTICK

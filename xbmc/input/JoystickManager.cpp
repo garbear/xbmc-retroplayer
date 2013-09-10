@@ -30,6 +30,7 @@
 #include "peripherals/devices/PeripheralImon.h"
 #include "settings/Setting.h"
 #include "utils/log.h"
+#include "utils/StdString.h"
 
 // Include joystick APIs
 #if defined(TARGET_WINDOWS)
@@ -43,8 +44,6 @@
 #include "input/linux/LinuxJoystickSDL.h"
 #endif
 
-
-#define OCCURED(time) ((time) <= XbmcThreads::SystemClockMillis())
 #ifndef ARRAY_LENGTH
 #define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 #endif
@@ -54,10 +53,34 @@
 
 #define ACTION_FIRST_DELAY      500 // ms
 #define ACTION_REPEAT_DELAY     100 // ms
-// Axis must be pushed past this for digital action repeats
-#define AXIS_DIGITAL_DEADZONE   0.5f
+#define AXIS_DIGITAL_DEADZONE   0.5f // Axis must be pushed past this for digital action repeats
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
+using namespace std;
+
+void ActionTracker::Reset()
+{
+  actionID = 0;
+  name.clear();
+  timeout.SetInfinite();
+}
+
+void ActionTracker::Track(const CAction &action)
+{
+  if (actionID != action.GetID())
+  {
+    // A new button was pressed, send the action and start tracking it
+    actionID = action.GetID();
+    name = action.GetName();
+    timeout.Set(ACTION_FIRST_DELAY);
+  }
+  else if (timeout.IsTimePast())
+  {
+    // Same button was pressed, send the action if the repeat delay has elapsed
+    timeout.Set(ACTION_REPEAT_DELAY);
+  }
+}
 
 CJoystickManager &CJoystickManager::Get()
 {
@@ -82,11 +105,12 @@ void CJoystickManager::Initialize()
   CLinuxJoystickSDL::Initialize(m_joysticks);
 #endif
 
+  // Truncate array
   while (m_joysticks.size() > ARRAY_LENGTH(m_states))
     m_joysticks.pop_back();
 
   for (unsigned int i = 0; i < ARRAY_LENGTH(m_states); i++)
-    m_states[i].Reset();
+    m_states[i].ResetState();
 }
 
 void CJoystickManager::DeInitialize()
@@ -104,7 +128,7 @@ void CJoystickManager::DeInitialize()
 #endif
 
   for (unsigned int i = 0; i < ARRAY_LENGTH(m_states); i++)
-    m_states[i].Reset();
+    m_states[i].ResetState();
 
    m_actionTracker.Reset(); 
 }
@@ -116,6 +140,7 @@ void CJoystickManager::Update()
 
   for (JoystickArray::iterator it = m_joysticks.begin(); it != m_joysticks.end(); it++)
     (*it)->Update();
+
   ProcessStateChanges();
 }
 
@@ -129,22 +154,22 @@ void CJoystickManager::ProcessStateChanges()
   }
 
   // If tracking an action and the time has elapsed, execute the action now
-  if (m_actionTracker.actionID && OCCURED(m_actionTracker.targetTime))
+  if (m_actionTracker.actionID && m_actionTracker.timeout.IsTimePast())
   {
     CAction action(m_actionTracker.actionID, 1.0f, 0.0f, m_actionTracker.name);
     g_application.ExecuteInputAction(action);
     m_actionTracker.Track(action); // Update the timer
   }
 
-  // Reset the wakeup check, so that the check will be performed next button press also
+  // Reset the wakeup check, so that the check will be performed for the next button press also
   ResetWakeup();
 }
 
-void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
+void CJoystickManager::ProcessButtonPresses(Joystick &oldState, const Joystick &newState, unsigned int joyID)
 {
   CRetroPlayerInput *joystickHandler = g_application.m_pPlayer->GetJoystickHandler();
 
-  for (unsigned int i = 0; i < newState.buttonCount; i++)
+  for (unsigned int i = 0; i < newState.buttons.size(); i++)
   {
     if (oldState.buttons[i] == newState.buttons[i])
       continue;
@@ -197,14 +222,14 @@ void CJoystickManager::ProcessButtonPresses(SJoystick &oldState, const SJoystick
   }
 }
 
-void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
+void CJoystickManager::ProcessHatPresses(Joystick &oldState, const Joystick &newState, unsigned int joyID)
 {
   CRetroPlayerInput *joystickHandler = g_application.m_pPlayer->GetJoystickHandler();
 
-  for (unsigned int i = 0; i < newState.hatCount; i++)
+  for (unsigned int i = 0; i < newState.hats.size(); i++)
   {
-    SJoystick::Hat &oldHat = oldState.hats[i];
-    const SJoystick::Hat &newHat = newState.hats[i];
+    Hat &oldHat = oldState.hats[i];
+    const Hat &newHat = newState.hats[i];
     if (oldHat == newHat)
       continue;
 
@@ -265,11 +290,11 @@ void CJoystickManager::ProcessHatPresses(SJoystick &oldState, const SJoystick &n
   }
 }
 
-void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &newState, unsigned int joyID)
+void CJoystickManager::ProcessAxisMotion(Joystick &oldState, const Joystick &newState, unsigned int joyID)
 {
   CRetroPlayerInput *joystickHandler = g_application.m_pPlayer->GetJoystickHandler();
 
-  for (unsigned int i = 0; i < newState.axisCount; i++)
+  for (unsigned int i = 0; i < newState.axes.size(); i++)
   {
     // Absolute magnitude
     float absAxis = ABS(newState.axes[i]);
@@ -366,29 +391,6 @@ void CJoystickManager::ProcessAxisMotion(SJoystick &oldState, const SJoystick &n
       // The presence of analog actions disables others from being tracked
       m_actionTracker.Reset();
     }
-  }
-}
-
-void CJoystickManager::ActionTracker::Reset()
-{
-  actionID = 0;
-  targetTime = 0;
-  name.clear();
-}
-
-void CJoystickManager::ActionTracker::Track(const CAction &action)
-{
-  if (actionID != action.GetID())
-  {
-    // A new button was pressed, send the action and start tracking it
-    actionID   = action.GetID();
-    name       = action.GetName();
-    targetTime = XbmcThreads::SystemClockMillis() + ACTION_FIRST_DELAY;
-  }
-  else if (OCCURED(targetTime))
-  {
-    // Same button was pressed, send the action if the delay has elapsed
-    targetTime = XbmcThreads::SystemClockMillis() + ACTION_REPEAT_DELAY;
   }
 }
 

@@ -23,7 +23,19 @@
 
 #include <string.h>
 
-unsigned char &SJoystick::Hat::operator[](unsigned int i)
+using namespace JOYSTICK;
+
+void Hat::Center()
+{
+  up = right = down = left = false;
+}
+
+bool Hat::operator==(const Hat &rhs) const
+{
+  return up == rhs.up && right == rhs.right && down == rhs.down && left == rhs.left;
+}
+
+bool &Hat::operator[](unsigned int i)
 {
   switch (i)
   {
@@ -35,8 +47,8 @@ unsigned char &SJoystick::Hat::operator[](unsigned int i)
   }
 }
 
-#define HAT_MAKE_DIRECTION(n, e, s, w) ((n) << 3 | (e) << 2 | (s) << 1 | (w))
-const char *SJoystick::Hat::GetDirection() const
+#define HAT_MAKE_DIRECTION(n, e, s, w) ((n ? 1 : 0) << 3 | (e ? 1 : 0) << 2 | (s ? 1 : 0) << 1 | (w ? 1 : 0))
+const char *Hat::GetDirection() const
 {
   switch (HAT_MAKE_DIRECTION(up, right, down, left))
   {
@@ -52,18 +64,22 @@ const char *SJoystick::Hat::GetDirection() const
   }
 }
 
-void SJoystick::Reset()
+void Joystick::ResetState(unsigned int buttonCount /* = GAMEPAD_BUTTON_COUNT */,
+                          unsigned int hatCount /* = GAMEPAD_HAT_COUNT */,
+                          unsigned int axisCount /* = GAMEPAD_AXIS_COUNT */)
 {
-  buttonCount = sizeof(buttons) / sizeof(buttons[0]);
-  hatCount    = sizeof(hats) / sizeof(hats[0]);
-  axisCount   = sizeof(axes) / sizeof(axes[0]);
-  memset(buttons, 0, sizeof(buttons));
-  memset(axes, 0, sizeof(axes));
+  buttons.clear();
+  hats.clear();
+  axes.clear();
+
+  buttons.resize(buttonCount);
+  hats.resize(hatCount);
+  axes.resize(axisCount);
 }
 
-void SJoystick::NormalizeAxis(unsigned int axis, long value, long maxAxisAmount)
+void Joystick::SetAxis(unsigned int axis, long value, long maxAxisAmount)
 {
-  if (axis >= axisCount)
+  if (axis >= axes.size())
     return;
   if (value > maxAxisAmount)
     value = maxAxisAmount;

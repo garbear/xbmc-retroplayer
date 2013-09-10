@@ -34,6 +34,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_version.h>
 #include "input/JoystickManager.h"
+
+using namespace JOYSTICK;
 #endif
 
 bool CHALManager::NewMessage;

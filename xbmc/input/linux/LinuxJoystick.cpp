@@ -54,30 +54,34 @@
 #define JSIOCGBTNMAP_LARGE _IOR('j', 0x34, __u16[KEY_MAX_LARGE - BTN_MISC + 1])
 #define JSIOCGBTNMAP_SMALL _IOR('j', 0x34, __u16[KEY_MAX_SMALL - BTN_MISC + 1])
 
+#define JOYSTICK_UNKNOWN   "Unknown XBMC-Compatible Linux Joystick"
+#define MAX_AXIS           32767
+
+using namespace JOYSTICK;
 using namespace std;
 
 static const char *axis_names[ABS_MAX + 1] =
 {
-"X",     "Y",     "Z",     "Rx",    "Ry",    "Rz",    "Throttle", "Rudder",
-"Wheel", "Gas",   "Brake", "?",     "?",     "?",     "?",        "?",
-"Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X", "Hat2Y", "Hat3X",    "Hat3Y",
-"?",     "?",     "?",      "?",    "?",     "?",     "?",
+  "X",     "Y",     "Z",     "Rx",    "Ry",    "Rz",    "Throttle", "Rudder",
+  "Wheel", "Gas",   "Brake", "?",     "?",     "?",     "?",        "?",
+  "Hat0X", "Hat0Y", "Hat1X", "Hat1Y", "Hat2X", "Hat2Y", "Hat3X",    "Hat3Y",
+  "?",     "?",     "?",      "?",    "?",     "?",     "?",
 };
 
 static const char *button_names[KEY_MAX - BTN_MISC + 1] =
 {
-"Btn0",       "Btn1",     "Btn2",      "Btn3",      "Btn4",      "Btn5",     "Btn6",
-"Btn7",       "Btn8",     "Btn9",      "?",         "?",         "?",        "?",
-"?",          "?",        "LeftBtn",   "RightBtn",  "MiddleBtn", "SideBtn",  "ExtraBtn",
-"ForwardBtn", "BackBtn",  "TaskBtn",   "?",         "?",         "?",        "?",
-"?",          "?",        "?",         "?",         "Trigger",   "ThumbBtn", "ThumbBtn2",
-"TopBtn",     "TopBtn2",  "PinkieBtn", "BaseBtn",   "BaseBtn2",  "BaseBtn3", "BaseBtn4",
-"BaseBtn5",   "BaseBtn6", "BtnDead",   "BtnA",      "BtnB",      "BtnC",     "BtnX",
-"BtnY",       "BtnZ",     "BtnTL",     "BtnTR",     "BtnTL2",    "BtnTR2",   "BtnSelect",
-"BtnStart",   "BtnMode",  "BtnThumbL", "BtnThumbR", "?",         "?",        "?",
-"?",          "?",        "?",         "?",         "?",         "?",        "?",
-"?",          "?",        "?",         "?",         "?",         "?",        "?",
-"WheelBtn",   "Gear up",
+  "Btn0",       "Btn1",     "Btn2",      "Btn3",      "Btn4",      "Btn5",     "Btn6",
+  "Btn7",       "Btn8",     "Btn9",      "?",         "?",         "?",        "?",
+  "?",          "?",        "LeftBtn",   "RightBtn",  "MiddleBtn", "SideBtn",  "ExtraBtn",
+  "ForwardBtn", "BackBtn",  "TaskBtn",   "?",         "?",         "?",        "?",
+  "?",          "?",        "?",         "?",         "Trigger",   "ThumbBtn", "ThumbBtn2",
+  "TopBtn",     "TopBtn2",  "PinkieBtn", "BaseBtn",   "BaseBtn2",  "BaseBtn3", "BaseBtn4",
+  "BaseBtn5",   "BaseBtn6", "BtnDead",   "BtnA",      "BtnB",      "BtnC",     "BtnX",
+  "BtnY",       "BtnZ",     "BtnTL",     "BtnTR",     "BtnTL2",    "BtnTR2",   "BtnSelect",
+  "BtnStart",   "BtnMode",  "BtnThumbL", "BtnThumbR", "?",         "?",        "?",
+  "?",          "?",        "?",         "?",         "?",         "?",        "?",
+  "?",          "?",        "?",         "?",         "?",         "?",        "?",
+  "WheelBtn",   "Gear up",
 };
 
 CLinuxJoystick::CLinuxJoystick(int fd, unsigned int id, const char *name, const std::string &filename,
@@ -85,9 +89,7 @@ CLinuxJoystick::CLinuxJoystick(int fd, unsigned int id, const char *name, const 
 {
   m_state.id          = id;
   m_state.name        = name;
-  m_state.buttonCount = std::min(m_state.buttonCount, (unsigned int)buttons);
-  m_state.hatCount    = 0;
-  m_state.axisCount   = std::min(m_state.axisCount, (unsigned int)axes);
+  m_state.ResetState(buttons, 0, axes);
 }
 
 CLinuxJoystick::~CLinuxJoystick()
@@ -108,7 +110,7 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
   }
 
   dirent *pDirent;
-  while ((pDirent = readdir(pd))!= NULL)
+  while ((pDirent = readdir(pd)) != NULL)
   {
     if (strncmp(pDirent->d_name, "js", 2) == 0)
     {
@@ -126,7 +128,7 @@ void CLinuxJoystick::Initialize(JoystickArray &joysticks)
       unsigned char axes = 0;
       unsigned char buttons = 0;
       int version = 0x000000;
-      char name[128] = "Unknown XBMC-Compatible Linux Joystick";
+      char name[128] = JOYSTICK_UNKNOWN;
 
       if (ioctl(fd, JSIOCGVERSION, &version) < 0 ||
           ioctl(fd, JSIOCGAXES, &axes) < 0 ||
@@ -253,7 +255,8 @@ int CLinuxJoystick::DetermineIoctl(int fd, int *ioctls, uint16_t *buttonMap, int
   /* Try each ioctl in turn. */
   for (int i = 0; ioctls[i] != 0; i++)
   {
-    if ((retval = ioctl(fd, ioctls[i], (void*)buttonMap)) >= 0)
+    retval = ioctl(fd, ioctls[i], (void*)buttonMap);
+    if (retval >= 0)
     {
       /* The ioctl did something. */
       ioctl_used = ioctls[i];
@@ -310,12 +313,12 @@ void CLinuxJoystick::Update()
     switch (joyEvent.type)
     {
     case JS_EVENT_BUTTON:
-      if (joyEvent.number < m_state.buttonCount)
+      if (joyEvent.number < m_state.buttons.size())
         m_state.buttons[joyEvent.number] = joyEvent.value;
       break;
     case JS_EVENT_AXIS:
-      if (joyEvent.number < m_state.axisCount)
-        m_state.NormalizeAxis(joyEvent.number, joyEvent.value, 32767);
+      if (joyEvent.number < m_state.axes.size())
+        m_state.SetAxis(joyEvent.number, joyEvent.value, MAX_AXIS);
       break;
     default:
       break;

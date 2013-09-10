@@ -24,6 +24,9 @@
 
 #include <string>
 
+namespace JOYSTICK
+{
+
 class CJoystickDX : public IJoystick
 {
 public:
@@ -32,7 +35,7 @@ public:
 
   virtual ~CJoystickDX() { Release(); }
   virtual void Update();
-  virtual const SJoystick &GetState() const { return m_state; }
+  virtual const Joystick &GetState() const { return m_state; }
 
 private:
   CJoystickDX(LPDIRECTINPUTDEVICE8 joystickDevice, const std::string &name, const DIDEVCAPS &devCaps);
@@ -45,5 +48,7 @@ private:
 
   static LPDIRECTINPUT8 m_pDirectInput;
   LPDIRECTINPUTDEVICE8  m_joystickDevice;
-  SJoystick             m_state;
+  Joystick              m_state;
 };
+
+} // namespace JOYSTICK

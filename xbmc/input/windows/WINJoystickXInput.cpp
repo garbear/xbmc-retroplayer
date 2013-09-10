@@ -28,16 +28,21 @@
 #pragma comment(lib, "XInput.lib")
 
 #define XINPUT_ALIAS  "XBMC-Compatible XInput Controller"
+#define MAX_JOYSTICKS 4
+#define MAX_AXIS      32768
+#define MAX_TRIGGER   255
+#define BUTTON_COUNT  10
+#define HAT_COUNT     1
+#define AXIS_COUNT    5
 
+using namespace JOYSTICK;
 
 CJoystickXInput::CJoystickXInput(unsigned int controllerID, unsigned int id)
   : m_state(), m_controllerID(controllerID), m_dwPacketNumber(0)
 {
-  m_state.id          = id;
-  m_state.name        = XINPUT_ALIAS;
-  m_state.buttonCount = std::min(m_state.buttonCount, 10U);
-  m_state.hatCount    = std::min(m_state.hatCount, 1U);
-  m_state.axisCount   = std::min(m_state.axisCount, 5U);
+  m_state.id = id;
+  m_state.name = XINPUT_ALIAS;
+  m_state.ResetState(BUTTON_COUNT, HAT_COUNT, AXIS_COUNT);
 }
 
 /* static */
@@ -47,7 +52,7 @@ void CJoystickXInput::Initialize(JoystickArray &joysticks)
 
   XINPUT_STATE controllerState; // No need to memset, only checking for controller existence
 
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < MAX_JOYSTICKS; i++)
   {
     DWORD result = XInputGetState(i, &controllerState);
     if (result != ERROR_SUCCESS)
@@ -86,26 +91,27 @@ void CJoystickXInput::Update()
   m_dwPacketNumber = controllerState.dwPacketNumber;
 
   // Map to DirectInput controls
-  m_state.hats[0].up = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP ? 1 : 0;
-  m_state.hats[0].right = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT ? 1 : 0;
-  m_state.hats[0].down = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN ? 1 : 0;
-  m_state.hats[0].left = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT ? 1 : 0;
+  m_state.buttons[0] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_A) ? true : false;
+  m_state.buttons[1] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_B) ? true : false;
+  m_state.buttons[2] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_X) ? true : false;
+  m_state.buttons[3] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_Y) ? true : false;
+  m_state.buttons[4] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER) ? true : false;
+  m_state.buttons[5] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER) ? true : false;
+  m_state.buttons[6] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) ? true : false;
+  m_state.buttons[7] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_START) ? true : false;
+  m_state.buttons[8] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB) ? true : false;
+  m_state.buttons[9] = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB) ? true : false;
 
-  m_state.buttons[0] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_A ? 1 : 0;
-  m_state.buttons[1] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_B ? 1 : 0;
-  m_state.buttons[2] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_X ? 1 : 0;
-  m_state.buttons[3] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_Y ? 1 : 0;
-  m_state.buttons[4] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER ? 1 : 0;
-  m_state.buttons[5] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER ? 1 : 0;
-  m_state.buttons[6] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK ? 1 : 0;
-  m_state.buttons[7] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_START ? 1 : 0;
-  m_state.buttons[8] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB ? 1 : 0;
-  m_state.buttons[9] = controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB ? 1 : 0;
+  m_state.hats[0].up    = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP) ? true : false;
+  m_state.hats[0].right = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT) ? true : false;
+  m_state.hats[0].down  = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN) ? true : false;
+  m_state.hats[0].left  = (controllerState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT) ? true : false;
 
-  m_state.NormalizeAxis(0, controllerState.Gamepad.sThumbLX, 32768);
-  m_state.NormalizeAxis(1, -controllerState.Gamepad.sThumbLY, 32768);
-  m_state.NormalizeAxis(2, (long)controllerState.Gamepad.bLeftTrigger -
-    (long)controllerState.Gamepad.bRightTrigger, 255); // Combine into a single axis, like DirectInput
-  m_state.NormalizeAxis(3, controllerState.Gamepad.sThumbRX, 32768);
-  m_state.NormalizeAxis(4, -controllerState.Gamepad.sThumbRY, 32768);
+  // Combine triggers into a single axis, like DirectInput
+  const long triggerAxis = (long)controllerState.Gamepad.bLeftTrigger - (long)controllerState.Gamepad.bRightTrigger;
+  m_state.SetAxis(0, controllerState.Gamepad.sThumbLX, MAX_AXIS);
+  m_state.SetAxis(1, -controllerState.Gamepad.sThumbLY, MAX_AXIS);
+  m_state.SetAxis(2, triggerAxis, MAX_TRIGGER); 
+  m_state.SetAxis(3, controllerState.Gamepad.sThumbRX, MAX_AXIS);
+  m_state.SetAxis(4, -controllerState.Gamepad.sThumbRY, MAX_AXIS);
 }

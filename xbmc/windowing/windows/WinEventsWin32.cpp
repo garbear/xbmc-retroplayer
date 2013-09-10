@@ -54,6 +54,7 @@
 
 #ifdef TARGET_WINDOWS
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 HWND g_hWnd = NULL;

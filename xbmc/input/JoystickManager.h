@@ -22,15 +22,36 @@
 
 #include "IJoystick.h"
 #include "settings/ISettingCallback.h"
-#include "utils/StdString.h"
+#include "threads/SystemClock.h"
+
+#include <string>
 
 class CAction;
 
-// Class to manage all connected joysticks
+namespace JOYSTICK
+{
+
+/**
+ * Track key presses for deferred action repeats.
+ */
+struct ActionTracker
+{
+  ActionTracker() { Reset(); }
+  void Reset();
+  void Track(const CAction &action);
+
+  int                  actionID; // Action ID, or 0 if not tracking any action
+  std::string          name; // Action name
+  XbmcThreads::EndTime timeout; // Timeout until action is repeated
+};
+
+/**
+ * Class to manage all connected joysticks.
+ */
 class CJoystickManager : public ISettingCallback
 {
 private:
-  CJoystickManager() : m_bEnabled(false), m_bWakeupChecked(false), m_actionTracker() { }
+  CJoystickManager() : m_bEnabled(false), m_bWakeupChecked(false) { }
   virtual ~CJoystickManager() { DeInitialize(); }
 
 public:
@@ -43,16 +64,23 @@ public:
   void Reinitialize() { Initialize(); }
   void Reset() { m_actionTracker.Reset(); }
 
+  // Inherited from ISettingCallback
   virtual void OnSettingChanged(const CSetting *setting);
 
 private:
   void Initialize();
   void DeInitialize();
 
+  /**
+   * After updating, look for changes in state.
+   * @param oldState - previous joystick state, set to newState as a post-condition
+   * @param newState - the updated joystick state
+   * @param joyID - the ID of the joystick being processed
+   */
   void ProcessStateChanges();
-  void ProcessButtonPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID);
-  void ProcessHatPresses(SJoystick &oldState, const SJoystick &newState, unsigned int joyID);
-  void ProcessAxisMotion(SJoystick &oldState, const SJoystick &newState, unsigned int joyID);
+  void ProcessButtonPresses(Joystick &oldState, const Joystick &newState, unsigned int joyID);
+  void ProcessHatPresses(Joystick &oldState, const Joystick &newState, unsigned int joyID);
+  void ProcessAxisMotion(Joystick &oldState, const Joystick &newState, unsigned int joyID);
 
   // Returns true if this wakes up from the screensaver
   bool Wakeup();
@@ -62,20 +90,11 @@ private:
   inline bool IsGameControl(int actionID);
 
   JoystickArray m_joysticks;
-  SJoystick     m_states[GAMEPAD_MAX_CONTROLLERS];
+  Joystick      m_states[GAMEPAD_MAX_CONTROLLERS];
   bool          m_bEnabled;
   bool          m_bWakeupChecked; // true if WakeupCheck() has been called
 
-  struct ActionTracker
-  {
-    ActionTracker() { Reset(); }
-    void Reset();
-    void Track(const CAction &action);
-
-    int        actionID;
-    CStdString name;
-    uint32_t   targetTime;
-  };
-
   ActionTracker m_actionTracker;
 };
+
+} // namespace INPUT

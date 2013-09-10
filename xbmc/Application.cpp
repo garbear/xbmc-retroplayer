@@ -370,6 +370,7 @@ using namespace ANNOUNCEMENT;
 using namespace PVR;
 using namespace EPG;
 using namespace PERIPHERALS;
+using namespace JOYSTICK;
 
 using namespace XbmcThreads;
 

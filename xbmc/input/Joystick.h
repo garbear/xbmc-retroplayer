@@ -20,6 +20,7 @@
  */
 
 #include <string>
+#include <vector>
 
 #define JACTIVE_NONE      0x00000000
 #define JACTIVE_BUTTON    0x00000001
@@ -33,59 +34,72 @@
 #define GAMEPAD_BUTTON_COUNT    32
 #define GAMEPAD_HAT_COUNT       4
 #define GAMEPAD_AXIS_COUNT      6
+
 #define GAMEPAD_MAX_CONTROLLERS 4
+
+namespace JOYSTICK
+{
+
+/**
+ * An arrow-based device on a gamepad. Legally, no more than two buttons can be
+ * pressed, and only if they are adjacent. If no buttons are pressed (or the
+ * hat is in an invalid state), the hat is considered centered.
+ */
+struct Hat
+{
+  Hat() { Center(); }
+  void Center();
+
+  bool operator==(const Hat &rhs) const;
+  bool operator!=(const Hat &rhs) const { return !(*this == rhs); }
+
+  /**
+   * Iterate through cardinal directions in an ordinal fashion.
+   *   Hat[0] == up
+   *   Hat[1] == right
+   *   Hat[2] == down
+   *   Hat[3] == left
+   */
+  bool       &operator[](unsigned int i);
+  const bool &operator[](unsigned int i) const { return const_cast<Hat&>(*this)[i]; }
+  
+  /**
+   * Helper function to translate this hat into a cardinal direction
+   * ("N", "NE", "E", ...) or "CENTERED".
+   */
+  const char *GetDirection() const;
+
+  bool up;
+  bool right;
+  bool down;
+  bool left;
+};
 
 /**
  * Abstract representation of a joystick. Joysticks can have buttons, hats and
  * analog axes in the range [-1, 1]. Some joystick APIs (the Linux Joystick API,
- * (for example) report hats as axes with an integer value of -1, 0 or 1. No
+ * for example) report hats as axes with an integer value of -1, 0 or 1. No
  * effort should be made to decode these axes back to hats, as this processing
  * is done in CJoystickManager.
  */
-struct SJoystick
+struct Joystick
 {
-private:
-  SJoystick(const SJoystick &other);
-  SJoystick &operator=(const SJoystick &rhs);
-
 public:
+  Joystick() : id(0) { ResetState(); }
+  void ResetState(unsigned int buttonCount = GAMEPAD_BUTTON_COUNT,
+                  unsigned int hatCount = GAMEPAD_HAT_COUNT,
+                  unsigned int axisCount = GAMEPAD_AXIS_COUNT);
+
   /**
-    * An arrow-based device on a gamepad. Legally, no more than two buttons can
-    * be pressed, and only if they are adjacent. If no buttons are pressed, the
-    * hat is centered.
-    */
-  struct Hat
-  {
-    Hat() { Center(); }
-    void Center() { up = right = down = left = 0; }
+   * Helper function to normalize a value to maxAxisAmount.
+   */
+  void SetAxis(unsigned int axis, long value, long maxAxisAmount);
 
-    bool operator==(const Hat &lhs) const { return up == lhs.up && right == lhs.right && down == lhs.down && left == lhs.left; }
-    bool operator!=(const Hat &lhs) const { return *this != lhs; }
-
-    // Iterate through cardinal directions in an ordinal fashion
-    const unsigned char &operator[](unsigned int i) const { return const_cast<Hat&>(*this)[i]; }
-    unsigned char &operator[](unsigned int i);
-
-    // Translate this hat into a cardinal direction ("N", "NE", "E", ...) or "CENTERED"
-    const char *GetDirection() const;
-
-    unsigned char up;
-    unsigned char right;
-    unsigned char down;
-    unsigned char left;
-  };
-
-  SJoystick() : id(0) { Reset(); }
-  void Reset();
-
-  void NormalizeAxis(unsigned int axis, long value, long maxAxisAmount);
-
-  std::string   name;
-  unsigned int  id;
-  unsigned char buttons[GAMEPAD_BUTTON_COUNT];
-  unsigned int  buttonCount;
-  Hat           hats[GAMEPAD_HAT_COUNT];
-  unsigned int  hatCount;
-  float         axes[GAMEPAD_AXIS_COUNT];
-  unsigned int  axisCount;
+  std::string        name;
+  unsigned int       id;
+  std::vector<bool>  buttons;
+  std::vector<Hat>   hats;
+  std::vector<float> axes;
 };
+
+} // namespace INPUT
