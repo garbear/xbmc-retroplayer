@@ -364,6 +364,9 @@
     <Filter Include="games\windows\wizards">
       <UniqueIdentifier>{f984f4e3-8778-4967-b819-ff171950a0b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\tags">
+      <UniqueIdentifier>{43ec8ed7-e2f3-4e78-8d03-350479c4b40a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3213,6 +3216,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\guilib\GUIGameController.cpp">
       <Filter>guilib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp">
+      <Filter>games\tags</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6229,6 +6238,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\guilib\GUIGameController.h">
       <Filter>guilib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
+      <Filter>games\tags</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
