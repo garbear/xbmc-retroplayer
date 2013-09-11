@@ -54,6 +54,10 @@ namespace PVR
   typedef std::shared_ptr<PVR::CPVRRecording> CPVRRecordingPtr;
 }
 class CPictureInfoTag;
+namespace GAME
+{
+  class CGameInfoTag;
+}
 
 class CAlbum;
 class CArtist;
@@ -168,6 +172,7 @@ public:
    */
   bool IsAudio() const;
 
+  bool IsGame() const;
   bool IsKaraoke() const;
   bool IsCUESheet() const;
   bool IsInternetStream(const bool bStrictCheck = false) const;
@@ -336,6 +341,18 @@ public:
     return m_pictureInfoTag;
   }
 
+  inline bool HasGameInfoTag() const
+  {
+    return m_gameInfoTag != NULL;
+  }
+
+  GAME::CGameInfoTag* GetGameInfoTag();
+
+  inline const GAME::CGameInfoTag* GetGameInfoTag() const
+  {
+    return m_gameInfoTag;
+  }
+
   CPictureInfoTag* GetPictureInfoTag();
 
   /*!
@@ -406,6 +423,7 @@ public:
   std::string FindTrailer() const;
 
   virtual bool LoadMusicTag();
+  virtual bool LoadGameTag();
 
   /* Returns the content type of this item if known */
   const std::string& GetMimeType() const { return m_mimetype; }
@@ -498,6 +516,7 @@ private:
   PVR::CPVRRecordingPtr m_pvrRecordingInfoTag;
   PVR::CPVRTimerInfoTag * m_pvrTimerInfoTag;
   CPictureInfoTag* m_pictureInfoTag;
+  GAME::CGameInfoTag* m_gameInfoTag;
   bool m_bIsAlbum;
 
   CCueDocumentPtr m_cueDocument;
