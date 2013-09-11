@@ -305,6 +305,12 @@
 		680F1A0C1B2A5B1D0008A19D /* DefaultController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680F1A051B2A5B1D0008A19D /* DefaultController.cpp */; };
 		680F1A0D1B2A5B1D0008A19D /* DefaultController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680F1A051B2A5B1D0008A19D /* DefaultController.cpp */; };
 		680F1A0E1B2A5B1D0008A19D /* DefaultController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680F1A051B2A5B1D0008A19D /* DefaultController.cpp */; };
+		681EC9161B2A88240064E12D /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9121B2A88240064E12D /* GameInfoTag.cpp */; };
+		681EC9171B2A88240064E12D /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9121B2A88240064E12D /* GameInfoTag.cpp */; };
+		681EC9181B2A88240064E12D /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9121B2A88240064E12D /* GameInfoTag.cpp */; };
+		681EC9191B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
+		681EC91A1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
+		681EC91B1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
 		68A587661B2A8342002D3F53 /* GameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68A587601B2A8342002D3F53 /* GameController.cpp */; };
 		68A587671B2A8342002D3F53 /* GameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68A587601B2A8342002D3F53 /* GameController.cpp */; };
 		68A587681B2A8342002D3F53 /* GameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68A587601B2A8342002D3F53 /* GameController.cpp */; };
@@ -3748,6 +3754,10 @@
 		680F1A061B2A5B1D0008A19D /* DefaultController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DefaultController.h; path = joysticks/DefaultController.h; sourceTree = "<group>"; };
 		680F1A071B2A5B1D0008A19D /* IButtonKeyHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IButtonKeyHandler.h; path = joysticks/IButtonKeyHandler.h; sourceTree = "<group>"; };
 		680F1A081B2A5B1D0008A19D /* IJoystickButtonMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJoystickButtonMapper.h; path = joysticks/IJoystickButtonMapper.h; sourceTree = "<group>"; };
+		681EC9121B2A88240064E12D /* GameInfoTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameInfoTag.cpp; path = games/tags/GameInfoTag.cpp; sourceTree = "<group>"; };
+		681EC9131B2A88240064E12D /* GameInfoTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameInfoTag.h; path = games/tags/GameInfoTag.h; sourceTree = "<group>"; };
+		681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameInfoTagLoader.cpp; path = games/tags/GameInfoTagLoader.cpp; sourceTree = "<group>"; };
+		681EC9151B2A88240064E12D /* GameInfoTagLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameInfoTagLoader.h; path = games/tags/GameInfoTagLoader.h; sourceTree = "<group>"; };
 		68A587601B2A8342002D3F53 /* GameController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameController.cpp; path = games/addons/GameController.cpp; sourceTree = "<group>"; };
 		68A587611B2A8342002D3F53 /* GameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameController.h; path = games/addons/GameController.h; sourceTree = "<group>"; };
 		68A587621B2A8342002D3F53 /* GameControllerFeature.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameControllerFeature.cpp; path = games/addons/GameControllerFeature.cpp; sourceTree = "<group>"; };
@@ -7051,10 +7061,22 @@
 			name = main;
 			sourceTree = "<group>";
 		};
+		681EC9111B2A880E0064E12D /* tags */ = {
+			isa = PBXGroup;
+			children = (
+				681EC9121B2A88240064E12D /* GameInfoTag.cpp */,
+				681EC9131B2A88240064E12D /* GameInfoTag.h */,
+				681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */,
+				681EC9151B2A88240064E12D /* GameInfoTagLoader.h */,
+			);
+			name = tags;
+			sourceTree = "<group>";
+		};
 		68A5875C1B2A82F1002D3F53 /* games */ = {
 			isa = PBXGroup;
 			children = (
 				68A5875F1B2A8332002D3F53 /* addons */,
+				681EC9111B2A880E0064E12D /* tags */,
 				68A5875D1B2A8318002D3F53 /* windows */,
 				68CF9B871B2C8A750016931A /* ControllerManager.cpp */,
 				68CF9B881B2C8A760016931A /* ControllerManager.h */,
@@ -10546,6 +10568,7 @@
 				E38E20820D25F9FD00618676 /* GUIDialogFileStacking.cpp in Sources */,
 				E38E20830D25F9FD00618676 /* GUIDialogGamepad.cpp in Sources */,
 				E38E20890D25F9FD00618676 /* GUIDialogMediaSource.cpp in Sources */,
+				681EC9191B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */,
 				E38E208A0D25F9FD00618676 /* GUIDialogMusicOSD.cpp in Sources */,
 				E38E208C0D25F9FD00618676 /* GUIDialogMuteBug.cpp in Sources */,
 				E38E208D0D25F9FD00618676 /* GUIDialogNetworkSetup.cpp in Sources */,
@@ -11071,6 +11094,7 @@
 				DF93D6A81444A8B1007C6459 /* RarFile.cpp in Sources */,
 				DF93D6AA1444A8B1007C6459 /* SFTPFile.cpp in Sources */,
 				DF93D6AB1444A8B1007C6459 /* ShoutcastFile.cpp in Sources */,
+				681EC9161B2A88240064E12D /* GameInfoTag.cpp in Sources */,
 				DF93D6AC1444A8B1007C6459 /* SlingboxFile.cpp in Sources */,
 				DF93D6AD1444A8B1007C6459 /* SMBFile.cpp in Sources */,
 				DF93D6AE1444A8B1007C6459 /* SpecialProtocolFile.cpp in Sources */,
@@ -11867,6 +11891,7 @@
 				68D279B31ACC6DE300B25E88 /* PeripheralBusAddon.cpp in Sources */,
 				DFF0F2A017528350002DA3A4 /* GUIRadioButtonControl.cpp in Sources */,
 				DFF0F2A117528350002DA3A4 /* GUIRenderingControl.cpp in Sources */,
+				681EC91B1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */,
 				DFF0F2A217528350002DA3A4 /* GUIResizeControl.cpp in Sources */,
 				DF4BF01A1A4EF31F0053AC56 /* cc_decoder708.cpp in Sources */,
 				395C2A1B1A9F074C00EBC7AD /* Locale.cpp in Sources */,
@@ -12202,6 +12227,7 @@
 				68A5878F1B2A8570002D3F53 /* GUIGameController.cpp in Sources */,
 				DFF0F3EC17528350002DA3A4 /* Screenshot.cpp in Sources */,
 				DFF0F3ED17528350002DA3A4 /* SeekHandler.cpp in Sources */,
+				681EC9181B2A88240064E12D /* GameInfoTag.cpp in Sources */,
 				DFF0F3EE17528350002DA3A4 /* SortUtils.cpp in Sources */,
 				DFF0F3EF17528350002DA3A4 /* Splash.cpp in Sources */,
 				DFF0F3F017528350002DA3A4 /* Stopwatch.cpp in Sources */,
@@ -12756,6 +12782,7 @@
 				E499124F174E5D8F00741B6D /* AddonsDirectory.cpp in Sources */,
 				E4991253174E5D8F00741B6D /* BlurayDirectory.cpp in Sources */,
 				E4991254174E5D8F00741B6D /* CacheStrategy.cpp in Sources */,
+				681EC91A1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */,
 				E4991255174E5D8F00741B6D /* CDDADirectory.cpp in Sources */,
 				E4991256174E5D8F00741B6D /* CDDAFile.cpp in Sources */,
 				E4991257174E5D8F00741B6D /* CircularCache.cpp in Sources */,
@@ -13316,6 +13343,7 @@
 				E499149A174E606600741B6D /* VideoReferenceClock.cpp in Sources */,
 				E499149B174E606600741B6D /* VideoThumbLoader.cpp in Sources */,
 				E499149C174E606E00741B6D /* GUIViewControl.cpp in Sources */,
+				681EC9171B2A88240064E12D /* GameInfoTag.cpp in Sources */,
 				E499149D174E606E00741B6D /* GUIViewState.cpp in Sources */,
 				E499149E174E606E00741B6D /* ViewDatabase.cpp in Sources */,
 				E499149F174E606E00741B6D /* ViewStateSettings.cpp in Sources */,
