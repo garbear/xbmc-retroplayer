@@ -346,6 +346,12 @@
     <Filter Include="peripherals\bus\virtual">
       <UniqueIdentifier>{00dc7d3e-6802-4478-a254-3042e4dbc35e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games">
+      <UniqueIdentifier>{56b8c4ee-0f45-42e9-a7f7-eeae1c8940fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\tags">
+      <UniqueIdentifier>{43ec8ed7-e2f3-4e78-8d03-350479c4b40a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3148,6 +3154,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\peripherals\PortMapper.cpp">
       <Filter>peripherals</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp">
+      <Filter>games\tags</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6098,6 +6110,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\peripherals\PortMapper.h">
       <Filter>peripherals</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
+      <Filter>games\tags</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
