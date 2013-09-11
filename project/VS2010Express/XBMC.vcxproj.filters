@@ -316,6 +316,12 @@
     <Filter Include="addons\include">
       <UniqueIdentifier>{c4c7579e-0c9c-415d-85c0-3c9e808899e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games">
+      <UniqueIdentifier>{56b8c4ee-0f45-42e9-a7f7-eeae1c8940fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\tags">
+      <UniqueIdentifier>{43ec8ed7-e2f3-4e78-8d03-350479c4b40a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3118,6 +3124,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\input\JoystickHat.cpp">
       <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp">
+      <Filter>games\tags</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp">
+      <Filter>games\tags</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6159,6 +6171,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\input\JoystickHat.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h">
+      <Filter>games\tags</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
+      <Filter>games\tags</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
