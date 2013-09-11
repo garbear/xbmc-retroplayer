@@ -412,10 +412,7 @@ bool CGameClient::OpenFile(const CFileItem& file, ILibretroCallbacksAV *callback
   m_dll.retro_set_input_state(GetInputState);
   m_dll.retro_set_input_poll(NoopPoop);
 
-  // TODO: Use CGameInfoTagLoader::GetPlatformByName(file.GetInfoTag().GetPlatform()).ports
-  // or CGameInfoTagLoader::GetPlatformByExtension(URIUtils::GetExtensions(file.GetPath())).ports
-  // if GamePlatform != PLATFORM_UNKNOWN or PLATFORM_AMBIGUOUS.
-  // Need an API call in libretro that lets us know the number of ports
+  // TODO: Need an API call in libretro that lets us know the number of ports
   SetDevice(0, RETRO_DEVICE_JOYPAD);
 
   return true;
