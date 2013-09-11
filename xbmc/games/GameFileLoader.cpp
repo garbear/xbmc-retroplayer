@@ -193,7 +193,7 @@ bool CGameFileLoader::CanOpen(const CGameClient &gc, const CFileItem &file)
   // Check platform
   if (!gc.GetPlatforms().empty() && file.GetGameInfoTag())
   {
-    GamePlatform id = CGameInfoTagLoader::GetPlatformByName(file.GetGameInfoTag()->GetPlatform()).id;
+    GamePlatform id = CGameInfoTagLoader::GetPlatformInfoByName(file.GetGameInfoTag()->GetPlatform()).id;
     if (id != PLATFORM_UNKNOWN)
       if (std::find(gc.GetPlatforms().begin(), gc.GetPlatforms().end(), id) == gc.GetPlatforms().end())
         return false;

@@ -21,16 +21,18 @@
 #pragma once
 
 #include "GameInfoTag.h"
-#include "utils/StdString.h"
+
+#include <set>
+#include <string>
+#include <vector>
 
 namespace GAME_INFO
 {
   // Platforms that XBMC is currently aware of
-  // Game ID used is MobyGames ID
+  // Game ID used is MobyGames ID (choice seemed arbitrary, might as well use an existing system for now)
   enum GamePlatform
   {
-    PLATFORM_UNKNOWN              = -2,
-    PLATFORM_AMBIGUOUS            = -1,
+    PLATFORM_UNKNOWN              = -1,
     PLATFORM_3D0                  = 35,
     PLATFORM_AMIGA                = 19,
     PLATFORM_AMIGA_CD32           = 56,
@@ -120,11 +122,10 @@ namespace GAME_INFO
 
   struct PlatformInfo
   {
-    GamePlatform    id;
-    const char      *name;
-    int             ports; // -1 for unknown
-    const char      *extensions; // Must be unique to the platform (e.g. no zip)
-    CStdStringArray vecExtensions; // Cache of extensions plus advanced settings, first populated on Get()
+    GamePlatform          id;
+    const char            *name;
+    int                   ports; // -1 for unknown
+    const char            *extensions; // Must be unique to the platform (e.g. no zip)
   };
 
   class CGameInfoTagLoader
@@ -132,15 +133,15 @@ namespace GAME_INFO
   public:
     static CGameInfoTagLoader &Get();
 
-    bool Load(const CStdString &strPath, CGameInfoTag &tag);
+    bool Load(const std::string &strPath, CGameInfoTag &tag);
 
     /**
      * Get platform info by the platform's name. See struct platformInfo in
      * GameInfoTagLoader.cpp. The comparison is performed case-, space- and
      * punctuation-insensitive. If the name isn't recognized as a valid game
-     * platform, a PLATFORM_UNKNOWN struct is returned.
+     * platform, the PLATFORM_UNKNOWN struct is returned.
      */
-    static const PlatformInfo &GetPlatformByName(const CStdString &strPlatform);
+    static const PlatformInfo &GetPlatformInfoByName(const std::string &strPlatform);
 
     /**
      * Resolve a known extension name into a PlatformInfo struct. If the
@@ -148,14 +149,16 @@ namespace GAME_INFO
      * returned. If the extension is valid for more than 1 platform (zip, bin),
      * PLATFORM_UNKOWN is returned.
      */
-    static const PlatformInfo &GetPlatformByExtension(const CStdString &strExtension);
+    static const PlatformInfo &GetPlatformInfoByExtension(const std::string &strExtension);
 
     /**
      * Look up platform information by ID.
      */
-    static const PlatformInfo &GetPlatformByID(GamePlatform id);
+    static const PlatformInfo &GetPlatformInfoByID(GamePlatform id);
 
   private:
+    CGameInfoTagLoader() { }
+
     /**
      * Strip all non-alphanumeric characters and compare strings case-insensitive.
      */

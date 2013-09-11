@@ -607,10 +607,8 @@
     <ClCompile Include="..\..\xbmc\filesystem\ZipManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameSettings.cpp" />
-    <ClCompile Include="..\..\xbmc\games\tags\GameboyTag.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp" />
-    <ClCompile Include="..\..\xbmc\games\tags\GBATag.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameClient.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileLoader.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp" />
@@ -1145,10 +1143,8 @@
     <ClInclude Include="..\..\xbmc\games\GameSettings.h" />
     <ClInclude Include="..\..\xbmc\games\libretro\LibretroCallbacks.h" />
     <ClInclude Include="..\..\xbmc\guilib\cximage.h" />
-    <ClInclude Include="..\..\xbmc\games\tags\GameboyTag.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h" />
-    <ClInclude Include="..\..\xbmc\games\tags\GBATag.h" />
     <ClInclude Include="..\..\xbmc\games\GameClient.h" />
     <ClInclude Include="..\..\xbmc\games\GameClientDLL.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileLoader.h" />

@@ -1,7 +1,5 @@
-SRCS=GameboyTag.cpp \
-     GameInfoTag.cpp \
+SRCS=GameInfoTag.cpp \
      GameInfoTagLoader.cpp \
-     GBATag.cpp
 
 LIB=gameinfotags.a
 

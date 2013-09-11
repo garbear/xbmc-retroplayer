@@ -890,7 +890,7 @@ void CGameClient::SetPlatforms(const string &strPlatformList)
   for (vector<string>::iterator it = platforms.begin(); it != platforms.end(); it++)
   {
     StringUtils::Trim(*it);
-    GamePlatform id = CGameInfoTagLoader::GetPlatformByName(*it).id;
+    GamePlatform id = CGameInfoTagLoader::GetPlatformInfoByName(*it).id;
     if (id != PLATFORM_UNKNOWN)
       m_platforms.push_back(id);
   }

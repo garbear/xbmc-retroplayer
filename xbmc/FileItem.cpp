@@ -3153,7 +3153,7 @@ bool CFileItem::LoadMusicTag()
 bool CFileItem::LoadGameTag()
 {
   // Already loaded?
-  if (HasGameInfoTag() && m_gameInfoTag->Loaded())
+  if (HasGameInfoTag() && m_gameInfoTag->IsLoaded())
     return true;
 
   // Load tag from file

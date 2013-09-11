@@ -24,67 +24,70 @@
 #include "utils/ISerializable.h"
 #include "utils/ISortable.h"
 
+#include <string>
 
 namespace GAME_INFO
 {
   class CGameInfoTag : public IArchivable, public ISerializable, public ISortable
   {
   public:
-    CGameInfoTag();
-    CGameInfoTag(const CGameInfoTag &tag);
+    CGameInfoTag() { Reset(); }
+    CGameInfoTag(const CGameInfoTag &tag) { *this = tag; }
     const CGameInfoTag &operator=(const CGameInfoTag &tag);
     ~CGameInfoTag() { }
     void Reset();
-    bool operator!=(const CGameInfoTag &tag) const;
 
-    bool Loaded() const { return m_bLoaded; }
+    bool operator==(const CGameInfoTag &tag) const;
+    bool operator!=(const CGameInfoTag &tag) const { return !(*this == tag); }
+
+    bool IsLoaded() const { return m_bLoaded; }
     void SetLoaded(bool bOnOff = true) { m_bLoaded = bOnOff; }
 
     // File path
-    const CStdString& GetURL() const { return m_strURL; }
-    void SetURL(const CStdString& strURL) { m_strURL = strURL; }
+    const std::string& GetURL() const { return m_strURL; }
+    void SetURL(const std::string& strURL) { m_strURL = strURL; }
+    
+    // Title
+    const std::string& GetTitle() const { return m_strName; }
+    void SetTitle(const std::string& strName) { m_strName = strName; }
 
     // Platform
-    const CStdString& GetPlatform() const { return m_strPlatform; }
-    void SetPlatform(const CStdString& strPlatform) { m_strPlatform = strPlatform; }
-
-    // Title
-    const CStdString& GetTitle() const { return m_strName; }
-    void SetTitle(const CStdString& strName) { m_strName = strName; }
+    const std::string& GetPlatform() const { return m_strPlatform; }
+    void SetPlatform(const std::string& strPlatform) { m_strPlatform = strPlatform; }
 
     // Game Code (ID)
-    const CStdString& GetID() const { return m_strCode; }
-    void SetID(const CStdString& strCode) { m_strCode = strCode; }
+    const std::string& GetID() const { return m_strID; }
+    void SetID(const std::string& strID) { m_strID = strID; }
 
     // Region
-    const CStdString& GetRegion() const { return m_strRegion; }
-    void SetRegion(const CStdString& strRegion) { m_strRegion = strRegion; }
+    const std::string& GetRegion() const { return m_strRegion; }
+    void SetRegion(const std::string& strRegion) { m_strRegion = strRegion; }
 
     // Publisher / Licensee
-    const CStdString& GetPublisher() const { return m_strPublisher; }
-    void SetPublisher(const CStdString& strPublisher) { m_strPublisher = strPublisher; }
+    const std::string& GetPublisher() const { return m_strPublisher; }
+    void SetPublisher(const std::string& strPublisher) { m_strPublisher = strPublisher; }
 
-    // Format (PAL/NTSC); this is empty iff Region is empty
-    const CStdString& GetFormat() const { return m_strFormat; }
-    void SetFormat(const CStdString& strFormat) { m_strFormat = strFormat; }
+    // Format (PAL/NTSC)
+    const std::string& GetFormat() const { return m_strFormat; }
+    void SetFormat(const std::string& strFormat) { m_strFormat = strFormat; }
 
-    // Cartridge Type, e.g. ROM+MBC5+RAM+BATT
-    const CStdString& GetCartridgeType() const { return m_strCartridgeType; }
-    void SetCartridgeType(const CStdString& strCartridgeType) { m_strCartridgeType = strCartridgeType; }
+    // Cartridge Type, e.g. ROM+MBC5+RAM+BATT or CD
+    const std::string& GetCartridgeType() const { return m_strCartridgeType; }
+    void SetCartridgeType(const std::string& strCartridgeType) { m_strCartridgeType = strCartridgeType; }
 
     virtual void Archive(CArchive &ar);
     virtual void Serialize(CVariant &value) const;
     virtual void ToSortable(SortItem &sortable);
 
   private:
-    bool       m_bLoaded;
-    CStdString m_strURL;
-    CStdString m_strPlatform;
-    CStdString m_strName;
-    CStdString m_strCode;
-    CStdString m_strRegion;
-    CStdString m_strPublisher;
-    CStdString m_strFormat;
-    CStdString m_strCartridgeType;
+    bool        m_bLoaded;
+    std::string m_strURL;
+    std::string m_strName;
+    std::string m_strPlatform;
+    std::string m_strID;
+    std::string m_strRegion;
+    std::string m_strPublisher;
+    std::string m_strFormat;
+    std::string m_strCartridgeType;
   };
 }
