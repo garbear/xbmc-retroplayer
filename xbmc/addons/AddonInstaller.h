@@ -21,12 +21,13 @@
 
 #include "utils/FileOperationJob.h"
 #include "addons/Addon.h"
+#include "utils/Observer.h"
 #include "utils/Stopwatch.h"
 #include "threads/Event.h"
 
 class CAddonDatabase;
 
-class CAddonInstaller : public IJobCallback
+class CAddonInstaller : public IJobCallback, public Observable
 {
 public:
   static CAddonInstaller &Get();

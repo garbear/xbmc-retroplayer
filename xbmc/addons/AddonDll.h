@@ -144,7 +144,7 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
   CStdString strFileName;
   if (!m_bIsChild)
   {
-    strFileName = LibPath();
+    strFileName = this->LibPath();
   }
   else
   { //FIXME hack to load same Dll twice
@@ -154,7 +154,7 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
     strFileName += "-" + ID() + extension;
 
     if (!CFile::Exists(strFileName))
-      CFile::Cache(LibPath(), strFileName);
+      CFile::Cache(this->LibPath(), strFileName);
 
     CLog::Log(LOGNOTICE, "ADDON: Loaded virtual child addon %s", strFileName.c_str());
   }
