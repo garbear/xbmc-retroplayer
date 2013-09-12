@@ -19,6 +19,7 @@
  */
 
 #include "AddonCallbacksGame.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
 #include "games/addons/GameClient.h"
 #include "utils/log.h"
 
@@ -64,7 +65,6 @@ CGameClient* CAddonCallbacksGame::GetGameClient(void* addonData, const char* str
   return dynamic_cast<CGameClient*>(addon->GetHelperGame()->m_addon);
 }
 
-/* TODO
 CRetroPlayer* CAddonCallbacksGame::GetRetroPlayer(void* addonData, const char* strFunction)
 {
   CGameClient* gameClient = GetGameClient(addonData, strFunction);
@@ -89,22 +89,18 @@ CRetroPlayer* CAddonCallbacksGame::GetRetroPlayer(void* addonData, const char* s
 
   return retroPlayer;
 }
-*/
 
 void CAddonCallbacksGame::CloseGame(void* addonData)
 {
-  /* TODO
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
 
   retroPlayer->CloseFile();
-  */
 }
 
 void CAddonCallbacksGame::VideoFrame(void* addonData, const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
 {
-  /* TODO
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
@@ -134,12 +130,10 @@ void CAddonCallbacksGame::VideoFrame(void* addonData, const uint8_t* data, unsig
     return;
 
   retroPlayer->VideoFrame(data, size, width, height, pixelFormat);
-  */
 }
 
 void CAddonCallbacksGame::AudioFrames(void* addonData, const uint8_t* data, unsigned int size, unsigned int frames, GAME_AUDIO_FORMAT format)
 {
-  /* TODO
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
@@ -160,11 +154,14 @@ void CAddonCallbacksGame::AudioFrames(void* addonData, const uint8_t* data, unsi
     return;
 
   retroPlayer->AudioFrames(data, size, frames, audioFormat);
-  */
 }
 
 void CAddonCallbacksGame::HwSetInfo(void* addonData, const game_hw_info *hw_info)
 {
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return;
+
   // TODO
 }
 
@@ -200,11 +197,9 @@ void CAddonCallbacksGame::ClosePort(void* addonData, unsigned int port)
 
 void CAddonCallbacksGame::RumbleSetState(void* addonData, unsigned int port, GAME_RUMBLE_EFFECT effect, float strength)
 {
-  /*
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
-  */
 
   // TODO
 }

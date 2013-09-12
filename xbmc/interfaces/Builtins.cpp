@@ -71,6 +71,7 @@
 #include "cores/IPlayer.h"
 #include "pvr/channels/PVRChannel.h"
 #include "pvr/recordings/PVRRecording.h"
+#include "games/tags/GameInfoTag.h"
 
 #include "filesystem/PluginDirectory.h"
 #ifdef HAS_FILESYSTEM_RAR
@@ -680,6 +681,29 @@ int CBuiltins::Execute(const std::string& execString)
         // (params[1] ... params[x]) separated by a comma to RunScript
         Execute(StringUtils::Format("RunScript(%s)", StringUtils::Join(params, ",").c_str()));
       }
+      else if (CAddonMgr::Get().GetAddon(addonid, addon, ADDON_GAMEDLL))
+      {
+        const bool bRunStandalone = (params.size() == 1);
+        if (bRunStandalone)
+        {
+          if (addon->IsExecutable())
+          {
+            CFileItem item("addon://" + addonid, false);
+            item.SetProperty("Addon.ID", addonid);
+            return g_application.PlayMedia(item);
+          }
+          else
+          {
+            CLog::Log(LOGERROR, "RunAddon: '%s' is not executable", addonid.c_str());
+          }
+        }
+        else
+        {
+          CFileItem item(params[1], false);
+          item.SetProperty("Addon.ID", addonid);
+          return g_application.PlayMedia(item);
+        }
+      }
       else
         CLog::Log(LOGERROR, "RunAddon: unknown add-on id '%s', or unexpected add-on type (not a script or plugin).", addonid.c_str());
     }
@@ -746,6 +770,16 @@ int CBuiltins::Execute(const std::string& execString)
       else if (StringUtils::StartsWithNoCase(params[i], "playoffset=")) {
         playOffset = atoi(params[i].substr(11).c_str()) - 1;
         item.SetProperty("playlist_starting_track", playOffset);
+      }
+      else if (StringUtils::StartsWithNoCase(params[i], "platform="))
+      {
+        // A game platform was specified, record the request for when we choose a game client
+        item.GetGameInfoTag()->SetPlatform(params[i].substr(9));
+      }
+      else if (StringUtils::StartsWithNoCase(params[i], "gameclient="))
+      {
+        // A game client ID was specified
+        item.SetProperty("Addon.ID", params[i].substr(11));
       }
     }
 
@@ -1761,8 +1795,8 @@ int CBuiltins::Execute(const std::string& execString)
     ADDON::TYPE type = TranslateType(params[0]);
     if (CAddonMgr::Get().GetDefault(type, addon))
     {
-      bool changed = CGUIDialogAddonSettings::ShowAndGetInput(addon);
-      if (type == ADDON_VIZ && changed)
+      CGUIDialogAddonSettings::ShowAndGetInput(addon);
+      if (type == ADDON_VIZ)
         g_windowManager.SendMessage(GUI_MSG_VISUALISATION_RELOAD, 0, 0);
     }
   }

@@ -56,7 +56,7 @@ public:
 
 private:
   static GAME::CGameClient* GetGameClient(void* addonData, const char* strFunction);
-  //static CRetroPlayer* GetRetroPlayer(void* addonData, const char* strFunction);
+  static CRetroPlayer* GetRetroPlayer(void* addonData, const char* strFunction);
 
   CB_GameLib*  m_callbacks; /*!< callback addresses */
   CAddon*      m_addon;     /*!< the addon */

@@ -378,6 +378,18 @@
 		68D279C01ACC6E0C00B25E88 /* PortMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D279BE1ACC6E0C00B25E88 /* PortMapper.cpp */; };
 		68D279C11ACC6E0C00B25E88 /* PortMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D279BE1ACC6E0C00B25E88 /* PortMapper.cpp */; };
 		68D279C21ACC6E0C00B25E88 /* PortMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D279BE1ACC6E0C00B25E88 /* PortMapper.cpp */; };
+		68DC87EF1B2CACD000EFB049 /* RetroPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87E71B2CACD000EFB049 /* RetroPlayer.cpp */; };
+		68DC87F01B2CACD000EFB049 /* RetroPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87E71B2CACD000EFB049 /* RetroPlayer.cpp */; };
+		68DC87F11B2CACD000EFB049 /* RetroPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87E71B2CACD000EFB049 /* RetroPlayer.cpp */; };
+		68DC87F21B2CACD000EFB049 /* RetroPlayerAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87E91B2CACD000EFB049 /* RetroPlayerAudio.cpp */; };
+		68DC87F31B2CACD000EFB049 /* RetroPlayerAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87E91B2CACD000EFB049 /* RetroPlayerAudio.cpp */; };
+		68DC87F41B2CACD000EFB049 /* RetroPlayerAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87E91B2CACD000EFB049 /* RetroPlayerAudio.cpp */; };
+		68DC87F51B2CACD000EFB049 /* RetroPlayerDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87EB1B2CACD000EFB049 /* RetroPlayerDialogs.cpp */; };
+		68DC87F61B2CACD000EFB049 /* RetroPlayerDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87EB1B2CACD000EFB049 /* RetroPlayerDialogs.cpp */; };
+		68DC87F71B2CACD000EFB049 /* RetroPlayerDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87EB1B2CACD000EFB049 /* RetroPlayerDialogs.cpp */; };
+		68DC87F81B2CACD000EFB049 /* RetroPlayerVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87ED1B2CACD000EFB049 /* RetroPlayerVideo.cpp */; };
+		68DC87F91B2CACD000EFB049 /* RetroPlayerVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87ED1B2CACD000EFB049 /* RetroPlayerVideo.cpp */; };
+		68DC87FA1B2CACD000EFB049 /* RetroPlayerVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87ED1B2CACD000EFB049 /* RetroPlayerVideo.cpp */; };
 		68F2DA0C1B2A608B006E297B /* AddonJoystickButtonMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */; };
 		68F2DA0D1B2A608B006E297B /* AddonJoystickButtonMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */; };
 		68F2DA0E1B2A608B006E297B /* AddonJoystickButtonMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */; };
@@ -3826,6 +3838,14 @@
 		68D279B71ACC6E0100B25E88 /* PeripheralKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralKeyboard.h; sourceTree = "<group>"; };
 		68D279BE1ACC6E0C00B25E88 /* PortMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PortMapper.cpp; sourceTree = "<group>"; };
 		68D279BF1ACC6E0C00B25E88 /* PortMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PortMapper.h; sourceTree = "<group>"; };
+		68DC87E71B2CACD000EFB049 /* RetroPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayer.cpp; path = RetroPlayer/RetroPlayer.cpp; sourceTree = "<group>"; };
+		68DC87E81B2CACD000EFB049 /* RetroPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayer.h; path = RetroPlayer/RetroPlayer.h; sourceTree = "<group>"; };
+		68DC87E91B2CACD000EFB049 /* RetroPlayerAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerAudio.cpp; path = RetroPlayer/RetroPlayerAudio.cpp; sourceTree = "<group>"; };
+		68DC87EA1B2CACD000EFB049 /* RetroPlayerAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerAudio.h; path = RetroPlayer/RetroPlayerAudio.h; sourceTree = "<group>"; };
+		68DC87EB1B2CACD000EFB049 /* RetroPlayerDialogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerDialogs.cpp; path = RetroPlayer/RetroPlayerDialogs.cpp; sourceTree = "<group>"; };
+		68DC87EC1B2CACD000EFB049 /* RetroPlayerDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerDialogs.h; path = RetroPlayer/RetroPlayerDialogs.h; sourceTree = "<group>"; };
+		68DC87ED1B2CACD000EFB049 /* RetroPlayerVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerVideo.cpp; path = RetroPlayer/RetroPlayerVideo.cpp; sourceTree = "<group>"; };
+		68DC87EE1B2CACD000EFB049 /* RetroPlayerVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerVideo.h; path = RetroPlayer/RetroPlayerVideo.h; sourceTree = "<group>"; };
 		68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonJoystickButtonMap.cpp; path = addons/AddonJoystickButtonMap.cpp; sourceTree = "<group>"; };
 		68F2DA011B2A608B006E297B /* AddonJoystickButtonMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonJoystickButtonMap.h; path = addons/AddonJoystickButtonMap.h; sourceTree = "<group>"; };
 		68F2DA021B2A608B006E297B /* AddonJoystickButtonMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonJoystickButtonMapping.cpp; path = addons/AddonJoystickButtonMapping.cpp; sourceTree = "<group>"; };
@@ -7216,6 +7236,21 @@
 			name = addons;
 			sourceTree = "<group>";
 		};
+		68DC87E61B2CACAF00EFB049 /* RetroPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				68DC87E71B2CACD000EFB049 /* RetroPlayer.cpp */,
+				68DC87E81B2CACD000EFB049 /* RetroPlayer.h */,
+				68DC87E91B2CACD000EFB049 /* RetroPlayerAudio.cpp */,
+				68DC87EA1B2CACD000EFB049 /* RetroPlayerAudio.h */,
+				68DC87EB1B2CACD000EFB049 /* RetroPlayerDialogs.cpp */,
+				68DC87EC1B2CACD000EFB049 /* RetroPlayerDialogs.h */,
+				68DC87ED1B2CACD000EFB049 /* RetroPlayerVideo.cpp */,
+				68DC87EE1B2CACD000EFB049 /* RetroPlayerVideo.h */,
+			);
+			name = RetroPlayer;
+			sourceTree = "<group>";
+		};
 		7C14096E18322476009F9411 /* lib */ = {
 			isa = PBXGroup;
 			children = (
@@ -8621,6 +8656,7 @@
 				7C5608C30F1754930056433A /* ExternalPlayer */,
 				E38E15D20D25F9FA00618676 /* paplayer */,
 				F5E56B11108284E6006E788A /* playercorefactory */,
+				68DC87E61B2CACAF00EFB049 /* RetroPlayer */,
 				E38E16580D25F9FA00618676 /* VideoRenderers */,
 				DF923E5B1A11536A008CDB0C /* DataCacheCore.cpp */,
 				DF923E5C1A11536A008CDB0C /* DataCacheCore.h */,
@@ -10559,6 +10595,7 @@
 				E38E20340D25F9FD00618676 /* DirectoryNode.cpp in Sources */,
 				E38E20350D25F9FD00618676 /* DirectoryNodeAlbum.cpp in Sources */,
 				E38E20360D25F9FD00618676 /* DirectoryNodeAlbumCompilations.cpp in Sources */,
+				68DC87F21B2CACD000EFB049 /* RetroPlayerAudio.cpp in Sources */,
 				E38E20370D25F9FD00618676 /* DirectoryNodeAlbumCompilationsSongs.cpp in Sources */,
 				E38E20380D25F9FD00618676 /* DirectoryNodeAlbumRecentlyAdded.cpp in Sources */,
 				E38E20390D25F9FD00618676 /* DirectoryNodeAlbumRecentlyAddedSong.cpp in Sources */,
@@ -10805,6 +10842,7 @@
 				E36C29E00DA72429001F0C9D /* Album.cpp in Sources */,
 				E36C29E60DA72442001F0C9D /* DVDSubtitleParserSami.cpp in Sources */,
 				E36C29EA0DA72486001F0C9D /* ScraperUrl.cpp in Sources */,
+				68DC87F81B2CACD000EFB049 /* RetroPlayerVideo.cpp in Sources */,
 				E36C29EB0DA72486001F0C9D /* MusicArtistInfo.cpp in Sources */,
 				E36C29EC0DA72486001F0C9D /* Fanart.cpp in Sources */,
 				68F2DA181B2A608B006E297B /* AddonJoystickInputHandling.cpp in Sources */,
@@ -11034,6 +11072,7 @@
 				18B7C89F129423A7009E7A26 /* MusicInfoTagLoaderShn.cpp in Sources */,
 				687AAF401B2CA50800C16152 /* GameClient.cpp in Sources */,
 				18B7C8D712942546009E7A26 /* ButtonTranslator.cpp in Sources */,
+				68DC87F51B2CACD000EFB049 /* RetroPlayerDialogs.cpp in Sources */,
 				18B7C8D912942546009E7A26 /* KeyboardStat.cpp in Sources */,
 				18B7C8DA12942546009E7A26 /* MouseStat.cpp in Sources */,
 				18B7C8E912942603009E7A26 /* Crc32.cpp in Sources */,
@@ -11246,6 +11285,7 @@
 				36A9466715CF1FD200727135 /* MusicDbUrl.cpp in Sources */,
 				DFC6F4B61AFF7CB10039A7FA /* kiss_fft.c in Sources */,
 				36A9466A15CF1FED00727135 /* UrlOptions.cpp in Sources */,
+				68DC87EF1B2CACD000EFB049 /* RetroPlayer.cpp in Sources */,
 				36A9466D15CF201F00727135 /* VideoDbUrl.cpp in Sources */,
 				552A226915F7E14B0015C0D0 /* main.cpp in Sources */,
 				DFB15B2215F8FB8100CDF0DE /* SDLMain.mm in Sources */,
@@ -11985,6 +12025,7 @@
 				DFF0F2BC17528350002DA3A4 /* LocalizeStrings.cpp in Sources */,
 				DFF0F2BD17528350002DA3A4 /* MatrixGLES.cpp in Sources */,
 				DFF0F2BE17528350002DA3A4 /* Shader.cpp in Sources */,
+				68DC87FA1B2CACD000EFB049 /* RetroPlayerVideo.cpp in Sources */,
 				DFF0F2BF17528350002DA3A4 /* Texture.cpp in Sources */,
 				DFF0F2C017528350002DA3A4 /* TextureBundle.cpp in Sources */,
 				DF3E5EFA199D41300039675D /* kodiclientwrapper.mm in Sources */,
@@ -12253,6 +12294,7 @@
 				DFF0F3C317528350002DA3A4 /* CharsetConverter.cpp in Sources */,
 				DFF0F3C417528350002DA3A4 /* CPUInfo.cpp in Sources */,
 				DFF0F3C517528350002DA3A4 /* Crc32.cpp in Sources */,
+				68DC87F41B2CACD000EFB049 /* RetroPlayerAudio.cpp in Sources */,
 				DFF0F3C617528350002DA3A4 /* CryptThreading.cpp in Sources */,
 				DFF0F3C717528350002DA3A4 /* DatabaseUtils.cpp in Sources */,
 				DFF0F3CB17528350002DA3A4 /* Environment.cpp in Sources */,
@@ -12303,6 +12345,7 @@
 				DFF0F3F417528350002DA3A4 /* SystemInfo.cpp in Sources */,
 				DFF0F3F517528350002DA3A4 /* TextSearch.cpp in Sources */,
 				DFF0F3F617528350002DA3A4 /* TimeSmoother.cpp in Sources */,
+				68DC87F11B2CACD000EFB049 /* RetroPlayer.cpp in Sources */,
 				DFF0F3F717528350002DA3A4 /* TimeUtils.cpp in Sources */,
 				DFF0F3F917528350002DA3A4 /* URIUtils.cpp in Sources */,
 				DFF0F3FA17528350002DA3A4 /* UrlOptions.cpp in Sources */,
@@ -12514,6 +12557,7 @@
 				7CCDA101192753E30074CF51 /* PltCtrlPointTask.cpp in Sources */,
 				7CCDA10A192753E30074CF51 /* PltDatagramStream.cpp in Sources */,
 				7CCDA113192753E30074CF51 /* PltDeviceData.cpp in Sources */,
+				68DC87F71B2CACD000EFB049 /* RetroPlayerDialogs.cpp in Sources */,
 				7CCDA11C192753E30074CF51 /* PltDeviceHost.cpp in Sources */,
 				7CCDA125192753E30074CF51 /* PltEvent.cpp in Sources */,
 				7CCDA12E192753E30074CF51 /* PltHttp.cpp in Sources */,
@@ -12750,6 +12794,7 @@
 				E49911E2174E5D3700741B6D /* DVDInputStreamHttp.cpp in Sources */,
 				E49911E3174E5D3700741B6D /* DVDInputStreamMemory.cpp in Sources */,
 				F597B05C18A804E0005AADAE /* DVDVideoCodec.cpp in Sources */,
+				68DC87F31B2CACD000EFB049 /* RetroPlayerAudio.cpp in Sources */,
 				E49911E4174E5D3700741B6D /* DVDInputStreamNavigator.cpp in Sources */,
 				E49911E5174E5D3700741B6D /* DVDInputStreamPVRManager.cpp in Sources */,
 				E49911E6174E5D3700741B6D /* DVDInputStreamRTMP.cpp in Sources */,
@@ -13111,6 +13156,7 @@
 				E4991361174E5EEF00741B6D /* AddonModuleXbmcplugin.cpp in Sources */,
 				E4991362174E5EEF00741B6D /* AddonModuleXbmcvfs.cpp in Sources */,
 				E4991363174E5EEF00741B6D /* CallbackHandler.cpp in Sources */,
+				68DC87F91B2CACD000EFB049 /* RetroPlayerVideo.cpp in Sources */,
 				E4991364174E5EEF00741B6D /* LanguageHook.cpp in Sources */,
 				68D279BC1ACC6E0100B25E88 /* PeripheralKeyboard.cpp in Sources */,
 				E4991365174E5EEF00741B6D /* PyContext.cpp in Sources */,
@@ -13549,6 +13595,7 @@
 				7C140996183224B8009F9411 /* SettingConditions.cpp in Sources */,
 				7C140999183224B8009F9411 /* SettingDependency.cpp in Sources */,
 				7C14099C183224B8009F9411 /* SettingRequirement.cpp in Sources */,
+				68DC87F01B2CACD000EFB049 /* RetroPlayer.cpp in Sources */,
 				7C14099F183224B8009F9411 /* SettingSection.cpp in Sources */,
 				7C1409A2183224B8009F9411 /* SettingsManager.cpp in Sources */,
 				7C1409A5183224B8009F9411 /* SettingUpdate.cpp in Sources */,
@@ -13675,6 +13722,7 @@
 				7CCDACB119275D1F0074CF51 /* NptStdcEnvironment.cpp in Sources */,
 				7CCDACC219275D790074CF51 /* NptAppleAutoreleasePool.mm in Sources */,
 				7CCDACCB19275D790074CF51 /* NptAppleLogConfig.mm in Sources */,
+				68DC87F61B2CACD000EFB049 /* RetroPlayerDialogs.cpp in Sources */,
 				7CAA469119427AED00008885 /* PosixDirectory.cpp in Sources */,
 				7C525DF6195E2D8100BE3482 /* SaveFileStateJob.cpp in Sources */,
 				7C908895196358A8003D0619 /* auto_buffer.cpp in Sources */,
