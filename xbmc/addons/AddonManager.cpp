@@ -39,6 +39,8 @@
 #include "DllPVRClient.h"
 #include "pvr/addons/PVRClient.h"
 #endif
+#include "games/GameClient.h"
+#include "games/GameManager.h"
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
 //#endif
@@ -51,6 +53,7 @@
 #include "Util.h"
 
 using namespace std;
+using namespace GAMES;
 using namespace PVR;
 
 namespace ADDON
@@ -114,6 +117,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_VIZ:
     case ADDON_SCREENSAVER:
     case ADDON_PVRDLL:
+    case ADDON_GAMEDLL:
       { // begin temporary platform handling for Dlls
         // ideally platforms issues will be handled by C-Pluff
         // this is not an attempt at a solution
@@ -155,6 +159,10 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
 #ifdef HAS_PVRCLIENTS
           return AddonPtr(new CPVRClient(props));
 #endif
+        }
+        else if (type == ADDON_GAMEDLL)
+        {
+          return AddonPtr(new CGameClient(props));
         }
         else
           return AddonPtr(new CScreenSaver(props));
@@ -298,7 +306,16 @@ bool CAddonMgr::Init()
       CLog::Log(LOGNOTICE, "ADDONS: Using repository %s", (*it)->ID().c_str());
   }
 
+  // TODO: This involves loading a couple DLLs, so call it delayed or outside the main thread
+  RegisterGameClientAddons();
   return true;
+}
+
+void CAddonMgr::RegisterGameClientAddons()
+{
+  VECADDONS gameClients;
+  GetAddons(ADDON_GAMEDLL, gameClients, true);
+  CGameManager::Get().RegisterAddons(gameClients);
 }
 
 void CAddonMgr::DeInit()
@@ -434,6 +451,16 @@ bool CAddonMgr::GetAddons(const TYPE &type, VECADDONS &addons, bool enabled /* =
         if (g_PVRClients->GetClient(props->plugin->identifier, pvrAddon))
         {
           addons.push_back(pvrAddon);
+          continue;
+        }
+      }
+
+      if (enabled && TranslateType(props->ext_point_id) == ADDON_GAMEDLL)
+      {
+        GameClientPtr gameClient;
+        if (CGameManager::Get().GetClient(props->plugin->identifier, gameClient))
+        {
+          addons.push_back(gameClient);
           continue;
         }
       }
@@ -576,6 +603,8 @@ void CAddonMgr::RemoveAddon(const CStdString& ID)
     SetChanged();
     NotifyObservers(ObservableMessageAddons);
   }
+  // Let the game manager update the information associated with this addon
+  CGameManager::Get().UnregisterAddonByID(ID);
 }
 
 bool CAddonMgr::DisableAddon(const std::string& ID, bool disable)
@@ -659,6 +688,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new CAddonLibrary(addonProps));
     case ADDON_PVRDLL:
       return AddonPtr(new CPVRClient(addonProps));
+    case ADDON_GAMEDLL:
+      return AddonPtr(new CGameClient(addonProps));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(addonProps));
     default:
