@@ -21,6 +21,7 @@
 #include "Joystick.h"
 #include "JoystickManager.h"
 #include "ButtonTranslator.h"
+#include "IInputHandler.h"
 #include "MouseStat.h"
 #include "Application.h"
 #include "guilib/Key.h"
@@ -103,6 +104,8 @@ void CJoystick::UpdateState(const CJoystickState& newState)
 
 void CJoystick::UpdateButton(unsigned int buttonIndex, bool newButton)
 {
+  IInputHandler* inputHandler = g_application.m_pPlayer->GetInputHandler();
+
   const bool oldButton = m_state.buttons[buttonIndex];
   if (oldButton == newButton)
     return; // Nothing changed
@@ -131,18 +134,35 @@ void CJoystick::UpdateButton(unsigned int buttonIndex, bool newButton)
   {
     CAction action(actionID, 1.0f, 0.0f, actionName);
 
-    g_application.ExecuteInputAction(action);
-    // Track the button press for deferred repeated execution
-    CJoystickManager::Get().Track(action);
+    if (IsGameControl(actionID))
+    {
+      if (inputHandler)
+        inputHandler->ProcessButtonDown(m_id, buttonIndex, action);
+      CJoystickManager::Get().ResetActionRepeater(); // Don't track game control actions
+    }
+    else
+    {
+      g_application.ExecuteInputAction(action);
+      // Track the button press for deferred repeated execution
+      CJoystickManager::Get().Track(action);
+    }
   }
   else if (!newButton)
   {
+    if (IsGameControl(actionID))
+    {
+      // Allow game input to record button release
+      if (inputHandler)
+        inputHandler->ProcessButtonUp(m_id, buttonIndex);
+    }
     CJoystickManager::Get().ResetActionRepeater(); // If a button was released, reset the tracker
   }
 }
 
 void CJoystick::UpdateHat(unsigned int hatIndex, const CJoystickHat& newHat)
 {
+  IInputHandler *inputHandler = g_application.m_pPlayer->GetInputHandler();
+
   CJoystickHat& oldHat = m_state.hats[hatIndex];
   if (oldHat == newHat)
     return;
@@ -179,12 +199,27 @@ void CJoystick::UpdateHat(unsigned int hatIndex, const CJoystickHat& newHat)
     {
       CAction action(actionID, 1.0f, 0.0f, actionName);
 
-      g_application.ExecuteInputAction(action);
-      // Track the hat press for deferred repeated execution
-      CJoystickManager::Get().Track(action);
+      if (IsGameControl(actionID))
+      {
+        if (inputHandler)
+          inputHandler->ProcessHatDown(m_id, hatIndex, directionIndex, action);
+        CJoystickManager::Get().ResetActionRepeater(); // Don't track game control actions
+      }
+      else
+      {
+        g_application.ExecuteInputAction(action);
+        // Track the hat press for deferred repeated execution
+        CJoystickManager::Get().Track(action);
+      }
     }
     else if (!newHat[direction])
     {
+      if (IsGameControl(actionID))
+      {
+        // Allow game input to record hat release
+        if (inputHandler)
+          inputHandler->ProcessHatUp(m_id, hatIndex, directionIndex);
+      }
       // If a hat was released, reset the tracker
       CJoystickManager::Get().ResetActionRepeater();
     }
@@ -235,6 +270,8 @@ void CJoystick::UpdateAxis(unsigned int axisIndex, float newAxis)
 
 void CJoystick::UpdateDigitalAxis(unsigned int axisIndex, bool bActiveBefore, bool bActiveNow, const CAction& action)
 {
+  IInputHandler *inputHandler = g_application.m_pPlayer->GetInputHandler();
+
   if (bActiveBefore == bActiveNow)
     return;
   
@@ -243,26 +280,58 @@ void CJoystick::UpdateDigitalAxis(unsigned int axisIndex, bool bActiveBefore, bo
 
   if (bActiveNow)
   {
-    g_application.ExecuteInputAction(action);
-    CJoystickManager::Get().Track(action);
+    if (IsGameControl(action.GetID()))
+    {
+      if (inputHandler)
+      {
+        // Because an axis's direction can reverse and the button ID will be
+        // given a different action, record the button up event first
+        inputHandler->ProcessDigitalAxisUp(m_id, axisIndex);
+        inputHandler->ProcessDigitalAxisDown(m_id, axisIndex, action);
+      }
+      CJoystickManager::Get().ResetActionRepeater(); // Don't track game control actions
+    }
+    else
+    {
+      g_application.ExecuteInputAction(action);
+      CJoystickManager::Get().Track(action);
+    }
   }
   else
   {
+    if (IsGameControl(action.GetID()))
+    {
+      if (inputHandler)
+        inputHandler->ProcessDigitalAxisUp(m_id, axisIndex);
+    }
     CJoystickManager::Get().ResetActionRepeater();
   }
 }
 
 void CJoystick::UpdateAnalogAxis(unsigned int axisIndex, float newAxis, const CAction& action)
 {
+  IInputHandler *inputHandler = g_application.m_pPlayer->GetInputHandler();
+  
   if (ABS(newAxis) == 0.0f)
   {
     const int axisId = axisIndex + 1;
     CLog::Log(LOGDEBUG, "Joystick %d axis %d centered", m_id, axisId);
   }
 
-  if (newAxis != 0.0f)
+  if (IsGameControl(action.GetID()))
+  {
+    if (inputHandler)
+      inputHandler->ProcessAnalogAxis(m_id, axisIndex, action);
+  }
+  else if (newAxis != 0.0f)
     g_application.ExecuteInputAction(action);
 
   // The presence of analog actions disables others from being tracked
   CJoystickManager::Get().ResetActionRepeater();
+}
+
+/* static */
+bool CJoystick::IsGameControl(int actionID)
+{
+  return ACTION_GAME_CONTROL_START <= actionID && actionID <= ACTION_GAME_CONTROL_END;
 }
