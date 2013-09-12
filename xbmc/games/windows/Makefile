@@ -1,5 +1,7 @@
 SRCS=GUIDialogControllerInput.cpp \
-     GUIWindowGameControllers.cpp
+     GUIViewStateWindowGames.cpp \
+     GUIWindowGameControllers.cpp \
+     GUIWindowGames.cpp \
 
 LIB=gamewindows.a
 
