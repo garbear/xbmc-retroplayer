@@ -419,6 +419,7 @@ msgid "Update failed"
 msgstr ""
 
 #: xbmc/addons/addoninstaller.cpp
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
 msgctxt "#114"
 msgid "Installation failed"
 msgstr ""
@@ -3709,6 +3710,7 @@ msgctxt "#1222"
 msgid "Music & video & pictures & files"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
 msgctxt "#1223"
 msgid "Disabled"
 msgstr ""
@@ -5791,6 +5793,7 @@ msgctxt "#13328"
 msgid "%s not found"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayer.cpp
 msgctxt "#13329"
 msgid "Error opening %s"
 msgstr ""
@@ -7232,6 +7235,7 @@ msgctxt "#16025"
 msgid "Enter the artist name"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
 msgctxt "#16026"
 msgid "Playback failed"
 msgstr ""
@@ -7244,6 +7248,7 @@ msgctxt "#16028"
 msgid "Enter value"
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
 msgctxt "#16029"
 msgid "Check the log file for details."
 msgstr ""
@@ -12430,6 +12435,7 @@ msgctxt "#24070"
 msgid "Add-on could not be loaded."
 msgstr ""
 
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
 msgctxt "#24071"
 msgid "An unknown error has occurred."
 msgstr ""
@@ -12775,6 +12781,7 @@ msgid "A compatible emulator was installed for:"
 msgstr ""
 
 #: system/settings/settings.xml
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
 #: xbmc/games/GameFileAutoLauncher.cpp
 msgctxt "#27005"
 msgid "Manage emulators..."
@@ -12815,7 +12822,22 @@ msgctxt "#27012"
 msgid "Some emulators can only load game files on the local hard drive. If the emulator also supports loading files from memory, this is the tie-breaker."
 msgstr ""
 
-#empty strings from id 27013 to 29799
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
+msgctxt "#27013"
+msgid "No compatible emulators found for file:"
+msgstr ""
+
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
+msgctxt "#27014"
+msgid "Install emulator"
+msgstr ""
+
+#: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
+msgctxt "#27015"
+msgid "Add-on manager"
+msgstr ""
+
+#empty strings from id 27016 to 29799
 
 #strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code
 
