@@ -57,6 +57,7 @@ namespace ADDON
     ADDON_VIDEO, // virtual addon types
     ADDON_AUDIO,
     ADDON_IMAGE,
+    ADDON_GAME,
     ADDON_EXECUTABLE,
     ADDON_VIZ_LIBRARY,
     ADDON_SCRAPER_LIBRARY,
