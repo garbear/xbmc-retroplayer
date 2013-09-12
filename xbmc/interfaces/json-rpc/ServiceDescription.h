@@ -1327,7 +1327,7 @@ namespace JSONRPC
                 "\"xbmc.player.musicviz\", \"xbmc.python.pluginsource\", \"xbmc.python.script\", \"xbmc.python.weather\","
                 "\"xbmc.python.subtitles\", \"xbmc.python.lyrics\", \"xbmc.gui.skin\", \"xbmc.gui.webinterface\","
                 "\"xbmc.pvrclient\", \"xbmc.addon.video\", \"xbmc.addon.audio\", \"xbmc.addon.image\", \"xbmc.addon.executable\","
-                "\"xbmc.service\", \"xbmc.subtitle.module\" ],"
+                "\"xbmc.service\", \"xbmc.subtitle.module\", \"xbmc.gameclient\" ],"
       "\"default\": \"unknown\""
     "}",
     "\"Addon.Content\": {"
