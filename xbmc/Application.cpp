@@ -282,6 +282,9 @@
 #include "addons/AddonInstaller.h"
 #include "CompileInfo.h"
 
+/* Game-related include files */
+#include "games/GameManager.h"
+
 #ifdef HAS_PERFORMANCE_SAMPLE
 #include "utils/PerformanceSample.h"
 #else
@@ -1514,6 +1517,8 @@ bool CApplication::Initialize()
 
   // show info dialog about moved configuration files if needed
   ShowAppMigrationMessage();
+
+  GAME::CGameManager::Get().Start();
 
   return true;
 }
@@ -3207,6 +3212,7 @@ bool CApplication::Cleanup()
     g_windowManager.Remove(WINDOW_SETTINGS_SERVICE);
     g_windowManager.Remove(WINDOW_SETTINGS_APPEARANCE);
     g_windowManager.Remove(WINDOW_SETTINGS_MYPVR);
+    g_windowManager.Remove(WINDOW_SETTINGS_MYGAMES);
     g_windowManager.Remove(WINDOW_DIALOG_KAI_TOAST);
 
     g_windowManager.Remove(WINDOW_DIALOG_SEEK_BAR);
@@ -3324,6 +3330,7 @@ void CApplication::Stop(int exitCode)
     CAnnouncementManager::Get().Deinitialize();
 
     StopPVRManager();
+    GAME::CGameManager::Get().Stop();
     StopServices();
     //Sleep(5000);
 
