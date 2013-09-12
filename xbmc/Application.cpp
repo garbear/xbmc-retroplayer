@@ -3195,7 +3195,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
      * This should speed up player startup for files on internet filesystems (eg. webdav) and
      * increase performance on low powered systems (Atom/ARM).
      */
-    if (item.IsVideo())
+    if (item.IsVideo() || item.IsGame())
     {
       CJobManager::GetInstance().PauseJobs();
     }
@@ -4165,7 +4165,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr)
     }
     else
 #endif
-    if (item.IsAudio() || item.IsVideo())
+    if (item.IsAudio() || item.IsVideo() || item.IsGame())
     { // an audio or video file
       PlayFile(item);
     }

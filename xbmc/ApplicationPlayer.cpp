@@ -198,6 +198,11 @@ bool CApplicationPlayer::IsPlayingVideo() const
   return (IsPlaying() && HasVideo());
 }
 
+bool CApplicationPlayer::IsPlayingGame() const
+{
+  return (IsPlaying() && m_eCurrentPlayer == EPC_RETROPLAYER);
+}
+
 void CApplicationPlayer::Pause()
 {
   std::shared_ptr<IPlayer> player = GetInternal();
