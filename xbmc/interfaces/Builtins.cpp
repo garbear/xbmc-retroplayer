@@ -65,6 +65,7 @@
 #include "URL.h"
 #include "music/MusicDatabase.h"
 #include "cores/IPlayer.h"
+#include "games/tags/GameInfoTag.h"
 
 #include "filesystem/PluginDirectory.h"
 #ifdef HAS_FILESYSTEM_RAR
@@ -587,6 +588,12 @@ int CBuiltins::Execute(const CStdString& execString)
           // Pass the script name (params[0]) and all the parameters
           // (params[1] ... params[x]) separated by a comma to RunScript
           cmd = StringUtils::Format("RunScript(%s)", StringUtils::JoinString(params, ",").c_str());
+        else if (addon->Type() == ADDON_GAMEDLL && params.size() >= 2)
+        {
+          CFileItem item(params[1], false);
+          item.SetProperty("gameclient", params[0]);
+          return g_application.PlayMedia(item);
+        }
 
         return Execute(cmd);
       }
@@ -654,6 +661,16 @@ int CBuiltins::Execute(const CStdString& execString)
       else if (StringUtils::StartsWithNoCase(params[i], "playoffset=")) {
         playOffset = atoi(params[i].substr(11).c_str()) - 1;
         item.SetProperty("playlist_starting_track", playOffset);
+      }
+      else if (StringUtils::StartsWithNoCase(params[i], "platform="))
+      {
+        // A game platform was specified, record the request for when we choose a game client
+        item.GetGameInfoTag()->SetPlatform(params[i].substr(9));
+      }
+      else if (StringUtils::StartsWithNoCase(params[i], "gameclient="))
+      {
+        // A game client ID was specified
+        item.SetProperty("gameclient", params[i].substr(11));
       }
     }
 
