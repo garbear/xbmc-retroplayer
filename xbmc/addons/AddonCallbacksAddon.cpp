@@ -50,6 +50,7 @@ CAddonCallbacksAddon::CAddonCallbacksAddon(CAddon* addon)
   m_callbacks->UnknownToUTF8      = UnknownToUTF8;
   m_callbacks->GetLocalizedString = GetLocalizedString;
   m_callbacks->GetDVDMenuLanguage = GetDVDMenuLanguage;
+  m_callbacks->URLEncode          = URLEncode;
   m_callbacks->FreeString         = FreeString;
 
   m_callbacks->OpenFile           = OpenFile;
@@ -289,6 +290,19 @@ char* CAddonCallbacksAddon::GetDVDMenuLanguage(const void* addonData)
   std::string string = g_langInfo.GetDVDMenuLanguage();
 
   char* buffer = strdup(string.c_str());
+  return buffer;
+}
+
+char* CAddonCallbacksAddon::URLEncode(const void* addonData, const char* url)
+{
+  CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
+  if (!helper)
+    return NULL;
+
+  std::string string = CURL::Encode(url);
+  char* buffer = NULL;
+  if (!string.empty())
+    buffer = strdup(string.c_str());
   return buffer;
 }
 
