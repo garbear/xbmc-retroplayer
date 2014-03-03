@@ -42,6 +42,7 @@ typedef enum
   ObservableMessagePeripheralsChanged,
   ObservableMessageManagerStateChanged,
   ObservableMessagePortsChanged,
+  ObservableMessageRemoteAddons,
 } ObservableMessage;
 
 class Observer

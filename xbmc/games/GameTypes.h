@@ -25,6 +25,10 @@
 namespace GAME
 {
 
+class CGameClient;
+typedef std::shared_ptr<CGameClient> GameClientPtr;
+typedef std::vector<GameClientPtr>   GameClientVector;
+
 class CGameController;
 typedef std::shared_ptr<CGameController> GameControllerPtr;
 typedef std::vector<GameControllerPtr>   GameControllerVector;

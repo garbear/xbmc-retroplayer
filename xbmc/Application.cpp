@@ -160,6 +160,7 @@
 
 // Game-related include files
 #include "games/ControllerManager.h"
+#include "games/GameManager.h"
 
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "guilib/GUIControlFactory.h"
@@ -1242,6 +1243,7 @@ bool CApplication::Initialize()
   }
 
   GAME::CControllerManager::Get().Start();
+  GAME::CGameManager::Get().Start();
 
   return true;
 }
@@ -2630,6 +2632,7 @@ void CApplication::Stop(int exitCode)
 
     StopPVRManager();
     GAME::CControllerManager::Get().Stop();
+    GAME::CGameManager::Get().Stop();
     StopServices();
     //Sleep(5000);
 

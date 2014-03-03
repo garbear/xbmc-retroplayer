@@ -44,6 +44,7 @@
 #include "pvr/addons/PVRClient.h"
 #endif
 #include "games/addons/GameController.h"
+#include "games/addons/GameClient.h"
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
 //#endif
@@ -121,6 +122,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_VIZ:
     case ADDON_SCREENSAVER:
     case ADDON_PVRDLL:
+    case ADDON_GAMEDLL:
     case ADDON_AUDIOENCODER:
     case ADDON_AUDIODECODER:
     case ADDON_PERIPHERALDLL:
@@ -159,6 +161,14 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
           return AddonPtr(new PVR::CPVRClient(props));
 #endif
         }
+        else if (type == ADDON_GAMEDLL)
+        {
+          return AddonPtr(new GAME::CGameClient(props));
+        }
+        else if (type == ADDON_SCREENSAVER)
+        {
+          return AddonPtr(new CScreenSaver(props));
+        }
         else if (type == ADDON_AUDIOENCODER)
           return AddonPtr(new CAudioEncoder(props));
         else if (type == ADDON_AUDIODECODER)
@@ -166,7 +176,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
         else if (type == ADDON_PERIPHERALDLL)
           return AddonPtr(new PERIPHERALS::CPeripheralAddon(props));
         else
-          return AddonPtr(new CScreenSaver(props));
+          return AddonPtr(new CAddon(props));
       }
     case ADDON_SKIN:
       return AddonPtr(new CSkinInfo(props));
@@ -855,6 +865,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new PERIPHERALS::CPeripheralAddon(addonProps));
     case ADDON_GAME_CONTROLLER:
       return AddonPtr(new GAME::CGameController(addonProps));
+    case ADDON_GAMEDLL:
+      return AddonPtr(new GAME::CGameClient(addonProps));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(addonProps));
     case ADDON_CONTEXT_ITEM:

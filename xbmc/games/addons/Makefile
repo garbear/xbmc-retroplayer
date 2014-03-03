@@ -1,4 +1,6 @@
-SRCS=GameController.cpp \
+SRCS=GameClient.cpp \
+     GameClientProperties.cpp \
+     GameController.cpp \
      GameControllerFeature.cpp \
      GameControllerLayout.cpp \
 

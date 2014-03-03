@@ -29,6 +29,22 @@ IF EXIST BUILD_WIN32\addons\pvr.* (
 )
 
 SET Counter=1
+IF EXIST BUILD_WIN32\addons\game.libretro.* (
+  ECHO SectionGroup "Game Add-ons" SecGameAddons >> game-addons.nsi
+  FOR /F "tokens=*" %%P IN ('dir /B /AD BUILD_WIN32\addons\game.libretro.*') DO (
+    SET "output=%%P"
+    SET output=!output:game.=!
+    ECHO Section "!output!" SecGameAddons!Counter! >> game-addons.nsi
+    ECHO SectionIn 1 #section is in installtype Full >> game-addons.nsi
+    ECHO SetOutPath "$INSTDIR\addons\%%P" >> game-addons.nsi
+    ECHO File /r "${app_root}\addons\%%P\*.*" >> game-addons.nsi
+    ECHO SectionEnd >> game-addons.nsi
+    SET /A Counter = !Counter! + 1
+    )
+  ECHO SectionGroupEnd >> game-addons.nsi
+)
+
+SET Counter=1
 IF EXIST BUILD_WIN32\addons\audiodecoder.* (
   ECHO SectionGroup "Audio Decoder Add-ons" SecAudioDecoderAddons >> audiodecoder-addons.nsi
   FOR /F "tokens=*" %%P IN ('dir /B /AD BUILD_WIN32\addons\audiodecoder.*') DO (
