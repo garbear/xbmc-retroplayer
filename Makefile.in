@@ -266,6 +266,7 @@ LIBADDON_DIRS=\
 	lib/addons/library.xbmc.gui \
 	lib/addons/library.xbmc.game \
 	lib/addons/library.xbmc.peripheral \
+	lib/addons/library.xbmc.libretro \
 
 CONFLUENCE_MEDIA=addons/skin.confluence/media
 SKIN_DIRS=$(CONFLUENCE_MEDIA)
@@ -417,6 +418,7 @@ libaddon: exports
 	$(MAKE) -C lib/addons/library.xbmc.game
 	$(MAKE) -C lib/addons/library.xbmc.gui
 	$(MAKE) -C lib/addons/library.xbmc.peripheral
+	$(MAKE) -C lib/addons/library.xbmc.libretro
 	$(MAKE) -C lib/addons/library.xbmc.pvr
 dvdpcodecs: dllloader
 	$(MAKE) -C lib/libdvd
