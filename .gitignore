@@ -136,6 +136,7 @@ config.log
 /lib/addons/library.xbmc.pvr/Makefile
 /lib/addons/library.xbmc.codec/Makefile
 /lib/addons/library.xbmc.game/Makefile
+/lib/addons/library.xbmc.libretro/Makefile
 /lib/addons/library.xbmc.addon/project/VS2010Express/Release
 /lib/addons/library.xbmc.addon/project/VS2010Express/Debug
 /lib/addons/library.xbmc.codec/project/VS2010Express/Release
@@ -146,6 +147,8 @@ config.log
 /lib/addons/library.xbmc.pvr/project/VS2010Express/Debug
 /lib/addons/library.xbmc.game/project/VS2010Express/Release
 /lib/addons/library.xbmc.game/project/VS2010Express/Debug
+/lib/addons/library.xbmc.libretro/project/VS2010Express/Release
+/lib/addons/library.xbmc.libretro/project/VS2010Express/Debug
 
 # /lib/cmyth/
 lib/cmyth/Makefile
@@ -1247,5 +1250,7 @@ lib/cmyth/Makefile
 /addons/library.xbmc.pvr/libXBMC_pvr.lib
 /addons/library.xbmc.game/libXBMC_game.dll
 /addons/library.xbmc.game/libXBMC_game.lib
+/addons/library.xbmc.libretro/libXBMC_libretro.dll
+/addons/library.xbmc.libretro/libXBMC_libretro.lib
 
 /pvr-addons
