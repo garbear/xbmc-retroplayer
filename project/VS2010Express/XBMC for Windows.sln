@@ -87,6 +87,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "visVortex", "..\..\xbmc\vis
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libXBMC_game", "..\..\lib\addons\library.xbmc.game\project\VS2010Express\libXBMC_game.vcxproj", "{1400C916-B4AD-41D7-ACEE-A853F3B89B38}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libXBMC_libretro", "..\..\lib\addons\library.xbmc.libretro\project\VS2010Express\libXBMC_libretro.vcxproj", "{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (DirectX)|Win32 = Debug (DirectX)|Win32
@@ -475,6 +477,16 @@ Global
 		{1400C916-B4AD-41D7-ACEE-A853F3B89B38}.Release (DirectX)|Win32.Build.0 = Release|Win32
 		{1400C916-B4AD-41D7-ACEE-A853F3B89B38}.Release (OpenGL)|Win32.ActiveCfg = Release|Win32
 		{1400C916-B4AD-41D7-ACEE-A853F3B89B38}.Release (OpenGL)|Win32.Build.0 = Release|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Debug (DirectX)|Win32.ActiveCfg = Debug|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Debug (DirectX)|Win32.Build.0 = Debug|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Debug (OpenGL)|Win32.ActiveCfg = Debug|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Debug (OpenGL)|Win32.Build.0 = Debug|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Debug Testsuite|Win32.ActiveCfg = Debug|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Debug Testsuite|Win32.Build.0 = Debug|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Release (DirectX)|Win32.ActiveCfg = Release|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Release (DirectX)|Win32.Build.0 = Release|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Release (OpenGL)|Win32.ActiveCfg = Release|Win32
+		{C346A3C7-96F6-4577-8F5B-A7B9144B1B04}.Release (OpenGL)|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
