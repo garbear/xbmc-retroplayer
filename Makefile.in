@@ -264,6 +264,7 @@ LIBADDON_DIRS=\
 	lib/addons/library.xbmc.codec \
 	lib/addons/library.xbmc.pvr \
 	lib/addons/library.xbmc.gui \
+	lib/addons/library.xbmc.game \
 
 CONFLUENCE_MEDIA=addons/skin.confluence/media
 SKIN_DIRS=$(CONFLUENCE_MEDIA)
