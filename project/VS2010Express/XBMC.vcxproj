@@ -271,6 +271,7 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacks.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksAddon.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksCodec.cpp" />
+    <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGame.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGUI.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPVR.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonDatabase.cpp" />
@@ -964,11 +965,16 @@
     <ClCompile Include="..\..\xbmc\TextureDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\DatabaseManager.cpp" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksCodec.h" />
+    <ClInclude Include="..\..\xbmc\addons\AddonCallbacksGame.h" />
+    <ClInclude Include="..\..\xbmc\addons\DllGameClient.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_addon_cpp_dll.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_addon_dll.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_addon_types.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_codec_types.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_epg_types.h" />
+    <ClInclude Include="..\..\xbmc\addons\include\xbmc_game_callbacks.h" />
+    <ClInclude Include="..\..\xbmc\addons\include\xbmc_game_dll.h" />
+    <ClInclude Include="..\..\xbmc\addons\include\xbmc_game_types.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_pvr_dll.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_pvr_types.h" />
     <ClInclude Include="..\..\xbmc\addons\include\xbmc_scr_dll.h" />
