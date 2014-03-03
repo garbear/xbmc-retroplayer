@@ -23,6 +23,7 @@
 #include "cores/dvdplayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "addons/include/xbmc_pvr_types.h"
 #include "addons/include/xbmc_codec_types.h"
+#include "addons/include/xbmc_game_callbacks.h"
 #include "addons/include/xbmc_peripheral_callbacks.h"
 #include "../../addons/library.xbmc.gui/libXBMC_gui.h"
 
@@ -411,6 +412,8 @@ typedef CB_PeripheralLib* (*XBMCPeripheralLib_RegisterMe)(void *addonData);
 typedef void (*XBMCPeripheralLib_UnRegisterMe)(void *addonData, CB_PeripheralLib *cbTable);
 typedef CB_PVRLib* (*XBMCPVRLib_RegisterMe)(void *addonData);
 typedef void (*XBMCPVRLib_UnRegisterMe)(void *addonData, CB_PVRLib *cbTable);
+typedef CB_GameLib* (*XBMCGameLib_RegisterMe)(void *addonData);
+typedef void (*XBMCGameLib_UnRegisterMe)(void *addonData, CB_GameLib *cbTable);
 
 typedef struct AddonCB
 {
@@ -426,6 +429,8 @@ typedef struct AddonCB
   XBMCPeripheralLib_UnRegisterMe PeripheralLib_UnRegisterMe;
   XBMCPVRLib_RegisterMe      PVRLib_RegisterMe;
   XBMCPVRLib_UnRegisterMe    PVRLib_UnRegisterMe;
+  XBMCGameLib_RegisterMe     GameLib_RegisterMe;
+  XBMCGameLib_UnRegisterMe   GameLib_UnRegisterMe;
 } AddonCB;
 
 
@@ -438,6 +443,7 @@ class CAddonCallbacksCodec;
 class CAddonCallbacksGUI;
 class CAddonCallbacksPeripheral;
 class CAddonCallbacksPVR;
+class CAddonCallbacksGame;
 
 class CAddonCallbacks
 {
@@ -456,12 +462,15 @@ public:
   static void PeripheralLib_UnRegisterMe(void *addonData, CB_PeripheralLib *cbTable);
   static CB_PVRLib* PVRLib_RegisterMe(void *addonData);
   static void PVRLib_UnRegisterMe(void *addonData, CB_PVRLib *cbTable);
+  static CB_GameLib* GameLib_RegisterMe(void *addonData);
+  static void GameLib_UnRegisterMe(void *addonData, CB_GameLib *cbTable);
 
   CAddonCallbacksAddon *GetHelperAddon() { return m_helperAddon; }
   CAddonCallbacksCodec *GetHelperCodec() { return m_helperCODEC; }
   CAddonCallbacksGUI *GetHelperGUI() { return m_helperGUI; }
   CAddonCallbacksPeripheral *GetHelperPeripheral() { return m_helperPeripheral; }
   CAddonCallbacksPVR *GetHelperPVR() { return m_helperPVR; }
+  CAddonCallbacksGame *GetHelperGame() { return m_helperGame; }
 
 private:
   AddonCB             *m_callbacks;
@@ -471,6 +480,7 @@ private:
   CAddonCallbacksGUI   *m_helperGUI;
   CAddonCallbacksPeripheral *m_helperPeripheral;
   CAddonCallbacksPVR   *m_helperPVR;
+  CAddonCallbacksGame  *m_helperGame;
 };
 
 }; /* namespace ADDON */
