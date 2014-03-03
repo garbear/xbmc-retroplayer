@@ -2511,6 +2511,7 @@ OUTPUT_FILES="Makefile \
     lib/addons/library.xbmc.codec/Makefile \
     lib/addons/library.kodi.guilib/Makefile \
     lib/addons/library.xbmc.pvr/Makefile \
+    lib/addons/library.kodi.game/Makefile \
     lib/addons/library.kodi.peripheral/Makefile \
     xbmc/visualizations/EGLHelpers/Makefile \
     tools/Linux/${APP_NAME_LC}.sh \

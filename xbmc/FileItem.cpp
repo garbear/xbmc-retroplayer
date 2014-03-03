@@ -58,6 +58,7 @@
 #include "utils/Variant.h"
 #include "music/karaoke/karaokelyricsfactory.h"
 #include "utils/Mime.h"
+#include "games/GameManager.h"
 #include "games/tags/GameInfoTag.h"
 #include "games/tags/GameInfoTagLoader.h"
 
@@ -728,6 +729,9 @@ bool CFileItem::IsVideo() const
   if (HasGameInfoTag())
     return false;
 
+  if (!GetProperty("gameclient").empty())
+    return false;
+
   if (HasMusicInfoTag())
     return false;
 
@@ -749,6 +753,11 @@ bool CFileItem::IsVideo() const
      || StringUtils::EqualsNoCase(extension, "mxf") )
      return true;
   }
+
+  // If the file is a zip file, ask the game clients if any support this file
+  // before assuming it is video.
+  if (StringUtils::EqualsNoCase(URIUtils::GetExtension(m_strPath), ".zip") && CGameManager::Get().IsGame(m_strPath))
+    return false;
 
   return URIUtils::HasExtension(m_strPath, g_advancedSettings.m_videoExtensions);
 }
@@ -824,12 +833,20 @@ bool CFileItem::IsAudio() const
      return true;
   }
 
+  // If the file is a zip file, ask the game clients if any support this file
+  // before assuming it is audio.
+  if (StringUtils::EqualsNoCase(URIUtils::GetExtension(m_strPath), ".zip") && CGameManager::Get().IsGame(m_strPath))
+    return false;
+
   return URIUtils::HasExtension(m_strPath, g_advancedSettings.GetMusicExtensions());
 }
 
 bool CFileItem::IsGame() const
 {
   if (HasGameInfoTag())
+    return true;
+
+  if (!GetProperty("gameclient").empty())
     return true;
 
   if (HasVideoInfoTag())
@@ -841,7 +858,7 @@ bool CFileItem::IsGame() const
   if (HasPictureInfoTag())
     return false;
 
-  return false;
+  return CGameManager::Get().IsGame(m_strPath);
 }
 
 bool CFileItem::IsKaraoke() const
@@ -861,6 +878,9 @@ bool CFileItem::IsPicture() const
     return true;
 
   if (HasGameInfoTag())
+    return false;
+
+  if (!GetProperty("gameclient").empty())
     return false;
 
   if (HasMusicInfoTag())

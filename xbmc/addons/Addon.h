@@ -153,7 +153,7 @@ public:
   const std::string Description() const { return m_props.description; }
   const std::string Path() const { return m_props.path; }
   const std::string Profile() const { return m_profile; }
-  const std::string LibPath() const;
+  virtual const std::string LibPath() const;
   const std::string Author() const { return m_props.author; }
   const std::string ChangeLog() const { return m_props.changelog; }
   const std::string FanArt() const { return m_props.fanart; }
@@ -232,7 +232,6 @@ protected:
   void SettingsToXML(CXBMCTinyXML &doc) const;
 
   CXBMCTinyXML      m_addonXmlDoc;
-  std::string       m_strLibName;
   bool              m_settingsLoaded;
   bool              m_userSettingsLoaded;
 
@@ -258,6 +257,7 @@ private:
   bool        m_enabled;
   CLocalizeStrings  m_strings;
   std::map<std::string, std::string> m_settings;
+  std::string       m_strLibName;
 };
 
 class CAddonLibrary : public CAddon

@@ -193,6 +193,9 @@
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "CompileInfo.h"
 
+/* Game-related include files */
+#include "games/GameManager.h"
+
 #ifdef HAS_PERFORMANCE_SAMPLE
 #include "utils/PerformanceSample.h"
 #else
@@ -1253,6 +1256,8 @@ bool CApplication::Initialize()
 
   // show info dialog about moved configuration files if needed
   ShowAppMigrationMessage();
+
+  GAME::CGameManager::Get().Start();
 
   return true;
 }
@@ -2589,6 +2594,7 @@ void CApplication::Stop(int exitCode)
     CAnnouncementManager::Get().Deinitialize();
 
     StopPVRManager();
+    GAME::CGameManager::Get().Stop();
     StopServices();
     //Sleep(5000);
 
