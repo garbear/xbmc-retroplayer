@@ -67,12 +67,10 @@ bool AllowVFS(void);
 bool RequireArchive(void);
 
 /*! Loads a game */
-GAME_ERROR LoadGame(const struct game_info* game);
+GAME_ERROR LoadGame(const char* url);
 
 /*! Loads a "special" kind of game. Should not be used except in extreme cases */
-GAME_ERROR LoadGameSpecial(GAME_TYPE               game_type,
-                           const struct game_info* info,
-                           size_t                  num_info);
+GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls);
 
 /*! Unloads a currently loaded game */
 GAME_ERROR UnloadGame(void);
@@ -200,7 +198,7 @@ unsigned DiskGetNumImages(void);
  * DiskControlGetImageIndex() returned 4 before. Index 1 will be
  * removed, and the new index is 3.
  */
-GAME_ERROR DiskReplaceImageIndex(unsigned index, const struct game_info *info);
+GAME_ERROR DiskReplaceImageIndex(unsigned index, const char* url);
 
 /*!
  * Adds a new valid index (DiskControlGetNumImages()) to the internal disk list.

@@ -541,16 +541,6 @@ typedef enum GAME_EJECT_STATE
   GAME_EJECTED
 } GAME_EJECT_STATE;
 
-// TODO: Change struct casing (either ALL CAPS or CamelCase)
-struct game_info
-{
-  const char *path;             // Path to game, UTF-8 encoded. Usually used as a reference.
-                                // May be NULL if rom was loaded from stdin or similar.
-  const void *data;             // Memory buffer of loaded game. Will be NULL if need_fullpath was set.
-  size_t      size;             // Size of memory buffer.
-  const char *meta;             // String of implementation specific meta-data.
-};
-
 /*!
  * Interface to acquire user-defined information from environment that cannot
  * feasibly be supported in a multi-system way. 'key' should be set to a key
@@ -661,8 +651,8 @@ typedef struct GameClient
   const char* (__cdecl* GetValidExtensions)(void);
   bool        (__cdecl* AllowVFS)(void);
   bool        (__cdecl* RequireArchive)(void);
-  GAME_ERROR  (__cdecl* LoadGame)(const struct game_info* game);
-  GAME_ERROR  (__cdecl* LoadGameSpecial)(GAME_TYPE game_type, const struct game_info* info, size_t num_info);
+  GAME_ERROR  (__cdecl* LoadGame)(const char* url);
+  GAME_ERROR  (__cdecl* LoadGameSpecial)(GAME_TYPE type, const char** urls, size_t num_urls);
   GAME_ERROR  (__cdecl* UnloadGame)(void);
   GAME_ERROR  (__cdecl* Run)(void);
   GAME_ERROR  (__cdecl* Reset)(void);
@@ -682,7 +672,7 @@ typedef struct GameClient
   unsigned    (__cdecl* DiskGetImageIndex)(void);
   GAME_ERROR  (__cdecl* DiskSetImageIndex)(unsigned index);
   unsigned    (__cdecl* DiskGetNumImages)(void);
-  GAME_ERROR  (__cdecl* DiskReplaceImageIndex)(unsigned index, const struct game_info *info);
+  GAME_ERROR  (__cdecl* DiskReplaceImageIndex)(unsigned index, const char* url);
   GAME_ERROR  (__cdecl* DiskAddImageIndex)(void);
   GAME_ERROR  (__cdecl* HwContextReset)(void);
   GAME_ERROR  (__cdecl* HwContextDestroy)(void);
