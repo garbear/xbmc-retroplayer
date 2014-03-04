@@ -34,9 +34,9 @@
  *
  * To add a new API function:
  *   1.  Declare the function in xbmc_game_dll.h with some helpful documentation
- *   2.  Asign the function pointer assignment in get_addon() of the same file.
- *       get_addon() (aliased to GetAddon()) is called in AddonDll.h immediately
- *       after loading the shared library.
+ *   2.  Asign the function pointer in get_addon() of the same file. get_addon()
+ *       (aliased to GetAddon()) is called in AddonDll.h immediately after
+ *       loading the shared library.
  *   3.  Add the function to the GameClient struct in xbmc_game_types.h. This
  *       struct contains pointers to all the API functions. It is populated in
  *       get_addon(). CGameClient invokes API functions through this struct.
@@ -63,18 +63,18 @@
 #include "addons/DllGameClient.h"
 #include "addons/include/xbmc_addon_types.h"
 
-//#include "FileItem.h"
-//#include "GameClientDLL.h"
-//#include "GameFileLoader.h"
+#include "GameFileLoader.h"
 //#include "games/tags/GameInfoTagLoader.h"
 //#include "SerialState.h"
 //#include "threads/CriticalSection.h"
 
 #include <boost/shared_ptr.hpp>
 //#include <set>
-//#include <string>
+#include <string>
 
 #define GAMECLIENT_MAX_PLAYERS  8
+
+class CFileItem;
 
 namespace GAME
 {
@@ -89,7 +89,8 @@ namespace GAME
     virtual ~CGameClient(void);// { DeInit(); }
     
     /*!
-     * @brief Initialise the instance of this add-on
+     * @brief Initialise the instance of this add-on. After Init() is called,
+     * the Get*() functions may be called.
      */
     ADDON_STATUS Create();
 
@@ -102,6 +103,9 @@ namespace GAME
      * @return True if this instance is initialised, false otherwise.
      */
     bool ReadyToUse(void) const { return m_bReadyToUse; }
+    
+    bool OpenFile(const CFileItem &file);
+    void CloseFile();
 
   private:
     /*!
@@ -136,23 +140,11 @@ namespace GAME
     //virtual ADDON::AddonPtr Clone() const;
 
     /**
-     * Load the DLL and query basic parameters. After Init() is called, the
-     * Get*() functions may be called.
-     */
-    bool Init();
-
-    // Cleanly shut down and unload the DLL.
-    void DeInit();
-
-    /**
      * Perform the gamut of checks on the file: "gameclient" property, platform,
      * extension, and a positive match on at least one of the CGameFileLoader
      * strategies.
      */
     bool CanOpen(const CFileItem &file) const;
-
-    bool OpenFile(const CFileItem &file);
-    void CloseFile();
 
     /**
      * Settings and strings are handled slightly differently with game client

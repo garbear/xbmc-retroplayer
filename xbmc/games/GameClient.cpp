@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
+ *      Copyright (C) 2012-2014 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@
  */
 
 #include "GameClient.h"
+#include "FileItem.h"
 //#include "addons/AddonManager.h"
 //#include "settings/Settings.h"
 //#include "threads/SingleLock.h"
@@ -184,11 +185,11 @@ ADDON_STATUS CGameClient::Create(void)
 
 void CGameClient::Destroy(void)
 {
+  // Reset 'ready to use' to false
   if (!m_bReadyToUse)
     return;
   m_bReadyToUse = false;
 
-  // Reset 'ready to use' to false
   CLog::Log(LOGDEBUG, "GAME: %s - destroying game add-on '%s'", __FUNCTION__, m_strClientName.c_str());
 
   // Destroy the add-on
@@ -223,7 +224,8 @@ bool CGameClient::GetAddonProperties(void)
   catch (...) { LogException("RequireArchive()"); return false; }
 
   // These properties are declared in addon.xml. Make sure they match the values
-  // reported by the game client.
+  // reported by the game client. This is primarily to avoid errors when adding
+  // addon.xml files to libretro cores.
   if (m_bAllowVFS != bAllowVFS)
   {
     CLog::Log(LOGERROR, "GAME: <allowvfs> tag in addon.xml doesn't match DLL value (%s)",
@@ -239,7 +241,7 @@ bool CGameClient::GetAddonProperties(void)
   if (m_strValidExtensions != strValidExtensions) // != operator defined above
   {
     CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)",
-        strValidExtensions..c_str());
+        strValidExtensions.c_str());
     return false;
   }
 
@@ -259,107 +261,20 @@ bool CGameClient::GetAddonProperties(void)
   return true;
 }
 
-bool CGameClient::LogError(const GAME_ERROR error, const char *strMethod) const
-{
-  if (error != GAME_ERROR_NO_ERROR)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - addon '%s' returned an error: %s",
-        strMethod, m_strClientName.c_str(), ToString(error));
-    return false;
-  }
-  return true;
-}
-
-void CGameClient::LogException(const char *strFunctionName) const
-{
-  CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s", strFunctionName, GetFriendlyName().c_str(), Author().c_str());
-}
-
-void CGameClient::DeInit()
-{
-  if (m_dll.IsLoaded())
-  {
-    CloseFile();
-
-    if (m_bIsInited)
-    {
-      m_dll.retro_deinit();
-      m_bIsInited = false;
-    }
-    try
-    {
-      m_dll.Unload();
-    }
-    catch (exception &e)
-    {
-      CLog::Log(LOGERROR, "GAME: Error unloading DLL: %s", e.what());
-    }
-  }
-}
-
-/* static */
-void CGameClient::GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParentZip &outerzip,
-    CGameFileLoaderUseVFS &vfs, CGameFileLoaderEnterZip &innerzip, CGameFileLoader *strategies[4])
-{
-  if (!CSettings::Get().GetBool("gamesdebug.prefervfs"))
-  {
-    // Passing file names comes first
-    strategies[0] = &hd;
-    strategies[1] = &outerzip;
-    strategies[2] = &vfs;
-    strategies[3] = &innerzip;
-  }
-  else
-  {
-    // Loading through VFS comes first
-    strategies[0] = &vfs;
-    strategies[1] = &innerzip;
-    strategies[2] = &hd;
-    strategies[3] = &outerzip;
-  }
-}
-
-bool CGameClient::CanOpen(const CFileItem &file) const
-{
-  return CGameFileLoader::CanOpen(*this, file);
-}
-
-bool CGameClient::OpenFile(const CFileItem& file, ILibretroCallbacksAV *callbacks)
+bool CGameClient::OpenFile(const CFileItem& file)
 {
   CSingleLock lock(m_critSection);
 
-  // Can't open a file without first initializing the DLL...
-  if (!m_dll.IsLoaded())
-    Init();
-
-  CloseFile();
+  if (!ReadyToUse())
+    return false;
 
   if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != ID())
   {
     CLog::Log(LOGERROR, "GAME: File has \"gameclient\" property set, but it doesn't match mine!");
     return false;
   }
-
-  m_callbacks = callbacks;
-
-  // Ensure the default values
-  m_callbacks->SetPixelFormat(LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555);
-  m_callbacks->SetKeyboardCallback(NULL);
-
-  // Install the hooks. These are called by CLibretroEnvironment::EnvironmentCallback()
-  CLibretroEnvironment::SetDLLCallbacks(this, boost::dynamic_pointer_cast<CGameClient>(Clone()));
-
-  // Because we call m_dll.retro_init() here instead of in Init(), keep track
-  // of this. Note that if we return false later, m_bIsInited will still be
-  // true because the DLL is still loaded and inited
-  if (!m_bIsInited)
-  {
-    // Set up our callback to retrieve environment variables
-    // retro_set_environment() must be called before retro_init()
-    m_dll.retro_set_environment(CLibretroEnvironment::EnvironmentCallback);
-    m_dll.retro_init();
-    m_bIsInited = true;
-  }
+  
+  CloseFile();
 
   if (!OpenInternal(file))
     return false;
@@ -398,7 +313,7 @@ bool CGameClient::OpenFile(const CFileItem& file, ILibretroCallbacksAV *callback
 
 bool CGameClient::OpenInternal(const CFileItem& file)
 {
-  LIBRETRO::retro_game_info info;
+  game_info info;
 
   CGameFileLoaderUseHD        hd;
   CGameFileLoaderUseParentZip outerzip;
@@ -415,49 +330,31 @@ bool CGameClient::OpenInternal(const CFileItem& file)
       continue;
     m_gameFile.ToInfo(info);
 
-    try
-    {
-      success = m_dll.retro_load_game(&info) && !CLibretroEnvironment::Abort();
-    }
-    catch (...)
-    {
-      success = false;
-      CLog::Log(LOGERROR, "GAME: Exception thrown in retro_load_game()");
-    }
+    try { success = m_pStruct->LoadGame(&info); }
+    catch (...) { LogException("LoadGame()"); }
 
     if (success)
     {
       CLog::Log(LOGINFO, "GAME: Client successfully loaded game");
       return true;
     }
-
-    // If the user bailed and went to the game settings screen, the abort flag was set
-    if (CLibretroEnvironment::Abort())
-    {
-      CLog::Log(LOGDEBUG, "GAME: Successfully loaded game, but CLibretroEnvironment aborted");
-      break;
-    }
-    CLog::Log(LOGINFO, "GAME: Client failed to load game");
   }
 
+  CLog::Log(LOGINFO, "GAME: Client failed to load game");
   return false;
+}
 
-  /*
-  bool ret, useMultipleRoms = false;
-  if (!useMultipleRoms)
+void CGameClient::CloseFile()
+{
+  CSingleLock lock(m_critSection);
+
+  if (m_dll.IsLoaded() && m_bIsPlaying)
   {
-    ret = m_dll.retro_load_game(&info);
+    m_dll.retro_unload_game();
+    m_bIsPlaying = false;
   }
-  else
-  {
-    // Special game types used when multiple roms are required
-    unsigned int romType = RETRO_GAME_TYPE_BSX;
-    //unsigned int romType = RETRO_GAME_TYPE_BSX_SLOTTED;
-    //unsigned int romType = RETRO_GAME_TYPE_SUFAMI_TURBO;
-    //unsigned int romType = RETRO_GAME_TYPE_SUPER_GAME_BOY;
-    ret = m_dll.retro_load_game_special(romType, &info, 1);
-  }
-  */
+
+  m_gameFile.Reset();
 }
 
 bool CGameClient::LoadGameInfo()
@@ -489,6 +386,49 @@ bool CGameClient::LoadGameInfo()
   m_sampleRate = av_info.timing.sample_rate;
 }
 
+bool CGameClient::LogError(const GAME_ERROR error, const char *strMethod) const
+{
+  if (error != GAME_ERROR_NO_ERROR)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - addon '%s' returned an error: %s",
+        strMethod, m_strClientName.c_str(), ToString(error));
+    return false;
+  }
+  return true;
+}
+
+void CGameClient::LogException(const char *strFunctionName) const
+{
+  CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s", strFunctionName, GetFriendlyName().c_str(), Author().c_str());
+}
+
+/* static */
+void CGameClient::GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParentZip &outerzip,
+    CGameFileLoaderUseVFS &vfs, CGameFileLoaderEnterZip &innerzip, CGameFileLoader *strategies[4])
+{
+  if (!CSettings::Get().GetBool("gamesdebug.prefervfs"))
+  {
+    // Passing file names comes first
+    strategies[0] = &hd;
+    strategies[1] = &outerzip;
+    strategies[2] = &vfs;
+    strategies[3] = &innerzip;
+  }
+  else
+  {
+    // Loading through VFS comes first
+    strategies[0] = &vfs;
+    strategies[1] = &innerzip;
+    strategies[2] = &hd;
+    strategies[3] = &outerzip;
+  }
+}
+
+bool CGameClient::CanOpen(const CFileItem &file) const
+{
+  return CGameFileLoader::CanOpen(*this, file);
+}
+
 void CGameClient::InitSerialization()
 {
   // Check if serialization is supported so savestates and rewind can be used
@@ -516,21 +456,6 @@ void CGameClient::InitSerialization()
       CLog::Log(LOGDEBUG, "GAME: Unable to serialize state, proceeding without rewind");
     }
   }
-}
-
-void CGameClient::CloseFile()
-{
-  CSingleLock lock(m_critSection);
-
-  if (m_dll.IsLoaded() && m_bIsPlaying)
-  {
-    m_dll.retro_unload_game();
-    m_bIsPlaying = false;
-  }
-
-  m_callbacks = NULL;
-  CLibretroEnvironment::ResetCallbacks();
-  m_gameFile.Reset();
 }
 
 void CGameClient::SetDevice(unsigned int port, unsigned int device)
