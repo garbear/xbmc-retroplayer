@@ -20,21 +20,23 @@
  */
 
 #include "GameClient.h"
-#include "addons/AddonManager.h"
-#include "libretro/LibretroEnvironment.h"
-#include "settings/Settings.h"
-#include "threads/SingleLock.h"
-#include "utils/log.h"
-#include "utils/StringUtils.h"
-#include "utils/URIUtils.h"
-#include "utils/Variant.h"
+//#include "addons/AddonManager.h"
+//#include "settings/Settings.h"
+//#include "threads/SingleLock.h"
+//#include "utils/log.h"
+//#include "utils/StringUtils.h"
+//#include "utils/URIUtils.h"
+//#include "utils/Variant.h"
 
 using namespace ADDON;
-using namespace GAME_INFO;
-using namespace GAMES;
+using namespace GAME;
 using namespace std;
 
-namespace GAMES
+#define GAME_CLIENT_NAME_UNKNOWN     "Unknown"
+#define GAME_CLIENT_VERSION_UNKNOWN  "v0.0.0"
+
+/*
+namespace GAME
 {
   // Helper functions
   void toExtensionSet(const CStdString strExtensionList, set<string> &extensions)
@@ -58,6 +60,7 @@ namespace GAMES
   }
 
   // Returns true if lhs and rhs are equal sets
+  // TODO: Use functions from std library
   bool operator==(const set<string> &lhs, const set<string> &rhs)
   {
     if (lhs.size() != rhs.size())
@@ -75,12 +78,13 @@ namespace GAMES
     return !(lhs == rhs);
   }
 } // namespace GAMES
+*/
 
-ILibretroCallbacksAV *CGameClient::m_callbacks = NULL;
-
-CGameClient::CGameClient(const AddonProps &props) : CAddon(props)
+CGameClient::CGameClient(const AddonProps &props)
+  : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
+    m_apiVersion("0.0.0")
 {
-  Initialize();
+  ResetProperties();
 
   InfoMap::const_iterator it;
   if ((it = props.extrainfo.find("platforms")) != props.extrainfo.end())
@@ -89,79 +93,56 @@ CGameClient::CGameClient(const AddonProps &props) : CAddon(props)
     SetExtensions(it->second);
   if ((it = props.extrainfo.find("allowvfs")) != props.extrainfo.end())
     m_bAllowVFS = (it->second == "true" || it->second == "yes");
-  if ((it = props.extrainfo.find("blockextract")) != props.extrainfo.end())
-    m_bRequireZip = (it->second == "true" || it->second == "yes");
+  if ((it = props.extrainfo.find("requirearchive")) != props.extrainfo.end())
+    m_bRequireArchive = (it->second == "true" || it->second == "yes");
 }
 
-CGameClient::CGameClient(const cp_extension_t *ext) : CAddon(ext)
+CGameClient::CGameClient(const cp_extension_t *ext)
+  : CAddonDll<DllGameClient, GameClient, game_client_properties>(ext),
+    m_apiVersion("0.0.0")
 {
-  Initialize();
+  ResetProperties();
 
-  if (!ext)
-    return;
-
-  CStdString platforms = CAddonMgr::Get().GetExtValue(ext->configuration, "platforms");
-  if (!platforms.empty())
+  if (ext)
   {
-    Props().extrainfo.insert(make_pair("platforms", platforms));
-    SetPlatforms(platforms);
-  }
+    string strPlatforms = CAddonMgr::Get().GetExtValue(ext->configuration, "platforms");
+    if (!strPlatforms.empty())
+    {
+      Props().extrainfo.insert(make_pair("platforms", strPlatforms));
+      SetPlatforms(strPlatforms);
+    }
 
-  CStdString extensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
-  if (!extensions.empty())
-  {
-    Props().extrainfo.insert(make_pair("extensions", extensions));
-    SetExtensions(extensions);
-  }
+    string strExtensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
+    if (!strExtensions.empty())
+    {
+      Props().extrainfo.insert(make_pair("extensions", strExtensions));
+      SetExtensions(strExtensions);
+    }
 
-  CStdString allowvfs = CAddonMgr::Get().GetExtValue(ext->configuration, "allowvfs");
-  if (!allowvfs.empty())
-  {
-    Props().extrainfo.insert(make_pair("allowvfs", allowvfs));
-    m_bAllowVFS = (allowvfs == "true" || allowvfs == "yes");
-  }
+    string strAllowVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "allowvfs");
+    if (!strAllowVFS.empty())
+    {
+      Props().extrainfo.insert(make_pair("allowvfs", strAllowVFS));
+      m_bAllowVFS = (strAllowVFS == "true" || strAllowVFS == "yes");
+    }
 
-  CStdString blockextract = CAddonMgr::Get().GetExtValue(ext->configuration, "blockextract");
-  if (!blockextract.empty())
-  {
-    Props().extrainfo.insert(make_pair("blockextract", blockextract));
-    m_bRequireZip = (blockextract == "true" || allowvfs == "yes");
-  }
-
-  // If library attribute isn't present, look for a system-dependent one
-  if (m_strLibName.empty())
-  {
-#if defined(TARGET_ANDROID)
-    m_strLibName = CAddonMgr::Get().GetExtValue(ext->configuration, "@library_android");
-#elif defined(_LINUX) && !defined(TARGET_DARWIN)
-    m_strLibName = CAddonMgr::Get().GetExtValue(ext->configuration, "@library_linux");
-#elif defined(_WIN32) && defined(HAS_SDL_OPENGL)
-    m_strLibName = CAddonMgr::Get().GetExtValue(ext->configuration, "@library_wingl");
-#elif defined(_WIN32) && defined(HAS_DX)
-    m_strLibName = CAddonMgr::Get().GetExtValue(ext->configuration, "@library_windx");
-#elif defined(TARGET_DARWIN)
-    m_strLibName = CAddonMgr::Get().GetExtValue(ext->configuration, "@library_osx");
-#endif
+    string strRequireArchive = CAddonMgr::Get().GetExtValue(ext->configuration, "requirearchive");
+    if (!strRequireArchive.empty())
+    {
+      Props().extrainfo.insert(make_pair("requirearchive", strRequireArchive));
+      m_bRequireArchive = (strRequireArchive == "true" || strRequireArchive == "yes");
+    }
   }
 }
 
-CGameClient::CGameClient(const CGameClient &other)
-  : CAddon(other),
-    m_extensions(other.m_extensions),
-    m_platforms(other.m_platforms)
+void CGameClient::ResetProperties()
 {
-  Initialize();
-  m_bAllowVFS = other.m_bAllowVFS;
-  m_bRequireZip = other.m_bRequireZip;
-}
+  m_apiVersion = AddonVersion("0.0.0");
+  m_bReadyToUse = false;
+  m_strClientName.clear();
+  m_strClientVersion.clear();
 
-AddonPtr CGameClient::Clone() const
-{
-  return GameClientPtr(new CGameClient(*this));
-}
-
-void CGameClient::Initialize()
-{
+  /*
   m_bAllowVFS = false;
   m_bRequireZip = false;
   m_bIsPlaying = false;
@@ -172,128 +153,126 @@ void CGameClient::Initialize()
   m_region = -1; // invalid
   m_serialSize = 0;
   m_bRewindEnabled = false;
+  */
 }
 
-bool CGameClient::LoadSettings(bool bForce /* = false */)
+ADDON_STATUS CGameClient::Create(void)
 {
-  if (m_settingsLoaded && !bForce)
-    return true;
+  ADDON_STATUS status = ADDON_STATUS_UNKNOWN;
 
-  TiXmlElement category("category");
-  category.SetAttribute("label", "15025"); // Emulator setup
-  m_addonXmlDoc.InsertEndChild(category);
+  // Ensure that a previous instance is destroyed
+  Destroy();
 
-  TiXmlElement systemdir("setting");
-  systemdir.SetAttribute("id", "systemdirectory");
-  systemdir.SetAttribute("label", "15026"); // External system directory
-  systemdir.SetAttribute("type", "folder");
-  systemdir.SetAttribute("default", "");
-  m_addonXmlDoc.RootElement()->InsertEndChild(systemdir);
+  // Reset all properties to defaults
+  ResetProperties();
 
-  // Whether system directory setting is visible in Game Settings (GUIWindowSettingsCategory)
-  // Setting is made visible the first time the game client asks for it
-  TiXmlElement gamesettings("setting");
-  gamesettings.SetAttribute("id", "hassystemdirectory");
-  gamesettings.SetAttribute("type", "bool");
-  gamesettings.SetAttribute("visible", "false"); // don't show the setting in GUIDialogAddonSettings
-  gamesettings.SetAttribute("default", "false");
-  m_addonXmlDoc.RootElement()->InsertEndChild(gamesettings);
-
-  SettingsFromXML(m_addonXmlDoc, true);
-  LoadUserSettings();
-  m_settingsLoaded = true;
-  return true;
-}
-
-void CGameClient::SaveSettings()
-{
-  // Avoid creating unnecessary files. This will skip creating the user save
-  // xml unless a value has deviated from a default, or a previous user save
-  // xml was loaded. Once a user save xml is created all saves will then
-  // succeed.
-  //
-  // The desired result here is that the user save xml only exists after
-  // RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY is first called in
-  // CLibretroEnvironment (or is modified by the user).
-  if (HasUserSettings() || GetSetting("hassystemdirectory") == "true" || GetSetting("systemdirectory") != "")
-    CAddon::SaveSettings();
-}
-
-CStdString CGameClient::GetString(uint32_t id)
-{
-  // No special string handling for game clients
-  return g_localizeStrings.Get(id);
-}
-
-bool CGameClient::Init()
-{
-  DeInit();
-
-  m_dll.SetFile(LibPath());
-  m_dll.EnableDelayedUnload(false);
-  if (!m_dll.Load())
+  // Initialise the add-on
+  bool bReadyToUse = false;
+  CLog::Log(LOGDEBUG, "GAME - %s - creating game add-on instance '%s'", __FUNCTION__, Name().c_str());
+  try
   {
-    CLog::Log(LOGERROR, "GameClient: Error loading DLL %s", LibPath().c_str());
+    status = CAddonDll<DllGameClient, GameClient, game_client_properties>::Create();
+    if (status == ADDON_STATUS_OK)
+      bReadyToUse = GetAddonProperties();
+  }
+  catch (...) { LogException(__FUNCTION__); }
+
+  m_bReadyToUse = bReadyToUse;
+
+  return status;
+}
+
+void CGameClient::Destroy(void)
+{
+  if (!m_bReadyToUse)
+    return;
+  m_bReadyToUse = false;
+
+  // Reset 'ready to use' to false
+  CLog::Log(LOGDEBUG, "GAME: %s - destroying game add-on '%s'", __FUNCTION__, m_strClientName.c_str());
+
+  // Destroy the add-on
+  try { CAddonDll<DllGameClient, GameClient, game_client_properties>::Destroy(); }
+  catch (...) { LogException(__FUNCTION__); }
+
+  // Reset all properties to defaults
+  ResetProperties();
+}
+
+bool CGameClient::GetAddonProperties(void)
+{
+  string strClientName;
+  string strClientVersion;
+  string strValidExtensions;
+  bool   bAllowVFS;
+  bool   bRequireArchive;
+  
+  try { strClientName = m_pStruct->GetClientName(); }
+  catch (...) { LogException("GetClientName()"); return false; }
+
+  try { strClientVersion = m_pStruct->GetClientVersion(); }
+  catch (...) { LogException("GetClientVersion()"); return false; }
+
+  try { strValidExtensions = m_pStruct->GetValidExtensions(); }
+  catch (...) { LogException("GetValidExtensions()"); return false; }
+
+  try { bAllowVFS = m_pStruct->AllowVFS(); }
+  catch (...) { LogException("AllowVFS()"); return false; }
+
+  try { bRequireArchive = m_pStruct->RequireArchive(); }
+  catch (...) { LogException("RequireArchive()"); return false; }
+
+  // These properties are declared in addon.xml. Make sure they match the values
+  // reported by the game client.
+  if (m_bAllowVFS != bAllowVFS)
+  {
+    CLog::Log(LOGERROR, "GAME: <allowvfs> tag in addon.xml doesn't match DLL value (%s)",
+        bAllowVFS ? "true" : "false");
+    return false;
+  }
+  if (m_bRequireArchive != bRequireArchive)
+  {
+    CLog::Log(LOGERROR, "GAME: <requirearchive> tag in addon.xml doesn't match DLL value (%s)",
+        bRequireArchive ? "true" : "false");
+    return false;
+  }
+  if (m_strValidExtensions != strValidExtensions) // != operator defined above
+  {
+    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)",
+        strValidExtensions..c_str());
     return false;
   }
 
-  LIBRETRO::retro_system_info info = { };
-  m_dll.retro_get_system_info(&info);
-  m_clientName    = info.library_name ? info.library_name : "Unknown";
-  m_clientVersion = info.library_version ? info.library_version : "v0.0";
-  bool allowVFS   = !info.need_fullpath;
-  bool requireZip = info.block_extract;
+  // Update client name and version
+  m_strClientName    = strClientName;
+  m_strClientVersion = strClientVersion;
 
-  set<string> extensions;
-  toExtensionSet(info.valid_extensions ? info.valid_extensions : "", extensions);
-
-  CLog::Log(LOGINFO, "GameClient: Loaded %s core at version %s", m_clientName.c_str(), m_clientVersion.c_str());
-
-  // Verify the DLL's reported values match those in addon.xml
-  // This is to catch any mistakes uploaded to add-on repos
-  bool success = true;
-  if (m_bAllowVFS != allowVFS)
-  {
-    CLog::Log(LOGERROR, "GameClient: <allowvfs> tag in addon.xml doesn't match DLL value (%s)",
-        allowVFS ? "true" : "false");
-    success = false;
-  }
-  if (m_bRequireZip != requireZip)
-  {
-    CLog::Log(LOGERROR, "GameClient: <blockextract> tag in addon.xml doesn't match DLL value (%s)",
-        requireZip ? "true" : "false");
-    success = false;
-  }
-  if (m_extensions != extensions) // != operator defined above
-  {
-    CLog::Log(LOGERROR, "GameClient: <extensions> tag in addon.xml doesn't match the set from DLL value (%s)",
-        info.valid_extensions ? info.valid_extensions : "");
-    success = false;
-  }
-
-  // Verify API versions
-  if (m_dll.retro_api_version() != RETRO_API_VERSION)
-  {
-    CLog::Log(LOGERROR, "GameClient: API version error: XBMC is at version %d, %s is at version %d",
-        RETRO_API_VERSION, m_clientName.c_str(), m_dll.retro_api_version());
-    success = false;
-  }
-
-  if (!success)
-  {
-    DeInit();
-    return false;
-  }
-
-  CLog::Log(LOGINFO, "GameClient: ------------------------------------");
-  CLog::Log(LOGINFO, "GameClient: Loaded DLL for %s", ID().c_str());
-  CLog::Log(LOGINFO, "GameClient: Client: %s at version %s", m_clientName.c_str(), m_clientVersion.c_str());
-  CLog::Log(LOGINFO, "GameClient: Valid extensions: %s", info.valid_extensions ? info.valid_extensions : "-");
-  CLog::Log(LOGINFO, "GameClient: Allow VFS: %s, require zip (block extract): %s", m_bAllowVFS ? "yes" : "no",
-      m_bRequireZip ? "yes" : "no");
-  CLog::Log(LOGINFO, "GameClient: ------------------------------------");
+  CLog::Log(LOGINFO, "GAME: ------------------------------------");
+  CLog::Log(LOGINFO, "GAME: Loaded DLL for %s", ID().c_str());
+  CLog::Log(LOGINFO, "GAME: Client: %s at version %s", m_strClientName.c_str(), m_strClientVersion.c_str());
+  CLog::Log(LOGINFO, "GAME: Valid extensions: %s", strValidExtensions.c_str());
+  CLog::Log(LOGINFO, "GAME: Allow VFS: %s, require archive: %s",
+      m_bAllowVFS ? "yes" : "no",
+      m_bRequireArchive ? "yes" : "no");
+  CLog::Log(LOGINFO, "GAME: ------------------------------------");
 
   return true;
+}
+
+bool CGameClient::LogError(const GAME_ERROR error, const char *strMethod) const
+{
+  if (error != GAME_ERROR_NO_ERROR)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - addon '%s' returned an error: %s",
+        strMethod, m_strClientName.c_str(), ToString(error));
+    return false;
+  }
+  return true;
+}
+
+void CGameClient::LogException(const char *strFunctionName) const
+{
+  CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s", strFunctionName, GetFriendlyName().c_str(), Author().c_str());
 }
 
 void CGameClient::DeInit()
@@ -313,7 +292,7 @@ void CGameClient::DeInit()
     }
     catch (exception &e)
     {
-      CLog::Log(LOGERROR, "GameClient: Error unloading DLL: %s", e.what());
+      CLog::Log(LOGERROR, "GAME: Error unloading DLL: %s", e.what());
     }
   }
 }
@@ -357,7 +336,7 @@ bool CGameClient::OpenFile(const CFileItem& file, ILibretroCallbacksAV *callback
 
   if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != ID())
   {
-    CLog::Log(LOGERROR, "GameClient: File has \"gameclient\" property set, but it doesn't match mine!");
+    CLog::Log(LOGERROR, "GAME: File has \"gameclient\" property set, but it doesn't match mine!");
     return false;
   }
 
@@ -443,22 +422,22 @@ bool CGameClient::OpenInternal(const CFileItem& file)
     catch (...)
     {
       success = false;
-      CLog::Log(LOGERROR, "GameClient: Exception thrown in retro_load_game()");
+      CLog::Log(LOGERROR, "GAME: Exception thrown in retro_load_game()");
     }
 
     if (success)
     {
-      CLog::Log(LOGINFO, "GameClient: Client successfully loaded game");
+      CLog::Log(LOGINFO, "GAME: Client successfully loaded game");
       return true;
     }
 
     // If the user bailed and went to the game settings screen, the abort flag was set
     if (CLibretroEnvironment::Abort())
     {
-      CLog::Log(LOGDEBUG, "GameClient: Successfully loaded game, but CLibretroEnvironment aborted");
+      CLog::Log(LOGDEBUG, "GAME: Successfully loaded game, but CLibretroEnvironment aborted");
       break;
     }
-    CLog::Log(LOGINFO, "GameClient: Client failed to load game");
+    CLog::Log(LOGINFO, "GAME: Client failed to load game");
   }
 
   return false;
@@ -481,23 +460,30 @@ bool CGameClient::OpenInternal(const CFileItem& file)
   */
 }
 
-void CGameClient::LoadGameInfo()
+bool CGameClient::LoadGameInfo()
 {
   // Get information about system audio/video timings and geometry
   // Can be called only after retro_load_game()
-  LIBRETRO::retro_system_av_info av_info = { };
-  m_dll.retro_get_system_av_info(&av_info);
+  game_system_av_info av_info = { };
+  
+  try
+  {
+    GAME_ERROR error = m_pStruct->GetSystemAVInfo(&av_info);
+    if (error != GAME_ERROR_NO_ERROR)
+      return false;
+  }
+  catch (...) { LogException("GetSystemAVInfo()"); return false; }
 
-  CLog::Log(LOGINFO, "GameClient: ---------------------------------------");
-  CLog::Log(LOGINFO, "GameClient: Opened file %s",   m_gameFile.Path().c_str());
-  CLog::Log(LOGINFO, "GameClient: Base Width:   %u", av_info.geometry.base_width);
-  CLog::Log(LOGINFO, "GameClient: Base Height:  %u", av_info.geometry.base_height);
-  CLog::Log(LOGINFO, "GameClient: Max Width:    %u", av_info.geometry.max_width);
-  CLog::Log(LOGINFO, "GameClient: Max Height:   %u", av_info.geometry.max_height);
-  CLog::Log(LOGINFO, "GameClient: Aspect Ratio: %f", av_info.geometry.aspect_ratio);
-  CLog::Log(LOGINFO, "GameClient: FPS:          %f", av_info.timing.fps);
-  CLog::Log(LOGINFO, "GameClient: Sample Rate:  %f", av_info.timing.sample_rate);
-  CLog::Log(LOGINFO, "GameClient: ---------------------------------------");
+  CLog::Log(LOGINFO, "GAME: ---------------------------------------");
+  CLog::Log(LOGINFO, "GAME: Opened file %s",   m_gameFile.Path().c_str());
+  CLog::Log(LOGINFO, "GAME: Base Width:   %u", av_info.geometry.base_width);
+  CLog::Log(LOGINFO, "GAME: Base Height:  %u", av_info.geometry.base_height);
+  CLog::Log(LOGINFO, "GAME: Max Width:    %u", av_info.geometry.max_width);
+  CLog::Log(LOGINFO, "GAME: Max Height:   %u", av_info.geometry.max_height);
+  CLog::Log(LOGINFO, "GAME: Aspect Ratio: %f", av_info.geometry.aspect_ratio);
+  CLog::Log(LOGINFO, "GAME: FPS:          %f", av_info.timing.fps);
+  CLog::Log(LOGINFO, "GAME: Sample Rate:  %f", av_info.timing.sample_rate);
+  CLog::Log(LOGINFO, "GAME: ---------------------------------------");
 
   m_frameRate = av_info.timing.fps;
   m_sampleRate = av_info.timing.sample_rate;
@@ -511,7 +497,7 @@ void CGameClient::InitSerialization()
 
   if (!m_serialSize)
   {
-    CLog::Log(LOGINFO, "GameClient: Game serialization not supported, continuing without save or rewind");
+    CLog::Log(LOGINFO, "GAME: Game serialization not supported, continuing without save or rewind");
     m_bRewindEnabled = false;
   }
 
@@ -521,13 +507,13 @@ void CGameClient::InitSerialization()
     m_serialState.Init(m_serialSize, (size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
 
     if (m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
-      CLog::Log(LOGDEBUG, "GameClient: Rewind is enabled");
+      CLog::Log(LOGDEBUG, "GAME: Rewind is enabled");
     else
     {
       m_serialSize = 0;
       m_bRewindEnabled = false;
       m_serialState.Reset();
-      CLog::Log(LOGDEBUG, "GameClient: Unable to serialize state, proceeding without rewind");
+      CLog::Log(LOGDEBUG, "GAME: Unable to serialize state, proceeding without rewind");
     }
   }
 }
@@ -627,7 +613,7 @@ void CGameClient::Reset()
       if (!m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
       {
         m_bRewindEnabled = false;
-        CLog::Log(LOGINFO, "GameClient::Reset - Unable to serialize state, proceeding without rewind");
+        CLog::Log(LOGINFO, "GAME::Reset - Unable to serialize state, proceeding without rewind");
       }
     }
   }
@@ -670,46 +656,4 @@ void CGameClient::SetPlatforms(const string &strPlatformList)
 bool CGameClient::IsExtensionValid(const string &ext) const
 {
   return CGameFileLoader::IsExtensionValid(ext, m_extensions);
-}
-
-void CGameClient::SetPixelFormat(LIBRETRO::retro_pixel_format format)
-{
-  if (m_callbacks)
-    m_callbacks->SetPixelFormat(format);
-}
-
-void CGameClient::SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback)
-{
-  if (m_callbacks)
-    m_callbacks->SetKeyboardCallback(callback);
-}
-
-/* static */
-void CGameClient::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
-{
-  if (m_callbacks)
-    m_callbacks->VideoFrame(data, width, height, pitch);
-}
-
-/* static */
-void CGameClient::AudioSample(int16_t left, int16_t right)
-{
-  if (m_callbacks)
-    m_callbacks->AudioSample(left, right);
-}
-
-/* static */
-size_t CGameClient::AudioSampleBatch(const int16_t *data, size_t frames)
-{
-  if (m_callbacks)
-    return m_callbacks->AudioSampleBatch(data, frames);
-  return frames;
-}
-
-/* static */
-int16_t CGameClient::GetInputState(unsigned port, unsigned device, unsigned index, unsigned id)
-{
-  if (m_callbacks)
-    return m_callbacks->GetInputState(port, device, index, id);
-  return 0;
 }

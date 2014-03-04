@@ -6226,9 +6226,6 @@
     <ClInclude Include="..\..\xbmc\games\GameClient.h">
       <Filter>games</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\GameClientDLL.h">
-      <Filter>games</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h">
       <Filter>games</Filter>
     </ClInclude>

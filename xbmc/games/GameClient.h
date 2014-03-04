@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
+ *      Copyright (C) 2012-2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,34 +19,121 @@
  */
 #pragma once
 
+/*
+ * Adding new functions and callbacks to the XBMC Game API
+ *
+ * The Game API is spread out across various files. Adding new functions and
+ * callbacks is an adventure that spans many layers of abstraction. Necessary
+ * steps can easily be omitted, so the process of adding functions and
+ * callbacks is documented here.
+ *
+ * The Game API is layed out in three files:
+ *   - xbmc_game_dll.h        (API function declarations)
+ *   - xbmc_game_callbacks.h  (API callback pointers)
+ *   - xbmc_game_types.h      (API enums and structs)
+ *
+ * To add a new API function:
+ *   1.  Declare the function in xbmc_game_dll.h with some helpful documentation
+ *   2.  Asign the function pointer assignment in get_addon() of the same file.
+ *       get_addon() (aliased to GetAddon()) is called in AddonDll.h immediately
+ *       after loading the shared library.
+ *   3.  Add the function to the GameClient struct in xbmc_game_types.h. This
+ *       struct contains pointers to all the API functions. It is populated in
+ *       get_addon(). CGameClient invokes API functions through this struct.
+ *   4.  Define the function in the cpp file of the game client project
+ *
+ * To add a new API callback:
+ *   1.  Declare the callback as a function pointer in the CB_GameLib struct of
+ *       xbmc_game_callbacks.h with some helpful documentation. The first
+ *       parameter, addonData, is the CAddonCallbacksGame object associated with
+ *       the game client instance.
+ *   2.  Declare the callback as a static member function of CAddonCallbacksGame
+ *   3.  Define the function in AddonCallbacksGame.cpp
+ *   4.  Expose the function to the game client in libXBMC_game.cpp. This shared
+ *       library allows for ABI compatibility if the API is unchanged across
+ *       releases.
+ *   5.  Add the callback to the helper class in libXBMC_game.h. Requires three
+ *       modifications: register the symbol exported from the shared library,
+ *       expose the callback using a member function wrapper, and declare the
+ *       function pointer as a protected member variable.
+ */
+
 #include "addons/Addon.h"
-#include "FileItem.h"
-#include "GameClientDLL.h"
-#include "GameFileLoader.h"
-#include "games/libretro/LibretroCallbacks.h"
-#include "games/tags/GameInfoTagLoader.h"
-#include "SerialState.h"
-#include "threads/CriticalSection.h"
+#include "addons/AddonDll.h"
+#include "addons/DllGameClient.h"
+#include "addons/include/xbmc_addon_types.h"
+
+//#include "FileItem.h"
+//#include "GameClientDLL.h"
+//#include "GameFileLoader.h"
+//#include "games/tags/GameInfoTagLoader.h"
+//#include "SerialState.h"
+//#include "threads/CriticalSection.h"
 
 #include <boost/shared_ptr.hpp>
-#include <set>
-#include <string>
+//#include <set>
+//#include <string>
 
 #define GAMECLIENT_MAX_PLAYERS  8
 
-namespace GAMES
+namespace GAME
 {
   class CGameClient;
   typedef boost::shared_ptr<CGameClient> GameClientPtr;
 
-  class CGameClient : public ADDON::CAddon, public ILibretroCallbacksDLL
+  class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
   {
   public:
     CGameClient(const ADDON::AddonProps &props);
     CGameClient(const cp_extension_t *props);
-    virtual ~CGameClient() { DeInit(); }
+    virtual ~CGameClient(void);// { DeInit(); }
+    
+    /*!
+     * @brief Initialise the instance of this add-on
+     */
+    ADDON_STATUS Create();
 
-    virtual ADDON::AddonPtr Clone() const;
+    /*!
+     * @brief Destroy the instance of this add-on.
+     */
+    void Destroy(void);
+
+    /*!
+     * @return True if this instance is initialised, false otherwise.
+     */
+    bool ReadyToUse(void) const { return m_bReadyToUse; }
+
+  private:
+    /*!
+     * @brief Resets all class members to their defaults. Called by the constructors.
+     */
+    void ResetProperties();
+    
+    bool GetAddonProperties(void);
+
+    bool LogError(const GAME_ERROR error, const char *strMethod) const;
+    void LogException(const char *strFunctionName) const;
+
+    ADDON::AddonVersion    m_apiVersion;
+    bool                   m_bReadyToUse;          /*!< true if this add-on is connected to the backend, false otherwise */
+
+    // Returned by m_dll
+    std::string                  m_strClientName;
+    std::string                  m_strClientVersion;
+    bool                         m_bAllowVFS;
+    /**
+     * If false, and ROM is in a zip, ROM file must be loaded from within the
+     * zip instead of extracted to a temporary cache. In XBMC's case, loading
+     * from the VFS is like extraction because the relative paths to the
+     * ROM's other files are not available to the emulator.
+     */
+    bool                         m_bRequireArchive;
+    double                       m_frameRate; // Video framerate
+    double                       m_frameRateCorrection; // Framerate correction factor (to sync to audio)
+    double                       m_sampleRate; // Audio frequency
+    int                          m_region; // Region of the loaded game
+
+    //virtual ADDON::AddonPtr Clone() const;
 
     /**
      * Load the DLL and query basic parameters. After Init() is called, the
@@ -64,7 +151,7 @@ namespace GAMES
      */
     bool CanOpen(const CFileItem &file) const;
 
-    bool OpenFile(const CFileItem &file, ILibretroCallbacksAV *callbacks);
+    bool OpenFile(const CFileItem &file);
     void CloseFile();
 
     /**
@@ -174,7 +261,7 @@ namespace GAMES
      * the screen. The framerate and samplerate are stored in m_frameRate and
      * m_sampleRate.
      */
-    void LoadGameInfo();
+    bool LoadGameInfo();
 
     /**
      * Initialize the game client serialization subsystem. If successful,
@@ -207,28 +294,11 @@ namespace GAMES
      */
     std::set<std::string>        m_extensions;
     GAME_INFO::GamePlatformArray m_platforms;
-    bool                         m_bAllowVFS;
-    /**
-      * If false, and ROM is in a zip, ROM file must be loaded from within the
-      * zip instead of extracted to a temporary cache. In XBMC's case, loading
-      * from the VFS is like extraction because the relative paths to the
-      * ROM's other files are not available to the emulator.
-      */
-    bool                         m_bRequireZip;
 
     GameClientDLL                m_dll;
-    static ILibretroCallbacksAV  *m_callbacks;
     bool                         m_bIsInited; // Keep track of whether m_dll.retro_init() has been called
     bool                         m_bIsPlaying; // This is true between retro_load_game() and retro_unload_game()
     CGameFile                    m_gameFile; // the current playing file
-
-    // Returned by m_dll
-    std::string                  m_clientName;
-    std::string                  m_clientVersion;
-    double                       m_frameRate; // Video framerate
-    double                       m_frameRateCorrection; // Framerate correction factor (to sync to audio)
-    double                       m_sampleRate; // Audio frequency
-    int                          m_region; // Region of the loaded game
 
     CCriticalSection             m_critSection;
     unsigned int                 m_serialSize;
@@ -237,11 +307,5 @@ namespace GAMES
 
     // If rewinding is disabled, use a buffer to avoid re-allocation when saving games
     std::vector<uint8_t>         m_savestateBuffer;
-
-    /**
-     * This callback exists to give XBMC a chance to poll for input. XBMC already
-     * takes care of this, so the callback isn't needed.
-     */
-    static void NoopPoop() { }
   };
 }

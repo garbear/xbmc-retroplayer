@@ -1070,7 +1070,6 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release (OpenGL)|Win32'">Retrieving the git revision</Message>
     </CustomBuild>
     <ClInclude Include="..\..\xbmc\games\GameClient.h" />
-    <ClInclude Include="..\..\xbmc\games\GameClientDLL.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileLoader.h" />
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />
