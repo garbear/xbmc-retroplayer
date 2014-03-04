@@ -48,7 +48,7 @@ namespace LIBRETRO
     unsigned DiskGetImageIndex(void);
     GAME_ERROR DiskSetImageIndex(unsigned index);
     unsigned DiskGetNumImages(void);
-    GAME_ERROR DiskReplaceImageIndex(unsigned index, const struct game_info *info);
+    GAME_ERROR DiskReplaceImageIndex(unsigned index, const char* url);
     GAME_ERROR DiskAddImageIndex(void);
     GAME_ERROR HwContextReset(void);
     GAME_ERROR HwContextDestroy(void);

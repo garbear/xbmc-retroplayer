@@ -434,13 +434,13 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
 
       // Translate struct
       game_system_av_info info;
-      info.geometry.base_width    = typedData->geometry.base_width;
-      info.geometry.base_height   = typedData->geometry.base_height;
-      info.geometry.max_width     = typedData->geometry.max_width;
-      info.geometry.max_height    = typedData->geometry.max_height;
-      info.geometry.aspect_ratio  = typedData->geometry.aspect_ratio;
-      info.timing.fps             = typedData->timing.fps;
-      info.timing.sample_rate     = typedData->timing.sample_rate;
+      info.geometry.base_width   = typedData->geometry.base_width;
+      info.geometry.base_height  = typedData->geometry.base_height;
+      info.geometry.max_width    = typedData->geometry.max_width;
+      info.geometry.max_height   = typedData->geometry.max_height;
+      info.geometry.aspect_ratio = typedData->geometry.aspect_ratio;
+      info.timing.fps            = typedData->timing.fps;
+      info.timing.sample_rate    = typedData->timing.sample_rate;
       if (!m_frontend->EnvironmentSetSystemAvInfo(&info))
         return false; // Frontend does not acknowledge a changed av_info struct
       else

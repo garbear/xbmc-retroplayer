@@ -19,6 +19,7 @@
  */
 
 #include "ClientBridge.h"
+#include "libretro.h"
 #include "LibretroDLL.h"
 #include "LibretroEnvironment.h"
 #include "libXBMC_addon.h"
@@ -87,6 +88,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
       throw ADDON_STATUS_PERMANENT_FAILURE;
     }
 
+    // Environment must be initialized before calling retro_init()
     CLIENT_BRIDGE = new CClientBridge;
     CLibretroEnvironment::Initialize(XBMC, FRONTEND, CLIENT, CLIENT_BRIDGE);
 
@@ -243,24 +245,34 @@ bool RequireArchive(void)
   return bRequireArchive;
 }
 
-GAME_ERROR LoadGame(const game_info* game)
+GAME_ERROR LoadGame(const char* url)
 {
   if (!CLIENT)
     return GAME_ERROR_FAILED;
 
-  bool result = CLIENT->retro_load_game(reinterpret_cast<const retro_game_info*>(game));
+  if (url == NULL)
+    return GAME_ERROR_INVALID_PARAMETERS;
+
+  retro_game_info info = { };
+  info.path = url;
+  bool result = CLIENT->retro_load_game(&info);
 
   return result ? GAME_ERROR_NO_ERROR : GAME_ERROR_FAILED;
 }
 
-GAME_ERROR LoadGameSpecial(GAME_TYPE game_type, const game_info* info, size_t num_info)
+GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls)
 {
   if (!CLIENT)
     return GAME_ERROR_FAILED;
 
-  bool result = CLIENT->retro_load_game_special(game_type,
-                                                reinterpret_cast<const retro_game_info*>(info),
-                                                num_info);
+  if (urls == NULL || num_urls == 0)
+    return GAME_ERROR_INVALID_PARAMETERS;
+
+  retro_game_info* info = new retro_game_info[num_urls];
+  for (unsigned int i = 0; i < num_urls; i++)
+    info[i].path = urls[i];
+  bool result = CLIENT->retro_load_game_special(type, info, num_urls);
+  delete[] info;
 
   return result ? GAME_ERROR_NO_ERROR : GAME_ERROR_FAILED;
 }
@@ -307,11 +319,20 @@ GAME_ERROR GetSystemAVInfo(game_system_av_info *info)
 {
   if (!CLIENT)
     return GAME_ERROR_FAILED;
+  
+  if (info == NULL)
+    return GAME_ERROR_INVALID_PARAMETERS;
 
-  // Make sure fps doesn't go unset
-  info->timing.fps = 0.0;
+  retro_system_av_info retro_info = { };
+  CLIENT->retro_get_system_av_info(&retro_info);
 
-  CLIENT->retro_get_system_av_info(reinterpret_cast<retro_system_av_info*>(info));
+  info->geometry.base_width   = retro_info.geometry.base_width;
+  info->geometry.base_height  = retro_info.geometry.base_height;
+  info->geometry.max_width    = retro_info.geometry.max_width;
+  info->geometry.max_height   = retro_info.geometry.max_height;
+  info->geometry.aspect_ratio = retro_info.geometry.aspect_ratio;
+  info->timing.fps            = retro_info.timing.fps;
+  info->timing.sample_rate    = retro_info.timing.sample_rate;
 
   if (info->timing.fps != 0.0)
   {
@@ -345,6 +366,9 @@ GAME_ERROR Serialize(void *data, size_t size)
   if (!CLIENT)
     return GAME_ERROR_FAILED;
 
+  if (data == NULL)
+    return GAME_ERROR_INVALID_PARAMETERS;
+
   bool result = CLIENT->retro_serialize(data, size);
 
   return result ? GAME_ERROR_NO_ERROR : GAME_ERROR_FAILED;
@@ -354,6 +378,9 @@ GAME_ERROR Deserialize(const void *data, size_t size)
 {
   if (!CLIENT)
     return GAME_ERROR_FAILED;
+
+  if (data == NULL)
+    return GAME_ERROR_INVALID_PARAMETERS;
 
   bool result = CLIENT->retro_unserialize(data, size);
 
@@ -444,12 +471,15 @@ unsigned DiskGetNumImages()
   return CLIENT_BRIDGE->DiskGetNumImages();
 }
 
-GAME_ERROR DiskReplaceImageIndex(unsigned index, const game_info *info)
+GAME_ERROR DiskReplaceImageIndex(unsigned index, const char* url)
 {
   if (!CLIENT_BRIDGE)
     return GAME_ERROR_FAILED;
 
-  return CLIENT_BRIDGE->DiskReplaceImageIndex(index, info);
+  if (url == NULL)
+    return GAME_ERROR_INVALID_PARAMETERS;
+
+  return CLIENT_BRIDGE->DiskReplaceImageIndex(index, url);
 }
 
 GAME_ERROR DiskAddImageIndex()

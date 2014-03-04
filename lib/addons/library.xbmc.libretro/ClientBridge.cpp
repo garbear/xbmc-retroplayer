@@ -110,18 +110,15 @@ unsigned CClientBridge::DiskGetNumImages(void)
   return m_retro_disk_get_num_images();
 }
 
-GAME_ERROR CClientBridge::DiskReplaceImageIndex(unsigned index, const struct game_info *info)
+GAME_ERROR CClientBridge::DiskReplaceImageIndex(unsigned index, const char* url)
 {
-  if (!m_retro_disk_replace_image_index || !info)
+  if (!m_retro_disk_replace_image_index)
     return GAME_ERROR_FAILED;
 
   // Translate struct
-  retro_game_info libretroInfo;
-  libretroInfo.path = info->path;
-  libretroInfo.data = info->data;
-  libretroInfo.size = info->size;
-  libretroInfo.meta = info->meta;
-  bool bSuccess = m_retro_disk_replace_image_index(index, &libretroInfo);
+  retro_game_info info = { };
+  info.path = url;
+  bool bSuccess = m_retro_disk_replace_image_index(index, &info);
 
   return bSuccess ? GAME_ERROR_NO_ERROR : GAME_ERROR_FAILED;
 }
