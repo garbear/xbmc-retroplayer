@@ -33,7 +33,7 @@
 #include <set>
 #include <string>
 
-namespace GAMES
+namespace GAME
 {
   /**
    * The main function of CGameManager is resolving file items into CGameClients.

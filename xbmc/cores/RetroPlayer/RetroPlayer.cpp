@@ -48,7 +48,7 @@
 #define AUTOSAVE_MS   30000 // autosave every 30 seconds
 
 using namespace ADDON;
-using namespace GAMES;
+using namespace GAME;
 using namespace std;
 
 CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
@@ -79,7 +79,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   assert((bool)gameClient);
 
   // Load the DLL and retrieve system info from the game client
-  if (!gameClient->Init())
+  if (!gameClient->Create())
   {
     CLog::Log(LOGERROR, "RetroPlayer: Failed to init game client %s", gameClient->ID().c_str());
     return false;
@@ -186,18 +186,18 @@ bool CRetroPlayer::CloseFile(bool reopen /* = false */)
 
 void CRetroPlayer::Process()
 {
-  const double speedFactor = CreateAudio(m_gameClient->GetSampleRate());
-  const double framerate = m_gameClient->GetFrameRate() * speedFactor;
+  CreateAudio(m_gameClient->GetSampleRate());
+  const double newFramerate = m_gameClient->GetFrameRate();
 
-  if (speedFactor == 1.0)
-    CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate set to %f", (float)framerate);
+  if (m_audioSpeedFactor == 1.0)
+    CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate set to %f", (float)newFramerate);
   else
     CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate changed from %f to %f",
-      (float)m_gameClient->GetFrameRate(), (float)framerate);
+      (float)(newFramerate / m_audioSpeedFactor), (float)newFramerate);
 
-  CreateVideo(framerate);
+  CreateVideo(newFramerate);
 
-  const double frametime = 1000 * 1000 / framerate; // microseconds
+  const double frametime = 1000 * 1000 / newFramerate; // microseconds
 
   CLog::Log(LOGDEBUG, "RetroPlayer: Beginning loop de loop");
   double nextpts = CDVDClock::GetAbsoluteClock() + frametime;
@@ -249,10 +249,10 @@ void CRetroPlayer::Process()
   CApplicationMessenger::Get().MediaStop(false);
 }
 
-double CRetroPlayer::CreateAudio(double samplerate)
+void CRetroPlayer::CreateAudio(double samplerate)
 {
   // Default: no change in framerate
-  double framerateFactor = 1.0;
+  m_audioSpeedFactor = 1.0;
 
   // No sound if invalid sample rate
   if (samplerate > 0)
@@ -266,7 +266,7 @@ double CRetroPlayer::CreateAudio(double samplerate)
         m_samplerate, (float)samplerate);
 
       // If audio is playing, use that as the reference clock and adjust our framerate accordingly
-      framerateFactor = m_samplerate / samplerate;
+      m_audioSpeedFactor = m_samplerate / samplerate;
     }
     else
     {
@@ -280,9 +280,7 @@ double CRetroPlayer::CreateAudio(double samplerate)
 
   // Record framerate correction factor back in our game client so that our
   // savestate buffer can be resized accordingly
-  m_gameClient->SetFrameRateCorrection(framerateFactor);
-
-  return framerateFactor;
+  m_gameClient->SetFrameRateCorrection(m_audioSpeedFactor);
 }
 
 void CRetroPlayer::CreateVideo(double framerate)

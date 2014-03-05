@@ -126,8 +126,8 @@ private:
    * @return the framerate multiplier (chosen samplerate / specified samplerate)
    *         or 1.0 if no audio.
    */
-  double CreateAudio(double samplerate);
-  void   CreateVideo(double framerate);
+  void CreateAudio(double samplerate);
+  void CreateVideo(double framerate);
 
   CRetroPlayerVideo    m_video;
   CRetroPlayerAudio    m_audio;
@@ -140,6 +140,7 @@ private:
 
   CPlayerOptions       m_PlayerOptions;
   int                  m_playSpeed; // Normal play speed is PLAYSPEED_NORMAL (1000)
+  double               m_audioSpeedFactor; // Factor by which the audio is sped up
   CEvent               m_pauseEvent;
   CCriticalSection     m_critSection; // For synchronization of Open() and Close() calls
 

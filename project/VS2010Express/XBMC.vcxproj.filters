@@ -334,6 +334,9 @@
     <Filter Include="addons\include">
       <UniqueIdentifier>{c4c7579e-0c9c-415d-85c0-3c9e808899e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\addons">
+      <UniqueIdentifier>{368b6c36-ed20-425e-a3b7-2da8782bf4fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3155,9 +3158,6 @@
     <ClCompile Include="..\..\xbmc\games\test\TestGameFileLoader.cpp">
       <Filter>games\test</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\GameClient.cpp">
-      <Filter>games</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp">
       <Filter>games</Filter>
     </ClCompile>
@@ -3205,6 +3205,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGame.cpp">
       <Filter>addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GameClient.cpp">
+      <Filter>games\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GameClients.cpp">
+      <Filter>games\addons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6223,9 +6229,6 @@
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
       <Filter>games\tags</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\GameClient.h">
-      <Filter>games</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h">
       <Filter>games</Filter>
     </ClInclude>
@@ -6333,6 +6336,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\addons\DllGameClient.h">
       <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GameClient.h">
+      <Filter>games\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GameClients.h">
+      <Filter>games\addons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
