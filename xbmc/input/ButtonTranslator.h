@@ -24,6 +24,7 @@
 #pragma once
 
 #include <map>
+#include <string>
 #include <vector>
 #include "system.h" // for HAS_EVENT_SERVER, HAS_LIRC
 
@@ -94,7 +95,7 @@ public:
 #if defined(HAS_LIRC) || defined(HAS_IRSERVERSUITE)
   int TranslateLircRemoteString(const char* szDevice, const char *szButton);
 #endif
-  bool TranslateJoystickString(int window, const char* szDevice, int id,
+  bool TranslateJoystickString(int window, const std::string& strDevice, int id,
                                short inputType, int& action, CStdString& strAction,
                                bool &fullrange);
 

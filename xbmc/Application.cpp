@@ -3210,7 +3210,7 @@ bool CApplication::ProcessJoystickEvent(const std::string& joystickName, int wKe
    bool fullRange = false;
 
    // Translate using regular joystick translator.
-   if (CButtonTranslator::GetInstance().TranslateJoystickString(iWin, joystickName.c_str(), wKeyID, inputType, actionID, actionName, fullRange))
+   if (CButtonTranslator::GetInstance().TranslateJoystickString(iWin, joystickName, wKeyID, inputType, actionID, actionName, fullRange))
      return ExecuteInputAction( CAction(actionID, fAmount, 0.0f, actionName, holdTime) );
    else
      CLog::Log(LOGDEBUG, "ERROR mapping joystick action. Joystick: %s %i",joystickName.c_str(), wKeyID);

@@ -900,7 +900,7 @@ void CButtonTranslator::MapJoystickActions(int windowID, TiXmlNode *pJoystick)
   }
 }
 
-bool CButtonTranslator::TranslateJoystickString(int window, const char* szDevice, int id, short inputType, int& action, CStdString& strAction, bool &fullrange)
+bool CButtonTranslator::TranslateJoystickString(int window, const string& strDevice, int id, short inputType, int& action, CStdString& strAction, bool &fullrange)
 {
   fullrange = false;
 
@@ -918,7 +918,7 @@ bool CButtonTranslator::TranslateJoystickString(int window, const char* szDevice
     return false;
   }
 
-  map<string, JoystickMap>::iterator it = jmap->find(szDevice);
+  map<string, JoystickMap>::iterator it = jmap->find(strDevice);
   if (it==jmap->end())
   {
     it = jmap->find(JOYSTICK_DEFAULT_MAP); // default global map name

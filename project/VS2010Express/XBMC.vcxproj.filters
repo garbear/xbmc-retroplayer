@@ -331,6 +331,12 @@
     <Filter Include="games\windows">
       <UniqueIdentifier>{b27eff5a-49e1-4e7d-b4c2-f4e46d18629a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="input\joystick">
+      <UniqueIdentifier>{fdbb8620-7bb7-4552-bf7c-6b7b9921e088}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input\joystick\api">
+      <UniqueIdentifier>{e214b922-a47e-4cbd-ae67-649dec9a701d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3131,12 +3137,6 @@
     <ClCompile Include="..\..\xbmc\cores\dvdplayer\DVDCodecs\Video\DVDVideoCodec.cpp">
       <Filter>cores\dvdplayer\DVDCodecs\Video</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\input\Joystick.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xbmc\input\JoystickManager.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\input\windows\WINJoystickDX.cpp">
       <Filter>input\windows</Filter>
     </ClCompile>
@@ -3197,8 +3197,26 @@
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp">
       <Filter>games\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\input\JoystickHat.cpp">
-      <Filter>input</Filter>
+    <ClCompile Include="..\..\xbmc\input\joystick\Joystick.cpp">
+      <Filter>input\joystick</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joystick\JoystickManager.cpp">
+      <Filter>input\joystick</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joystick\JoystickAxis.cpp">
+      <Filter>input\joystick</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joystick\JoystickButton.cpp">
+      <Filter>input\joystick</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joystick\JoystickHat.cpp">
+      <Filter>input\joystick</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joystick\MouseObserver.cpp">
+      <Filter>input\joystick</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joystick\ActionObserver.cpp">
+      <Filter>input\joystick</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6199,12 +6217,6 @@
     <ClInclude Include="..\..\xbmc\utils\XSLTUtils.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\input\Joystick.h">
-      <Filter>input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\input\JoystickManager.h">
-      <Filter>input</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\input\windows\WINJoystickDX.h">
       <Filter>input\windows</Filter>
     </ClInclude>
@@ -6277,8 +6289,26 @@
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h">
       <Filter>games\windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\input\JoystickHat.h">
-      <Filter>input</Filter>
+    <ClInclude Include="..\..\xbmc\input\joystick\Joystick.h">
+      <Filter>input\joystick</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joystick\JoystickAxis.h">
+      <Filter>input\joystick</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joystick\JoystickButton.h">
+      <Filter>input\joystick</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joystick\JoystickHat.h">
+      <Filter>input\joystick</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joystick\JoystickManager.h">
+      <Filter>input\joystick</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joystick\MouseObserver.h">
+      <Filter>input\joystick</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joystick\ActionObserver.h">
+      <Filter>input\joystick</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

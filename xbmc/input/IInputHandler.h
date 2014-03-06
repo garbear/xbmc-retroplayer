@@ -19,32 +19,39 @@
  */
 #pragma once
 
+#include <stdint.h>
+
 class CAction;
+
+namespace INPUT
+{
 
 class IInputHandler
 {
 public:
   /**
-   * Marks a key as pressed. This intercepts keys sent to CApplication::OnKey()
-   * before they are translated into actions.
-   */
-  virtual void ProcessKeyDown(unsigned int controllerID, uint32_t key, const CAction &action) = 0;
+    * Marks a key as pressed. This intercepts keys sent to CApplication::OnKey()
+    * before they are translated into actions.
+    */
+  virtual void ProcessKeyDown(unsigned int controllerID, uint32_t key, const CAction &action) { }
 
   /**
-   * Marks a key as released. Because key releases aren't processed by
-   * CApplication and aren't translated into actions, these are intercepted
-   * at the raw event stage in CApplication::OnEvent().
-   */
-  virtual void ProcessKeyUp(unsigned int controllerID, uint32_t key) = 0;
+    * Marks a key as released. Because key releases aren't processed by
+    * CApplication and aren't translated into actions, these are intercepted
+    * at the raw event stage in CApplication::OnEvent().
+    */
+  virtual void ProcessKeyUp(unsigned int controllerID, uint32_t key) { }
 
   /**
-   * Notify interface of joystick events from CJoystickManager.
-   */
-  virtual void ProcessButtonDown(unsigned int controllerID, unsigned int buttonID, const CAction &action) = 0;
-  virtual void ProcessButtonUp(unsigned int controllerID, unsigned int buttonID) = 0;
-  virtual void ProcessDigitalAxisDown(unsigned int controllerID, unsigned int buttonID, const CAction &action) = 0;
-  virtual void ProcessDigitalAxisUp(unsigned int controllerID, unsigned int buttonID) = 0;
-  virtual void ProcessHatDown(unsigned int controllerID, unsigned int hatID, unsigned char dir, const CAction &action) = 0;
-  virtual void ProcessHatUp(unsigned int controllerID, unsigned int hatID, unsigned char dir) = 0;
-  virtual void ProcessAnalogAxis(unsigned int controllerID, unsigned int axisID, const CAction &action) = 0;
+    * Notify interface of joystick events from CJoystickManager.
+    */
+  virtual void ProcessButtonDown(unsigned int controllerID, unsigned int buttonID, const CAction &action) { }
+  virtual void ProcessButtonUp(unsigned int controllerID, unsigned int buttonID) { }
+  virtual void ProcessDigitalAxisDown(unsigned int controllerID, unsigned int buttonID, const CAction &action) { }
+  virtual void ProcessDigitalAxisUp(unsigned int controllerID, unsigned int buttonID) { }
+  virtual void ProcessHatDown(unsigned int controllerID, unsigned int hatID, unsigned char dir, const CAction &action) { }
+  virtual void ProcessHatUp(unsigned int controllerID, unsigned int hatID, unsigned char dir) { }
+  virtual void ProcessAnalogAxis(unsigned int controllerID, unsigned int axisID, const CAction &action) { }
 };
+
+}

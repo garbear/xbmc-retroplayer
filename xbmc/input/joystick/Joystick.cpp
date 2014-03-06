@@ -36,70 +36,12 @@ using namespace std;
 #define ABS(x)  ((x) >= 0 ? (x) : (-(x)))
 #endif
 
-#ifndef CLAMP
-#define CLAMP(value, min, max)  ((value) > (max) ? (max) : (value) < (min) ? (min) : (value))
-#endif
-
-CJoystick::CJoystickState::CJoystickState(unsigned int buttonCount, unsigned int hatCount, unsigned int axisCount)
-{
-  buttons.resize(buttonCount);
-  hats.resize(hatCount);
-  axes.resize(axisCount);
-}
-
-void CJoystick::CJoystickState::Reset()
-{
-  for (vector<bool>::iterator it = buttons.begin(); it != buttons.end(); ++it)
-    *it = false;
-  for (vector<CJoystickHat>::iterator it = hats.begin(); it != hats.end(); ++it)
-    it->Center();
-  for (vector<float>::iterator it = axes.begin(); it != axes.end(); ++it)
-    *it = 0.0f;
-}
-
-void CJoystick::CJoystickState::SetAxis(unsigned int axisIndex, long value, long maxAxisAmount)
-{
-  if (axisIndex >= axes.size())
-    return;
-
-  value = CLAMP(value, -maxAxisAmount, maxAxisAmount);
-
-  const long deadzoneRange = (long)(g_advancedSettings.m_controllerDeadzone * maxAxisAmount);
-
-  if (value > deadzoneRange)
-    axes[axisIndex] = (float)(value - deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
-  else if (value < -deadzoneRange)
-    axes[axisIndex] = (float)(value + deadzoneRange) / (float)(maxAxisAmount - deadzoneRange);
-  else
-    axes[axisIndex] = 0.0f;
-}
-
 CJoystick::CJoystick(const std::string& strName, unsigned int id, unsigned int buttonCount, unsigned int hatCount, unsigned int axisCount)
  : m_name(strName),
    m_id(id),
    m_state(buttonCount, hatCount, axisCount),
    m_initialState(buttonCount, hatCount, axisCount)
 {
-}
-
-CJoystick::CJoystickState& CJoystick::InitialState()
-{
-  m_initialState.Reset();
-  return m_initialState;
-}
-
-void CJoystick::UpdateState(const CJoystickState& newState)
-{
-  assert(m_state.buttons.size() == newState.buttons.size());
-  assert(m_state.hats.size() == newState.hats.size());
-  assert(m_state.axes.size() == newState.axes.size());
-
-  for (unsigned int i = 0; i < m_state.buttons.size() && i < newState.buttons.size(); i++)
-    UpdateButton(i, newState.buttons[i]);
-  for (unsigned int i = 0; i < m_state.hats.size() && i < newState.hats.size(); i++)
-    UpdateHat(i, newState.hats[i]);
-  for (unsigned int i = 0; i < m_state.axes.size() && i < newState.axes.size(); i++)
-    UpdateAxis(i, newState.axes[i]);
 }
 
 void CJoystick::UpdateButton(unsigned int buttonIndex, bool newButton)
