@@ -164,9 +164,9 @@ const char* GetMininumGameAPIVersion(void)
 // Split out from retro_get_system_info()
 const char* GetClientName(void)
 {
-  static string strClientName = GAME_CLIENT_NAME_UNKNOWN;
+  string strClientName = GAME_CLIENT_NAME_UNKNOWN;
   
-  if (strClientName == GAME_CLIENT_NAME_UNKNOWN && CLIENT)
+  if (CLIENT)
   {
     retro_system_info info = { };
     CLIENT->retro_get_system_info(&info);
@@ -180,9 +180,9 @@ const char* GetClientName(void)
 // Split out from retro_get_system_info()
 const char* GetClientVersion(void)
 {
-  static string strClientVersion = GAME_CLIENT_VERSION_UNKNOWN;
+  string strClientVersion = GAME_CLIENT_VERSION_UNKNOWN;
   
-  if (strClientVersion == GAME_CLIENT_VERSION_UNKNOWN && CLIENT)
+  if (CLIENT)
   {
     retro_system_info info = { };
     CLIENT->retro_get_system_info(&info);
@@ -196,9 +196,9 @@ const char* GetClientVersion(void)
 // Split out from retro_get_system_info()
 const char* GetValidExtensions(void)
 {
-  static string strValidExtensions;
+  string strValidExtensions;
   
-  if (strValidExtensions.empty() && CLIENT)
+  if (CLIENT)
   {
     retro_system_info info = { };
     CLIENT->retro_get_system_info(&info);
@@ -212,9 +212,9 @@ const char* GetValidExtensions(void)
 // Split out from retro_get_system_info()
 bool SupportsVFS(void)
 {
-  static bool bSupportsVFS = false;
+  bool bSupportsVFS = false;
   
-  if (!bSupportsVFS && CLIENT)
+  if (CLIENT)
   {
     retro_system_info info = { };
     CLIENT->retro_get_system_info(&info);
