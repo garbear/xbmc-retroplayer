@@ -92,10 +92,8 @@ CGameClient::CGameClient(const AddonProps &props)
     SetPlatforms(it->second);
   if ((it = props.extrainfo.find("extensions")) != props.extrainfo.end())
     SetExtensions(it->second);
-  if ((it = props.extrainfo.find("allowvfs")) != props.extrainfo.end())
-    m_bAllowVFS = (it->second == "true" || it->second == "yes");
-  if ((it = props.extrainfo.find("requirearchive")) != props.extrainfo.end())
-    m_bRequireArchive = (it->second == "true" || it->second == "yes");
+  if ((it = props.extrainfo.find("supports_vfs")) != props.extrainfo.end())
+    m_bSupportsVFS = (it->second == "true" || it->second == "yes");
 }
 
 CGameClient::CGameClient(const cp_extension_t *ext)
@@ -120,18 +118,11 @@ CGameClient::CGameClient(const cp_extension_t *ext)
       SetExtensions(strExtensions);
     }
 
-    string strAllowVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "allowvfs");
-    if (!strAllowVFS.empty())
+    string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "allowvfs");
+    if (!strSupportsVFS.empty())
     {
-      Props().extrainfo.insert(make_pair("allowvfs", strAllowVFS));
-      m_bAllowVFS = (strAllowVFS == "true" || strAllowVFS == "yes");
-    }
-
-    string strRequireArchive = CAddonMgr::Get().GetExtValue(ext->configuration, "requirearchive");
-    if (!strRequireArchive.empty())
-    {
-      Props().extrainfo.insert(make_pair("requirearchive", strRequireArchive));
-      m_bRequireArchive = (strRequireArchive == "true" || strRequireArchive == "yes");
+      Props().extrainfo.insert(make_pair("supports_vfs", strSupportsVFS));
+      m_bSupportsVFS = (strSupportsVFS == "true" || strSupportsVFS == "yes");
     }
   }
 }
@@ -144,7 +135,7 @@ void CGameClient::ResetProperties()
   m_strClientVersion.clear();
 
   /*
-  m_bAllowVFS = false;
+  m_bSupportsVFS = false;
   m_bRequireZip = false;
   m_bIsPlaying = false;
   m_bIsInited = false;
@@ -205,7 +196,7 @@ bool CGameClient::GetAddonProperties(void)
   string strClientName;
   string strClientVersion;
   string strValidExtensions;
-  bool   bAllowVFS;
+  bool   bSupportsVFS;
   bool   bRequireArchive;
   
   try { strClientName = m_pStruct->GetClientName(); }
@@ -217,19 +208,16 @@ bool CGameClient::GetAddonProperties(void)
   try { strValidExtensions = m_pStruct->GetValidExtensions(); }
   catch (...) { LogException("GetValidExtensions()"); return false; }
 
-  try { bAllowVFS = m_pStruct->AllowVFS(); }
-  catch (...) { LogException("AllowVFS()"); return false; }
-
-  try { bRequireArchive = m_pStruct->RequireArchive(); }
-  catch (...) { LogException("RequireArchive()"); return false; }
+  try { bSupportsVFS = m_pStruct->SupportsVFS(); }
+  catch (...) { LogException("SupportsVFS()"); return false; }
 
   // These properties are declared in addon.xml. Make sure they match the values
   // reported by the game client. This is primarily to avoid errors when adding
   // addon.xml files to libretro cores.
-  if (m_bAllowVFS != bAllowVFS)
+  if (m_bSupportsVFS != bSupportsVFS)
   {
     CLog::Log(LOGERROR, "GAME: <allowvfs> tag in addon.xml doesn't match DLL value (%s)",
-        bAllowVFS ? "true" : "false");
+        bSupportsVFS ? "true" : "false");
     return false;
   }
   if (m_bRequireArchive != bRequireArchive)
@@ -253,9 +241,7 @@ bool CGameClient::GetAddonProperties(void)
   CLog::Log(LOGINFO, "GAME: Loaded DLL for %s", ID().c_str());
   CLog::Log(LOGINFO, "GAME: Client: %s at version %s", m_strClientName.c_str(), m_strClientVersion.c_str());
   CLog::Log(LOGINFO, "GAME: Valid extensions: %s", strValidExtensions.c_str());
-  CLog::Log(LOGINFO, "GAME: Allow VFS: %s, require archive: %s",
-      m_bAllowVFS ? "yes" : "no",
-      m_bRequireArchive ? "yes" : "no");
+  CLog::Log(LOGINFO, "GAME: Supports VFS: %s", m_bSupportsVFS ? "yes" : "no");
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
 
   return true;

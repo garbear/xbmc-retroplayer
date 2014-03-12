@@ -210,11 +210,11 @@ const char* GetValidExtensions(void)
 }
 
 // Split out from retro_get_system_info()
-bool AllowVFS(void)
+bool SupportsVFS(void)
 {
-  static bool bAllowVfs = false;
+  static bool bSupportsVFS = false;
   
-  if (!bAllowVfs && CLIENT)
+  if (!bSupportsVFS && CLIENT)
   {
     retro_system_info info = { };
     CLIENT->retro_get_system_info(&info);
@@ -223,26 +223,10 @@ bool AllowVFS(void)
     // retro_game_info::path when calling retro_load_game(). Conversely, if
     // need_fullpath is false, retro_load_game() can load from the memory
     // block specified by retro_game_info::data.
-    bAllowVfs = !info.need_fullpath;
+    bSupportsVFS = !info.need_fullpath;
   }
 
-  return bAllowVfs;
-}
-
-// Split out from retro_get_system_info()
-bool RequireArchive(void)
-{
-  static bool bRequireArchive = false;
-  
-  if (!bRequireArchive && CLIENT)
-  {
-    retro_system_info info = { };
-    CLIENT->retro_get_system_info(&info);
-    // "require archive" is a more direct way of saying "block extract"
-    bRequireArchive = info.block_extract;
-  }
-
-  return bRequireArchive;
+  return bSupportsVFS;
 }
 
 GAME_ERROR LoadGame(const char* url)

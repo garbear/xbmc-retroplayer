@@ -34,7 +34,7 @@
  *
  * To add a new API function:
  *   1.  Declare the function in xbmc_game_dll.h with some helpful documentation
- *   2.  Asign the function pointer in get_addon() of the same file. get_addon()
+ *   2.  Assign the function pointer in get_addon() of the same file. get_addon()
  *       (aliased to GetAddon()) is called in AddonDll.h immediately after
  *       loading the shared library.
  *   3.  Add the function to the GameClient struct in xbmc_game_types.h. This
@@ -71,6 +71,7 @@
 #include <boost/shared_ptr.hpp>
 //#include <set>
 #include <string>
+#include <vector>
 
 #define GAMECLIENT_MAX_PLAYERS  8
 
@@ -80,22 +81,22 @@ namespace GAME
 {
   class CGameClient;
   typedef boost::shared_ptr<CGameClient> GameClientPtr;
+  typedef std::vector<CGameClient>       GameClientVector;
 
   class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
   {
   public:
     CGameClient(const ADDON::AddonProps &props);
     CGameClient(const cp_extension_t *props);
-    virtual ~CGameClient(void);// { DeInit(); }
+    virtual ~CGameClient(void);
     
     /*!
-     * @brief Initialise the instance of this add-on. After Init() is called,
-     * the Get*() functions may be called.
+     * @brief Initialise the instance of this add-on
      */
     ADDON_STATUS Create();
 
     /*!
-     * @brief Destroy the instance of this add-on.
+     * @brief Destroy the instance of this add-on
      */
     void Destroy(void);
 
@@ -121,17 +122,10 @@ namespace GAME
     ADDON::AddonVersion    m_apiVersion;
     bool                   m_bReadyToUse;          /*!< true if this add-on is connected to the backend, false otherwise */
 
-    // Returned by m_dll
+    // Returned from DLL
     std::string                  m_strClientName;
     std::string                  m_strClientVersion;
-    bool                         m_bAllowVFS;
-    /**
-     * If false, and ROM is in a zip, ROM file must be loaded from within the
-     * zip instead of extracted to a temporary cache. In XBMC's case, loading
-     * from the VFS is like extraction because the relative paths to the
-     * ROM's other files are not available to the emulator.
-     */
-    bool                         m_bRequireArchive;
+    bool                         m_bSupportsVFS;
     double                       m_frameRate; // Video framerate
     double                       m_frameRateCorrection; // Framerate correction factor (to sync to audio)
     double                       m_sampleRate; // Audio frequency
@@ -158,8 +152,7 @@ namespace GAME
 
     const std::set<std::string>        &GetExtensions() const { return m_extensions; }
     const GAME_INFO::GamePlatformArray &GetPlatforms() const { return m_platforms; }
-    bool                               AllowVFS() const { return m_bAllowVFS; }
-    bool                               RequireZip() const { return m_bRequireZip; }
+    bool                               SupportsVFS() const { return m_bSupportsVFS; }
 
     const std::string                  &GetFilePath() const { return m_gameFile.Path(); }
     // Returns true after Init() is called and until DeInit() is called.
@@ -277,7 +270,7 @@ namespace GAME
     void SetPlatforms(const std::string &strPlatformList);
 
     /**
-     * m_extensions, m_platforms, m_bAllowVFS, and m_bRequireZip are the core
+     * m_extensions, m_platforms and m_bSupportsVFS, and m_bRequireZip are the core
      * configuration parameters of game clients are listed here first. These
      * are the fields listed in addon.xml, and are the fields that are consulted
      * when deciding if this game client supports a particular game file.

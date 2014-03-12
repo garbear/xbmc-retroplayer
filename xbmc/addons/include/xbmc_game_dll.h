@@ -57,14 +57,7 @@ const char* GetClientVersion(void);
 const char* GetValidExtensions(void);
 
 /*! Return true if the game client supports loading games via the VFS */
-bool AllowVFS(void);
-
-/*!
- * If true, the frontend is not allowed to extract any archives before loading
- * the real game image. Necessary for certain libretro implementations that
- * load games from zipped archives.
- */
-bool RequireArchive(void);
+bool SupportsVFS(void);
 
 /*! Loads a game */
 GAME_ERROR LoadGame(const char* url);
@@ -317,8 +310,7 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->GetClientName            = GetClientName;
   pClient->GetClientVersion         = GetClientVersion;
   pClient->GetValidExtensions       = GetValidExtensions;
-  pClient->AllowVFS                 = AllowVFS;
-  pClient->RequireArchive           = RequireArchive;
+  pClient->SupportsVFS              = SupportsVFS;
   pClient->LoadGame                 = LoadGame;
   pClient->LoadGameSpecial          = LoadGameSpecial;
   pClient->UnloadGame               = UnloadGame;
