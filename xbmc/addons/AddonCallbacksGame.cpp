@@ -44,7 +44,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentSetRotation         = EnvironmentSetRotation;
   m_callbacks->EnvironmentGetOverscan         = EnvironmentGetOverscan;
   m_callbacks->EnvironmentCanDupe             = EnvironmentCanDupe;
-  m_callbacks->EnvironmentSetPerformanceLevel = EnvironmentSetPerformanceLevel;
   m_callbacks->EnvironmentGetSystemDirectory  = EnvironmentGetSystemDirectory;
   m_callbacks->EnvironmentSetPixelFormat      = EnvironmentSetPixelFormat;
   m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
@@ -125,11 +124,6 @@ bool CAddonCallbacksGame::EnvironmentCanDupe(void* addonData)
 {
   // TODO: Move to library.xbmc.libretro and remove callback
   return true;
-}
-
-void CAddonCallbacksGame::EnvironmentSetPerformanceLevel(void* addonData, unsigned level)
-{
-  // Stub
 }
 
 char* CAddonCallbacksGame::EnvironmentGetSystemDirectory(void* addonData)

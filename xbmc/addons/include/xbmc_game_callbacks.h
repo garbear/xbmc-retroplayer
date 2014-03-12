@@ -60,27 +60,6 @@ typedef struct CB_GameLib
   bool (*EnvironmentCanDupe)(void* addonData);
 
   /*!
-    * Gives a hint to the frontend how demanding this implementation is on a
-    * system. E.g. reporting a level of 2 means this implementation should run
-    * decently on all frontends of level 2 and up.
-    *
-    * It can be used by the frontend to potentially warn about too demanding
-    * implementations.
-    *
-    * The levels are "floating", but roughly defined as:
-    *    0:  Low-powered embedded devices such as Raspberry Pi
-    *    1:  6th generation consoles, such as Wii/Xbox 1, and phones, tablets, etc.
-    *    2:  7th generation consoles, such as PS3/360, with sub-par CPUs.
-    *    3:  Modern desktop/laptops with reasonably powerful CPUs.
-    *    4:  High-end desktops with very powerful CPUs.
-    *
-    * This function can be called on a per-game basis, as certain games an
-    * implementation can play might be particularily demanding. If called, it
-    * should be called in GameLoad(). Replaces RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL.
-    */
-  void (*EnvironmentSetPerformanceLevel)(void* addonData, unsigned level);
-
-  /*!
     * Returns the "system" directory of the frontend. This directory can be
     * used to store system specific ROMs such as BIOSes, configuration data,
     * etc. If no such directory is defined, this returns false and it's up to

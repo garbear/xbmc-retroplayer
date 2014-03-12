@@ -47,7 +47,6 @@ public:
   static void EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation);
   static bool EnvironmentGetOverscan(void* addonData);
   static bool EnvironmentCanDupe(void* addonData);
-  static void EnvironmentSetPerformanceLevel(void* addonData, unsigned level);
   static char* EnvironmentGetSystemDirectory(void* addonData);
   static bool EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format);
   static void EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count);

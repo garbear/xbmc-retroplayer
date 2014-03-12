@@ -111,8 +111,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
   case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
     {
       const unsigned* typedData = reinterpret_cast<const unsigned*>(data);
-      if (typedData)
-        m_frontend->EnvironmentSetPerformanceLevel(*typedData);
+      // Removed from Game API
       break;
     }
   case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:

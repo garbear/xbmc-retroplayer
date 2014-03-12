@@ -83,13 +83,6 @@ DLLEXPORT bool GAME_environment_can_dupe(AddonCB* frontend, CB_GameLib* cb)
   return cb->EnvironmentCanDupe(frontend->addonData);
 }
 
-DLLEXPORT void GAME_environment_set_performance_level(AddonCB* frontend, CB_GameLib* cb, unsigned level)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->EnvironmentSetPerformanceLevel(frontend->addonData, level);
-}
-
 DLLEXPORT char* GAME_environment_get_system_directory(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)

@@ -102,7 +102,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_overscan)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_can_dupe)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_message)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_performance_level)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_system_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_pixel_format)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
@@ -176,11 +175,6 @@ public:
   void EnvironmentSetMessage(const struct game_message *message)
   {
     return GAME_environment_set_message(m_handle, m_callbacks, message);
-  }
-
-  void EnvironmentSetPerformanceLevel(unsigned level)
-  {
-    return GAME_environment_set_performance_level(m_handle, m_callbacks, level);
   }
 
   char* EnvironmentGetSystemDirectory(void)
@@ -391,7 +385,6 @@ protected:
     bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
     void (*GAME_environment_set_message)(void* handle, CB_GameLib* cb, const struct game_message *message);
-    void (*GAME_environment_set_performance_level)(void* handle, CB_GameLib* cb, unsigned level);
     char* (*GAME_environment_get_system_directory)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_seto_pixel_frmat)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);

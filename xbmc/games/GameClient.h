@@ -48,7 +48,8 @@
  *       parameter, addonData, is the CAddonCallbacksGame object associated with
  *       the game client instance.
  *   2.  Declare the callback as a static member function of CAddonCallbacksGame
- *   3.  Define the function in AddonCallbacksGame.cpp
+ *   3.  Define the function in AddonCallbacksGame.cpp and assign the callback
+ *       to the callbacks table in the constructor.
  *   4.  Expose the function to the game client in libXBMC_game.cpp. This shared
  *       library allows for ABI compatibility if the API is unchanged across
  *       releases.
