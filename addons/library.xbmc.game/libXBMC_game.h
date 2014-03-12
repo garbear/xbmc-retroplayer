@@ -108,7 +108,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_variable)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_variables)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_variable_update)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_support_no_game)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_libretro_path)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_content_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_save_directory)) throw false;
@@ -205,11 +204,6 @@ public:
   bool EnvironmentGetVariableUpdate(void)
   {
     return GAME_environment_get_variable_update(m_handle, m_callbacks);
-  }
-
-  void EnvironmentSetSupportNoGame(bool supports_no_game)
-  {
-    return GAME_environment_set_support_no_game(m_handle, m_callbacks, supports_no_game);
   }
 
   char* EnvironmentGetLibretroPath(void)
@@ -386,12 +380,11 @@ protected:
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
     void (*GAME_environment_set_message)(void* handle, CB_GameLib* cb, const struct game_message *message);
     char* (*GAME_environment_get_system_directory)(void* handle, CB_GameLib* cb);
-    bool (*GAME_environment_seto_pixel_frmat)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
+    bool (*GAME_environment_set_pixel_format)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
     void (*GAME_environment_get_variable)(void* handle, CB_GameLib* cb, struct game_variable* variable);
     void (*GAME_environment_set_variables)(void* handle, CB_GameLib* cb, const struct game_variable* variables, size_t count);
     bool (*GAME_environment_get_variable_update)(void* handle, CB_GameLib* cb);
-    void (*GAME_environment_set_support_no_game)(void* handle, CB_GameLib* cb, bool supports_no_game);
     char* (*GAME_environment_get_libretro_path)(void* handle, CB_GameLib* cb);
     char* (*GAME_environment_get_content_directory)(void* handle, CB_GameLib* cb);
     char* (*GAME_environment_get_save_directory)(void* handle, CB_GameLib* cb);

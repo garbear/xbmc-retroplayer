@@ -134,13 +134,6 @@ typedef struct CB_GameLib
   bool (*EnvironmentGetVariableUpdate)(void* addonData);
 
   /*!
-    * If true, the game client supports calls to GameLoad()
-    * with NULL as argument. Used by cores which can run without particular
-    * game data. Replaces RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME.
-    */
-  void (*EnvironmentSetSupportNoGame)(void* addonData, bool supports_no_game);
-
-  /*!
     * Retrieves the absolute path from where this game client was loaded. False
     * is returned if it was loaded statically (i.e. linked statically to
     * frontend), or if the path cannot be determined. Mostly useful in

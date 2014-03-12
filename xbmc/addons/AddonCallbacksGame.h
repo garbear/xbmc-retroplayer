@@ -53,7 +53,6 @@ public:
   static void EnvironmentGetVariable(void* addonData, game_variable* variable);
   static void EnvironmentSetVariables(void* addonData, const game_variable* variables, size_t count);
   static bool EnvironmentGetVariableUpdate(void* addonData);
-  static void EnvironmentSetSupportNoGame(void* addonData, bool supports_no_game);
   static char* EnvironmentGetLibretroPath(void* addonData);
   static char* EnvironmentGetContentDirectory(void* addonData);
   static char* EnvironmentGetSaveDirectory(void* addonData);

@@ -50,7 +50,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentGetVariable         = EnvironmentGetVariable;
   m_callbacks->EnvironmentSetVariables        = EnvironmentSetVariables;
   m_callbacks->EnvironmentGetVariableUpdate   = EnvironmentGetVariableUpdate;
-  m_callbacks->EnvironmentSetSupportNoGame    = EnvironmentSetSupportNoGame;
   m_callbacks->EnvironmentGetLibretroPath     = EnvironmentGetLibretroPath;
   m_callbacks->EnvironmentGetContentDirectory = EnvironmentGetContentDirectory;
   m_callbacks->EnvironmentGetSaveDirectory    = EnvironmentGetSaveDirectory;
@@ -157,11 +156,6 @@ bool CAddonCallbacksGame::EnvironmentGetVariableUpdate(void* addonData)
 {
   // Stub
   return false;
-}
-
-void CAddonCallbacksGame::EnvironmentSetSupportNoGame(void* addonData, bool supports_no_game)
-{
-  // Stub
 }
 
 char* CAddonCallbacksGame::EnvironmentGetLibretroPath(void* addonData)

@@ -59,6 +59,13 @@ const char* GetValidExtensions(void);
 /*! Return true if the game client supports loading games via the VFS */
 bool SupportsVFS(void);
 
+/*!
+ * If true, the game client supports calls to LoadGame() with NULL as argument.
+ * Used by cores which can run without particular game data. Replaces
+ * RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME.
+ */
+bool SupportsNoGame(void);
+
 /*! Loads a game */
 GAME_ERROR LoadGame(const char* url);
 
@@ -311,6 +318,7 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->GetClientVersion         = GetClientVersion;
   pClient->GetValidExtensions       = GetValidExtensions;
   pClient->SupportsVFS              = SupportsVFS;
+  pClient->SupportsNoGame           = SupportsNoGame;
   pClient->LoadGame                 = LoadGame;
   pClient->LoadGameSpecial          = LoadGameSpecial;
   pClient->UnloadGame               = UnloadGame;

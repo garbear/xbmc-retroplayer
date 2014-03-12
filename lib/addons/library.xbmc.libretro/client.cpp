@@ -229,6 +229,12 @@ bool SupportsVFS(void)
   return bSupportsVFS;
 }
 
+// Removes the need for an extra frontend callback
+bool SupportsNoGame(void)
+{
+  return CLibretroEnvironment::SupportsNoGame();
+}
+
 GAME_ERROR LoadGame(const char* url)
 {
   if (!CLIENT)

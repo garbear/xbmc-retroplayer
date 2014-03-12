@@ -125,13 +125,6 @@ DLLEXPORT bool GAME_environment_get_variable_update(AddonCB* frontend, CB_GameLi
   return cb->EnvironmentGetVariableUpdate(frontend->addonData);
 }
 
-DLLEXPORT void GAME_environment_set_support_no_game(AddonCB* frontend, CB_GameLib* cb, bool supports_no_game)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->EnvironmentSetSupportNoGame(frontend->addonData, supports_no_game);
-}
-
 DLLEXPORT char* GAME_environment_get_libgame_path(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)

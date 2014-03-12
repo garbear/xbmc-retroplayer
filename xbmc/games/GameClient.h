@@ -104,13 +104,14 @@ namespace GAME
     /**
      * True if this instance is initialised, false otherwise.
      */
-    bool                         ReadyToUse(void) const { return m_bReadyToUse; }
-    const std::string&           GetClientName() const { return m_strClientName; }
+    bool                         ReadyToUse(void) const   { return m_bReadyToUse; }
+    const std::string&           GetClientName() const    { return m_strClientName; }
     const std::string&           GetClientVersion() const { return m_strClientVersion; }
-    const std::set<std::string>& GetExtensions() const { return m_extensions; }
-    bool                         SupportsVFS() const { return m_bSupportsVFS; }
-    const GamePlatformSet&       GetPlatforms() const { return m_platforms; }
-    const std::string&           GetFilePath() const { return m_gameFile.Path(); }
+    const std::set<std::string>& GetExtensions() const    { return m_extensions; }
+    bool                         SupportsVFS() const      { return m_bSupportsVFS; }
+    bool                         SupportsNoGame() const   { return m_bSupportsNoGame; }
+    const GamePlatformSet&       GetPlatforms() const     { return m_platforms; }
+    const std::string&           GetFilePath() const      { return m_gameFile.Path(); }
 
     /**
      * Find the region of a currently running game. The return value will be
@@ -142,10 +143,12 @@ namespace GAME
     ADDON::AddonVersion   m_apiVersion;
     bool                  m_bReadyToUse;          /*!< true if this add-on is connected to the backend, false otherwise */
 
-    // Returned from DLL
+    // Returned from Game API
     std::string           m_strClientName;
     std::string           m_strClientVersion;
     bool                  m_bSupportsVFS;
+    bool                  m_bSupportsNoGame;
+
     double                m_frameRate; // Video framerate
     double                m_frameRateCorrection; // Framerate correction factor (to sync to audio)
     double                m_sampleRate; // Audio frequency

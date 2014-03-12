@@ -75,6 +75,8 @@ CGameClient::CGameClient(const AddonProps& props)
     SetExtensions(it->second);
   if ((it = props.extrainfo.find("supports_vfs")) != props.extrainfo.end())
     m_bSupportsVFS = (it->second == "true" || it->second == "yes");
+  if ((it = props.extrainfo.find("supports_no_game")) != props.extrainfo.end())
+    m_bSupportsNoGame = (it->second == "true" || it->second == "yes");
 }
 
 CGameClient::CGameClient(const cp_extension_t* ext)
@@ -99,11 +101,18 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       SetExtensions(strExtensions);
     }
 
-    string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "allowvfs");
+    string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_vfs");
     if (!strSupportsVFS.empty())
     {
       Props().extrainfo.insert(make_pair("supports_vfs", strSupportsVFS));
       m_bSupportsVFS = (strSupportsVFS == "true" || strSupportsVFS == "yes");
+    }
+
+    string strSupportsNoGame = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
+    if (!strSupportsNoGame.empty())
+    {
+      Props().extrainfo.insert(make_pair("supports_no_game", strSupportsNoGame));
+      m_bSupportsNoGame = (strSupportsNoGame == "true" || strSupportsNoGame == "yes");
     }
   }
 }
@@ -114,10 +123,10 @@ void CGameClient::ResetProperties()
   m_bReadyToUse = false;
   m_strClientName.clear();
   m_strClientVersion.clear();
+  m_bSupportsVFS = false;
+  m_bSupportsNoGame = false;
 
   /*
-  m_bSupportsVFS = false;
-  m_bRequireZip = false;
   m_bIsPlaying = false;
   m_bIsInited = false;
   m_frameRate = 0.0;
@@ -178,7 +187,7 @@ bool CGameClient::GetAddonProperties(void)
   string strClientVersion;
   string strValidExtensions;
   bool   bSupportsVFS;
-  bool   bRequireArchive;
+  bool   bSupportsNoGame;
   
   try { strClientName = m_pStruct->GetClientName(); }
   catch (...) { LogException("GetClientName()"); return false; }
@@ -192,17 +201,25 @@ bool CGameClient::GetAddonProperties(void)
   try { bSupportsVFS = m_pStruct->SupportsVFS(); }
   catch (...) { LogException("SupportsVFS()"); return false; }
 
+  try { bSupportsNoGame = m_pStruct->SupportsNoGame(); }
+  catch (...) { LogException("SupportsNoGame()"); return false; }
+
   // These properties are declared in addon.xml. Make sure they match the values
   // reported by the game client. This is primarily to avoid errors when adding
   // addon.xml files to libretro cores.
+  if (m_strValidExtensions != strValidExtensions) // != operator defined above
+  {
+    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)", strValidExtensions.c_str());
+    return false;
+  }
   if (m_bSupportsVFS != bSupportsVFS)
   {
     CLog::Log(LOGERROR, "GAME: <supports_vfs> tag in addon.xml doesn't match DLL value (%s)", bSupportsVFS ? "true" : "false");
     return false;
   }
-  if (m_strValidExtensions != strValidExtensions) // != operator defined above
+  if (m_bSupportsNoGame != bSupportsNoGame)
   {
-    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)", strValidExtensions.c_str());
+    CLog::Log(LOGERROR, "GAME: <supports_no_game> tag in addon.xml doesn't match DLL value (%s)", bSupportsNoGame ? "true" : "false");
     return false;
   }
 
@@ -215,6 +232,7 @@ bool CGameClient::GetAddonProperties(void)
   CLog::Log(LOGINFO, "GAME: Client: %s at version %s", m_strClientName.c_str(), m_strClientVersion.c_str());
   CLog::Log(LOGINFO, "GAME: Valid extensions: %s", strValidExtensions.c_str());
   CLog::Log(LOGINFO, "GAME: Supports VFS: %s", m_bSupportsVFS ? "yes" : "no");
+  CLog::Log(LOGINFO, "GAME: Supports no game: %s", m_bSupportsNoGame ? "yes" : "no");
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
 
   return true;

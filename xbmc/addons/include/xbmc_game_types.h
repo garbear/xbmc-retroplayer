@@ -650,6 +650,7 @@ typedef struct GameClient
   const char* (__cdecl* GetClientVersion)(void);
   const char* (__cdecl* GetValidExtensions)(void);
   bool        (__cdecl* SupportsVFS)(void);
+  bool        (__cdecl* SupportsNoGame)(void);
   GAME_ERROR  (__cdecl* LoadGame)(const char* url);
   GAME_ERROR  (__cdecl* LoadGameSpecial)(GAME_TYPE type, const char** urls, size_t num_urls);
   GAME_ERROR  (__cdecl* UnloadGame)(void);

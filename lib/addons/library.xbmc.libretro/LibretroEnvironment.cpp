@@ -38,6 +38,7 @@ CHelper_libXBMC_addon* CLibretroEnvironment::m_xbmc = NULL;
 CHelper_libXBMC_game*  CLibretroEnvironment::m_frontend = NULL;
 CClientBridge*         CLibretroEnvironment::m_clientBridge = NULL;
 
+bool   CLibretroEnvironment::m_bSupportsNoGame = false;
 double CLibretroEnvironment::m_fps = 0.0;
 bool   CLibretroEnvironment::m_bFramerateKnown = false;
 
@@ -150,7 +151,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       const retro_input_descriptor* typedData = reinterpret_cast<const retro_input_descriptor*>(data);
       size_t count = 0;
-      for (const retro_input_descriptor *descriptor = typedData; descriptor && descriptor->description; descriptor++)
+      for (const retro_input_descriptor* descriptor = typedData; descriptor && descriptor->description; descriptor++)
         count++;
 
       if (count)
@@ -270,7 +271,10 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       const bool* typedData = reinterpret_cast<const bool*>(data);
       if (typedData)
-        m_frontend->EnvironmentSetSupportNoGame(*typedData);
+      {
+        // Store this value so that it can be queried directly via the Game API
+        m_bSupportsNoGame = *typedData;
+      }
       break;
     }
   case RETRO_ENVIRONMENT_GET_LIBRETRO_PATH:
