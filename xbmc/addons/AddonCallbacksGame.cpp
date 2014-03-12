@@ -132,10 +132,10 @@ void CAddonCallbacksGame::EnvironmentSetPerformanceLevel(void* addonData, unsign
   // Stub
 }
 
-bool CAddonCallbacksGame::EnvironmentGetSystemDirectory(void* addonData, char *buffer, size_t buffer_size)
+char* CAddonCallbacksGame::EnvironmentGetSystemDirectory(void* addonData)
 {
   // Stub
-  return false;
+  return NULL;
 }
 
 bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format)
@@ -170,22 +170,22 @@ void CAddonCallbacksGame::EnvironmentSetSupportNoGame(void* addonData, bool supp
   // Stub
 }
 
-bool CAddonCallbacksGame::EnvironmentGetLibretroPath(void* addonData, char *buffer, size_t buffer_size)
+char* CAddonCallbacksGame::EnvironmentGetLibretroPath(void* addonData)
 {
   // Stub
-  return false;
+  return NULL;
 }
 
-bool CAddonCallbacksGame::EnvironmentGetContentDirectory(void* addonData, char *buffer, size_t buffer_size)
+char* CAddonCallbacksGame::EnvironmentGetContentDirectory(void* addonData)
 {
   // Stub
-  return false;
+  return NULL;
 }
 
-bool CAddonCallbacksGame::EnvironmentGetSaveDirectory(void* addonData, char *buffer, size_t buffer_size)
+char* CAddonCallbacksGame::EnvironmentGetSaveDirectory(void* addonData)
 {
   // Stub
-  return false;
+  return NULL;
 }
 
 bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info)

@@ -84,14 +84,15 @@ typedef struct CB_GameLib
     * Returns the "system" directory of the frontend. This directory can be
     * used to store system specific ROMs such as BIOSes, configuration data,
     * etc. If no such directory is defined, this returns false and it's up to
-    * the implementation to find a suitable directory.
+    * the implementation to find a suitable directory. Must be freed with
+    * FreeString().
     *
     * NOTE: Some cores used this folder also for "save" data such as memory
     * cards, etc, for lack of a better place to put it. This is now
     * discouraged, and if possible, cores should try to use
     * EnvironmentGetSaveDirectory(). Replaces RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY.
     */
-  bool (*EnvironmentGetSystemDirectory)(void* addonData, char* buffer, size_t buffer_size);
+  char* (*EnvironmentGetSystemDirectory)(void* addonData);
 
   /*!
     * Sets the internal pixel format used by the implementation. The default
@@ -101,7 +102,7 @@ typedef struct CB_GameLib
     * called inside GameLoad() or game_get_system_av_info(). Replaces
     * RETRO_ENVIRONMENT_SET_PIXEL_FORMAT.
     */
-  void (*EnvironmentSetPixelFormat)(void* addonData, enum GAME_PIXEL_FORMAT format);
+  bool (*EnvironmentSetPixelFormat)(void* addonData, enum GAME_PIXEL_FORMAT format);
 
   /*!
     * Sets an array of game_input_descriptors. It is up to the frontend to
@@ -156,8 +157,7 @@ typedef struct CB_GameLib
   /*!
     * If true, the game client supports calls to GameLoad()
     * with NULL as argument. Used by cores which can run without particular
-    * game data. This should be called within game_set_environment() only (TODO).
-    * Replaces RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME.
+    * game data. Replaces RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME.
     */
   void (*EnvironmentSetSupportNoGame)(void* addonData, bool supports_no_game);
 
@@ -166,33 +166,35 @@ typedef struct CB_GameLib
     * is returned if it was loaded statically (i.e. linked statically to
     * frontend), or if the path cannot be determined. Mostly useful in
     * cooperation with EnvironmentSetSupportNoGame() as assets can be
-    * loaded without ugly hacks. Replaces RETRO_ENVIRONMENT_GET_LIBRETRO_PATH.
+    * loaded without ugly hacks. Must be freed with FreeString(). Replaces
+    * RETRO_ENVIRONMENT_GET_LIBRETRO_PATH.
     */
-  bool (*EnvironmentGetLibretroPath)(void* addonData, char* buffer, size_t buffer_size);
+  char* (*EnvironmentGetLibretroPath)(void* addonData);
 
   /*!
     * Returns the "content" directory of the frontend. This directory can be
     * used to store specific assets that the core relies upon, such as art
-    * assets, input data, etc etc. If this returns false, no such directory is
+    * assets, input data, etc etc. If this returns NULL, no such directory is
     * defined, and it's up to the implementation to find a suitable directory.
-    * Replaces RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY.
+    * Must be freed with FreeString(). Replaces RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY.
     */
-  bool (*EnvironmentGetContentDirectory)(void* addonData, char* buffer, size_t buffer_size);
+  char* (*EnvironmentGetContentDirectory)(void* addonData);
 
   /*!
     * Returns the "save" directory of the frontend. This directory can be used
     * to store SRAM, memory cards, high scores, etc, if the game client
-    * cannot use the regular memory interface (GameGetMemoryData()).
+    * cannot use the regular memory interface (GetMemoryData()). Must be freed
+    * with FreeString().
     *
-    * NOTE: game clients used to check EnvironmentGetSystemDirectory()
+    * NOTE: Game clients used to check EnvironmentGetSystemDirectory()
     * for similar things before. They should still check
     * EnvironmentGetSystemDirectory() if they want to be backwards-
-    * compatible. This should return true only if the frontend user has set a
+    * compatible. This should return NULL if the frontend user has not set a
     * specific save path.
     *
     * Replaces RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY.
     */
-  bool (*EnvironmentGetSaveDirectory)(void* addonData, char* buffer, size_t buffer_size);
+  char* (*EnvironmentGetSaveDirectory)(void* addonData);
 
   /*!
     * Sets a new av_info structure. This can only be called from within

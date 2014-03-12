@@ -183,9 +183,9 @@ public:
     return GAME_environment_set_performance_level(m_handle, m_callbacks, level);
   }
 
-  bool EnvironmentGetSystemDirectory(char *buffer, size_t buffer_size)
+  char* EnvironmentGetSystemDirectory(void)
   {
-    return GAME_environment_get_system_directory(m_handle, m_callbacks, buffer, buffer_size);
+    return GAME_environment_get_system_directory(m_handle, m_callbacks);
   }
 
   bool EnvironmentSetPixelFormat(enum GAME_PIXEL_FORMAT format)
@@ -218,19 +218,19 @@ public:
     return GAME_environment_set_support_no_game(m_handle, m_callbacks, supports_no_game);
   }
 
-  bool EnvironmentGetLibretroPath(char *buffer, size_t buffer_size)
+  char* EnvironmentGetLibretroPath(void)
   {
-    return GAME_environment_get_libretro_path(m_handle, m_callbacks, buffer, buffer_size);
+    return GAME_environment_get_libretro_path(m_handle, m_callbacks);
   }
 
-  bool EnvironmentGetContentDirectory(char *buffer, size_t buffer_size)
+  char* EnvironmentGetContentDirectory(void)
   {
-    return GAME_environment_get_content_directory(m_handle, m_callbacks, buffer, buffer_size);
+    return GAME_environment_get_content_directory(m_handle, m_callbacks);
   }
 
-  bool EnvironmentGetSaveDirectory(char *buffer, size_t buffer_size)
+  char* EnvironmentGetSaveDirectory(void)
   {
-    return GAME_environment_get_save_directory(m_handle, m_callbacks, buffer, buffer_size);
+    return GAME_environment_get_save_directory(m_handle, m_callbacks);
   }
 
   bool EnvironmentSetSystemAvInfo(const struct game_system_av_info* info)
@@ -392,16 +392,16 @@ protected:
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
     void (*GAME_environment_set_message)(void* handle, CB_GameLib* cb, const struct game_message *message);
     void (*GAME_environment_set_performance_level)(void* handle, CB_GameLib* cb, unsigned level);
-    bool (*GAME_environment_get_system_directory)(void* handle, CB_GameLib* cb, char *buffer, size_t buffer_size);
-    bool (*GAME_environment_set_pixel_format)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
+    char* (*GAME_environment_get_system_directory)(void* handle, CB_GameLib* cb);
+    bool (*GAME_environment_seto_pixel_frmat)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
     void (*GAME_environment_get_variable)(void* handle, CB_GameLib* cb, struct game_variable* variable);
     void (*GAME_environment_set_variables)(void* handle, CB_GameLib* cb, const struct game_variable* variables, size_t count);
     bool (*GAME_environment_get_variable_update)(void* handle, CB_GameLib* cb);
     void (*GAME_environment_set_support_no_game)(void* handle, CB_GameLib* cb, bool supports_no_game);
-    bool (*GAME_environment_get_libretro_path)(void* handle, CB_GameLib* cb, char *buffer, size_t buffer_size);
-    bool (*GAME_environment_get_content_directory)(void* handle, CB_GameLib* cb, char *buffer, size_t buffer_size);
-    bool (*GAME_environment_get_save_directory)(void* handle, CB_GameLib* cb, char *buffer, size_t buffer_size);
+    char* (*GAME_environment_get_libretro_path)(void* handle, CB_GameLib* cb);
+    char* (*GAME_environment_get_content_directory)(void* handle, CB_GameLib* cb);
+    char* (*GAME_environment_get_save_directory)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);
     void (*GAME_video_refresh)(void* handle, CB_GameLib* cb, const void *data, unsigned width, unsigned height, size_t pitch);
     void (*GAME_audio_sample)(void* handle, CB_GameLib* cb, int16_t left, int16_t right);

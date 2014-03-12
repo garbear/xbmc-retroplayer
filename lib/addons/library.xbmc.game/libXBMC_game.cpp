@@ -90,14 +90,14 @@ DLLEXPORT void GAME_environment_set_performance_level(AddonCB* frontend, CB_Game
   return cb->EnvironmentSetPerformanceLevel(frontend->addonData, level);
 }
 
-DLLEXPORT bool GAME_environment_get_system_directory(AddonCB* frontend, CB_GameLib* cb, char *buffer, size_t buffer_size)
+DLLEXPORT char* GAME_environment_get_system_directory(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->EnvironmentGetSystemDirectory(frontend->addonData, buffer, buffer_size);
+  return cb->EnvironmentGetSystemDirectory(frontend->addonData);
 }
 
-DLLEXPORT void GAME_environment_set_pixel_format(AddonCB* frontend, CB_GameLib* cb, GAME_PIXEL_FORMAT format)
+DLLEXPORT bool GAME_environment_set_pixel_format(AddonCB* frontend, CB_GameLib* cb, GAME_PIXEL_FORMAT format)
 {
   if (frontend == NULL || cb == NULL)
     return;
@@ -139,25 +139,25 @@ DLLEXPORT void GAME_environment_set_support_no_game(AddonCB* frontend, CB_GameLi
   return cb->EnvironmentSetSupportNoGame(frontend->addonData, supports_no_game);
 }
 
-DLLEXPORT bool GAME_environment_get_libgame_path(AddonCB* frontend, CB_GameLib* cb, char *buffer, size_t buffer_size)
+DLLEXPORT char* GAME_environment_get_libgame_path(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->EnvironmentGetLibretroPath(frontend->addonData, buffer, buffer_size);
+  return cb->EnvironmentGetLibretroPath(frontend->addonData);
 }
 
-DLLEXPORT bool GAME_environment_get_content_directory(AddonCB* frontend, CB_GameLib* cb, char *buffer, size_t buffer_size)
+DLLEXPORT char* GAME_environment_get_content_directory(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->EnvironmentGetContentDirectory(frontend->addonData, buffer, buffer_size);
+  return cb->EnvironmentGetContentDirectory(frontend->addonData);
 }
 
-DLLEXPORT bool GAME_environment_get_save_directory(AddonCB* frontend, CB_GameLib* cb, char *buffer, size_t buffer_size)
+DLLEXPORT char* GAME_environment_get_save_directory(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->EnvironmentGetSaveDirectory(frontend->addonData, buffer, buffer_size);
+  return cb->EnvironmentGetSaveDirectory(frontend->addonData);
 }
 
 DLLEXPORT bool GAME_environment_set_system_av_info(AddonCB* frontend, CB_GameLib* cb, const struct game_system_av_info* info)

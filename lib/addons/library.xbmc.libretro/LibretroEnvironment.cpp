@@ -120,12 +120,19 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        static char systemDirBuffer[4096];
-        memset(systemDirBuffer, 0, sizeof(systemDirBuffer));
-        if (m_frontend->EnvironmentGetSystemDirectory(systemDirBuffer, sizeof(systemDirBuffer)))
+        char* systemDir = m_frontend->EnvironmentGetSystemDirectory();
+        if (systemDir)
+        {
+          static char systemDirBuffer[8192];
+          memset(systemDirBuffer, 0, sizeof(systemDirBuffer));
+          strncpy(systemDirBuffer, systemDir, sizeof(systemDirBuffer));
           *typedData = systemDirBuffer;
+          m_xbmc->FreeString(systemDir);
+        }
         else
+        {
           *typedData = NULL;
+        }
       }
       break;
     }
@@ -272,12 +279,19 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        static char libretroPathBuffer[4096];
-        memset(libretroPathBuffer, 0, sizeof(libretroPathBuffer));
-        if (m_frontend->EnvironmentGetLibretroPath(libretroPathBuffer, sizeof(libretroPathBuffer)))
+        char* libretroPath = m_frontend->EnvironmentGetLibretroPath();
+        if (libretroPath)
+        {
+          static char libretroPathBuffer[8192];
+          memset(libretroPathBuffer, 0, sizeof(libretroPathBuffer));
+          strncpy(libretroPathBuffer, libretroPath, sizeof(libretroPathBuffer));
           *typedData = libretroPathBuffer;
+          m_xbmc->FreeString(libretroPath);
+        }
         else
+        {
           *typedData = NULL;
+        }
       }
       break;
     }
@@ -403,12 +417,19 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        static char contentDirBuffer[4096];
-        memset(contentDirBuffer, 0, sizeof(contentDirBuffer));
-        if (m_frontend->EnvironmentGetContentDirectory(contentDirBuffer, sizeof(contentDirBuffer)))
+        char* contentDir = m_frontend->EnvironmentGetLibretroPath();
+        if (contentDir)
+        {
+          static char contentDirBuffer[8192];
+          memset(contentDirBuffer, 0, sizeof(contentDirBuffer));
+          strncpy(contentDirBuffer, contentDir, sizeof(contentDirBuffer));
           *typedData = contentDirBuffer;
+          m_xbmc->FreeString(contentDir);
+        }
         else
+        {
           *typedData = NULL;
+        }
       }
       break;
     }
@@ -417,12 +438,19 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        static char saveDirBuffer[4096];
-        memset(saveDirBuffer, 0, sizeof(saveDirBuffer));
-        if (m_frontend->EnvironmentGetSaveDirectory(saveDirBuffer, sizeof(saveDirBuffer)))
+        char* saveDir = m_frontend->EnvironmentGetLibretroPath();
+        if (saveDir)
+        {
+          static char saveDirBuffer[8192];
+          memset(saveDirBuffer, 0, sizeof(saveDirBuffer));
+          strncpy(saveDirBuffer, saveDir, sizeof(saveDirBuffer));
           *typedData = saveDirBuffer;
+          m_xbmc->FreeString(saveDir);
+        }
         else
+        {
           *typedData = NULL;
+        }
       }
       break;
     }
