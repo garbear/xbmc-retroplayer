@@ -164,7 +164,7 @@ const char* GetMininumGameAPIVersion(void)
 // Split out from retro_get_system_info()
 const char* GetClientName(void)
 {
-  string strClientName = GAME_CLIENT_NAME_UNKNOWN;
+  static string strClientName = GAME_CLIENT_NAME_UNKNOWN;
   
   if (CLIENT)
   {
@@ -180,7 +180,7 @@ const char* GetClientName(void)
 // Split out from retro_get_system_info()
 const char* GetClientVersion(void)
 {
-  string strClientVersion = GAME_CLIENT_VERSION_UNKNOWN;
+  static string strClientVersion = GAME_CLIENT_VERSION_UNKNOWN;
   
   if (CLIENT)
   {
@@ -196,7 +196,7 @@ const char* GetClientVersion(void)
 // Split out from retro_get_system_info()
 const char* GetValidExtensions(void)
 {
-  string strValidExtensions;
+  static string strValidExtensions;
   
   if (CLIENT)
   {
