@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
+ *      Copyright (C) 2012-2014 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -26,19 +26,19 @@
 
 #include <string>
 
-namespace GAME_INFO
+namespace GAME
 {
   class CGameInfoTag : public IArchivable, public ISerializable, public ISortable
   {
   public:
     CGameInfoTag() { Reset(); }
-    CGameInfoTag(const CGameInfoTag &tag) { *this = tag; }
-    const CGameInfoTag &operator=(const CGameInfoTag &tag);
+    CGameInfoTag(const CGameInfoTag& tag) { *this = tag; }
+    const CGameInfoTag& operator=(const CGameInfoTag& tag);
     ~CGameInfoTag() { }
     void Reset();
 
-    bool operator==(const CGameInfoTag &tag) const;
-    bool operator!=(const CGameInfoTag &tag) const { return !(*this == tag); }
+    bool operator==(const CGameInfoTag& tag) const;
+    bool operator!=(const CGameInfoTag& tag) const { return !(*this == tag); }
 
     bool IsLoaded() const { return m_bLoaded; }
     void SetLoaded(bool bOnOff = true) { m_bLoaded = bOnOff; }
@@ -71,13 +71,13 @@ namespace GAME_INFO
     const std::string& GetFormat() const { return m_strFormat; }
     void SetFormat(const std::string& strFormat) { m_strFormat = strFormat; }
 
-    // Cartridge Type, e.g. ROM+MBC5+RAM+BATT or CD
+    // Cartridge Type, e.g. "ROM+MBC5+RAM+BATT" or "CD"
     const std::string& GetCartridgeType() const { return m_strCartridgeType; }
     void SetCartridgeType(const std::string& strCartridgeType) { m_strCartridgeType = strCartridgeType; }
 
-    virtual void Archive(CArchive &ar);
-    virtual void Serialize(CVariant &value) const;
-    virtual void ToSortable(SortItem &sortable, Field field) const;
+    virtual void Archive(CArchive& ar);
+    virtual void Serialize(CVariant& value) const;
+    virtual void ToSortable(SortItem& sortable, Field field) const;
 
   private:
     bool        m_bLoaded;

@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
+ *      Copyright (C) 2012-2014 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -24,23 +24,26 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
+using namespace GAME;
+using namespace std;
+
 #ifndef ARRAY_LENGTH
-#define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
+#define ARRAY_LENGTH(x)  (sizeof((x)) / sizeof((x)[0]))
 #endif
 
-#define PLATFORM_SEPARATOR  "|"
+#define IS_ALPHANUMERIC(c)  (('a' <= (c) && (c) <= 'z') || ('A' <= (c) && (c) <= 'Z') || ('0' <= (c) && (c) <= '9'))
+#define TO_LOWER(c)         (('A' <= (c) && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
 
-using namespace GAME_INFO;
-using namespace std;
+#define PLATFORM_SEPARATOR  "|"
 
 /*
  * Lookups are made using comparisons between case-insensitive alphanumeric
  * strings. "CD-i" will match "CDi", "CD_I" and "CD I". For performance reasons,
  * extensions are parsed and cached in PlatformInfo::parsedExtensions.
  */
-namespace GAME_INFO
+namespace GAME
 {
-  static PlatformInfo platformInfo[] =
+  static PlatformInfo _PlatformInfo[] =
   {// ID                             Name                    Ports  Extensions
     { PLATFORM_UNKNOWN,              "",                     -1,    "" },
     { PLATFORM_3D0,                  "3DO",                  -1,    "" },
@@ -130,18 +133,18 @@ namespace GAME_INFO
 }
 
 /* static */
-CGameInfoTagLoader &CGameInfoTagLoader::Get()
+CGameInfoTagLoader& CGameInfoTagLoader::Get()
 {
   static CGameInfoTagLoader gameInfoTagLoaderInstance;
   return gameInfoTagLoaderInstance;
 }
 
-bool CGameInfoTagLoader::Load(const string &strPath, CGameInfoTag &tag)
+bool CGameInfoTagLoader::Load(const string& strPath, CGameInfoTag& tag)
 {
   if (strPath.empty())
     return false;
 
-  PlatformInfo platform = GetPlatformInfoByExtension(URIUtils::GetExtension(strPath));
+  const PlatformInfo& platform = GetPlatformInfoByExtension(URIUtils::GetExtension(strPath));
   if (platform.id == PLATFORM_UNKNOWN)
     return false;
   
@@ -161,23 +164,25 @@ bool CGameInfoTagLoader::Load(const string &strPath, CGameInfoTag &tag)
 }
 
 /* static */
-const PlatformInfo &CGameInfoTagLoader::GetPlatformInfoByName(const string &strPlatform)
+const PlatformInfo& CGameInfoTagLoader::GetPlatformInfoByName(const string& strPlatform)
 {
   if (strPlatform.empty())
-    return platformInfo[0]; // Unknown
+    return _PlatformInfo[0]; // Unknown
 
-  for (size_t i = 0; i < ARRAY_LENGTH(platformInfo); i++)
-    if (SanitizedEquals(strPlatform.c_str(), platformInfo[i].name))
-      return platformInfo[i];
+  for (size_t i = 0; i < ARRAY_LENGTH(_PlatformInfo); i++)
+  {
+    if (SanitizedEquals(strPlatform.c_str(), _PlatformInfo[i].name))
+      return _PlatformInfo[i];
+  }
 
-  return platformInfo[0]; // Unknown
+  return _PlatformInfo[0]; // Unknown
 }
 
 /* static */
-const PlatformInfo &CGameInfoTagLoader::GetPlatformInfoByExtension(const string &strExtension)
+const PlatformInfo& CGameInfoTagLoader::GetPlatformInfoByExtension(const string& strExtension)
 {
   if (strExtension.empty())
-    return platformInfo[0]; // Unknown
+    return _PlatformInfo[0]; // Unknown
 
   // Canonicalize as lower case, starts with "."
   string strExt(strExtension);
@@ -185,31 +190,33 @@ const PlatformInfo &CGameInfoTagLoader::GetPlatformInfoByExtension(const string 
   if (strExt[0] != '.')
     strExt.insert(0, ".");
 
-  for (size_t i = 0; i < ARRAY_LENGTH(platformInfo); i++)
+  for (size_t i = 0; i < ARRAY_LENGTH(_PlatformInfo); i++)
   {
-    if (!*platformInfo[i].extensions)
+    if (_PlatformInfo[i].extensions[0] == '\0')
       continue; // No extensions
 
-    vector<string> vecExts = StringUtils::Split(platformInfo[i].extensions, PLATFORM_SEPARATOR);
+    vector<string> vecExts = StringUtils::Split(_PlatformInfo[i].extensions, PLATFORM_SEPARATOR);
 
-    for (unsigned int i = 0; i < vecExts.size(); i++)
-      if (vecExts[i] == strExt)
-        return platformInfo[i];
+    for (vector<string>::const_iterator it = vecExts.begin(); it != vecExts.end(); ++it)
+    {
+      if (*it == strExt)
+        return _PlatformInfo[i];
+    }
   }
-  return platformInfo[0]; // Unknown
+  return _PlatformInfo[0]; // Unknown
 }
 
 /* static */
 const PlatformInfo &CGameInfoTagLoader::GetPlatformInfoByID(GamePlatform platform)
 {
-  for (size_t i = 0; i < ARRAY_LENGTH(platformInfo); i++)
-    if (platformInfo[i].id == platform)
-      return platformInfo[i];
-  return platformInfo[0]; // Unknown
-}
+  for (size_t i = 0; i < ARRAY_LENGTH(_PlatformInfo); i++)
+  {
+    if (_PlatformInfo[i].id == platform)
+      return _PlatformInfo[i];
+  }
 
-#define IS_ALPHANUMERIC(c) (('a' <= (c) && (c) <= 'z') || ('A' <= (c) && (c) <= 'Z') || ('0' <= (c) && (c) <= '9'))
-#define LOWER(c) (('A' <= (c) && (c) <= 'Z') ? (c) - 'A' + 'a' : (c))
+  return _PlatformInfo[0]; // Unknown
+}
 
 /* static */
 bool CGameInfoTagLoader::SanitizedEquals(const char *str1, const char *str2)
@@ -221,7 +228,7 @@ bool CGameInfoTagLoader::SanitizedEquals(const char *str1, const char *str2)
     return true;
 
   // Break at the first null character
-  for (; *str1 && *str2; )
+  while (*str1 && *str2)
   {
     // Advance to the next alphanumeric character
     while (*str1 && !IS_ALPHANUMERIC(*str1))
@@ -230,7 +237,7 @@ bool CGameInfoTagLoader::SanitizedEquals(const char *str1, const char *str2)
       str2++;
 
     // If they differ, we're done here, otherwise increment and continue
-    if (LOWER(*str1) != LOWER(*str2))
+    if (TO_LOWER(*str1) != TO_LOWER(*str2))
       return false;
 
     str1++;

@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
+ *      Copyright (C) 2012-2014 Team XBMC
  *      http://www.xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #include "GameInfoTag.h"
 #include "utils/Variant.h"
 
-using namespace GAME_INFO;
+using namespace GAME;
 
 void CGameInfoTag::Reset()
 {
@@ -37,7 +37,7 @@ void CGameInfoTag::Reset()
   m_strCartridgeType.clear();
 }
 
-const CGameInfoTag &CGameInfoTag::operator=(const CGameInfoTag &tag)
+const CGameInfoTag& CGameInfoTag::operator=(const CGameInfoTag& tag)
 {
   if (this != &tag)
   {
@@ -54,25 +54,26 @@ const CGameInfoTag &CGameInfoTag::operator=(const CGameInfoTag &tag)
   return *this;
 }
 
-bool CGameInfoTag::operator==(const CGameInfoTag &tag) const
+bool CGameInfoTag::operator==(const CGameInfoTag& tag) const
 {
   if (this != &tag)
   {
     // Two tags can't be equal if they aren't loaded
     if (!m_bLoaded || !tag.m_bLoaded) return false;
-    if (m_strURL != tag.m_strURL) return false;
-    if (m_strName != tag.m_strName) return false;
-    if (m_strPlatform != tag.m_strPlatform) return false;
-    if (m_strID != tag.m_strID) return false;
-    if (m_strRegion != tag.m_strRegion) return false;
-    if (m_strPublisher != tag.m_strPublisher) return false;
-    if (m_strFormat != tag.m_strFormat) return false;
+
+    if (m_strURL           != tag.m_strURL)           return false;
+    if (m_strName          != tag.m_strName)          return false;
+    if (m_strPlatform      != tag.m_strPlatform)      return false;
+    if (m_strID            != tag.m_strID)            return false;
+    if (m_strRegion        != tag.m_strRegion)        return false;
+    if (m_strPublisher     != tag.m_strPublisher)     return false;
+    if (m_strFormat        != tag.m_strFormat)        return false;
     if (m_strCartridgeType != tag.m_strCartridgeType) return false;
   }
   return true;
 }
 
-void CGameInfoTag::Archive(CArchive &ar)
+void CGameInfoTag::Archive(CArchive& ar)
 {
   if (ar.IsStoring())
   {
@@ -100,7 +101,7 @@ void CGameInfoTag::Archive(CArchive &ar)
   }
 }
 
-void CGameInfoTag::Serialize(CVariant &value) const
+void CGameInfoTag::Serialize(CVariant& value) const
 {
   value["loaded"]        = m_bLoaded;
   value["url"]           = m_strURL;
@@ -113,7 +114,7 @@ void CGameInfoTag::Serialize(CVariant &value) const
   value["cartridgetype"] = m_strCartridgeType;
 }
 
-void CGameInfoTag::ToSortable(SortItem &sortable, Field field) const
+void CGameInfoTag::ToSortable(SortItem& sortable, Field field) const
 {
   // No database entries for games (...yet)
 }
