@@ -34,8 +34,7 @@
 #include "utils/Variant.h"
 
 using namespace ADDON;
-using namespace GAME_INFO;
-using namespace GAMES;
+using namespace GAME;
 using namespace XFILE;
 using namespace std;
 
@@ -65,10 +64,10 @@ static const PortMapping ports[] =
 
 
 /* static */
-CGameManager &CGameManager::Get()
+CGameManager& CGameManager::Get()
 {
-  static CGameManager _instance;
-  return _instance;
+  static CGameManager gameManagerInstance;
+  return gameManagerInstance;
 }
 
 void CGameManager::Start()
@@ -78,7 +77,7 @@ void CGameManager::Start()
   CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_GAMEDLL, this);
 
   // Notify GameManager of game clients being tracked in remote repositories
-  // TODO: Run UpdateRemoteAddons() and UpdateAddons() off-thread
+  // TODO: Run this off-thread
   CAddonDatabase database;
   if (database.Open())
   {
@@ -90,13 +89,13 @@ void CGameManager::Start()
   UpdateAddons();
 }
 
-void CGameManager::UpdateRemoteAddons(const ADDON::VECADDONS &addons)
+void CGameManager::UpdateRemoteAddons(const ADDON::VECADDONS& addons)
 {
   CSingleLock lock(m_critSection);
 
   for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
   {
-    const AddonPtr &addon = *it;
+    const AddonPtr& addon = *it;
     if (!addon->IsType(ADDON_GAMEDLL))
       continue;
 
@@ -132,7 +131,7 @@ void CGameManager::Stop()
   CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_GAMEDLL);
 }
 
-void CGameManager::RegisterAddons(const VECADDONS &addons)
+void CGameManager::RegisterAddons(const VECADDONS& addons)
 {
   for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); it++)
   {
@@ -141,7 +140,7 @@ void CGameManager::RegisterAddons(const VECADDONS &addons)
   }
 }
 
-bool CGameManager::RegisterAddon(const GameClientPtr &client)
+bool CGameManager::RegisterAddon(const GameClientPtr& client)
 {
 #if 0 // TODO
   if (!client || !client->Enabled())
@@ -163,11 +162,11 @@ bool CGameManager::RegisterAddon(const GameClientPtr &client)
 
   CSingleLock lock(m_critSection);
 
-  GameClientPtr &registeredClient = m_gameClients[client->ID()];
+  GameClientPtr& registeredClient = m_gameClients[client->ID()];
   if (registeredClient)
     return true; // Already registered
 
-  if (!client->Init())
+  if (!client->Create())
   {
     CLog::Log(LOGERROR, "GameManager: failed to load DLL for %s, disabling in database", client->ID().c_str());
     CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
@@ -179,7 +178,7 @@ bool CGameManager::RegisterAddon(const GameClientPtr &client)
     return false;
   }
 
-  client->DeInit();
+  client->Destroy();
 
   registeredClient = client;
   CLog::Log(LOGDEBUG, "GameManager: Registered add-on %s", client->ID().c_str());
@@ -190,21 +189,20 @@ bool CGameManager::RegisterAddon(const GameClientPtr &client)
   return true;
 }
 
-void CGameManager::UnregisterAddonByID(const string &strId)
+void CGameManager::UnregisterAddonByID(const string& strClientId)
 {
   CSingleLock lock(m_critSection);
 
-  GameClientPtr client = m_gameClients[strId];
-  if (client)
+  GameClientMap::iterator it = m_gameClients.find(strClientId);
+  if (it != m_gameClients.end())
   {
-    if (client->IsInitialized())
-      client->DeInit();
+    it->second->Destroy();
+    m_gameClients.erase(it);
   }
   else
   {
-    CLog::Log(LOGERROR, "GameManager: can't unregister %s - not registered!", strId.c_str());
+    CLog::Log(LOGERROR, "GameManager: can't unregister %s - not registered!", strClientId.c_str());
   }
-  m_gameClients.erase(m_gameClients.find(strId));
 }
 
 void CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
@@ -225,17 +223,17 @@ void CGameManager::AddonDisabled(AddonPtr addon)
     UnregisterAddonByID(addon->ID());
 }
 
-void CGameManager::Notify(const Observable &obs, const ObservableMessage msg)
+void CGameManager::Notify(const Observable& obs, const ObservableMessage msg)
 {
   if (msg == ObservableMessageAddons)
     UpdateAddons();
 }
 
-bool CGameManager::GetClient(const string &strClientId, GameClientPtr &addon) const
+bool CGameManager::GetClient(const string& strClientId, GameClientPtr& addon) const
 {
   CSingleLock lock(m_critSection);
 
-  map<string, GameClientPtr>::const_iterator itr = m_gameClients.find(strClientId);
+  GameClientMap::const_iterator itr = m_gameClients.find(strClientId);
   if (itr != m_gameClients.end())
   {
     addon = itr->second;
@@ -244,9 +242,9 @@ bool CGameManager::GetClient(const string &strClientId, GameClientPtr &addon) co
   return false;
 }
 
-bool CGameManager::GetConnectedClient(const string &strClientId, GameClientPtr &addon) const
+bool CGameManager::GetConnectedClient(const string& strClientId, GameClientPtr& addon) const
 {
-  return GetClient(strClientId, addon) && addon->IsInitialized();
+  return GetClient(strClientId, addon) && addon->ReadyToUse();
 }
 
 bool CGameManager::IsConnectedClient(const string &strClientId) const
@@ -259,13 +257,13 @@ bool CGameManager::IsConnectedClient(const AddonPtr addon) const
 {
   // See if we are tracking the client
   CSingleLock lock(m_critSection);
-  map<string, GameClientPtr>::const_iterator itr = m_gameClients.find(addon->ID());
+  GameClientMap::const_iterator itr = m_gameClients.find(addon->ID());
   if (itr != m_gameClients.end())
-    return itr->second->IsInitialized();
+    return itr->second->ReadyToUse();
   return false;
 }
 
-void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string> &candidates) const
+void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candidates) const
 {
   CSingleLock lock(m_critSection);
 

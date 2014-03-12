@@ -43,18 +43,18 @@ namespace GAME
    * querying it directly, so it is desirable to only do this once and cache the
    * information.
    */
-  class CGameManager :
-    public ADDON::IAddonMgrCallback, public IAddonDatabaseCallback, public Observer
+  class CGameManager : public ADDON::IAddonMgrCallback, public IAddonDatabaseCallback, public Observer
   {
   protected:
     CGameManager() { }
 
   public:
-    static CGameManager &Get();
+    static CGameManager& Get();
     virtual ~CGameManager() { Stop(); }
 
     virtual void Start();
     virtual void Stop();
+
 
     //** Functions to notify CGameManager about stuff it manages **//
 
@@ -63,9 +63,9 @@ namespace GAME
      * has been placed in the queue via SetAutolaunch(), it will be launched if a
      * compatible emulator is registered.
      */
-    void RegisterAddons(const ADDON::VECADDONS &addons);
-    bool RegisterAddon(const GAMES::GameClientPtr &client);
-    void UnregisterAddonByID(const std::string &strId);
+    void RegisterAddons(const ADDON::VECADDONS& addons);
+    bool RegisterAddon(const GameClientPtr& client);
+    void UnregisterAddonByID(const std::string& strClientId);
 
     /**
      * Register the supported extensions of game clients in the add-on database
@@ -86,26 +86,25 @@ namespace GAME
      * a callback interface for the Repository Updated action. For now,
      * compromise and always pretend that they are remote add-ons.
      */
-    void UpdateRemoteAddons(const ADDON::VECADDONS &addons);
+    void UpdateRemoteAddons(const ADDON::VECADDONS& addons);
+    
+    // Queue a file to be launched when the next game client is installed.
+    void SetAutoLaunch(const CFileItem& file) { m_fileLauncher.SetAutoLaunch(file); }
+    void ClearAutoLaunch() { m_fileLauncher.ClearAutoLaunch(); }
 
     // Inherited from IAddonDatabaseCallback
     virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
     virtual void AddonDisabled(ADDON::AddonPtr addon);
 
     // Inherited from Observer
-    virtual void Notify(const Observable &obs, const ObservableMessage msg);
+    virtual void Notify(const Observable& obs, const ObservableMessage msg);
 
-    /**
-     * Queue a file to be launched when the next game client is installed.
-     */
-    void SetAutoLaunch(const CFileItem &file) { m_fileLauncher.SetAutoLaunch(file); }
-    void ClearAutoLaunch() { m_fileLauncher.ClearAutoLaunch(); }
 
     //** Functions to get info for stuff that CGameManager manages **//
 
-    virtual bool GetClient(const std::string &strClientId, GameClientPtr &addon) const;
-    virtual bool GetConnectedClient(const std::string &strClientId, GameClientPtr &addon) const;
-    virtual bool IsConnectedClient(const std::string &strClientId) const;
+    virtual bool GetClient(const std::string& strClientId, GameClientPtr& addon) const;
+    virtual bool GetConnectedClient(const std::string& strClientId, GameClientPtr& addon) const;
+    virtual bool IsConnectedClient(const std::string& strClientId) const;
     virtual bool IsConnectedClient(const ADDON::AddonPtr addon) const;
 
     /**
@@ -120,19 +119,20 @@ namespace GAME
      *     suitable candidates (which may yield multiple if there are several
      *     different kinds of ROMs inside).
      */
-    void GetGameClientIDs(const CFileItem& file, std::vector<std::string> &candidates) const;
+    void GetGameClientIDs(const CFileItem& file, std::vector<std::string>& candidates) const;
 
     /**
      * Get a list of valid game client extensions (as determined by the tag in
      * addon.xml). Includes game clients in remote repositories.
      */
-    void GetExtensions(std::vector<std::string> &exts) const;
+    void GetExtensions(std::vector<std::string>& exts) const;
 
     /**
      * Returns true if the file extension is supported by an add-on in an enabled
      * repository.
      */
-    bool IsGame(const std::string &path) const;
+    bool IsGame(const std::string& path) const;
+
 
     //** Functions that operate on the clients **//
 
@@ -146,9 +146,11 @@ namespace GAME
     // Initialize m_gameClients with enabled game clients
     virtual bool UpdateAddons();
 
-    std::map<std::string, GameClientPtr> m_gameClients;
-    std::set<std::string>                m_gameExtensions;
-    CGameFileAutoLauncher                m_fileLauncher;
-    CCriticalSection                     m_critSection;
+    typedef std::map<std::string, GameClientPtr> GameClientMap;
+
+    GameClientMap         m_gameClients;
+    std::set<std::string> m_gameExtensions;
+    CGameFileAutoLauncher m_fileLauncher;
+    CCriticalSection      m_critSection;
   };
 } // namespace GAMES

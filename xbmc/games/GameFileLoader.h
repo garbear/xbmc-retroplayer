@@ -25,13 +25,12 @@
 #include <string>
 #include <vector>
 
-// Forward declarations
 class CFileItem;
-namespace LIBRETRO { struct retro_game_info; }
-namespace GAMES { class CGameClient; }
 
-namespace GAMES
+namespace GAME
 {
+  class CGameClient;
+
   /**
    * Game clients can load files in one of two ways: by path, or by a buffer of
    * the file's data. This class is a container that allows both ways, and also

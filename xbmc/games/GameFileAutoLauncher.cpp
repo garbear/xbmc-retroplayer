@@ -33,7 +33,7 @@
 #define UPDATE_INTERVAL_MS   5 * 1000 // 5s
 #define TIMEOUT_MS           2 * 60 * 1000 // 2 mins
 
-using namespace GAMES;
+using namespace GAME;
 using namespace std;
 
 CGameFileAutoLauncher::CGameFileAutoLauncher() : CThread("Game launcher")
@@ -66,7 +66,7 @@ void CGameFileAutoLauncher::Process()
   // StopThread() was called or state became invalid
 }
 
-void CGameFileAutoLauncher::SetAutoLaunch(const CFileItem &file)
+void CGameFileAutoLauncher::SetAutoLaunch(const CFileItem& file)
 {
   if (m_queuedFile)
     StopThread(true);
@@ -93,14 +93,18 @@ void CGameFileAutoLauncher::ClearAutoLaunch()
 
 bool CGameFileAutoLauncher::IsStateValid()
 {
+  // Check timeout
   if (m_timeout.IsTimePast())
     return false;
+
+  // Check if the user is still in the add-on browser
   if (!g_windowManager.IsWindowActive(WINDOW_ADDON_BROWSER))
     return false;
+
   return true;
 }
 
-void CGameFileAutoLauncher::Launch(const GameClientPtr &gameClient)
+void CGameFileAutoLauncher::Launch(const GameClientPtr& gameClient)
 {
   CFileItemPtr file;
   {
@@ -119,15 +123,15 @@ void CGameFileAutoLauncher::Launch(const GameClientPtr &gameClient)
 
   CLog::Log(LOGDEBUG, "GameFileAutoLauncher: prompting user for launch of %s", file->GetPath().c_str());
 
-  string title;
+  string strTitle;
   if (file->HasGameInfoTag())
-    title = file->GetGameInfoTag()->GetTitle();
-  if (title.empty())
-    title = URIUtils::GetFileName(file->GetPath());
+    strTitle = file->GetGameInfoTag()->GetTitle();
+  if (strTitle.empty())
+    strTitle = URIUtils::GetFileName(file->GetPath());
 
   pDialog->SetHeading(24025); // Manage emulators...
   pDialog->SetLine(0, 15024); // A compatible emulator was installed for:
-  pDialog->SetLine(1, title);
+  pDialog->SetLine(1, strTitle);
   pDialog->SetLine(2, 20013); // Do you wish to launch the game?
   pDialog->DoModal();
 
@@ -135,7 +139,7 @@ void CGameFileAutoLauncher::Launch(const GameClientPtr &gameClient)
   {
     // Close the add-on info dialog, if open
     int iWindow = g_windowManager.GetTopMostModalDialogID(true);
-    CGUIWindow *window = g_windowManager.GetWindow(iWindow);
+    CGUIWindow* window = g_windowManager.GetWindow(iWindow);
     if (window)
       window->Close();
 

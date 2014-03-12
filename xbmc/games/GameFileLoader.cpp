@@ -37,8 +37,7 @@
 #define MAX_SAVESTATE_CRC_LENGTH   40 * 1024 * 1024 // 40 MiB
 
 using namespace ADDON;
-using namespace GAME_INFO;
-using namespace GAMES;
+using namespace GAME;
 using namespace XFILE;
 using namespace std;
 

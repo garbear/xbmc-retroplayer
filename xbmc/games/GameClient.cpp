@@ -39,14 +39,14 @@ using namespace std;
 /*
 namespace GAME
 {
-  // Helper functions
+  // Helper function
   void toExtensionSet(const CStdString strExtensionList, set<string> &extensions)
   {
     extensions.clear();
     vector<string> vecExtensions = StringUtils::Split(strExtensionList, "|");
     for (vector<string>::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
     {
-      string &ext = *it;
+      string& ext = *it;
       if (ext.empty())
         continue;
 
@@ -59,29 +59,10 @@ namespace GAME
       extensions.insert(ext);
     }
   }
-
-  // Returns true if lhs and rhs are equal sets
-  // TODO: Use functions from std library
-  bool operator==(const set<string> &lhs, const set<string> &rhs)
-  {
-    if (lhs.size() != rhs.size())
-      return false;
-    for (set<string>::const_iterator itl = lhs.begin(), itr = rhs.begin(); itl != lhs.end(); itl++, itr++)
-    {
-      if ((*itl) != (*itr))
-        return false;
-    }
-    return true;
-  }
-
-  bool operator!=(const set<string> &lhs, const set<string> &rhs)
-  {
-    return !(lhs == rhs);
-  }
 } // namespace GAMES
 */
 
-CGameClient::CGameClient(const AddonProps &props)
+CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
     m_apiVersion("0.0.0")
 {
@@ -96,7 +77,7 @@ CGameClient::CGameClient(const AddonProps &props)
     m_bSupportsVFS = (it->second == "true" || it->second == "yes");
 }
 
-CGameClient::CGameClient(const cp_extension_t *ext)
+CGameClient::CGameClient(const cp_extension_t* ext)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(ext),
     m_apiVersion("0.0.0")
 {
@@ -216,20 +197,12 @@ bool CGameClient::GetAddonProperties(void)
   // addon.xml files to libretro cores.
   if (m_bSupportsVFS != bSupportsVFS)
   {
-    CLog::Log(LOGERROR, "GAME: <allowvfs> tag in addon.xml doesn't match DLL value (%s)",
-        bSupportsVFS ? "true" : "false");
-    return false;
-  }
-  if (m_bRequireArchive != bRequireArchive)
-  {
-    CLog::Log(LOGERROR, "GAME: <requirearchive> tag in addon.xml doesn't match DLL value (%s)",
-        bRequireArchive ? "true" : "false");
+    CLog::Log(LOGERROR, "GAME: <supports_vfs> tag in addon.xml doesn't match DLL value (%s)", bSupportsVFS ? "true" : "false");
     return false;
   }
   if (m_strValidExtensions != strValidExtensions) // != operator defined above
   {
-    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)",
-        strValidExtensions.c_str());
+    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)", strValidExtensions.c_str());
     return false;
   }
 
@@ -283,13 +256,6 @@ bool CGameClient::OpenFile(const CFileItem& file)
   default:
     break;
   }
-
-  // Install callbacks (static wrappers for ILibretroCallbacksAV)
-  m_dll.retro_set_video_refresh(VideoFrame);
-  m_dll.retro_set_audio_sample(AudioSample);
-  m_dll.retro_set_audio_sample_batch(AudioSampleBatch);
-  m_dll.retro_set_input_state(GetInputState);
-  m_dll.retro_set_input_poll(NoopPoop);
 
   // TODO: Need an API call in libretro that lets us know the number of ports
   SetDevice(0, RETRO_DEVICE_JOYPAD);
@@ -372,7 +338,7 @@ bool CGameClient::LoadGameInfo()
   m_sampleRate = av_info.timing.sample_rate;
 }
 
-bool CGameClient::LogError(const GAME_ERROR error, const char *strMethod) const
+bool CGameClient::LogError(const GAME_ERROR error, const char* strMethod) const
 {
   if (error != GAME_ERROR_NO_ERROR)
   {
@@ -383,14 +349,14 @@ bool CGameClient::LogError(const GAME_ERROR error, const char *strMethod) const
   return true;
 }
 
-void CGameClient::LogException(const char *strFunctionName) const
+void CGameClient::LogException(const char* strFunctionName) const
 {
   CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s", strFunctionName, GetFriendlyName().c_str(), Author().c_str());
 }
 
 /* static */
-void CGameClient::GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParentZip &outerzip,
-    CGameFileLoaderUseVFS &vfs, CGameFileLoaderEnterZip &innerzip, CGameFileLoader *strategies[4])
+void CGameClient::GetStrategy(CGameFileLoaderUseHD& hd, CGameFileLoaderUseParentZip& outerzip,
+    CGameFileLoaderUseVFS& vfs, CGameFileLoaderEnterZip& innerzip, CGameFileLoader* strategies[4])
 {
   if (!CSettings::Get().GetBool("gamesdebug.prefervfs"))
   {
@@ -410,7 +376,7 @@ void CGameClient::GetStrategy(CGameFileLoaderUseHD &hd, CGameFileLoaderUseParent
   }
 }
 
-bool CGameClient::CanOpen(const CFileItem &file) const
+bool CGameClient::CanOpen(const CFileItem& file) const
 {
   return CGameFileLoader::CanOpen(*this, file);
 }
@@ -547,7 +513,7 @@ void CGameClient::SetExtensions(const string &strExtensionList)
   toExtensionSet(strExtensionList, m_extensions);
 }
 
-void CGameClient::SetPlatforms(const string &strPlatformList)
+void CGameClient::SetPlatforms(const string& strPlatformList)
 {
   // If no platforms are provided, don't erase the ones we are already tracking
   if (strPlatformList.empty())
@@ -564,7 +530,7 @@ void CGameClient::SetPlatforms(const string &strPlatformList)
   }
 }
 
-bool CGameClient::IsExtensionValid(const string &ext) const
+bool CGameClient::IsExtensionValid(const string& ext) const
 {
   return CGameFileLoader::IsExtensionValid(ext, m_extensions);
 }

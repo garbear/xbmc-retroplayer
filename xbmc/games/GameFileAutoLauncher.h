@@ -25,7 +25,7 @@
 #include "threads/SystemClock.h"
 #include "threads/Thread.h"
 
-namespace GAMES
+namespace GAME
 {
   /**
     * Class providing auto-launch functionality for the game browser. When the
@@ -45,13 +45,13 @@ namespace GAMES
     /**
      * Queue a file to be launched when a compatible emulator is installed.
      */
-    void SetAutoLaunch(const CFileItem &file);
+    void SetAutoLaunch(const CFileItem& file);
     void ClearAutoLaunch();
 
     /**
      * Launch the queued file (if any) with the specified game client, if possible.
      */
-    void Launch(const GameClientPtr &gameClient);
+    void Launch(const GameClientPtr& gameClient);
 
   protected:
     /**
@@ -72,4 +72,4 @@ namespace GAMES
     CCriticalSection     m_critSection;
     XbmcThreads::EndTime m_timeout;
   };
-} // namespace GAMES
+} // namespace GAME
