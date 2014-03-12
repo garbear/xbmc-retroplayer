@@ -21,13 +21,12 @@
 
 #include "GameClient.h"
 #include "FileItem.h"
-//#include "addons/AddonManager.h"
-//#include "settings/Settings.h"
-//#include "threads/SingleLock.h"
-//#include "utils/log.h"
-//#include "utils/StringUtils.h"
+#include "settings/Settings.h"
+#include "threads/SingleLock.h"
+#include "utils/log.h"
+#include "utils/StringUtils.h"
 //#include "utils/URIUtils.h"
-//#include "utils/Variant.h"
+#include "utils/Variant.h"
 
 using namespace ADDON;
 using namespace GAME;
@@ -35,32 +34,9 @@ using namespace std;
 
 #define GAME_CLIENT_NAME_UNKNOWN     "Unknown"
 #define GAME_CLIENT_VERSION_UNKNOWN  "v0.0.0"
-
-/*
-namespace GAME
-{
-  // Helper function
-  void toExtensionSet(const CStdString strExtensionList, set<string> &extensions)
-  {
-    extensions.clear();
-    vector<string> vecExtensions = StringUtils::Split(strExtensionList, "|");
-    for (vector<string>::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
-    {
-      string& ext = *it;
-      if (ext.empty())
-        continue;
-
-      StringUtils::ToLower(ext);
-
-      // Make sure extension starts with "."
-      if (ext[0] != '.')
-        ext.insert(0, ".");
-
-      extensions.insert(ext);
-    }
-  }
-} // namespace GAMES
-*/
+#define EXTENSION_SEPARATOR          "|"
+#define GAME_REGION_NTSC_STRING      "NTSC"
+#define GAME_REGION_PAL_STRING       "PAL"
 
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
@@ -69,8 +45,10 @@ CGameClient::CGameClient(const AddonProps& props)
   ResetProperties();
 
   InfoMap::const_iterator it;
+  /*
   if ((it = props.extrainfo.find("platforms")) != props.extrainfo.end())
     SetPlatforms(it->second);
+  */
   if ((it = props.extrainfo.find("extensions")) != props.extrainfo.end())
     SetExtensions(it->second);
   if ((it = props.extrainfo.find("supports_vfs")) != props.extrainfo.end())
@@ -87,18 +65,20 @@ CGameClient::CGameClient(const cp_extension_t* ext)
 
   if (ext)
   {
+    /*
     string strPlatforms = CAddonMgr::Get().GetExtValue(ext->configuration, "platforms");
     if (!strPlatforms.empty())
     {
       Props().extrainfo.insert(make_pair("platforms", strPlatforms));
       SetPlatforms(strPlatforms);
     }
+    */
 
     string strExtensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
     if (!strExtensions.empty())
     {
       Props().extrainfo.insert(make_pair("extensions", strExtensions));
-      SetExtensions(strExtensions);
+      SetExtensions(strExtensions, m_extensions);
     }
 
     string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_vfs");
@@ -123,19 +103,19 @@ void CGameClient::ResetProperties()
   m_bReadyToUse = false;
   m_strClientName.clear();
   m_strClientVersion.clear();
+  m_extensions.clear();
   m_bSupportsVFS = false;
   m_bSupportsNoGame = false;
-
-  /*
+  //m_platforms.clear();
   m_bIsPlaying = false;
-  m_bIsInited = false;
+  //m_gameFile.Reset();
+  m_region = GAME_REGION_NTSC;
   m_frameRate = 0.0;
   m_frameRateCorrection = 1.0;
   m_sampleRate = 0.0;
-  m_region = -1; // invalid
-  m_serialSize = 0;
+  m_serializeSize = 0;
   m_bRewindEnabled = false;
-  */
+  m_serialState.Reset();
 }
 
 ADDON_STATUS CGameClient::Create(void)
@@ -207,7 +187,9 @@ bool CGameClient::GetAddonProperties(void)
   // These properties are declared in addon.xml. Make sure they match the values
   // reported by the game client. This is primarily to avoid errors when adding
   // addon.xml files to libretro cores.
-  if (m_strValidExtensions != strValidExtensions) // != operator defined above
+  set<string> extensions;
+  SetExtensions(strValidExtensions, extensions);
+  if (m_extensions != extensions)
   {
     CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)", strValidExtensions.c_str());
     return false;
@@ -238,6 +220,11 @@ bool CGameClient::GetAddonProperties(void)
   return true;
 }
 
+bool CGameClient::CanOpen(const CFileItem& file) const
+{
+  return CGameFileLoader::CanOpen(*this, file);
+}
+
 bool CGameClient::OpenFile(const CFileItem& file)
 {
   CSingleLock lock(m_critSection);
@@ -247,13 +234,21 @@ bool CGameClient::OpenFile(const CFileItem& file)
 
   if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != ID())
   {
-    CLog::Log(LOGERROR, "GAME: File has \"gameclient\" property set, but it doesn't match mine!");
+    CLog::Log(LOGERROR, "GAME: File's \"gameclient\" property set to %s, but it doesn't match mine!",
+      file.GetProperty("gameclient").asString().c_str());
     return false;
   }
   
   CloseFile();
 
-  if (!OpenInternal(file))
+  // TODO: Try to resolve path to a local file, as not all libretro cores support VFS
+  string strTranslatedPath = file.GetPath();
+
+  GAME_ERROR error = GAME_ERROR_FAILED;
+  try { LogError(error = m_pStruct->LoadGame(strTranslatedPath.c_str()), "LoadGame()"); }
+  catch (...) { LogException("LoadGame()"); return false; }
+
+  if (error != GAME_ERROR_NO_ERROR)
     return false;
 
   m_bIsPlaying = true;
@@ -262,69 +257,10 @@ bool CGameClient::OpenFile(const CFileItem& file)
 
   InitSerialization();
 
-  // Query the game region
-  switch (m_dll.retro_get_region())
-  {
-  case RETRO_REGION_NTSC:
-    m_region = RETRO_REGION_NTSC;
-    break;
-  case RETRO_REGION_PAL:
-    m_region = RETRO_REGION_PAL;
-    break;
-  default:
-    break;
-  }
-
   // TODO: Need an API call in libretro that lets us know the number of ports
-  SetDevice(0, RETRO_DEVICE_JOYPAD);
+  SetDevice(0, GAME_DEVICE_JOYPAD);
 
   return true;
-}
-
-bool CGameClient::OpenInternal(const CFileItem& file)
-{
-  game_info info;
-
-  CGameFileLoaderUseHD        hd;
-  CGameFileLoaderUseParentZip outerzip;
-  CGameFileLoaderUseVFS       vfs;
-  CGameFileLoaderEnterZip     innerzip;
-
-  CGameFileLoader *strategy[4];
-  GetStrategy(hd, outerzip, vfs, innerzip, strategy);
-
-  bool success = false;
-  for (unsigned int i = 0; i < sizeof(strategy) / sizeof(strategy[0]) && !success; i++)
-  {
-    if (!strategy[i]->CanLoad(*this, file, m_gameFile))
-      continue;
-    m_gameFile.ToInfo(info);
-
-    try { success = m_pStruct->LoadGame(&info); }
-    catch (...) { LogException("LoadGame()"); }
-
-    if (success)
-    {
-      CLog::Log(LOGINFO, "GAME: Client successfully loaded game");
-      return true;
-    }
-  }
-
-  CLog::Log(LOGINFO, "GAME: Client failed to load game");
-  return false;
-}
-
-void CGameClient::CloseFile()
-{
-  CSingleLock lock(m_critSection);
-
-  if (m_dll.IsLoaded() && m_bIsPlaying)
-  {
-    m_dll.retro_unload_game();
-    m_bIsPlaying = false;
-  }
-
-  m_gameFile.Reset();
 }
 
 bool CGameClient::LoadGameInfo()
@@ -332,14 +268,17 @@ bool CGameClient::LoadGameInfo()
   // Get information about system audio/video timings and geometry
   // Can be called only after retro_load_game()
   game_system_av_info av_info = { };
-  
-  try
-  {
-    GAME_ERROR error = m_pStruct->GetSystemAVInfo(&av_info);
-    if (error != GAME_ERROR_NO_ERROR)
-      return false;
-  }
-  catch (...) { LogException("GetSystemAVInfo()"); return false; }
+
+  GAME_ERROR error = GAME_ERROR_FAILED;
+  try { LogError(error = m_pStruct->GetSystemAVInfo(&av_info), "GetSystemAVInfo()"); }
+  catch (...) { LogException("GetSystemAVInfo()"); }
+
+  if (error != GAME_ERROR_NO_ERROR)
+    return false;
+
+  GAME_REGION region;
+  try { region = m_pStruct->GetRegion(); }
+  catch (...) { LogException("GetRegion()"); return false; }
 
   CLog::Log(LOGINFO, "GAME: ---------------------------------------");
   CLog::Log(LOGINFO, "GAME: Opened file %s",   m_gameFile.Path().c_str());
@@ -350,82 +289,50 @@ bool CGameClient::LoadGameInfo()
   CLog::Log(LOGINFO, "GAME: Aspect Ratio: %f", av_info.geometry.aspect_ratio);
   CLog::Log(LOGINFO, "GAME: FPS:          %f", av_info.timing.fps);
   CLog::Log(LOGINFO, "GAME: Sample Rate:  %f", av_info.timing.sample_rate);
+  CLog::Log(LOGINFO, "GAME: Region:       %s", region == GAME_REGION_NTSC ? GAME_REGION_NTSC_STRING : GAME_REGION_PAL_STRING);
   CLog::Log(LOGINFO, "GAME: ---------------------------------------");
 
-  m_frameRate = av_info.timing.fps;
+  m_frameRate  = av_info.timing.fps;
   m_sampleRate = av_info.timing.sample_rate;
+  m_region     = region;
 }
 
-bool CGameClient::LogError(const GAME_ERROR error, const char* strMethod) const
-{
-  if (error != GAME_ERROR_NO_ERROR)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - addon '%s' returned an error: %s",
-        strMethod, m_strClientName.c_str(), ToString(error));
-    return false;
-  }
-  return true;
-}
-
-void CGameClient::LogException(const char* strFunctionName) const
-{
-  CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s", strFunctionName, GetFriendlyName().c_str(), Author().c_str());
-}
-
-/* static */
-void CGameClient::GetStrategy(CGameFileLoaderUseHD& hd, CGameFileLoaderUseParentZip& outerzip,
-    CGameFileLoaderUseVFS& vfs, CGameFileLoaderEnterZip& innerzip, CGameFileLoader* strategies[4])
-{
-  if (!CSettings::Get().GetBool("gamesdebug.prefervfs"))
-  {
-    // Passing file names comes first
-    strategies[0] = &hd;
-    strategies[1] = &outerzip;
-    strategies[2] = &vfs;
-    strategies[3] = &innerzip;
-  }
-  else
-  {
-    // Loading through VFS comes first
-    strategies[0] = &vfs;
-    strategies[1] = &innerzip;
-    strategies[2] = &hd;
-    strategies[3] = &outerzip;
-  }
-}
-
-bool CGameClient::CanOpen(const CFileItem& file) const
-{
-  return CGameFileLoader::CanOpen(*this, file);
-}
-
-void CGameClient::InitSerialization()
+bool CGameClient::InitSerialization()
 {
   // Check if serialization is supported so savestates and rewind can be used
-  m_serialSize = m_dll.retro_serialize_size();
-  m_bRewindEnabled = CSettings::Get().GetBool("gamesgeneral.enablerewind");
+  unsigned int serializeSize;
+  try { serializeSize = m_pStruct->SerializeSize(); }
+  catch (...) { LogException("SerializeSize()"); return false; }
 
-  if (!m_serialSize)
+  if (serializeSize == 0)
   {
-    CLog::Log(LOGINFO, "GAME: Game serialization not supported, continuing without save or rewind");
-    m_bRewindEnabled = false;
+    CLog::Log(LOGINFO, "GAME: Serialization not supported, continuing without save or rewind");
+    return false;
   }
+
+  m_serializeSize = serializeSize;
+  m_bRewindEnabled = CSettings::Get().GetBool("gamesgeneral.enablerewind");
 
   // Set up rewind functionality
   if (m_bRewindEnabled)
   {
-    m_serialState.Init(m_serialSize, (size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
+    m_serialState.Init(m_serializeSize, (size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
 
-    if (m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
-      CLog::Log(LOGDEBUG, "GAME: Rewind is enabled");
-    else
+    GAME_ERROR error = GAME_ERROR_FAILED;
+    try { LogError(error = m_pStruct->Serialize(m_serialState.GetState(), m_serialState.GetFrameSize()), "Serialize()"); }
+    catch (...) { LogException("Serialize()"); }
+
+    if (error != GAME_ERROR_NO_ERROR)
     {
-      m_serialSize = 0;
+      m_serializeSize = 0;
       m_bRewindEnabled = false;
       m_serialState.Reset();
-      CLog::Log(LOGDEBUG, "GAME: Unable to serialize state, proceeding without rewind");
+      CLog::Log(LOGERROR, "GAME: Unable to serialize state, proceeding without save or rewind");
+      return false;
     }
   }
+
+  return true;
 }
 
 void CGameClient::SetDevice(unsigned int port, unsigned int device)
@@ -436,45 +343,62 @@ void CGameClient::SetDevice(unsigned int port, unsigned int device)
     if (port < GAMECLIENT_MAX_PLAYERS)
     {
       // Validate device
-      if (device <= RETRO_DEVICE_ANALOG ||
-          device == RETRO_DEVICE_JOYPAD_MULTITAP ||
-          device == RETRO_DEVICE_LIGHTGUN_SUPER_SCOPE ||
-          device == RETRO_DEVICE_LIGHTGUN_JUSTIFIER ||
-          device == RETRO_DEVICE_LIGHTGUN_JUSTIFIERS)
+      if (device <= GAME_DEVICE_ANALOG ||
+          device == GAME_DEVICE_JOYPAD_MULTITAP ||
+          device == GAME_DEVICE_LIGHTGUN_SUPER_SCOPE ||
+          device == GAME_DEVICE_LIGHTGUN_JUSTIFIER ||
+          device == GAME_DEVICE_LIGHTGUN_JUSTIFIERS)
       {
-        m_dll.retro_set_controller_port_device(port, device);
+        try { LogError(m_pStruct->SetControllerPortDevice(port, device), "SetControllerPortDevice()"); }
+        catch (...) { LogException("SetControllerPortDevice()"); }
       }
     }
   }
+}
+
+void CGameClient::CloseFile()
+{
+  CSingleLock lock(m_critSection);
+
+  if (m_bReadyToUse && m_bIsPlaying)
+  {
+    try { LogError(m_pStruct->UnloadGame(), "UnloadGame()"); }
+    catch (...) { LogException("UnloadGame()"); }
+
+    m_bIsPlaying = false;
+  }
+
+  m_gameFile.Reset();
 }
 
 bool CGameClient::RunFrame()
 {
   CSingleLock lock(m_critSection);
 
-  if (m_bIsPlaying)
+  if (!m_bIsPlaying)
+    return false;
+
+  GAME_ERROR error = GAME_ERROR_FAILED;
+  try { LogError(error = m_pStruct->Run(), "Run()"); }
+  catch (...) { LogException("Run()"); }
+
+  if (error != GAME_ERROR_NO_ERROR)
+    return false;
+
+  // Append a new state delta to the rewind buffer
+  if (m_bRewindEnabled)
   {
-    try
+    error = GAME_ERROR_FAILED;
+    try { LogError(error = m_pStruct->Serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()), "Serialize()"); }
+    catch (...) { LogException("Serialize()"); }
+
+    if (error != GAME_ERROR_NO_ERROR)
     {
-      m_dll.retro_run();
-    }
-    catch (...)
-    {
-      CLog::Log(LOGERROR, "GameClient error: exception thrown in retro_run()");
+      m_bRewindEnabled = false;
       return false;
     }
 
-    // Append a new state delta to the rewind buffer
-    if (m_bRewindEnabled)
-    {
-      if (m_dll.retro_serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()))
-        m_serialState.AdvanceFrame();
-      else
-      {
-        CLog::Log(LOGERROR, "GameClient core claimed it could serialize, but failed.");
-        m_bRewindEnabled = false;
-      }
-    }
+    m_serialState.AdvanceFrame();
   }
 
   return true;
@@ -488,8 +412,11 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
   if (m_bIsPlaying && m_bRewindEnabled)
   {
     rewound = m_serialState.RewindFrames(frames);
-    if (rewound)
-      m_dll.retro_unserialize(m_serialState.GetState(), m_serialState.GetFrameSize());
+    if (rewound != 0)
+    {
+      try { LogError(m_pStruct->Deserialize(m_serialState.GetState(), m_serialState.GetFrameSize()), "Deserialize()"); }
+      catch (...) { LogException("Deserialize()"); }
+    }
   }
   return rewound;
 }
@@ -500,16 +427,19 @@ void CGameClient::Reset()
   {
     // TODO: Reset all controller ports to their same value. bSNES since v073r01
     // resets controllers to JOYPAD after a reset, so guard against this.
-    m_dll.retro_reset();
+    try { LogError(m_pStruct->Reset(), "Reset()"); }
+    catch (...) { LogException("Reset()"); }
 
     if (m_bRewindEnabled)
     {
-      m_serialState.Init(m_serialState.GetFrameSize(), m_serialState.GetMaxFrames());
-      if (!m_dll.retro_serialize(m_serialState.GetState(), m_serialState.GetFrameSize()))
-      {
+      m_serialState.ReInit();
+
+      GAME_ERROR error = GAME_ERROR_FAILED;
+      try { LogError(error = m_pStruct->Serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()), "Serialize()"); }
+      catch (...) { LogException("Serialize()"); }
+
+      if (error != GAME_ERROR_NO_ERROR)
         m_bRewindEnabled = false;
-        CLog::Log(LOGINFO, "GAME::Reset - Unable to serialize state, proceeding without rewind");
-      }
     }
   }
 }
@@ -522,33 +452,84 @@ void CGameClient::SetFrameRateCorrection(double correctionFactor)
     m_serialState.SetMaxFrames((size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
 }
 
-void CGameClient::SetExtensions(const string &strExtensionList)
+void CGameClient::SetExtensions(const string &strExtensionList, std::set<std::string>& extensions)
 {
-  // If no extensions are provided, don't erase the ones we are already tracking
-  if (strExtensionList.empty())
-    return;
+  extensions.clear();
 
-  toExtensionSet(strExtensionList, m_extensions);
+  vector<string> vecExtensions = StringUtils::Split(strExtensionList, EXTENSION_SEPARATOR);
+  for (vector<string>::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
+  {
+    string& ext = *it;
+    if (ext.empty())
+      continue;
+
+    StringUtils::ToLower(ext);
+
+    // Make sure extension starts with "."
+    if (ext[0] != '.')
+      ext.insert(0, ".");
+
+    extensions.insert(ext);
+  }
 }
 
+/*
 void CGameClient::SetPlatforms(const string& strPlatformList)
 {
-  // If no platforms are provided, don't erase the ones we are already tracking
-  if (strPlatformList.empty())
-    return;
-
   m_platforms.clear();
-  vector<string> platforms = StringUtils::Split(strPlatformList, "|");
+
+  vector<string> platforms = StringUtils::Split(strPlatformList, EXTENSION_SEPARATOR);
   for (vector<string>::iterator it = platforms.begin(); it != platforms.end(); it++)
   {
     StringUtils::Trim(*it);
     GamePlatform id = CGameInfoTagLoader::GetPlatformInfoByName(*it).id;
     if (id != PLATFORM_UNKNOWN)
-      m_platforms.push_back(id);
+      m_platforms.insert(id);
   }
 }
+*/
 
+/*
 bool CGameClient::IsExtensionValid(const string& ext) const
 {
   return CGameFileLoader::IsExtensionValid(ext, m_extensions);
+}
+*/
+
+bool CGameClient::LogError(GAME_ERROR error, const char* strMethod) const
+{
+  if (error != GAME_ERROR_NO_ERROR)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - addon '%s' returned an error: %s",
+        strMethod, m_strClientName.c_str(), ToString(error));
+    return false;
+  }
+  return true;
+}
+
+void CGameClient::LogException(const char* strFunctionName) const
+{
+  CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on '%s'",
+      strFunctionName, GetClientName().c_str());
+  CLog::Log(LOGERROR, "Please contact the developer of this add-on: %s", Author().c_str());
+}
+
+const char* CGameClient::ToString(GAME_ERROR error)
+{
+  switch (error)
+  {
+  case GAME_ERROR_NO_ERROR:
+    return "no error";
+  case GAME_ERROR_NOT_IMPLEMENTED:
+    return "not implemented";
+  case GAME_ERROR_REJECTED:
+    return "rejected by the client";
+  case GAME_ERROR_INVALID_PARAMETERS:
+    return "invalid parameters for this method";
+  case GAME_ERROR_FAILED:
+    return "the command failed";
+  case GAME_ERROR_UNKNOWN:
+  default:
+    return "unknown error";
+  }
 }

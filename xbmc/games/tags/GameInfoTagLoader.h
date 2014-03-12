@@ -117,7 +117,7 @@ namespace GAME
     PLATFORM_ZX_SPECTR            = 41,
   };
 
-  typedef std::set<GamePlatform> GamePlatformSet;
+  typedef std::set<GamePlatform> GamePlatforms;
 
   struct PlatformInfo
   {

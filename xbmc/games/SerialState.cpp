@@ -19,14 +19,16 @@
  *
  */
 
-// Code is by Hans-Kristian Arntzen
-
 #include "SerialState.h"
-#include "system.h" // for SAFE_DELETE_ARRAY()
 
+using namespace GAME;
 
 // Pad forward to nearest boundary of bytes
-#define PAD_TO_CEIL(x, bytes) (((x) + (bytes) - 1) / (bytes))
+#define PAD_TO_CEIL(x, bytes)  (((x) + (bytes) - 1) / (bytes))
+
+#ifndef SAFE_DELETE_ARRAY
+#define SAFE_DELETE_ARRAY(p)   do { delete[] (p);   (p)=NULL; } while (0)
+#endif
 
 void CSerialState::Init(size_t frameSize, size_t frameCount)
 {

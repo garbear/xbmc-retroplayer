@@ -25,6 +25,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+namespace GAME
+{
+
 class CSerialState
 {
 public:
@@ -32,6 +35,7 @@ public:
   ~CSerialState() { Reset(); }
 
   void Init(size_t frameSize, size_t frameCount);
+  void ReInit() { Init(m_frameSize, m_maxFrames); }
   bool IsInited() const { return m_state && m_nextState; }
   void Reset(); // Free up any memory allocated
   void SetMaxFrames(size_t frameCount);
@@ -77,3 +81,5 @@ private:
   typedef std::vector<DeltaPair> DeltaPairVector;
   std::deque<DeltaPairVector>    m_rewindBuffer;
 };
+
+} // namespace GAME

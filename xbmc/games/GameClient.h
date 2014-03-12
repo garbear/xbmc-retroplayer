@@ -59,14 +59,13 @@
  *       function pointer as a protected member variable.
  */
 
+#include "GameFileLoader.h"
+#include "SerialState.h"
+//#include "tags/GameInfoTagLoader.h"
 #include "addons/Addon.h"
 #include "addons/AddonDll.h"
 #include "addons/DllGameClient.h"
 #include "addons/include/xbmc_addon_types.h"
-
-#include "GameFileLoader.h"
-#include "tags/GameInfoTagLoader.h"
-#include "SerialState.h"
 #include "threads/CriticalSection.h"
 
 #include <boost/shared_ptr.hpp>
@@ -80,194 +79,148 @@ class CFileItem;
 
 namespace GAME
 {
-  class CGameClient;
-  typedef boost::shared_ptr<CGameClient> GameClientPtr;
-  typedef std::vector<CGameClient>       GameClientVector;
 
-  class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
-  {
-  public:
-    CGameClient(const ADDON::AddonProps& props);
-    CGameClient(const cp_extension_t* props);
-    virtual ~CGameClient(void);
+class CGameClient;
+typedef boost::shared_ptr<CGameClient> GameClientPtr;
+typedef std::vector<CGameClient>       GameClientVector;
 
-    /**
-     * Initialise the instance of this add-on
-     */
-    ADDON_STATUS Create();
+class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
+{
+public:
+  CGameClient(const ADDON::AddonProps& props);
+  CGameClient(const cp_extension_t* props);
+  virtual ~CGameClient(void);
 
-    /**
-     * Destroy the instance of this add-on
-     */
-    void Destroy(void);
+  // Initialise the instance of this add-on
+  ADDON_STATUS Create();
 
-    /**
-     * True if this instance is initialised, false otherwise.
-     */
-    bool                         ReadyToUse(void) const   { return m_bReadyToUse; }
-    const std::string&           GetClientName() const    { return m_strClientName; }
-    const std::string&           GetClientVersion() const { return m_strClientVersion; }
-    const std::set<std::string>& GetExtensions() const    { return m_extensions; }
-    bool                         SupportsVFS() const      { return m_bSupportsVFS; }
-    bool                         SupportsNoGame() const   { return m_bSupportsNoGame; }
-    const GamePlatformSet&       GetPlatforms() const     { return m_platforms; }
-    const std::string&           GetFilePath() const      { return m_gameFile.Path(); }
+  // Destroy the instance of this add-on
+  void Destroy(void);
 
-    /**
-     * Find the region of a currently running game. The return value will be
-     * RETRO_REGION_NTSC, RETRO_REGION_PAL or -1 for invalid.
-     */
-    int                          GetRegion() const { return m_region; }
+  // Return true if this instance is initialised, false otherwise
+  bool ReadyToUse(void) const   { return m_bReadyToUse; }
 
-    bool OpenFile(const CFileItem& file);
-    void CloseFile();
+  // Query properties of the game client
+  const std::string&           GetClientName() const    { return m_strClientName; }
+  const std::string&           GetClientVersion() const { return m_strClientVersion; }
+  const std::set<std::string>& GetExtensions() const    { return m_extensions; }
+  bool                         SupportsVFS() const      { return m_bSupportsVFS; }
+  bool                         SupportsNoGame() const   { return m_bSupportsNoGame; }
+  //const GamePlatforms&         GetPlatforms() const     { return m_platforms; }
 
-    /**
-     * Perform the gamut of checks on the file: "gameclient" property, platform,
-     * extension, and a positive match on at least one of the CGameFileLoader
-     * strategies.
-     */
-    bool CanOpen(const CFileItem& file) const;
+  // Query properties of the running game
+  const std::string& GetFilePath() const   { return m_gameFile.Path(); }
+  int                GetRegion() const     { return m_region; }
+  double             GetFrameRate() const  { return m_frameRate * m_frameRateCorrection; }
+  double             GetSampleRate() const { return m_sampleRate; }
 
-  private:
-    /*!
-     * @brief Resets all class members to their defaults. Called by the constructors.
-     */
-    void ResetProperties();
-    
-    bool GetAddonProperties(void);
+  // Modify the value returned by GetFrameRate()
+  void SetFrameRateCorrection(double correctionFactor);
 
-    bool LogError(const GAME_ERROR error, const char* strMethod) const;
-    void LogException(const char* strFunctionName) const;
+  /**
+    * Perform the gamut of checks on the file: "gameclient" property, platform,
+    * extension, and a positive match on at least one of the CGameFileLoader
+    * strategies.
+    */
+  bool CanOpen(const CFileItem& file) const;
 
-    ADDON::AddonVersion   m_apiVersion;
-    bool                  m_bReadyToUse;          /*!< true if this add-on is connected to the backend, false otherwise */
+  bool OpenFile(const CFileItem& file);
+  void CloseFile();
 
-    // Returned from Game API
-    std::string           m_strClientName;
-    std::string           m_strClientVersion;
-    bool                  m_bSupportsVFS;
-    bool                  m_bSupportsNoGame;
+  /**
+    * Each port (or player, if you will) must be associated with a device. The
+    * default device is GAME_DEVICE_JOYPAD.
+    *
+    * TODO: Do not exceed the number of devices that the game client supports.
+    * A quick analysis of SNES9x Next v2 showed that a third port will overflow
+    * a buffer. Currently, there is no way to determine the number of ports a
+    * client will support, so stick with 1.
+    *
+    * Precondition: OpenFile() must return true.
+    */
+  void SetDevice(unsigned int port, unsigned int device);
 
-    double                m_frameRate; // Video framerate
-    double                m_frameRateCorrection; // Framerate correction factor (to sync to audio)
-    double                m_sampleRate; // Audio frequency
-    int                   m_region; // Region of the loaded game
-    std::set<std::string> m_extensions;
-    GamePlatformSet       m_platforms;
+  /**
+    * Allow the game to run and produce a video frame.
+    * Precondition: OpenFile() returned true.
+    * Returns false if an exception is thrown in retro_run().
+    */
+  bool RunFrame();
 
-    bool                  m_bIsPlaying; // This is true between OpenFile() and CloseFile()
-    CGameFile             m_gameFile; // the current playing file
+  /**
+    * Rewind gameplay 'frames' frames.
+    * As there is a fixed size buffer backing
+    * save state deltas, it might not be possible to rewind as many
+    * frames as desired. The function returns number of frames actually rewound.
+    */
+  unsigned int RewindFrames(unsigned int frames);
 
-    CCriticalSection      m_critSection;
-    unsigned int          m_serialSize;
-    bool                  m_bRewindEnabled;
-    CSerialState          m_serialState;
+  // Returns how many frames it is possible to rewind with a call to RewindFrames().
+  size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
 
-    // If rewinding is disabled, use a buffer to avoid re-allocation when saving games
-    std::vector<uint8_t>  m_savestateBuffer;
+  // Returns the maximum amount of frames that can ever be rewound.
+  size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
 
-    /**
-     * Settings and strings are handled slightly differently with game client
-     * because they all share the possibility of having a system directory.
-     * Trivial saves are skipped to avoid unnecessary file creations, and
-     * strings simply use g_localizeStrings.
-     * \sa LoadSettings
-     */
-    virtual void SaveSettings();
-    virtual CStdString GetString(uint32_t id);
+  // Reset the game, if running.
+  void Reset();
 
+  /**
+    * If the game client was a bad boy and provided no extensions, this will
+    * optimistically return true.
+    */
+  //bool IsExtensionValid(const std::string& ext) const;
 
+private:
+  /**
+    * Resets all class members to their defaults. Called by the constructors.
+    */
+  void ResetProperties();
 
-    /**
-     * Each port (or player, if you will) must be associated with a device. The
-     * default device is RETRO_DEVICE_JOYPAD. For a list of valid devices, see
-     * libretro.h.
-     *
-     * Do not exceed the number of devices that the game client supports. A
-     * quick analysis of SNES9x Next v2 showed that a third port will overflow
-     * a buffer. Currently, there is no way to determine the number of ports a
-     * client will support, so stick with 1.
-     *
-     * Precondition: OpenFile() must return true.
-     */
-    void SetDevice(unsigned int port, unsigned int device);
+  bool GetAddonProperties(void);
 
-    /**
-     * Allow the game to run and produce a video frame.
-     * Precondition: OpenFile() returned true.
-     * Returns false if an exception is thrown in retro_run().
-     */
-    bool RunFrame();
+  bool LoadGameInfo();
 
-    /**
-     * Rewind gameplay 'frames' frames.
-     * As there is a fixed size buffer backing
-     * save state deltas, it might not be possible to rewind as many
-     * frames as desired. The function returns number of frames actually rewound.
-     */
-    unsigned int RewindFrames(unsigned int frames);
+  /**
+    * Initialize the game client serialization subsystem. If successful,
+    * m_bRewindEnabled and m_serialSize are set appropriately.
+    */
+  bool InitSerialization();
 
-    // Returns how many frames it is possible to rewind with a call to RewindFrames().
-    size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
+  /**
+    * Parse a pipe-separated list returned from the game client.
+    */
+  static void SetExtensions(const std::string& strExtensionList, std::set<std::string>& extensions);
+  //void SetPlatforms(const std::string& strPlatformList);
 
-    // Returns the maximum amount of frames that can ever be rewound.
-    size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
+  bool LogError(GAME_ERROR error, const char* strMethod) const;
+  void LogException(const char* strFunctionName) const;
+  static const char* ToString(GAME_ERROR error);
 
-    // Reset the game, if running.
-    void Reset();
+  ADDON::AddonVersion   m_apiVersion;
+  bool                  m_bReadyToUse;          /*!< true if this add-on is connected to the backend, false otherwise */
 
-    // Video framerate is used to calculate savestate wall time
-    double GetFrameRate() const { return m_frameRate * m_frameRateCorrection; }
-    void SetFrameRateCorrection(double correctionFactor);
-    double GetSampleRate() const { return m_sampleRate; }
+  // Returned from the Game API
+  std::string           m_strClientName;
+  std::string           m_strClientVersion;
+  std::set<std::string> m_extensions;
+  bool                  m_bSupportsVFS;
+  bool                  m_bSupportsNoGame;
+  //GamePlatforms         m_platforms;
 
-    /**
-     * If the game client was a bad boy and provided no extensions, this will
-     * optimistically return true.
-     */
-    bool IsExtensionValid(const std::string& ext) const;
+  // Properties of the current playing file
+  bool                  m_bIsPlaying; // This is true between OpenFile() and CloseFile()
+  CGameFile             m_gameFile; // the current playing file
+  GAME_REGION           m_region; // Region of the loaded game
+  double                m_frameRate; // Video framerate
+  double                m_frameRateCorrection; // Framerate correction factor (to sync to audio)
+  double                m_sampleRate; // Audio frequency
 
-  protected:
-    CGameClient(const CGameClient& other);
-    virtual bool LoadSettings(bool bForce = false);
+  // Save/rewind functionality
+  unsigned int          m_serializeSize;
+  bool                  m_bRewindEnabled;
+  CSerialState          m_serialState;
 
-  private:
-    void Initialize();
+  CCriticalSection      m_critSection;
+};
 
-    /**
-     * Perform the actual loading of the game by the DLL. The resulting CGameFile
-     * is placed in m_gameFile.
-     */
-    bool OpenInternal(const CFileItem& file);
-
-    /**
-     * Calls retro_get_system_av_info() and prints the game/environment info on
-     * the screen. The framerate and samplerate are stored in m_frameRate and
-     * m_sampleRate.
-     */
-    bool LoadGameInfo();
-
-    /**
-     * Initialize the game client serialization subsystem. If successful,
-     * m_bRewindEnabled and m_serialSize are set appropriately.
-     */
-    void InitSerialization();
-
-    /**
-     * Given the strategies above, order them in the way that respects
-     * CSettings::Get().GetBool("gamesdebug.prefervfs").
-     */
-    static void GetStrategy(CGameFileLoaderUseHD& hd, CGameFileLoaderUseParentZip& outerzip,
-        CGameFileLoaderUseVFS& vfs, CGameFileLoaderEnterZip& innerzip, CGameFileLoader* strategies[4]);
-
-    /**
-     * Parse a pipe-separated list, returned from the game client, into an
-     * array. The extensions list can contain both upper and lower case
-     * extensions; only lower-case extensions are stored in m_validExtensions.
-     */
-    void SetExtensions(const std::string& strExtensionList);
-    void SetPlatforms(const std::string& strPlatformList);
-
-  };
-}
+} // namespace GAME
