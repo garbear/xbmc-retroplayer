@@ -322,9 +322,6 @@
     <Filter Include="games\test">
       <UniqueIdentifier>{4cad6943-a5ca-415b-b465-7a3207e74dd1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="games\libretro">
-      <UniqueIdentifier>{536b4439-d8cb-40e6-b8cc-c0f5c43c77ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="cores\RetroPlayer">
       <UniqueIdentifier>{7c1ec2e2-f324-4955-a4d8-5929210761e1}</UniqueIdentifier>
     </Filter>
@@ -3166,9 +3163,6 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\SerialState.cpp">
       <Filter>games</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\libretro\LibretroEnvironment.cpp">
-      <Filter>games\libretro</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.cpp">
       <Filter>cores\RetroPlayer</Filter>
@@ -6231,18 +6225,6 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\SerialState.h">
       <Filter>games</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\libretro\LibretroEnvironment.h">
-      <Filter>games\libretro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\libretro\libretro.h">
-      <Filter>games\libretro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\libretro\libretro_wrapped.h">
-      <Filter>games\libretro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\libretro\LibretroCallbacks.h">
-      <Filter>games\libretro</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.h">
       <Filter>cores\RetroPlayer</Filter>
