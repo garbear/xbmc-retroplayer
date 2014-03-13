@@ -24,22 +24,22 @@
 
 class CSetting;
 
-namespace GAMES
+namespace GAME
 {
-  class CGameSettings : public ISettingCallback
-  {
-  public:
-    static CGameSettings &Get();
-    
-    // Inherited from ISettingCallback
-    virtual void OnSettingAction(const CSetting *setting);
 
-  protected:
-    virtual ~CGameSettings() { }
+class CGameSettings : public ISettingCallback
+{
+public:
+  static CGameSettings& Get();
+  virtual ~CGameSettings() { }
 
-  private: // non-copyable
-    CGameSettings() { }
-    CGameSettings(const CGameSettings&);
-    CGameSettings& operator=(const CGameSettings&);
-  };
-} // namespace GAMES
+  // Inherited from ISettingCallback
+  virtual void OnSettingAction(const CSetting* setting);
+
+private: // non-copyable
+  CGameSettings() { }
+  CGameSettings(const CGameSettings&);
+  CGameSettings& operator=(const CGameSettings&);
+};
+
+} // namespace GAME

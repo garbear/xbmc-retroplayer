@@ -26,21 +26,21 @@
 
 #include <string>
 
-using namespace GAMES;
+using namespace GAME;
 
 /* static */
-CGameSettings &CGameSettings::Get()
+CGameSettings& CGameSettings::Get()
 {
-  static CGameSettings _settingsInstance;
-  return _settingsInstance;
+  static CGameSettings gameSettingsInstance;
+  return gameSettingsInstance;
 }
 
-void CGameSettings::OnSettingAction(const CSetting *setting)
+void CGameSettings::OnSettingAction(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == "gamesgeneral.manageaddons")
   {
     CStdStringArray params;
