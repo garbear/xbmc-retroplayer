@@ -119,6 +119,7 @@ public:
   // Modify the value returned by GetFrameRate(), used to sync gameplay to audio
   void SetFrameRateCorrection(double correctionFactor);
 
+  // Because "GetSystemDirectory" is reserved under winbloze
   std::string GetSystemFolder() const;
 
   /**

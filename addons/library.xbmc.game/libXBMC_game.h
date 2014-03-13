@@ -105,9 +105,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_system_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_pixel_format)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_variable)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_variables)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_variable_update)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_libretro_path)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_content_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_save_directory)) throw false;
@@ -189,21 +186,6 @@ public:
   void EnvironmentSetInputDescriptors(const struct game_input_descriptor* descriptor, size_t count)
   {
     return GAME_environment_set_input_descriptors(m_handle, m_callbacks, descriptor, count);
-  }
-
-  void EnvironmentGetVariable(struct game_variable* variable)
-  {
-    return GAME_environment_get_variable(m_handle, m_callbacks, variable);
-  }
-
-  void EnvironmentSetVariables(const struct game_variable* variables, size_t count)
-  {
-    return GAME_environment_set_variables(m_handle, m_callbacks, variables, count);
-  }
-
-  bool EnvironmentGetVariableUpdate(void)
-  {
-    return GAME_environment_get_variable_update(m_handle, m_callbacks);
   }
 
   char* EnvironmentGetLibretroPath(void)
@@ -382,9 +364,6 @@ protected:
     char* (*GAME_environment_get_system_directory)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_set_pixel_format)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
-    void (*GAME_environment_get_variable)(void* handle, CB_GameLib* cb, struct game_variable* variable);
-    void (*GAME_environment_set_variables)(void* handle, CB_GameLib* cb, const struct game_variable* variables, size_t count);
-    bool (*GAME_environment_get_variable_update)(void* handle, CB_GameLib* cb);
     char* (*GAME_environment_get_libretro_path)(void* handle, CB_GameLib* cb);
     char* (*GAME_environment_get_content_directory)(void* handle, CB_GameLib* cb);
     char* (*GAME_environment_get_save_directory)(void* handle, CB_GameLib* cb);

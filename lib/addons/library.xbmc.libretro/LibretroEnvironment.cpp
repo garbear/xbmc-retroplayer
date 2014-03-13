@@ -23,6 +23,7 @@
 #include "FrontendBridge.h"
 #include "libretro.h"
 #include "LibretroDLL.h"
+#include "libXBMC_addon.h"
 #include "libXBMC_game.h"
 
 #include <stdarg.h>
@@ -31,6 +32,7 @@
 
 using namespace ADDON;
 using namespace LIBRETRO;
+using namespace std;
 
 #define DEFAULT_NOTIFICATION_TIME_MS  3000 // Time to display toast dialogs, from AddonCallbacksAddon.cpp
 
@@ -42,6 +44,9 @@ bool   CLibretroEnvironment::m_bSupportsNoGame = false;
 double CLibretroEnvironment::m_fps = 0.0;
 bool   CLibretroEnvironment::m_bFramerateKnown = false;
 
+map<string, set<string> > CLibretroEnvironment::m_variables;
+map<string, string> CLibretroEnvironment::m_settings;
+
 void CLibretroEnvironment::Initialize(CHelper_libXBMC_addon* xbmc, CHelper_libXBMC_game* frontend, CLibretroDLL* client, CClientBridge *clientBridge)
 {
   m_xbmc = xbmc;
@@ -50,6 +55,10 @@ void CLibretroEnvironment::Initialize(CHelper_libXBMC_addon* xbmc, CHelper_libXB
 
   // Install environment callback
   client->retro_set_environment(EnvironmentCallback);
+}
+
+void CLibretroEnvironment::Deinitialize()
+{
 }
 
 void CLibretroEnvironment::UpdateFramerate(double fps)
@@ -230,41 +239,86 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       retro_variable* typedData = reinterpret_cast<retro_variable*>(data);
       if (typedData)
       {
-        // Translate struct
-        game_variable variable;
-        variable.key   = typedData->key;
-        variable.value = typedData->value;
-        m_frontend->EnvironmentGetVariable(&variable);
+        // Default case
+        typedData->value = NULL;
+
+        const char* key = typedData->key;
+        if (!key)
+          break;
+
+        // Ask XBMC for the setting's value
+        char valueBuffer[1024] = { };
+        m_xbmc->GetSetting(key, valueBuffer);
+        string value = valueBuffer;
+        if (value.empty())
+          break;
+
+        // Error-log if the value is invalid
+        if (m_variables[key].find(value) == m_variables[key].end())
+        {
+          m_xbmc->Log(LOG_ERROR, "Setting \"%s\" has invalid value: \"%s\"", key, value.c_str());
+          break;
+        }
+
+        // Store the setting in m_settings and return its value
+        m_settings[key] = value;
+        typedData->value = m_settings[key].c_str();
       }
       break;
     }
   case RETRO_ENVIRONMENT_SET_VARIABLES:
     {
       const retro_variable* typedData = reinterpret_cast<const retro_variable*>(data);
-      size_t count = 0;
-      for (const retro_variable* variable = typedData; variable && variable->key && variable->value; variable++)
-        count++;
-      
-      if (count)
+      if (typedData)
       {
-        // Translate struct
-        game_variable* variables = new game_variable[count];
-        for (unsigned int i = 0; i < count; i++)
+        char valueBuffer[1024];
+        for (const retro_variable* variable = typedData; variable->key && variable->value; variable++)
         {
-          variables[i].key   = typedData[i].key;
-          variables[i].value = typedData[i].value;
-        }
-        m_frontend->EnvironmentSetVariables(variables, count);
-        delete variables;
-      }
+          m_xbmc->Log(LOG_INFO, "Checking for settings %s (value is \"%s\")", variable->key, variable->value);
+          // This will error-log if the setting can't be found
+          m_xbmc->GetSetting(variable->key, valueBuffer);
 
+          // Record the variable
+          string key = variable->key;
+          string values = variable->value;
+
+          // Look for ; separating the description from the pipe-separated values
+          size_t pos;
+          if ((pos = values.find(';')) != string::npos)
+          {
+            pos++;
+            while (values[pos] == ' ')
+              pos++;
+          }
+          values = values.substr(pos);
+
+          // Split the values on | delimiter
+          while (!values.empty())
+          {
+            pos = values.find('|');
+            if (pos == string::npos)
+            {
+              m_variables[key].insert(values);
+              values.clear();
+            }
+            else
+            {
+              m_variables[key].insert(values.substr(0, pos));
+              values.erase(0, pos + 1);
+            }
+          }
+        }
+      }
       break;
     }
   case RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
     {
       bool* typedData = reinterpret_cast<bool*>(data);
       if (typedData)
-        *typedData = m_frontend->EnvironmentGetVariableUpdate();
+      {
+        // TODO: Need to return true if the setting's value has changed
+        *typedData = false;
+      }
       break;
     }
   case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:

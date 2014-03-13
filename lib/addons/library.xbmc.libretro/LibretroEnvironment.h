@@ -19,6 +19,10 @@
  */
 #pragma once
 
+#include <map>
+#include <set>
+#include <string>
+
 namespace ADDON { class CHelper_libXBMC_addon; }
 class CHelper_libXBMC_game;
 
@@ -31,6 +35,7 @@ namespace LIBRETRO
   {
   public:
     static void Initialize(ADDON::CHelper_libXBMC_addon* xbmc, CHelper_libXBMC_game* frontend, CLibretroDLL* client, CClientBridge* clientBridge);
+    static void Deinitialize();
     static ADDON::CHelper_libXBMC_addon* GetXBMC() { return m_xbmc; }
     static CHelper_libXBMC_game* GetFrontend() { return m_frontend; }
 
@@ -57,5 +62,10 @@ namespace LIBRETRO
     static bool   m_bSupportsNoGame;
     static double m_fps;
     static bool   m_bFramerateKnown; // true if UpdateFramerate() has been called
+
+    // Record the variables reported by libretro core
+    static std::map<std::string, std::set<std::string> > m_variables;
+    // Record the settings reported by XBMC
+    static std::map<std::string, std::string> m_settings;
   };
 } // namespace LIBRETRO

@@ -50,9 +50,6 @@ public:
   static char* EnvironmentGetSystemDirectory(void* addonData);
   static bool EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format);
   static void EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count);
-  static void EnvironmentGetVariable(void* addonData, game_variable* variable);
-  static void EnvironmentSetVariables(void* addonData, const game_variable* variables, size_t count);
-  static bool EnvironmentGetVariableUpdate(void* addonData);
   static char* EnvironmentGetLibretroPath(void* addonData);
   static char* EnvironmentGetContentDirectory(void* addonData);
   static char* EnvironmentGetSaveDirectory(void* addonData);

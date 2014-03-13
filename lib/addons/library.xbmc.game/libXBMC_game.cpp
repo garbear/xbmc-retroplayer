@@ -104,27 +104,6 @@ DLLEXPORT void GAME_environment_set_input_descriptors(AddonCB* frontend, CB_Game
   return cb->EnvironmentSetInputDescriptors(frontend->addonData, descriptor, count);
 }
 
-DLLEXPORT void GAME_environment_get_variable(AddonCB* frontend, CB_GameLib* cb, game_variable* variable)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->EnvironmentGetVariable(frontend->addonData, variable);
-}
-
-DLLEXPORT void GAME_environment_set_variables(AddonCB* frontend, CB_GameLib* cb, const struct game_variable* variables, size_t count)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->EnvironmentSetVariables(frontend->addonData, variables, count);
-}
-
-DLLEXPORT bool GAME_environment_get_variable_update(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentGetVariableUpdate(frontend->addonData);
-}
-
 DLLEXPORT char* GAME_environment_get_libgame_path(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)

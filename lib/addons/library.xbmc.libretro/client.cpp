@@ -114,6 +114,9 @@ void ADDON_Destroy()
 {
   if (CLIENT)
     CLIENT->retro_deinit();
+
+  CLibretroEnvironment::Deinitialize();
+
   SAFE_DELETE(XBMC);
   SAFE_DELETE(FRONTEND);
   SAFE_DELETE(CLIENT);

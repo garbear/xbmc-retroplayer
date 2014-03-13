@@ -92,48 +92,6 @@ typedef struct CB_GameLib
   void (*EnvironmentSetInputDescriptors)(void* addonData, const struct game_input_descriptor* descriptor, size_t count);
 
   /*!
-    * Interface to acquire user-defined information from environment that
-    * cannot feasibly be supported in a multi-system way. 'key' should be set
-    * to a key which has already been set by SET_VARIABLES. 'data' will be set
-    * to a value or NULL. Replaces RETRO_ENVIRONMENT_GET_VARIABLE.
-    */
-  void (*EnvironmentGetVariable)(void* addonData, struct game_variable* variable);
-
-  /*!
-    * Allows an implementation to signal the environment which variables it
-    * might want to check for later using GET_VARIABLE. This allows the
-    * frontend to present these variables to a user dynamically. This should
-    * be called as early as possible.
-    *
-    * 'data' points to an array of game_variable structs. game_variable::key
-    * should be namespaced to not collide with other implementations' keys.
-    * E.g. A core called 'foo' should use keys named as 'foo_option'.
-    * game_variable::value should contain a human readable description of the
-    * key as well as a '|' delimited list of expected values. The number of
-    * possible options should be very limited, i.e. it should be feasible to
-    * cycle through options without a keyboard. First entry should be treated
-    * as a default.
-    *
-    * Example entry:
-    * { "foo_option", "Speed hack coprocessor X; false|true" }
-    *
-    * Text before first ';' is description. This ';' must be followed by a
-    * space, and followed by a list of possible values split up with '|'.
-    * Only strings are operated on. The possible values will generally be
-    * displayed and stored as-is by the frontend.
-    *
-    * Replaces RETRO_ENVIRONMENT_SET_VARIABLES.
-    */
-  void (*EnvironmentSetVariables)(void* addonData, const struct game_variable* variables, size_t count);
-
-  /*!
-    * Result is set to true if some variables are updated by frontend since
-    * last call to EnvironmentGetVariable(). Variables should be queried
-    * with EnvironmentGetVariable(). Replaces RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE.
-    */
-  bool (*EnvironmentGetVariableUpdate)(void* addonData);
-
-  /*!
     * Retrieves the absolute path from where this game client was loaded. False
     * is returned if it was loaded statically (i.e. linked statically to
     * frontend), or if the path cannot be determined. Mostly useful in

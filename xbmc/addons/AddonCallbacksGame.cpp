@@ -19,6 +19,7 @@
  */
 
 #include "AddonCallbacksGame.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
 #include "games/GameClient.h"
 #include "threads/SystemClock.h"
 #include "utils/log.h"
@@ -49,9 +50,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentGetSystemDirectory  = EnvironmentGetSystemDirectory;
   m_callbacks->EnvironmentSetPixelFormat      = EnvironmentSetPixelFormat;
   m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
-  m_callbacks->EnvironmentGetVariable         = EnvironmentGetVariable;
-  m_callbacks->EnvironmentSetVariables        = EnvironmentSetVariables;
-  m_callbacks->EnvironmentGetVariableUpdate   = EnvironmentGetVariableUpdate;
   m_callbacks->EnvironmentGetLibretroPath     = EnvironmentGetLibretroPath;
   m_callbacks->EnvironmentGetContentDirectory = EnvironmentGetContentDirectory;
   m_callbacks->EnvironmentGetSaveDirectory    = EnvironmentGetSaveDirectory;
@@ -133,7 +131,7 @@ char* CAddonCallbacksGame::EnvironmentGetSystemDirectory(void* addonData)
   if (!gameClient)
   {
     CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
-    return;
+    return NULL;
   }
 
   string strSystemDirectory = gameClient->GetSystemFolder();
@@ -144,29 +142,26 @@ char* CAddonCallbacksGame::EnvironmentGetSystemDirectory(void* addonData)
 
 bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format)
 {
-  // Stub
-  return false;
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return false;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
+    return false;
+  }
+
+  gameClient->GetPlayer()->SetPixelFormat(format);
+  return true;
 }
 
 void CAddonCallbacksGame::EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count)
 {
-  // Stub
-}
-
-void CAddonCallbacksGame::EnvironmentGetVariable(void* addonData, game_variable* variable)
-{
-  // Stub
-}
-
-void CAddonCallbacksGame::EnvironmentSetVariables(void* addonData, const game_variable* variables, size_t count)
-{
-  // Stub
-}
-
-bool CAddonCallbacksGame::EnvironmentGetVariableUpdate(void* addonData)
-{
-  // Stub
-  return false;
+  // TODO
 }
 
 char* CAddonCallbacksGame::EnvironmentGetLibretroPath(void* addonData)
