@@ -21,6 +21,7 @@
 #pragma once
 
 #include "RetroPlayerBuffer.h"
+#include "addons/include/xbmc_game_types.h"
 #include "linux/PlatformDefs.h" // Must be included before RenderManager.h
 #include "cores/VideoRenderers/RenderManager.h"
 #include "DllSwScale.h"
@@ -73,7 +74,7 @@ public:
    * function is not called, m_pixelFormat defaults to LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555.
    * For a list of valid pixel formats, see libretro.h.
    */
-  void SetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat) { m_pixelFormat = pixelFormat; }
+  void SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat) { m_pixelFormat = pixelFormat; }
 
 protected:
   virtual void Process();
@@ -84,7 +85,7 @@ private:
   void ColorspaceConversion(const VideoFrame &input, const DVDVideoPicture &output);
   
   DllSwScale              m_dllSwScale;
-  SwsContext              *m_swsContext;
+  SwsContext*             m_swsContext;
 
   CRetroPlayerVideoBuffer m_buffer;
   CEvent                  m_frameEvent;  // Set immediately when a new frame is queued
@@ -99,5 +100,5 @@ private:
   unsigned int            m_outputWidth;
   unsigned int            m_outputHeight;
   double                  m_outputFramerate;
-  LIBRETRO::retro_pixel_format m_pixelFormat;
+  GAME_PIXEL_FORMAT       m_pixelFormat;
 };

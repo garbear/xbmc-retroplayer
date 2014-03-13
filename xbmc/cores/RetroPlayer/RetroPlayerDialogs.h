@@ -39,7 +39,7 @@ public:
    *         (valid pointer if function returns true, untouched if function returns false)
    * @return true if the loading should continue, false to abort
    */
-  static bool GetGameClient(const CFileItem &file, GAMES::GameClientPtr &result);
+  static bool GetGameClient(const CFileItem &file, GAME::GameClientPtr &result);
 
 private:
   /**
@@ -51,7 +51,7 @@ private:
    *         (valid pointer if function returns true, untouched if function returns false)
    * @return false if the user aborts the game launching process
    */
-  static bool GameLauchDialog(const CFileItem &file, GAMES::GameClientPtr &result);
+  static bool GameLauchDialog(const CFileItem &file, GAME::GameClientPtr &result);
 
   /**
    * Download and install a game client from a remote repository.
@@ -63,13 +63,13 @@ private:
    * @return true if the game client is compatible and installs successfully,
    *         false if the client is already installed or fails to install.
    */
-  static bool InstallGameClient(const std::string &strId, const CFileItem &file, GAMES::GameClientPtr &result);
+  static bool InstallGameClient(const std::string &strId, const CFileItem &file, GAME::GameClientPtr &result);
 
   /**
    * Present the user with a list of game clients compatible with the specified
    * file and install the chosen game client.
    */
-  static bool InstallGameClientDialog(const CFileItem &file, GAMES::GameClientPtr &result);
+  static bool InstallGameClientDialog(const CFileItem &file, GAME::GameClientPtr &result);
 
   /**
    * Present the user with a list of game clients and an option to go to the
@@ -80,5 +80,5 @@ private:
    *         (valid pointer if function returns true, untouched if function returns false)
    * @return true to continue launching the game, false to abort
    */
-  static bool ChooseGameClientDialog(const std::vector<std::string> &clientIds, const CFileItem &file, GAMES::GameClientPtr &result);
+  static bool ChooseGameClientDialog(const std::vector<std::string> &clientIds, const CFileItem &file, GAME::GameClientPtr &result);
 };

@@ -438,7 +438,7 @@ void CSettings::Uninitialize()
   m_settingsManager->UnregisterCallback(&CNetworkServices::Get());
   m_settingsManager->UnregisterCallback(&g_passwordManager);
   m_settingsManager->UnregisterCallback(&PVR::g_PVRManager);
-  m_settingsManager->UnregisterCallback(&GAMES::CGameSettings::Get());
+  m_settingsManager->UnregisterCallback(&GAME::CGameSettings::Get());
   m_settingsManager->UnregisterCallback(&CRssManager::Get());
 #if defined(TARGET_LINUX)
   m_settingsManager->UnregisterCallback(&g_timezone);
@@ -1143,7 +1143,7 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert("gamesgeneral.manageaddons");
-  m_settingsManager->RegisterCallback(&GAMES::CGameSettings::Get(), settingSet);
+  m_settingsManager->RegisterCallback(&GAME::CGameSettings::Get(), settingSet);
 
   settingSet.clear();
   settingSet.insert("lookandfeel.rssedit");

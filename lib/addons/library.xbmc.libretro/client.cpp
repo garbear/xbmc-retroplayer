@@ -402,7 +402,7 @@ GAME_REGION GetRegion(void)
   if (!CLIENT)
     return GAME_REGION_NTSC;
 
-  return static_cast<GAME_REGION>(CLIENT->retro_get_region());
+  return CLIENT->retro_get_region() == RETRO_REGION_NTSC ? GAME_REGION_NTSC : GAME_REGION_PAL;
 }
 
 void* GetMemoryData(GAME_MEMORY id)

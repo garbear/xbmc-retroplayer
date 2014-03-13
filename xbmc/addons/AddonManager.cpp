@@ -53,7 +53,7 @@
 #include "Util.h"
 
 using namespace std;
-using namespace GAMES;
+using namespace GAME;
 using namespace PVR;
 
 namespace ADDON

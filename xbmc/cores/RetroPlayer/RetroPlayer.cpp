@@ -54,7 +54,6 @@ using namespace std;
 CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
   : IPlayer(callback),
     CThread("RetroPlayer"),
-    m_keyboardCallback(NULL),
     m_playSpeed(PLAYSPEED_NORMAL),
     m_samplerate(0)
 {
@@ -122,7 +121,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
 void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
 {
   // Get game info tag (from a mutable file item, if necessary)
-  const GAME_INFO::CGameInfoTag *tag = file.GetGameInfoTag();
+  const CGameInfoTag *tag = file.GetGameInfoTag();
   CFileItem temp;
   if (!tag)
   {
@@ -312,14 +311,9 @@ int16_t CRetroPlayer::GetInputState(unsigned port, unsigned device, unsigned ind
   return m_input.GetInput(port, device, index, id);
 }
 
-void CRetroPlayer::SetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat)
+void CRetroPlayer::SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat)
 {
   m_video.SetPixelFormat(pixelFormat);
-}
-
-void CRetroPlayer::SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback)
-{
-  m_keyboardCallback = callback;
 }
 
 void CRetroPlayer::Pause()

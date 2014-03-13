@@ -40,7 +40,7 @@
 using namespace std;
 using namespace XFILE;
 using namespace ADDON;
-using namespace GAMES;
+using namespace GAME;
 
 AddonPtr CRepository::Clone() const
 {

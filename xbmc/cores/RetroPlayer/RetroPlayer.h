@@ -23,6 +23,7 @@
 #include "RetroPlayerAudio.h"
 #include "RetroPlayerInput.h"
 #include "RetroPlayerVideo.h"
+#include "addons/include/xbmc_game_types.h"
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "games/GameClient.h"
@@ -33,7 +34,7 @@
 #include <stdint.h>
 #include <string>
 
-class CRetroPlayer : public IPlayer, public GAMES::ILibretroCallbacksAV, public CThread
+class CRetroPlayer : public IPlayer, public CThread
 {
 public:
   CRetroPlayer(IPlayerCallback& callback);
@@ -98,16 +99,11 @@ public:
   // TODO: Skip to next disk in multi-disc games (e.g. PSX)
   virtual bool SkipNext() { return false; }
 
-  /*
-   * Inherited from ILibretroCallbacksAV. Used to send and receive data from
-   * the game clients.
-   */
   virtual void VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch);
   virtual void AudioSample(int16_t left, int16_t right);
   virtual size_t AudioSampleBatch(const int16_t *data, size_t frames);
   virtual int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
-  virtual void SetPixelFormat(LIBRETRO::retro_pixel_format pixelFormat);
-  virtual void SetKeyboardCallback(LIBRETRO::retro_keyboard_event_t callback);
+  virtual void SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat);
 
 protected:
   virtual void Process();
@@ -134,9 +130,7 @@ private:
   CRetroPlayerInput    m_input;
 
   CFileItemPtr         m_file;
-  GAMES::GameClientPtr m_gameClient;
-
-  LIBRETRO::retro_keyboard_event_t m_keyboardCallback; // TODO
+  GAME::GameClientPtr  m_gameClient;
 
   CPlayerOptions       m_PlayerOptions;
   int                  m_playSpeed; // Normal play speed is PLAYSPEED_NORMAL (1000)

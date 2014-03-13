@@ -70,8 +70,7 @@ using namespace PLAYLIST;
 using namespace MUSIC_INFO;
 using namespace PVR;
 using namespace EPG;
-using namespace GAME_INFO;
-using namespace GAMES;
+using namespace GAME;
 
 CFileItem::CFileItem(const CSong& song)
 {
@@ -3306,10 +3305,10 @@ MUSIC_INFO::CMusicInfoTag* CFileItem::GetMusicInfoTag()
   return m_musicInfoTag;
 }
 
-GAME_INFO::CGameInfoTag* CFileItem::GetGameInfoTag()
+CGameInfoTag* CFileItem::GetGameInfoTag()
 {
   if (!m_gameInfoTag)
-    m_gameInfoTag = new GAME_INFO::CGameInfoTag;
+    m_gameInfoTag = new CGameInfoTag;
 
   return m_gameInfoTag;
 }

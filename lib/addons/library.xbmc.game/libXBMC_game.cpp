@@ -93,7 +93,7 @@ DLLEXPORT char* GAME_environment_get_system_directory(AddonCB* frontend, CB_Game
 DLLEXPORT bool GAME_environment_set_pixel_format(AddonCB* frontend, CB_GameLib* cb, GAME_PIXEL_FORMAT format)
 {
   if (frontend == NULL || cb == NULL)
-    return;
+    return false;
   return cb->EnvironmentSetPixelFormat(frontend->addonData, format);
 }
 

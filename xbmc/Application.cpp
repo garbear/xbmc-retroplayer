@@ -1531,7 +1531,7 @@ bool CApplication::Initialize()
   CJoystickManager::Get().SetEnabled(CSettings::Get().GetBool("input.enablejoystick") &&
                     CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0);
 
-  GAMES::CGameManager::Get().Start();
+  GAME::CGameManager::Get().Start();
 
   return true;
 }
@@ -3483,7 +3483,7 @@ void CApplication::Stop(int exitCode)
     m_pPlayer->ClosePlayer();
 
     StopPVRManager();
-    GAMES::CGameManager::Get().Stop();
+    GAME::CGameManager::Get().Stop();
     StopServices();
     //Sleep(5000);
 

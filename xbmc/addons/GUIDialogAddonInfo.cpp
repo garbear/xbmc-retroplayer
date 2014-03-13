@@ -51,7 +51,7 @@
 
 using namespace std;
 using namespace ADDON;
-using namespace GAMES;
+using namespace GAME;
 using namespace XFILE;
 
 CGUIDialogAddonInfo::CGUIDialogAddonInfo(void)

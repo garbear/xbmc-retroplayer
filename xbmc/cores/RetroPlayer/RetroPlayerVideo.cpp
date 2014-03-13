@@ -34,7 +34,7 @@ CRetroPlayerVideo::CRetroPlayerVideo()
     m_outputWidth(0),
     m_outputHeight(0),
     m_outputFramerate(0.0),
-    m_pixelFormat(LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555)
+    m_pixelFormat(GAME_PIXEL_FORMAT_0RGB1555)
 {
 }
 

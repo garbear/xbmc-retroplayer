@@ -38,10 +38,10 @@
 #include <map>
 
 using namespace ADDON;
-using namespace GAMES;
+using namespace GAME;
 using namespace std;
 
-bool CRetroPlayerDialogs::GetGameClient(const CFileItem &file, GAMES::GameClientPtr &result)
+bool CRetroPlayerDialogs::GetGameClient(const CFileItem &file, GameClientPtr &result)
 {
   // See how many game clients contend for this file
   vector<string> candidates;
@@ -121,7 +121,7 @@ bool CRetroPlayerDialogs::GameLauchDialog(const CFileItem &file, GameClientPtr &
   return false;
 }
 
-bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GAMES::GameClientPtr &result)
+bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameClientPtr &result)
 {
   // Get all remote add-ons
   // TODO: filter by type (ADDON_GAMEDLL)
@@ -137,9 +137,11 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GAMES::
       continue;
     GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(*itRemote);
 
+    /*
     // Only add game clients to the list if they provide extensions or platforms
     if (!gc || (gc->GetExtensions().empty() && gc->GetPlatforms().empty()))
       continue;
+    */
 
     if (!gc->CanOpen(file))
       continue;
@@ -248,7 +250,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GAMES::
   return true;
 }
 
-bool CRetroPlayerDialogs::InstallGameClient(const string &strId, const CFileItem &file, GAMES::GameClientPtr &result)
+bool CRetroPlayerDialogs::InstallGameClient(const string &strId, const CFileItem &file, GameClientPtr &result)
 {
   // First, make sure the game client isn't installed
   CLog::Log(LOGDEBUG, "RetroPlayer: Trying to install game client %s", strId.c_str());

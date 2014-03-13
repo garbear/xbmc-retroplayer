@@ -53,7 +53,7 @@ namespace PVR
   class CPVRTimerInfoTag;
 }
 class CPictureInfoTag;
-namespace GAME_INFO
+namespace GAME
 {
   class CGameInfoTag;
 }
@@ -315,9 +315,9 @@ public:
     return m_gameInfoTag != NULL;
   }
 
-  GAME_INFO::CGameInfoTag* GetGameInfoTag();
+  GAME::CGameInfoTag* GetGameInfoTag();
 
-  inline const GAME_INFO::CGameInfoTag* GetGameInfoTag() const
+  inline const GAME::CGameInfoTag* GetGameInfoTag() const
   {
     return m_gameInfoTag;
   }
@@ -469,7 +469,7 @@ private:
   PVR::CPVRRecording* m_pvrRecordingInfoTag;
   PVR::CPVRTimerInfoTag * m_pvrTimerInfoTag;
   CPictureInfoTag* m_pictureInfoTag;
-  GAME_INFO::CGameInfoTag* m_gameInfoTag;
+  GAME::CGameInfoTag* m_gameInfoTag;
   bool m_bIsAlbum;
 };
 

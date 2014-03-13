@@ -28,8 +28,7 @@
 #include "gtest/gtest.h"
 
 using namespace ADDON;
-using namespace GAME_INFO;
-using namespace GAMES;
+using namespace GAME;
 
 TEST(TestGameFileLoader, CGameFileLoaderUseHD)
 {

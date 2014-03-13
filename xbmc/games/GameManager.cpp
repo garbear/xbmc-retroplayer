@@ -24,7 +24,6 @@
 #include "Application.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/Directory.h"
-#include "GameFileLoader.h"
 #include "profiles/ProfilesManager.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
@@ -275,11 +274,13 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candi
       continue;
 
     CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->second->ID().c_str());
+    /*
     if (CGameFileLoader::CanOpen(*it->second, file))
     {
       CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", it->second->ID().c_str());
       candidates.push_back(it->second->ID());
     }
+    */
 
     if (!requestedClient.empty())
       break; // If the requested client isn't installed, it's not a valid candidate
@@ -316,11 +317,11 @@ bool CGameManager::StopClient(AddonPtr client, bool bRestart)
   {
     CLog::Log(LOGDEBUG, "%s - %s add-on '%s'", __FUNCTION__, bRestart ? "restarting" : "stopping", mappedClient->Name().c_str());
     if (bRestart)
-      mappedClient->Init();
+      mappedClient->Create();
     else
-      mappedClient->DeInit();
+      mappedClient->Destroy();
 
-    return bRestart ? mappedClient->IsInitialized() : true;
+    return bRestart ? mappedClient->ReadyToUse() : true;
   }
 
   return false;

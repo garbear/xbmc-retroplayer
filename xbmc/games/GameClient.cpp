@@ -54,7 +54,7 @@ CGameClient::CGameClient(const AddonProps& props)
     SetPlatforms(it->second);
   */
   if ((it = props.extrainfo.find("extensions")) != props.extrainfo.end())
-    SetExtensions(it->second);
+    SetExtensions(it->second, m_extensions);
   if ((it = props.extrainfo.find("supports_vfs")) != props.extrainfo.end())
     m_bSupportsVFS = (it->second == "true" || it->second == "yes");
   if ((it = props.extrainfo.find("supports_no_game")) != props.extrainfo.end())
@@ -113,6 +113,7 @@ void CGameClient::ResetProperties()
   //m_platforms.clear();
   m_bIsPlaying = false;
   m_filePath.clear();
+  m_retroPlayer = NULL;
   m_region = GAME_REGION_NTSC;
   m_frameRate = 0.0;
   m_frameRateCorrection = 1.0;
@@ -230,7 +231,7 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   return true;
 }
 
-bool CGameClient::OpenFile(const CFileItem& file)
+bool CGameClient::OpenFile(const CFileItem& file, CRetroPlayer* player)
 {
   CSingleLock lock(m_critSection);
 
@@ -248,6 +249,8 @@ bool CGameClient::OpenFile(const CFileItem& file)
 
   if (!OpenInternal(file))
     return false;
+
+  m_retroPlayer = player;
 
   LoadGameInfo();
 
@@ -434,6 +437,7 @@ void CGameClient::CloseFile()
 
   m_bIsPlaying = false;
   m_filePath.clear();
+  m_retroPlayer = NULL;
 }
 
 bool CGameClient::RunFrame()

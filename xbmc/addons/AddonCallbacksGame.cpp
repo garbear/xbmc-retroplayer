@@ -230,11 +230,13 @@ game_time_t CAddonCallbacksGame::PerfGetTimeUsec(void* addonData)
 game_perf_tick_t CAddonCallbacksGame::PerfGetCounter(void* addonData)
 {
   // Stub
+  return 0;
 }
 
 uint64_t CAddonCallbacksGame::PerfGetCpuFeatures(void* addonData)
 {
   // Stub
+  return 0;
 }
 
 void CAddonCallbacksGame::PerfLog(void* addonData)
