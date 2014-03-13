@@ -23,12 +23,14 @@
 #include "threads/SystemClock.h"
 #include "utils/log.h"
 
-
 //#include "Application.h"
 //#include "settings/AdvancedSettings.h"
 //#include "dialogs/GUIDialogKaiToast.h"
 
+#include <string>
+
 using namespace GAME;
+using namespace std;
 using namespace XbmcThreads;
 
 namespace ADDON
@@ -91,9 +93,9 @@ CAddonCallbacksGame::~CAddonCallbacksGame()
   delete m_callbacks;
 }
 
-CGameClient *CAddonCallbacksGame::GetGameClient(void *addonData)
+CGameClient* CAddonCallbacksGame::GetGameClient(void* addonData)
 {
-  CAddonCallbacks *addon = static_cast<CAddonCallbacks*>(addonData);
+  CAddonCallbacks* addon = static_cast<CAddonCallbacks*>(addonData);
   if (!addon || !addon->GetHelperGame())
   {
     CLog::Log(LOGERROR, "GAME - %s - called with a null pointer", __FUNCTION__);
@@ -105,12 +107,12 @@ CGameClient *CAddonCallbacksGame::GetGameClient(void *addonData)
 
 void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)
 {
-  // Stub
+  // TODO
 }
 
 bool CAddonCallbacksGame::EnvironmentGetOverscan(void* addonData)
@@ -127,8 +129,17 @@ bool CAddonCallbacksGame::EnvironmentCanDupe(void* addonData)
 
 char* CAddonCallbacksGame::EnvironmentGetSystemDirectory(void* addonData)
 {
-  // Stub
-  return NULL;
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  string strSystemDirectory = gameClient->GetSystemFolder();
+
+  char* buffer = strdup(strSystemDirectory.c_str());
+  return buffer;
 }
 
 bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format)

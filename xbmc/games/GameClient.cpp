@@ -41,6 +41,7 @@ using namespace std;
 #define EXTENSION_SEPARATOR          "|"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
+#define GAME_CLIENT_SYSTEM_DIRECTORY "system"
 
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
@@ -223,6 +224,16 @@ bool CGameClient::GetAddonProperties(void)
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
 
   return true;
+}
+
+string CGameClient::GetSystemFolder() const
+{
+  string strSystemDir = URIUtils::AddFileToFolder(Profile(), GAME_CLIENT_SYSTEM_DIRECTORY);
+
+  // The occasional libretro core tends to concatenate without checking for the trailing slash
+  URIUtils::RemoveSlashAtEnd(strSystemDir);
+
+  return strSystemDir;
 }
 
 bool CGameClient::CanOpen(const CFileItem& file) const

@@ -119,6 +119,8 @@ public:
   // Modify the value returned by GetFrameRate(), used to sync gameplay to audio
   void SetFrameRateCorrection(double correctionFactor);
 
+  std::string GetSystemFolder() const;
+
   /**
    * Perform the gamut of checks on the file: "gameclient" property, platform,
    * extension, and a positive match on at least one of the CGameFileLoader
@@ -182,7 +184,7 @@ private:
 
   /**
    * Initialize the game client serialization subsystem. If successful,
-   * m_bRewindEnabled and m_serialSize are set appropriately.
+   * m_bRewindEnabled and m_serializeSize are set appropriately.
    */
   bool InitSerialization();
 

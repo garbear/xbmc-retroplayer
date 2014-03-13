@@ -41,7 +41,7 @@ public:
   /*!
    * @return The callback table.
    */
-  CB_GameLib* GetCallbacks() { return m_callbacks; }
+  CB_GameLib* GetCallbacks() const { return m_callbacks; }
 
   static void ShutdownFrontend(void* addonData);
   static void EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation);
