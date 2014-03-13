@@ -30,7 +30,7 @@
 #include "view/ViewState.h"
 #include "view/ViewStateSettings.h"
 
-using namespace GAMES;
+using namespace GAME;
 
 CGUIViewStateWindowGames::CGUIViewStateWindowGames(const CFileItemList& items) : CGUIViewState(items)
 {

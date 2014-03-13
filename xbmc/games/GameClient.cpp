@@ -246,13 +246,14 @@ bool CGameClient::OpenFile(const CFileItem& file, CRetroPlayer* player)
   }
   
   CloseFile();
-
-  if (!OpenInternal(file))
-    return false;
-
+  
   m_retroPlayer = player;
 
-  LoadGameInfo();
+  if (!OpenInternal(file))
+  {
+    m_retroPlayer = NULL;
+    return false;
+  }
 
   InitSerialization();
 
@@ -325,8 +326,15 @@ bool CGameClient::OpenInternal(const CFileItem& file)
 
   if (error != GAME_ERROR_NO_ERROR)
     return false;
-
+  
   m_filePath = strTranslatedUrl;
+
+  if (!LoadGameInfo())
+  {
+    m_filePath.clear();
+    return false;
+  }
+
   m_bIsPlaying = true;
 
   return true;
@@ -364,6 +372,8 @@ bool CGameClient::LoadGameInfo()
   m_frameRate  = av_info.timing.fps;
   m_sampleRate = av_info.timing.sample_rate;
   m_region     = region;
+
+  return true;
 }
 
 bool CGameClient::InitSerialization()

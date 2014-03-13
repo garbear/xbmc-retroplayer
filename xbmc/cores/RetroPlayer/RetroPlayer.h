@@ -27,7 +27,6 @@
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "games/GameClient.h"
-#include "games/libretro/LibretroCallbacks.h"
 #include "threads/Thread.h"
 #include "threads/Event.h"
 

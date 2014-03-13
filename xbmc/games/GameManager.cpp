@@ -274,6 +274,7 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candi
       continue;
 
     CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->second->ID().c_str());
+    // TODO
     /*
     if (CGameFileLoader::CanOpen(*it->second, file))
     {

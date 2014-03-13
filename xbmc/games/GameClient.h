@@ -89,7 +89,7 @@ class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_clie
 public:
   CGameClient(const ADDON::AddonProps& props);
   CGameClient(const cp_extension_t* props);
-  virtual ~CGameClient(void);
+  virtual ~CGameClient(void) { Destroy(); }
 
   // Initialise the instance of this add-on
   ADDON_STATUS Create();

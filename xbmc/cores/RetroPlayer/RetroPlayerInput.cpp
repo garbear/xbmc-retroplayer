@@ -20,7 +20,7 @@
  */
 
 #include "RetroPlayerInput.h"
-#include "games/libretro/libretro_wrapped.h"
+#include "addons/include/xbmc_game_types.h"
 #include "utils/log.h"
 
 #include <string.h>
@@ -38,8 +38,8 @@
 #define ABS(X) ((X) >= 0 ? (X) : (-(X)))
 #endif
 
-#define RETRO_ANALOG_MIN -0x8000
-#define RETRO_ANALOG_MAX  0x7fff
+#define GAME_ANALOG_MIN -0x8000
+#define GAME_ANALOG_MAX  0x7fff
 
 // Add DeviceItem support to std::map
 bool operator < (const CRetroPlayerInput::DeviceItem &lhs, const CRetroPlayerInput::DeviceItem &rhs)
@@ -61,55 +61,55 @@ int16_t CRetroPlayerInput::GetInput(unsigned port, unsigned device, unsigned ind
 {
   if (port < ARRAY_SIZE(m_joypadState))
   {
-    device &= RETRO_DEVICE_MASK;
+    device &= GAME_DEVICE_MASK;
 
     switch (device)
     {
-    case RETRO_DEVICE_JOYPAD:
+    case GAME_DEVICE_JOYPAD:
       if (id <= ACTION_JOYPAD_R3)
       {
         const unsigned int offset = ACTION_JOYPAD_B - ACTION_GAME_CONTROL_START;
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_JOYPAD id out of bounds (%u)", id);
+        CLog::Log(LOGERROR, "RetroPlayerInput: GAME_DEVICE_JOYPAD id out of bounds (%u)", id);
       break;
 
-    case RETRO_DEVICE_MOUSE:
-      if (id <= RETRO_DEVICE_ID_MOUSE_RIGHT)
+    case GAME_DEVICE_MOUSE:
+      if (id <= GAME_DEVICE_ID_MOUSE_RIGHT)
       {
         const unsigned int offset = ACTION_MOUSE_CONTROLLER_X - ACTION_GAME_CONTROL_START;
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_MOUSE id out of bounds (%u)", id);
+        CLog::Log(LOGERROR, "RetroPlayerInput: GAME_DEVICE_MOUSE id out of bounds (%u)", id);
       break;
 
-    case RETRO_DEVICE_LIGHTGUN:
-      if (id <= RETRO_DEVICE_ID_LIGHTGUN_START)
+    case GAME_DEVICE_LIGHTGUN:
+      if (id <= GAME_DEVICE_ID_LIGHTGUN_START)
       {
         const unsigned int offset = ACTION_LIGHTGUN_X - ACTION_GAME_CONTROL_START;
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_LIGHTGUN id out of bounds (%u)", id);
+        CLog::Log(LOGERROR, "RetroPlayerInput: GAME_DEVICE_LIGHTGUN id out of bounds (%u)", id);
       break;
 
-    case RETRO_DEVICE_ANALOG:
-      if (id <= RETRO_DEVICE_ID_ANALOG_Y && index <= RETRO_DEVICE_INDEX_ANALOG_RIGHT)
+    case GAME_DEVICE_ANALOG:
+      if (id <= GAME_DEVICE_ID_ANALOG_Y && index <= GAME_DEVICE_INDEX_ANALOG_RIGHT)
       {
-        unsigned int offset = RETRO_DEVICE_ID_ANALOG_Y - ACTION_GAME_CONTROL_START;
+        unsigned int offset = GAME_DEVICE_ID_ANALOG_Y - ACTION_GAME_CONTROL_START;
         // X (id=0) and Y (id=1) are for left analog. Right analog follows in Key.h, so use id=2 and id=3
-        if (index == RETRO_DEVICE_INDEX_ANALOG_RIGHT)
+        if (index == GAME_DEVICE_INDEX_ANALOG_RIGHT)
           offset += 2;
         return m_joypadState[port][id + offset];
       }
       else
-        CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_ANALOG id/index out of bounds (%u/%u)", id, index);
+        CLog::Log(LOGERROR, "RetroPlayerInput: GAME_DEVICE_ANALOG id/index out of bounds (%u/%u)", id, index);
       break;
 
-    case RETRO_DEVICE_KEYBOARD:
-      CLog::Log(LOGERROR, "RetroPlayerInput: RETRO_DEVICE_KEYBOARD not supported!");
+    case GAME_DEVICE_KEYBOARD:
+      CLog::Log(LOGERROR, "RetroPlayerInput: GAME_DEVICE_KEYBOARD not supported!");
       break;
 
     default:
@@ -225,13 +225,13 @@ void CRetroPlayerInput::ProcessAnalogAxis(unsigned int controllerID, unsigned in
     value = 0;
   else if (action.GetAmount(1) > 0)
   {
-    int32_t value2 = (int)(RETRO_ANALOG_MAX * action.GetAmount(1));
-    value = (int16_t)(value2 > RETRO_ANALOG_MAX ? RETRO_ANALOG_MAX : value2);
+    int32_t value2 = (int)(GAME_ANALOG_MAX * action.GetAmount(1));
+    value = (int16_t)(value2 > GAME_ANALOG_MAX ? GAME_ANALOG_MAX : value2);
   }
   else
   {
-    int32_t value2 = (int)(RETRO_ANALOG_MIN * -action.GetAmount(1));
-    value = (int16_t)(value2 < RETRO_ANALOG_MIN ? RETRO_ANALOG_MIN : value2);
+    int32_t value2 = (int)(GAME_ANALOG_MIN * -action.GetAmount(1));
+    value = (int16_t)(value2 < GAME_ANALOG_MIN ? GAME_ANALOG_MIN : value2);
   }
 
   if (value != 0) // Is axis non-centered?
@@ -275,16 +275,16 @@ TODO:
 
 int CRetroPlayerInput::TranslateActionID(int id /* , int device */) const
 {
-  int m_device = RETRO_DEVICE_JOYPAD; // Until we keep track of multiple devices
+  int m_device = GAME_DEVICE_JOYPAD; // Until we keep track of multiple devices
 
   switch (m_device)
   {
-  case RETRO_DEVICE_JOYPAD:
-  case RETRO_DEVICE_MOUSE:
-  case RETRO_DEVICE_LIGHTGUN:
-  case RETRO_DEVICE_ANALOG:
+  case GAME_DEVICE_JOYPAD:
+  case GAME_DEVICE_MOUSE:
+  case GAME_DEVICE_LIGHTGUN:
+  case GAME_DEVICE_ANALOG:
     return TRANSLATE_INTERVAL(id, ACTION_GAME_CONTROL_START, ACTION_GAME_CONTROL_END);
-  case RETRO_DEVICE_KEYBOARD:
+  case GAME_DEVICE_KEYBOARD:
     // Keyboard is poll-based, need to poll requested key
   default:
     break;
