@@ -21,11 +21,15 @@
 
 #include "GameClient.h"
 #include "FileItem.h"
+#include "filesystem/Directory.h"
+#include "filesystem/SpecialProtocol.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
+#include "URL.h"
 #include "utils/log.h"
+#include "utils/StdString.h"
 #include "utils/StringUtils.h"
-//#include "utils/URIUtils.h"
+#include "utils/URIUtils.h"
 #include "utils/Variant.h"
 
 using namespace ADDON;
@@ -108,7 +112,7 @@ void CGameClient::ResetProperties()
   m_bSupportsNoGame = false;
   //m_platforms.clear();
   m_bIsPlaying = false;
-  //m_gameFile.Reset();
+  m_filePath.clear();
   m_region = GAME_REGION_NTSC;
   m_frameRate = 0.0;
   m_frameRateCorrection = 1.0;
@@ -222,7 +226,8 @@ bool CGameClient::GetAddonProperties(void)
 
 bool CGameClient::CanOpen(const CFileItem& file) const
 {
-  return CGameFileLoader::CanOpen(*this, file);
+  // TODO
+  return true;
 }
 
 bool CGameClient::OpenFile(const CFileItem& file)
@@ -241,17 +246,8 @@ bool CGameClient::OpenFile(const CFileItem& file)
   
   CloseFile();
 
-  // TODO: Try to resolve path to a local file, as not all libretro cores support VFS
-  string strTranslatedPath = file.GetPath();
-
-  GAME_ERROR error = GAME_ERROR_FAILED;
-  try { LogError(error = m_pStruct->LoadGame(strTranslatedPath.c_str()), "LoadGame()"); }
-  catch (...) { LogException("LoadGame()"); return false; }
-
-  if (error != GAME_ERROR_NO_ERROR)
+  if (!OpenInternal(file))
     return false;
-
-  m_bIsPlaying = true;
 
   LoadGameInfo();
 
@@ -259,6 +255,76 @@ bool CGameClient::OpenFile(const CFileItem& file)
 
   // TODO: Need an API call in libretro that lets us know the number of ports
   SetDevice(0, GAME_DEVICE_JOYPAD);
+
+  return true;
+}
+
+bool HasLocalParentZip(const string& path, string& strParentZip)
+{
+  // Can't use parent zip if path isn't a child file of a zip folder
+  if (!URIUtils::IsInZIP(path))
+    return false;
+
+  // Make sure we're in the root folder of the zip (no parent folder)
+  CURL parentURL(URIUtils::GetParentPath(path));
+  if (!parentURL.GetFileName().empty())
+    return false;
+
+  // Make sure the container zip is on the local hard disk
+  string parentZip = parentURL.GetHostName();
+  if (!CURL(parentZip).GetProtocol().empty())
+    return false;
+
+  strParentZip = parentZip;
+  return true;
+}
+
+bool CGameClient::OpenInternal(const CFileItem& file)
+{
+  // Try to resolve path to a local file, as not all game clients support VFS
+  CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+  if (translatedUrl.GetProtocol() == "file")
+    translatedUrl.SetProtocol("");
+
+  string strTranslatedUrl = translatedUrl.Get();
+
+  // If the game client doesn't support VFS, we'll need a backup plan
+  if (!SupportsVFS() && !translatedUrl.GetProtocol().empty())
+  {
+    // Maybe the file is in a local zip, and the game client supports zips
+    string strParentZip;
+    if (IsExtensionValid(".zip") && HasLocalParentZip(translatedUrl.Get(), strParentZip))
+      strTranslatedUrl = strParentZip;
+  }
+
+  // If the game client doesn't support zips, we can try to load the file via the zip:// VFS protocol
+  if (SupportsVFS() && StringUtils::EqualsNoCase(URIUtils::GetExtension(strTranslatedUrl), ".zip") && !IsExtensionValid(".zip"))
+  {
+    // Enumerate the zip and look for a file inside the zip with a valid extension
+    CStdString strZipUrl;
+    URIUtils::CreateArchivePath(strZipUrl, "zip", strTranslatedUrl, "");
+
+    string strValidExts;
+    for (set<string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
+      strValidExts += *it + "|";
+
+    CFileItemList itemList;
+    if (CDirectory::GetDirectory(strZipUrl, itemList, strValidExts, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO) && itemList.Size())
+    {
+      // Use the first file discovered
+      strTranslatedUrl = itemList[0]->GetPath();
+    }
+  }
+
+  GAME_ERROR error = GAME_ERROR_FAILED;
+  try { LogError(error = m_pStruct->LoadGame(strTranslatedUrl.c_str()), "LoadGame()"); }
+  catch (...) { LogException("LoadGame()"); }
+
+  if (error != GAME_ERROR_NO_ERROR)
+    return false;
+
+  m_filePath = strTranslatedUrl;
+  m_bIsPlaying = true;
 
   return true;
 }
@@ -281,7 +347,7 @@ bool CGameClient::LoadGameInfo()
   catch (...) { LogException("GetRegion()"); return false; }
 
   CLog::Log(LOGINFO, "GAME: ---------------------------------------");
-  CLog::Log(LOGINFO, "GAME: Opened file %s",   m_gameFile.Path().c_str());
+  CLog::Log(LOGINFO, "GAME: Opened file %s",   m_filePath.c_str());
   CLog::Log(LOGINFO, "GAME: Base Width:   %u", av_info.geometry.base_width);
   CLog::Log(LOGINFO, "GAME: Base Height:  %u", av_info.geometry.base_height);
   CLog::Log(LOGINFO, "GAME: Max Width:    %u", av_info.geometry.max_width);
@@ -364,11 +430,10 @@ void CGameClient::CloseFile()
   {
     try { LogError(m_pStruct->UnloadGame(), "UnloadGame()"); }
     catch (...) { LogException("UnloadGame()"); }
-
-    m_bIsPlaying = false;
   }
 
-  m_gameFile.Reset();
+  m_bIsPlaying = false;
+  m_filePath.clear();
 }
 
 bool CGameClient::RunFrame()
@@ -489,12 +554,20 @@ void CGameClient::SetPlatforms(const string& strPlatformList)
 }
 */
 
-/*
-bool CGameClient::IsExtensionValid(const string& ext) const
+bool CGameClient::IsExtensionValid(const string& strExtension) const
 {
-  return CGameFileLoader::IsExtensionValid(ext, m_extensions);
+  if (m_extensions.empty())
+    return true; // Be optimistic :)
+  if (strExtension.empty())
+    return false;
+
+  // Convert to lower case and canonicalize with a leading "."
+  string strExtension2(strExtension);
+  StringUtils::ToLower(strExtension2);
+  if (strExtension2[0] != '.')
+    strExtension2.insert(0, ".");
+  return m_extensions.find(strExtension2) != m_extensions.end();
 }
-*/
 
 bool CGameClient::LogError(GAME_ERROR error, const char* strMethod) const
 {

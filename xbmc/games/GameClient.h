@@ -98,7 +98,7 @@ public:
   void Destroy(void);
 
   // Return true if this instance is initialised, false otherwise
-  bool ReadyToUse(void) const   { return m_bReadyToUse; }
+  bool ReadyToUse(void) const { return m_bReadyToUse; }
 
   // Query properties of the game client
   const std::string&           GetClientName() const    { return m_strClientName; }
@@ -114,81 +114,77 @@ public:
   double             GetFrameRate() const  { return m_frameRate * m_frameRateCorrection; }
   double             GetSampleRate() const { return m_sampleRate; }
 
-  // Modify the value returned by GetFrameRate()
+  // Modify the value returned by GetFrameRate(), used to sync gameplay to audio
   void SetFrameRateCorrection(double correctionFactor);
 
   /**
-    * Perform the gamut of checks on the file: "gameclient" property, platform,
-    * extension, and a positive match on at least one of the CGameFileLoader
-    * strategies.
-    */
+   * Perform the gamut of checks on the file: "gameclient" property, platform,
+   * extension, and a positive match on at least one of the CGameFileLoader
+   * strategies.
+   */
   bool CanOpen(const CFileItem& file) const;
 
   bool OpenFile(const CFileItem& file);
+
   void CloseFile();
 
   /**
-    * Each port (or player, if you will) must be associated with a device. The
-    * default device is GAME_DEVICE_JOYPAD.
-    *
-    * TODO: Do not exceed the number of devices that the game client supports.
-    * A quick analysis of SNES9x Next v2 showed that a third port will overflow
-    * a buffer. Currently, there is no way to determine the number of ports a
-    * client will support, so stick with 1.
-    *
-    * Precondition: OpenFile() must return true.
-    */
+   * Each port (or player, if you will) must be associated with a device. The
+   * default device is GAME_DEVICE_JOYPAD.
+   *
+   * TODO: Do not exceed the number of devices that the game client supports.
+   * A quick analysis of SNES9x Next v2 showed that a third port will overflow
+   * a buffer. Currently, there is no way to determine the number of ports a
+   * client will support, so stick with 1.
+   *
+   * Precondition: OpenFile() must return true.
+   */
   void SetDevice(unsigned int port, unsigned int device);
 
   /**
-    * Allow the game to run and produce a video frame.
-    * Precondition: OpenFile() returned true.
-    * Returns false if an exception is thrown in retro_run().
-    */
+   * Allow the game to run and produce a video frame.
+   * Precondition: OpenFile() returned true.
+   * Returns false if an exception is thrown in retro_run().
+   */
   bool RunFrame();
 
   /**
-    * Rewind gameplay 'frames' frames.
-    * As there is a fixed size buffer backing
-    * save state deltas, it might not be possible to rewind as many
-    * frames as desired. The function returns number of frames actually rewound.
-    */
+   * Rewind gameplay 'frames' frames.
+   * As there is a fixed size buffer backing
+   * save state deltas, it might not be possible to rewind as many
+   * frames as desired. The function returns number of frames actually rewound.
+   */
   unsigned int RewindFrames(unsigned int frames);
 
-  // Returns how many frames it is possible to rewind with a call to RewindFrames().
+  // Returns how many frames it is possible to rewind with a call to RewindFrames()
   size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
 
-  // Returns the maximum amount of frames that can ever be rewound.
+  // Returns the maximum amount of frames that can ever be rewound
   size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
 
-  // Reset the game, if running.
+  // Reset the game, if running
   void Reset();
 
-  /**
-    * If the game client was a bad boy and provided no extensions, this will
-    * optimistically return true.
-    */
-  //bool IsExtensionValid(const std::string& ext) const;
+  // If the game client provided no extensions, this will optimistically return true
+  bool IsExtensionValid(const std::string& strExtension) const;
 
 private:
-  /**
-    * Resets all class members to their defaults. Called by the constructors.
-    */
+  // Resets all class members to their defaults. Called by the constructors
   void ResetProperties();
 
   bool GetAddonProperties(void);
+  
+  bool OpenInternal(const CFileItem& file);
 
   bool LoadGameInfo();
 
   /**
-    * Initialize the game client serialization subsystem. If successful,
-    * m_bRewindEnabled and m_serialSize are set appropriately.
-    */
+   * Initialize the game client serialization subsystem. If successful,
+   * m_bRewindEnabled and m_serialSize are set appropriately.
+   */
   bool InitSerialization();
 
-  /**
-    * Parse a pipe-separated list returned from the game client.
-    */
+  // Parse a pipe-separated list returned from the game client
   static void SetExtensions(const std::string& strExtensionList, std::set<std::string>& extensions);
   //void SetPlatforms(const std::string& strPlatformList);
 
@@ -209,7 +205,7 @@ private:
 
   // Properties of the current playing file
   bool                  m_bIsPlaying; // This is true between OpenFile() and CloseFile()
-  CGameFile             m_gameFile; // the current playing file
+  std::string           m_filePath; // the current playing file
   GAME_REGION           m_region; // Region of the loaded game
   double                m_frameRate; // Video framerate
   double                m_frameRateCorrection; // Framerate correction factor (to sync to audio)

@@ -516,7 +516,6 @@
     <ClCompile Include="..\..\xbmc\filesystem\ZipManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameClient.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp" />
-    <ClCompile Include="..\..\xbmc\games\GameFileLoader.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameSettings.cpp" />
     <ClCompile Include="..\..\xbmc\games\libretro\LibretroEnvironment.cpp" />
@@ -1071,7 +1070,6 @@
     </CustomBuild>
     <ClInclude Include="..\..\xbmc\games\GameClient.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h" />
-    <ClInclude Include="..\..\xbmc\games\GameFileLoader.h" />
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />
     <ClInclude Include="..\..\xbmc\games\GameSettings.h" />
     <ClInclude Include="..\..\xbmc\games\libretro\libretro.h" />
