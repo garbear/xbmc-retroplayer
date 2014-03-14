@@ -34,18 +34,20 @@ using namespace LIBRETRO;
 
 CLibretroDLL::CLibretroDLL(CHelper_libXBMC_addon* xbmc)
  : m_xbmc(xbmc),
-   m_libretro(NULL)
+   m_libretroClient(NULL)
 {
   assert(m_xbmc);
 }
 
 void CLibretroDLL::Unload(void)
 {
-  if (m_libretro)
+  if (m_libretroClient)
   {
-    dlclose(m_libretro);
-    m_libretro = NULL;
+    dlclose(m_libretroClient);
+    m_libretroClient = NULL;
   }
+
+  m_libraryPath.clear();
 }
 
 #define LIBRETRO_REGISTER_SYMBOL(dll, functionPtr)  RegisterSymbol(dll, functionPtr, #functionPtr)
@@ -56,12 +58,12 @@ bool RegisterSymbol(void* dll, T functionPtr, const char* strFunctionPtr)
   return (functionPtr = (T)dlsym(dll, strFunctionPtr)) != NULL;
 }
 
-bool CLibretroDLL::Load(const char* library_path)
+bool CLibretroDLL::Load(const char* libraryPath)
 {
   Unload();
 
-  m_libretro = dlopen(library_path, RTLD_LAZY);
-  if (m_libretro == NULL)
+  m_libretroClient = dlopen(libraryPath, RTLD_LAZY);
+  if (m_libretroClient == NULL)
   {
     m_xbmc->Log(LOG_ERROR, "Unable to load %s", dlerror());
     return false;
@@ -69,37 +71,39 @@ bool CLibretroDLL::Load(const char* library_path)
 
   try
   {
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_set_environment)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_set_video_refresh)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_set_audio_sample)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_set_audio_sample_batch)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_set_input_poll)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_set_input_state)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_init)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_deinit)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_api_version)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_get_system_info)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_get_system_av_info)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_set_controller_port_device)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_reset)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_run)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_serialize_size)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_serialize)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_unserialize)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_cheat_reset)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_cheat_set)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_load_game)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_load_game_special)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_unload_game)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_get_region)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_get_memory_data)) throw false;
-    if (!LIBRETRO_REGISTER_SYMBOL(m_libretro, retro_get_memory_size)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_set_environment)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_set_video_refresh)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_set_audio_sample)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_set_audio_sample_batch)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_set_input_poll)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_set_input_state)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_init)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_deinit)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_api_version)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_get_system_info)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_get_system_av_info)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_set_controller_port_device)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_reset)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_run)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_serialize_size)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_serialize)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_unserialize)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_cheat_reset)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_cheat_set)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_load_game)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_load_game_special)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_unload_game)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_get_region)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_get_memory_data)) throw false;
+    if (!LIBRETRO_REGISTER_SYMBOL(m_libretroClient, retro_get_memory_size)) throw false;
   }
   catch (const bool& bSuccess)
   {
     m_xbmc->Log(LOG_ERROR, "Unable to assign function %s", dlerror());
     return bSuccess;
   }
+
+  m_libraryPath = libraryPath;
 
   return true;
 }

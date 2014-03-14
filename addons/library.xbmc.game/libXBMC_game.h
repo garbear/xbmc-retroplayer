@@ -105,7 +105,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_system_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_pixel_format)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_libretro_path)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_content_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_save_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_system_av_info)) throw false;
@@ -186,11 +185,6 @@ public:
   void EnvironmentSetInputDescriptors(const struct game_input_descriptor* descriptor, size_t count)
   {
     return GAME_environment_set_input_descriptors(m_handle, m_callbacks, descriptor, count);
-  }
-
-  char* EnvironmentGetLibretroPath(void)
-  {
-    return GAME_environment_get_libretro_path(m_handle, m_callbacks);
   }
 
   char* EnvironmentGetContentDirectory(void)
@@ -364,7 +358,6 @@ protected:
     char* (*GAME_environment_get_system_directory)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_set_pixel_format)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
-    char* (*GAME_environment_get_libretro_path)(void* handle, CB_GameLib* cb);
     char* (*GAME_environment_get_content_directory)(void* handle, CB_GameLib* cb);
     char* (*GAME_environment_get_save_directory)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);

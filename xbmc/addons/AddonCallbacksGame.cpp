@@ -50,7 +50,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentGetSystemDirectory  = EnvironmentGetSystemDirectory;
   m_callbacks->EnvironmentSetPixelFormat      = EnvironmentSetPixelFormat;
   m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
-  m_callbacks->EnvironmentGetLibretroPath     = EnvironmentGetLibretroPath;
   m_callbacks->EnvironmentGetContentDirectory = EnvironmentGetContentDirectory;
   m_callbacks->EnvironmentGetSaveDirectory    = EnvironmentGetSaveDirectory;
   m_callbacks->EnvironmentSetSystemAvInfo     = EnvironmentSetSystemAvInfo;
@@ -162,12 +161,6 @@ bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_
 void CAddonCallbacksGame::EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count)
 {
   // TODO
-}
-
-char* CAddonCallbacksGame::EnvironmentGetLibretroPath(void* addonData)
-{
-  // Stub
-  return NULL;
 }
 
 char* CAddonCallbacksGame::EnvironmentGetContentDirectory(void* addonData)

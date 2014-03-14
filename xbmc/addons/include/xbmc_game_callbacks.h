@@ -92,16 +92,6 @@ typedef struct CB_GameLib
   void (*EnvironmentSetInputDescriptors)(void* addonData, const struct game_input_descriptor* descriptor, size_t count);
 
   /*!
-    * Retrieves the absolute path from where this game client was loaded. False
-    * is returned if it was loaded statically (i.e. linked statically to
-    * frontend), or if the path cannot be determined. Mostly useful in
-    * cooperation with EnvironmentSetSupportNoGame() as assets can be
-    * loaded without ugly hacks. Must be freed with FreeString(). Replaces
-    * RETRO_ENVIRONMENT_GET_LIBRETRO_PATH.
-    */
-  char* (*EnvironmentGetLibretroPath)(void* addonData);
-
-  /*!
     * Returns the "content" directory of the frontend. This directory can be
     * used to store specific assets that the core relies upon, such as art
     * assets, input data, etc etc. If this returns NULL, no such directory is

@@ -38,6 +38,7 @@ using namespace std;
 
 CHelper_libXBMC_addon* CLibretroEnvironment::m_xbmc = NULL;
 CHelper_libXBMC_game*  CLibretroEnvironment::m_frontend = NULL;
+CLibretroDLL*          CLibretroEnvironment::m_client = NULL;
 CClientBridge*         CLibretroEnvironment::m_clientBridge = NULL;
 
 bool   CLibretroEnvironment::m_bSupportsNoGame = false;
@@ -51,10 +52,11 @@ void CLibretroEnvironment::Initialize(CHelper_libXBMC_addon* xbmc, CHelper_libXB
 {
   m_xbmc = xbmc;
   m_frontend = frontend;
+  m_client = client;
   m_clientBridge = clientBridge;
 
   // Install environment callback
-  client->retro_set_environment(EnvironmentCallback);
+  m_client->retro_set_environment(EnvironmentCallback);
 }
 
 void CLibretroEnvironment::Deinitialize()
@@ -336,19 +338,23 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        char* libretroPath = m_frontend->EnvironmentGetLibretroPath();
-        if (libretroPath)
+        static string libretroPath;
+
+        if (libretroPath.empty())
         {
-          static char libretroPathBuffer[8192];
-          memset(libretroPathBuffer, 0, sizeof(libretroPathBuffer));
-          strncpy(libretroPathBuffer, libretroPath, sizeof(libretroPathBuffer));
-          *typedData = libretroPathBuffer;
-          m_xbmc->FreeString(libretroPath);
+          string libretroClient = m_client->GetLibraryPath();
+          size_t pos = libretroClient.find_last_of("/\\");
+          if (pos != 0 && pos != string::npos)
+          {
+            // Don't include trailing slash, it makes some libretro clients fail
+            libretroPath = libretroClient.substr(0, pos);
+          }
         }
+
+        if (!libretroPath.empty())
+          *typedData = libretroPath.c_str();
         else
-        {
           *typedData = NULL;
-        }
       }
       break;
     }
@@ -474,7 +480,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        char* contentDir = m_frontend->EnvironmentGetLibretroPath();
+        char* contentDir = m_frontend->EnvironmentGetContentDirectory();
         if (contentDir)
         {
           static char contentDirBuffer[8192];
@@ -495,7 +501,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        char* saveDir = m_frontend->EnvironmentGetLibretroPath();
+        char* saveDir = m_frontend->EnvironmentGetSaveDirectory();
         if (saveDir)
         {
           static char saveDirBuffer[8192];

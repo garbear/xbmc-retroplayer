@@ -55,11 +55,8 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
     if (!callbacks || !props)
       throw ADDON_STATUS_UNKNOWN;
 
-    game_client_properties* libretro_props = static_cast<game_client_properties*>(props);
+    game_client_properties* gameClientProps = static_cast<game_client_properties*>(props);
 
-    if (!libretro_props->shared_library)
-      throw ADDON_STATUS_PERMANENT_FAILURE;
-    
     XBMC = new CHelper_libXBMC_addon;
     if (!XBMC || !XBMC->RegisterMe(callbacks))
       throw ADDON_STATUS_PERMANENT_FAILURE;
@@ -68,16 +65,10 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
     if (!FRONTEND || !FRONTEND->RegisterMe(callbacks))
       throw ADDON_STATUS_PERMANENT_FAILURE;
 
-    if (libretro_props->version_major != 1)
-    {
-      XBMC->Log(LOG_ERROR, "Wrapper not needed, libretro version = %u", libretro_props->version_major);
-      throw ADDON_STATUS_PERMANENT_FAILURE;
-    }
-
     CLIENT = new CLibretroDLL(XBMC);
-    if (!CLIENT->Load(libretro_props->shared_library))
+    if (!CLIENT->Load(gameClientProps->library_path))
     {
-      XBMC->Log(LOG_ERROR, "Failed to load ", libretro_props->version_major);
+      XBMC->Log(LOG_ERROR, "Failed to load %s", gameClientProps->library_path);
       throw ADDON_STATUS_PERMANENT_FAILURE;
     }
 

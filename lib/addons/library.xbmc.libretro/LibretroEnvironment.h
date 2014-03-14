@@ -57,6 +57,7 @@ namespace LIBRETRO
 
     static ADDON::CHelper_libXBMC_addon* m_xbmc;
     static CHelper_libXBMC_game*         m_frontend;
+    static CLibretroDLL*                 m_client;
     static CClientBridge*                m_clientBridge;
 
     static bool   m_bSupportsNoGame;

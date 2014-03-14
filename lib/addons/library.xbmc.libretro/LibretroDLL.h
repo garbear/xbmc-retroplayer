@@ -23,6 +23,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string>
 
 namespace ADDON { class CHelper_libXBMC_addon; }
 
@@ -35,7 +36,9 @@ namespace LIBRETRO
     ~CLibretroDLL(void) { Unload(); }
 
     void Unload(void);
-    bool Load(const char* library_path);
+    bool Load(const char* libraryPath);
+
+    const std::string& GetLibraryPath() const { return m_libraryPath; }
 
     void     (*retro_set_environment)(retro_environment_t);
     void     (*retro_set_video_refresh)(retro_video_refresh_t);
@@ -65,6 +68,7 @@ namespace LIBRETRO
 
   private:
     ADDON::CHelper_libXBMC_addon* m_xbmc;
-    void* m_libretro;
+    void*                         m_libretroClient;
+    std::string                   m_libraryPath;
   };
 } // namespace LIBRETRO

@@ -104,13 +104,6 @@ DLLEXPORT void GAME_environment_set_input_descriptors(AddonCB* frontend, CB_Game
   return cb->EnvironmentSetInputDescriptors(frontend->addonData, descriptor, count);
 }
 
-DLLEXPORT char* GAME_environment_get_libgame_path(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentGetLibretroPath(frontend->addonData);
-}
-
 DLLEXPORT char* GAME_environment_get_content_directory(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)

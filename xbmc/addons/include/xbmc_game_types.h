@@ -619,11 +619,7 @@ struct game_hw_info
 /*! Properties passed to the game_init() method of a game client */
 typedef struct game_client_properties
 {
-  unsigned int version_major;
-  unsigned int version_minor;
-  unsigned int version_patch;
-  const char*  client_path;    // Path to the client library
-  const char*  shared_library; // 
+  const char*  library_path;    // Path to the game client's shared library being loaded
 } game_client_properties;
 
 /*! Structure to transfer the methods from xbmc_game_dll.h to XBMC */
