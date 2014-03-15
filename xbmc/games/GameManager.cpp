@@ -175,12 +175,14 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
 
   CSingleLock lock(m_critSection);
 
-  GameClientPtr& registeredClient = m_gameClients[client->ID()];
-  if (registeredClient)
+  GameClientMap::const_iterator it = m_gameClients.find(client->ID());
+  if (it != m_gameClients.end())
     return true; // Already registered
 
   if (!client->Create())
   {
+    lock.Leave();
+
     CLog::Log(LOGERROR, "GameManager: failed to load DLL for %s, disabling in database", client->ID().c_str());
     CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
 
@@ -193,7 +195,7 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
 
   client->Destroy();
 
-  registeredClient = client;
+  m_gameClients[client->ID()] = client;
   CLog::Log(LOGDEBUG, "GameManager: Registered add-on %s", client->ID().c_str());
 
   // If a file was queued by RetroPlayer, try to launch the newly installed game client
