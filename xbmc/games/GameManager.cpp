@@ -131,7 +131,7 @@ void CGameManager::UpdateRemoteAddons()
   if (database.Open())
   {
     VECADDONS addons;
-    database.GetAddons(addons); // TODO: Filter by type ADDON_GAMEDLL
+    database.GetAddons(addons, ADDON_GAMEDLL);
     database.Close();
 
     CSingleLock lock(m_critSection);
