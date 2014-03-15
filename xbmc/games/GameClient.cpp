@@ -21,6 +21,7 @@
 
 #include "GameClient.h"
 #include "addons/AddonManager.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
@@ -43,6 +44,11 @@ using namespace std;
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
 #define LIBRETRO_V1_HELPER           "library.xbmc.libretro"
+
+#ifdef TARGET_WINDOWS
+  #pragma warning (push)
+  #pragma warning (disable : 4355) // "this" : used in base member initializer list
+#endif
 
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
@@ -131,7 +137,7 @@ void CGameClient::ResetProperties()
   //m_platforms.clear();
   m_bIsPlaying = false;
   m_filePath.clear();
-  m_retroPlayer = NULL;
+  m_player = NULL;
   m_region = GAME_REGION_NTSC;
   m_frameRate = 0.0;
   m_frameRateCorrection = 1.0;
@@ -169,6 +175,9 @@ ADDON_STATUS CGameClient::Create(void)
 
 void CGameClient::Destroy(void)
 {
+  if (m_bIsPlaying && m_player)
+    m_player->CloseFile();
+
   // Reset 'ready to use' to false
   if (!m_bReadyToUse)
     return;
@@ -268,7 +277,7 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   return true;
 }
 
-bool CGameClient::OpenFile(const CFileItem& file, CRetroPlayer* player)
+bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 {
   CSingleLock lock(m_critSection);
 
@@ -283,21 +292,18 @@ bool CGameClient::OpenFile(const CFileItem& file, CRetroPlayer* player)
   }
   
   CloseFile();
-  
-  m_retroPlayer = player;
 
-  if (!OpenInternal(file))
+  if (OpenInternal(file))
   {
-    m_retroPlayer = NULL;
-    return false;
+    m_player = player;
+    InitSerialization();
+
+    // TODO: Need an API call in libretro that lets us know the number of ports
+    SetDevice(0, GAME_DEVICE_JOYPAD);
+
+    return true;
   }
-
-  InitSerialization();
-
-  // TODO: Need an API call in libretro that lets us know the number of ports
-  SetDevice(0, GAME_DEVICE_JOYPAD);
-
-  return true;
+  return false;
 }
 
 bool HasLocalParentZip(const string& path, string& strParentZip)
@@ -363,18 +369,14 @@ bool CGameClient::OpenInternal(const CFileItem& file)
 
   if (error != GAME_ERROR_NO_ERROR)
     return false;
-  
-  m_filePath = strTranslatedUrl;
 
-  if (!LoadGameInfo())
+  if (LoadGameInfo())
   {
-    m_filePath.clear();
-    return false;
+    m_filePath = strTranslatedUrl;
+    m_bIsPlaying = true;
+    return true;
   }
-
-  m_bIsPlaying = true;
-
-  return true;
+  return false;
 }
 
 bool CGameClient::LoadGameInfo()
@@ -484,7 +486,7 @@ void CGameClient::CloseFile()
 
   m_bIsPlaying = false;
   m_filePath.clear();
-  m_retroPlayer = NULL;
+  m_player = NULL;
 }
 
 bool CGameClient::RunFrame()
@@ -657,3 +659,7 @@ const char* CGameClient::ToString(GAME_ERROR error)
     return "unknown error";
   }
 }
+
+#ifdef TARGET_WINDOWS
+  #pragma warning (pop)
+#endif

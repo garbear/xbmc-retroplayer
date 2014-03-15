@@ -33,7 +33,7 @@
 class IAddonDatabaseCallback
 {
 public:
-  virtual ~IAddonDatabaseCallback() {};
+  virtual ~IAddonDatabaseCallback() {}
   /**
     * Called when an add-on is enabled in the database.
     * @param addon - a pointer to the add-on

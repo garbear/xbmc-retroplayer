@@ -86,16 +86,41 @@ CAddonCallbacksGame::~CAddonCallbacksGame()
   delete m_callbacks;
 }
 
-CGameClient* CAddonCallbacksGame::GetGameClient(void* addonData)
+CGameClient* CAddonCallbacksGame::GetGameClient(void* addonData, const char* strFunction)
 {
   CAddonCallbacks* addon = static_cast<CAddonCallbacks*>(addonData);
   if (!addon || !addon->GetHelperGame())
   {
-    CLog::Log(LOGERROR, "GAME - %s - called with a null pointer", __FUNCTION__);
+    CLog::Log(LOGERROR, "GAME - %s - called with a null pointer", strFunction);
     return NULL;
   }
 
   return dynamic_cast<CGameClient*>(addon->GetHelperGame()->m_addon);
+}
+
+CRetroPlayer* CAddonCallbacksGame::GetRetroPlayer(void* addonData, const char* strFunction)
+{
+  CGameClient* gameClient = GetGameClient(addonData, strFunction);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", strFunction);
+    return NULL;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", strFunction);
+    return NULL;
+  }
+
+  CRetroPlayer* retroPlayer = dynamic_cast<CRetroPlayer*>(gameClient->GetPlayer());
+  if (!retroPlayer)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - active player is not RetroPlayer!", strFunction);
+    return NULL;
+  }
+
+  return retroPlayer;
 }
 
 void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
@@ -105,20 +130,11 @@ void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
 
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)
 {
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
     return;
-  }
 
-  if (!gameClient->GetPlayer())
-  {
-    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
-    return;
-  }
-
-  gameClient->GetPlayer()->SetRotation(rotation);
+  retroPlayer->SetRotation(rotation);
 }
 
 bool CAddonCallbacksGame::EnvironmentGetOverscan(void* addonData)
@@ -135,21 +151,11 @@ bool CAddonCallbacksGame::EnvironmentCanDupe(void* addonData)
 
 bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format)
 {
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
     return false;
-  }
-
-  if (!gameClient->GetPlayer())
-  {
-    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
-    return false;
-  }
-
-  gameClient->GetPlayer()->SetPixelFormat(format);
-  return true;
+  
+  return retroPlayer->SetPixelFormat(format);
 }
 
 void CAddonCallbacksGame::EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count)
@@ -165,79 +171,41 @@ bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game
 
 void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch)
 {
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
     return;
-  }
-
-  if (!gameClient->GetPlayer())
-  {
-    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
-    return;
-  }
-
-  // Verify all game client data. You don't know where that code's been.
-  if (data && width && height && pitch)
-    gameClient->GetPlayer()->VideoFrame(data, width, height, pitch);
+  
+  return retroPlayer->VideoFrame(data, width, height, pitch);
 }
 
 void CAddonCallbacksGame::AudioSample(void* addonData, int16_t left, int16_t right)
 {
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
     return;
-  }
-
-  if (!gameClient->GetPlayer())
-  {
-    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
-    return;
-  }
-
-  gameClient->GetPlayer()->AudioSample(left, right);
+  
+  return retroPlayer->AudioSample(left, right);
 }
 
 size_t CAddonCallbacksGame::AudioSampleBatch(void* addonData, const int16_t *data, size_t frames)
 {
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
     return 0;
-  }
+  
+  if (!data || !frames)
+    return 0;
 
-  if (!gameClient->GetPlayer())
-  {
-    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
-    return 0;
-  }
-
-  if (data && frames)
-    return gameClient->GetPlayer()->AudioSampleBatch(data, frames);
-  else
-    return 0;
+  return retroPlayer->AudioSampleBatch(data, frames);
 }
 
 int16_t CAddonCallbacksGame::InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id)
 {
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
     return 0;
-  }
-
-  if (!gameClient->GetPlayer())
-  {
-    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
-    return 0;
-  }
-
-  return gameClient->GetPlayer()->GetInputState(port, device, index, id);
+  
+  return retroPlayer->GetInputState(port, device, index, id);
 }
 
 uint64_t CAddonCallbacksGame::InputGetDeviceCapabilities(void* addonData)
@@ -248,20 +216,11 @@ uint64_t CAddonCallbacksGame::InputGetDeviceCapabilities(void* addonData)
 
 bool CAddonCallbacksGame::RumbleSetState(void* addonData, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength)
 {
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
     return false;
-  }
-
-  if (!gameClient->GetPlayer())
-  {
-    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
-    return false;
-  }
-
-  return gameClient->GetPlayer()->RumbleState(port, effect, strength);
+  
+  return retroPlayer->RumbleState(port, effect, strength);
 }
 
 game_time_t CAddonCallbacksGame::PerfGetTimeUsec(void* addonData)

@@ -103,7 +103,7 @@ public:
   virtual size_t AudioSampleBatch(const int16_t *data, size_t frames);
   virtual int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
   virtual bool RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength);
-  virtual void SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat);
+  virtual bool SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat);
   virtual void SetRotation(GAME_ROTATION rotation);
 
 protected:

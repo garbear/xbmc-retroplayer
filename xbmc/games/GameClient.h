@@ -76,7 +76,7 @@
 #define GAMECLIENT_MAX_PLAYERS  8
 
 class CFileItem;
-class CRetroPlayer;
+class IPlayer;
 
 namespace GAME
 {
@@ -118,7 +118,7 @@ public:
   // Query properties of the running game
   bool               IsPlaying() const     { return m_bIsPlaying; }
   const std::string& GetFilePath() const   { return m_filePath; }
-  CRetroPlayer*      GetPlayer() const     { return m_retroPlayer; }
+  IPlayer*           GetPlayer() const     { return m_player; }
   int                GetRegion() const     { return m_region; }
   double             GetFrameRate() const  { return m_frameRate * m_frameRateCorrection; }
   double             GetSampleRate() const { return m_sampleRate; }
@@ -133,7 +133,7 @@ public:
    */
   bool CanOpen(const CFileItem& file) const;
 
-  bool OpenFile(const CFileItem& file, CRetroPlayer* player);
+  bool OpenFile(const CFileItem& file, IPlayer* player);
 
   void CloseFile();
 
@@ -217,7 +217,7 @@ private:
   // Properties of the current playing file
   bool                  m_bIsPlaying;          // This is true between OpenFile() and CloseFile()
   std::string           m_filePath;            // The current playing file
-  CRetroPlayer*         m_retroPlayer;         // The player core that called OpenFile()
+  IPlayer*              m_player;              // The player core that called OpenFile()
   GAME_REGION           m_region;              // Region of the loaded game
   double                m_frameRate;           // Video framerate
   double                m_frameRateCorrection; // Framerate correction factor (to sync to audio)

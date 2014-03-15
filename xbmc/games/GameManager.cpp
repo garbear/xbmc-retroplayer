@@ -21,6 +21,7 @@
 
 #include "GameManager.h"
 #include "addons/AddonDatabase.h"
+#include "addons/AddonInstaller.h"
 #include "Application.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/Directory.h"
@@ -73,69 +74,82 @@ void CGameManager::Start()
 {
   CAddonMgr::Get().RegisterAddonMgrCallback(ADDON_GAMEDLL, this);
   CAddonMgr::Get().RegisterObserver(this);
+  CAddonInstaller::Get().RegisterObserver(this);
   CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_GAMEDLL, this);
 
-  // Notify GameManager of game clients being tracked in remote repositories
-  // TODO: Run this off-thread
-  CAddonDatabase database;
-  if (database.Open())
-  {
-    VECADDONS addons;
-    database.GetAddons(addons); // TODO: Filter by type ADDON_GAMEDLL
-    UpdateRemoteAddons(addons);
-  }
-
+  // TODO: Run these off-thread
+  // CAddonMgr::Init() is called before CGameManager::Start(), so we won't
+  // receive the first ObservableMessageAddons message
   UpdateAddons();
-}
-
-void CGameManager::UpdateRemoteAddons(const ADDON::VECADDONS& addons)
-{
-  CSingleLock lock(m_critSection);
-
-  for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
-  {
-    const AddonPtr& addon = *it;
-    if (!addon->IsType(ADDON_GAMEDLL))
-      continue;
-
-    GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(addon);
-    if (!gc)
-      continue;
-
-    bool bIsBroken = !gc->Props().broken.empty();
-    if (!bIsBroken)
-    {
-      bool bHasExtensions = !gc->GetExtensions().empty();
-      if (bHasExtensions)
-        m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
-      else
-        CLog::Log(LOGDEBUG, "GameManager - No extensions for %s version %s", gc->ID().c_str(), gc->Version().c_str());
-    }
-  }
-  CLog::Log(LOGDEBUG, "GameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
-}
-
-bool CGameManager::UpdateAddons()
-{
-  VECADDONS gameClients;
-  CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, gameClients);
-  RegisterAddons(gameClients);
-  return true;
+  UpdateRemoteAddons();
 }
 
 void CGameManager::Stop()
 {
   CAddonMgr::Get().UnregisterAddonMgrCallback(ADDON_GAMEDLL);
   CAddonMgr::Get().UnregisterObserver(this);
+  CAddonInstaller::Get().UnregisterObserver(this);
   CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_GAMEDLL);
 }
 
-void CGameManager::RegisterAddons(const VECADDONS& addons)
+bool CGameManager::StopClient(AddonPtr client, bool bRestart)
 {
-  for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); it++)
+  // This lock is to ensure that ReCreate() or Destroy() are not started from
+  // multiple threads.
+  CSingleLock lock(m_critSection);
+
+  GameClientPtr mappedClient;
+  if (GetClient(client->ID(), mappedClient))
   {
-    if ((*it)->Type() == ADDON_GAMEDLL)
+    CLog::Log(LOGDEBUG, "%s - %s add-on '%s'", __FUNCTION__, bRestart ? "restarting" : "stopping", mappedClient->Name().c_str());
+    if (bRestart)
+      mappedClient->Create();
+    else
+      mappedClient->Destroy();
+
+    return bRestart ? mappedClient->ReadyToUse() : true;
+  }
+
+  return false;
+}
+
+bool CGameManager::UpdateAddons()
+{
+  VECADDONS gameClients;
+  if (CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, gameClients))
+  {
+    for (VECADDONS::const_iterator it = gameClients.begin(); it != gameClients.end(); it++)
       RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it));
+  }
+  return true;
+}
+
+void CGameManager::UpdateRemoteAddons()
+{
+  CAddonDatabase database;
+  if (database.Open())
+  {
+    VECADDONS addons;
+    database.GetAddons(addons); // TODO: Filter by type ADDON_GAMEDLL
+    database.Close();
+
+    CSingleLock lock(m_critSection);
+
+    for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
+    {
+      const AddonPtr& addon = *it;
+      if (!addon->IsType(ADDON_GAMEDLL))
+        continue;
+
+      GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(addon);
+      if (!gc)
+        continue;
+
+      bool bIsBroken = !gc->Props().broken.empty();
+      if (!bIsBroken && !gc->GetExtensions().empty())
+        m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
+    }
+    CLog::Log(LOGDEBUG, "GameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
   }
 }
 
@@ -204,30 +218,6 @@ void CGameManager::UnregisterAddonByID(const string& strClientId)
   }
 }
 
-void CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
-{
-  if (!addon)
-    return;
-
-  // If the enabled addon is a game client, register it
-  RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
-}
-
-void CGameManager::AddonDisabled(AddonPtr addon)
-{
-  if (!addon)
-    return;
-
-  if (addon->Type() == ADDON_GAMEDLL)
-    UnregisterAddonByID(addon->ID());
-}
-
-void CGameManager::Notify(const Observable& obs, const ObservableMessage msg)
-{
-  if (msg == ObservableMessageAddons)
-    UpdateAddons();
-}
-
 bool CGameManager::GetClient(const string& strClientId, GameClientPtr& addon) const
 {
   CSingleLock lock(m_critSection);
@@ -266,9 +256,9 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candi
 {
   CSingleLock lock(m_critSection);
 
-  CStdString requestedClient = file.GetProperty("gameclient").asString();
+  string requestedClient = file.GetProperty("gameclient").asString();
 
-  for (map<string, GameClientPtr>::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
+  for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
     if (!requestedClient.empty() && requestedClient != it->first)
       continue;
@@ -283,8 +273,9 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candi
     }
     */
 
+    // If the requested client isn't installed, there are no valid candidates
     if (!requestedClient.empty())
-      break; // If the requested client isn't installed, it's not a valid candidate
+      break;
   }
 }
 
@@ -307,23 +298,28 @@ bool CGameManager::IsGame(const std::string &path) const
   return m_gameExtensions.find(extension) != m_gameExtensions.end();
 }
 
-bool CGameManager::StopClient(AddonPtr client, bool bRestart)
+void CGameManager::Notify(const Observable& obs, const ObservableMessage msg)
 {
-  // This lock is to ensure that ReCreate() or Destroy() are not started from
-  // multiple threads.
-  CSingleLock lock(m_critSection);
+  if (msg == ObservableMessageAddons)
+    UpdateAddons();
+  else if (msg == ObservableMessageRemoteAddons)
+    UpdateRemoteAddons();
+}
 
-  GameClientPtr mappedClient;
-  if (GetClient(client->ID(), mappedClient))
-  {
-    CLog::Log(LOGDEBUG, "%s - %s add-on '%s'", __FUNCTION__, bRestart ? "restarting" : "stopping", mappedClient->Name().c_str());
-    if (bRestart)
-      mappedClient->Create();
-    else
-      mappedClient->Destroy();
+void CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
+{
+  if (!addon)
+    return;
 
-    return bRestart ? mappedClient->ReadyToUse() : true;
-  }
+  if (addon->Type() == ADDON_GAMEDLL)
+    RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
+}
 
-  return false;
+void CGameManager::AddonDisabled(AddonPtr addon)
+{
+  if (!addon)
+    return;
+
+  if (addon->Type() == ADDON_GAMEDLL)
+    UnregisterAddonByID(addon->ID());
 }

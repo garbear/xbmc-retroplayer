@@ -73,7 +73,7 @@ public:
    * function is not called, m_pixelFormat defaults to LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555.
    * For a list of valid pixel formats, see libretro.h.
    */
-  void SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat) { m_pixelFormat = pixelFormat; }
+  bool SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat) { m_pixelFormat = pixelFormat; return true; }
 
 protected:
   virtual void Process();

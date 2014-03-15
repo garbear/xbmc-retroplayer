@@ -23,6 +23,7 @@
 #include "include/xbmc_game_callbacks.h"
 
 namespace GAME { class CGameClient; }
+class CRetroPlayer;
 
 namespace ADDON
 {
@@ -80,7 +81,8 @@ public:
   static game_proc_address_t HwGetProcAddress(void* addonData, const char *sym);
 
 private:
-  static GAME::CGameClient* GetGameClient(void* addonData);
+  static GAME::CGameClient* GetGameClient(void* addonData, const char* strFunction);
+  static CRetroPlayer* GetRetroPlayer(void* addonData, const char* strFunction);
 
   CB_GameLib*  m_callbacks; /*!< callback addresses */
   CAddon*      m_addon;     /*!< the addon */

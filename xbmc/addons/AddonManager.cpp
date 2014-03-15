@@ -306,16 +306,7 @@ bool CAddonMgr::Init()
       CLog::Log(LOGNOTICE, "ADDONS: Using repository %s", (*it)->ID().c_str());
   }
 
-  // TODO: This involves loading a couple DLLs, so call it delayed or outside the main thread
-  RegisterGameClientAddons();
   return true;
-}
-
-void CAddonMgr::RegisterGameClientAddons()
-{
-  VECADDONS gameClients;
-  GetAddons(ADDON_GAMEDLL, gameClients, true);
-  CGameManager::Get().RegisterAddons(gameClients);
 }
 
 void CAddonMgr::DeInit()
@@ -603,8 +594,6 @@ void CAddonMgr::RemoveAddon(const CStdString& ID)
     SetChanged();
     NotifyObservers(ObservableMessageAddons);
   }
-  // Let the game manager update the information associated with this addon
-  CGameManager::Get().UnregisterAddonByID(ID);
 }
 
 bool CAddonMgr::DisableAddon(const std::string& ID, bool disable)

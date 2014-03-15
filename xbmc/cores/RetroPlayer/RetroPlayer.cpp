@@ -315,9 +315,9 @@ bool CRetroPlayer::RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_
   return false;
 }
 
-void CRetroPlayer::SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat)
+bool CRetroPlayer::SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat)
 {
-  m_video.SetPixelFormat(pixelFormat);
+  return m_video.SetPixelFormat(pixelFormat);
 }
 
 void CRetroPlayer::SetRotation(GAME_ROTATION rotation)
