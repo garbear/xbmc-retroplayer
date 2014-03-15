@@ -88,7 +88,8 @@ void CGameManager::Stop()
 {
   CAddonMgr::Get().UnregisterAddonMgrCallback(ADDON_GAMEDLL);
   CAddonMgr::Get().UnregisterObserver(this);
-  CAddonInstaller::Get().UnregisterObserver(this);
+  // TODO: Why does this crash?
+  //CAddonInstaller::Get().UnregisterObserver(this);
   CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_GAMEDLL);
 }
 
