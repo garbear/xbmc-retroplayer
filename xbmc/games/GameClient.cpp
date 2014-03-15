@@ -43,7 +43,6 @@ using namespace std;
 #define EXTENSION_SEPARATOR          "|"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
-#define LIBRETRO_WRAPPER_LIBRARY     "library.xbmc.libretro"
 
 #ifdef TARGET_WINDOWS
   #pragma warning (push)

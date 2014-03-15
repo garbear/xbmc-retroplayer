@@ -156,29 +156,33 @@ void CGameManager::UpdateRemoteAddons()
 
 bool CGameManager::RegisterAddon(const GameClientPtr& client)
 {
-#if 0 // TODO
-  if (!client || !client->Enabled())
-    return false;
-#else
   if (!client)
+    return false;
+
+  // This special game client is a wrapper for libretro cores. It shouldn't be
+  // registered as a real game client.
+  if (client->ID() == LIBRETRO_WRAPPER_LIBRARY)
     return false;
 
   CAddonDatabase database;
   if (!database.Open())
     return false;
 
-  // It's possible for game clients to be enabled but not enabled in the
-  // database when they're installed but not configured yet. (TODO: is this correct?)
-  bool bEnabled = client->Enabled() && !database.IsAddonDisabled(client->ID());
-  if (!bEnabled)
+  // This logic is from PVRClients.cpp. In addition to the enabled status, it
+  // also checks that the game client is installed and configured. If the client
+  // has been installed but is not configured yet, it will be disabled in the
+  // database.
+  if (!client->Enabled() || database.IsAddonDisabled(client->ID()))
     return false;
-#endif
 
   CSingleLock lock(m_critSection);
 
-  GameClientMap::const_iterator it = m_gameClients.find(client->ID());
-  if (it != m_gameClients.end())
-    return true; // Already registered
+  if (!m_gameClients.empty())
+  {
+    GameClientMap::const_iterator it = m_gameClients.find(client->ID());
+    if (it != m_gameClients.end())
+      return true; // Already registered
+  }
 
   if (!client->Create())
   {

@@ -73,7 +73,8 @@
 #include <string>
 #include <vector>
 
-#define GAMECLIENT_MAX_PLAYERS  8
+#define LIBRETRO_WRAPPER_LIBRARY   "library.xbmc.libretro"
+#define GAMECLIENT_MAX_PLAYERS     8
 
 class CFileItem;
 class IPlayer;

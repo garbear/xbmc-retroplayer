@@ -57,14 +57,6 @@ namespace GAME
 
     virtual bool StopClient(ADDON::AddonPtr client, bool bRestart);
 
-    /**
-     * Create and maintain a cache of game client add-on information. If a file
-     * has been placed in the queue via SetAutolaunch(), it will be launched if a
-     * compatible emulator is registered.
-     */
-    bool RegisterAddon(const GameClientPtr& client);
-    void UnregisterAddonByID(const std::string& strClientId);
-
     virtual bool GetClient(const std::string& strClientId, GameClientPtr& addon) const;
     virtual bool GetConnectedClient(const std::string& strClientId, GameClientPtr& addon) const;
     virtual bool IsConnectedClient(const std::string& strClientId) const;
@@ -115,6 +107,14 @@ namespace GAME
     // Initialize m_gameClients with enabled game clients
     virtual bool UpdateAddons();
     void UpdateRemoteAddons();
+    
+    /**
+     * Create and maintain a cache of game client add-on information. If a file
+     * has been placed in the queue via SetAutolaunch(), it will be launched if a
+     * compatible emulator is registered.
+     */
+    bool RegisterAddon(const GameClientPtr& client);
+    void UnregisterAddonByID(const std::string& strClientId);
 
     typedef std::map<std::string, GameClientPtr> GameClientMap;
 
