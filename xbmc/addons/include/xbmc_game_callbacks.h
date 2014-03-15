@@ -64,7 +64,7 @@ typedef struct CB_GameLib
     * pixel format is GAME_PIXEL_FORMAT_0RGB1555. This pixel format however,
     * is deprecated (see enum GAME_PIXEL_FORMAT). If the call returns false,
     * the frontend does not support this pixel format. This function should be
-    * called inside Load() or GetSystemAVInfo(). Replaces
+    * called inside LoadGame() or GetSystemAVInfo(). Replaces
     * RETRO_ENVIRONMENT_SET_PIXEL_FORMAT.
     */
   bool (*EnvironmentSetPixelFormat)(void* addonData, enum GAME_PIXEL_FORMAT format);
@@ -252,7 +252,7 @@ typedef struct CB_GameLib
     * interface to get access to a video camera. New video frames are
     * delivered in a callback in same thread as Run().
     *
-    * GET_CAMERA_INTERFACE should be called in Load(). Depending
+    * GET_CAMERA_INTERFACE should be called in LoadGame(). Depending
     * on the camera implementation used, camera frames will be delivered as a
     * raw framebuffer, or as an OpenGL texture directly.
     *
