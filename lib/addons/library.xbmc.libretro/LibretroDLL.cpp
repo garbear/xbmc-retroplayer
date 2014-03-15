@@ -77,6 +77,17 @@ bool RegisterSymbol(void* dll, T& functionPtr, const char* strFunctionPtr)
   return (functionPtr = (T)dlsym(dll, strFunctionPtr)) != NULL;
 }
 
+// Trailing slash causes some libretro cores to fail  
+void RemoveSlashAtEnd(std::string& path)
+{
+  if (!path.empty())
+  {
+    char last = path[path.size() - 1];
+    if (last == '/' || last == '\\')
+      path.erase(path.size() - 1);
+  }
+}
+
 bool CLibretroDLL::Load(const game_client_properties* gameClientProps)
 {
   Unload();
@@ -126,6 +137,12 @@ bool CLibretroDLL::Load(const game_client_properties* gameClientProps)
   m_strSystemDirectory  = gameClientProps->system_directory;
   m_strContentDirectory = gameClientProps->content_directory;
   m_strSaveDirectory    = gameClientProps->save_directory;
+
+  // Trailing slash causes some libretro cores to fail
+  RemoveSlashAtEnd(m_strLibraryDirectory);
+  RemoveSlashAtEnd(m_strSystemDirectory);
+  RemoveSlashAtEnd(m_strContentDirectory);
+  RemoveSlashAtEnd(m_strSaveDirectory);
 
   return true;
 }

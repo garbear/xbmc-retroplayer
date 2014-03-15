@@ -35,13 +35,13 @@ class CGameClientProperties
 public:
   CGameClientProperties(const CGameClient* parent);
 
-  // CGameClient::GameClientPath(), passed to game client DLL
+  // Equal to CGameClient::GameClientPath(), passed to game client DLL
   const char* GetLibraryPath();
   
   // "special://profile/addon_data/id/system", passed to game client DLL
   const char* GetSystemDirectory();
 
-  // CGameClient::GameClientPath(), passed to game client DLL
+  // Directory containing CGameClient::GameClientPath(), passed to game client DLL
   const char* GetContentDirectory();
 
   // "special://profile/addon_data/id/save", passed to game client DLL
