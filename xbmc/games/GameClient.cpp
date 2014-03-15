@@ -245,12 +245,18 @@ bool CGameClient::GetAddonProperties(void)
 
 const CStdString CGameClient::LibPath() const
 {
-  // Use library.xbmc.libretro add-on to load libretro v1 clients
-  if (Version() == AddonVersion("1.0.0"))
+  // Use helper library add-on to load libretro v1 clients
+  const ADDONDEPS& dependencies = GetDeps();
+  ADDONDEPS::const_iterator it = dependencies.find("xbmc.game");
+  if (it != dependencies.end())
   {
-    AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(LIBRETRO_V1_HELPER, addon, ADDON_GAMEDLL) && addon)
-      return addon->LibPath();
+    const AddonVersion& gameApiVersion = it->second.first;
+    if (gameApiVersion == AddonVersion("1.0.0"))
+    {
+      AddonPtr addon;
+      if (CAddonMgr::Get().GetAddon(LIBRETRO_V1_HELPER, addon, ADDON_GAMEDLL) && addon)
+        return addon->LibPath();
+    }
   }
 
   return CAddon::LibPath();
