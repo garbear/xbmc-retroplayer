@@ -23,6 +23,7 @@
 
 using namespace GAME;
 
+#define GAME_CLIENT_SAVE_DIRECTORY    "save"
 #define GAME_CLIENT_SYSTEM_DIRECTORY  "system"
 
 CGameClientProperties::CGameClientProperties(const CGameClient* parent)
@@ -48,12 +49,16 @@ const char* CGameClientProperties::GetSystemDirectory()
 
 const char* CGameClientProperties::GetContentDirectory()
 {
-  // TODO
+  if (m_strContentDirectory.empty())
+    m_strContentDirectory = m_parent->LibPath();
+
   return m_strContentDirectory.c_str();
 }
 
 const char* CGameClientProperties::GetSaveDirectory()
 {
-  // TODO
+  if (m_strSaveDirectory.empty())
+    m_strSaveDirectory = URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SAVE_DIRECTORY);
+
   return m_strSaveDirectory.c_str();
 }

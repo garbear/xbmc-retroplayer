@@ -19,8 +19,6 @@
  */
 #pragma once
 
-#include "addons/include/xbmc_game_types.h"
-
 #include <string.h>
 
 namespace GAME
@@ -28,6 +26,10 @@ namespace GAME
 
 class CGameClient;
 
+/**
+ * A wrapper for game client properties declared in xbmc_game_types.h. The
+ * definitions of all properties are encapsulated within this class.
+ */
 class CGameClientProperties
 {
 public:
@@ -39,10 +41,10 @@ public:
   // "special://profile/addon_data/id/system", passed to game client DLL
   const char* GetSystemDirectory();
 
-  //
+  // LibPath(), passed to game client DLL
   const char* GetContentDirectory();
 
-  //
+  // "special://profile/addon_data/id/system", passed to game client DLL
   const char* GetSaveDirectory();
 
 private:
