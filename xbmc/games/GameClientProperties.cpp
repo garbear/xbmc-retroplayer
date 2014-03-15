@@ -34,7 +34,7 @@ CGameClientProperties::CGameClientProperties(const CGameClient* parent)
 const char* CGameClientProperties::GetLibraryPath()
 {
   if (m_strLibraryPath.empty())
-    m_strLibraryPath = m_parent->LibPath();
+    m_strLibraryPath = m_parent->GameClientPath();
 
   return m_strLibraryPath.c_str();
 }
@@ -50,7 +50,7 @@ const char* CGameClientProperties::GetSystemDirectory()
 const char* CGameClientProperties::GetContentDirectory()
 {
   if (m_strContentDirectory.empty())
-    m_strContentDirectory = m_parent->LibPath();
+    m_strContentDirectory = m_parent->GameClientPath();
 
   return m_strContentDirectory.c_str();
 }

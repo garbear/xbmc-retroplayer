@@ -98,6 +98,12 @@ public:
   // Destroy the instance of this add-on
   void Destroy(void);
 
+  // Path to the game client library
+  const std::string& GameClientPath() const { return m_strGameClientPath; }
+
+  // Override LibPath() to return a helper library for v1 clients
+  virtual const CStdString LibPath() const;
+
   // Return true if this instance is initialised, false otherwise
   bool ReadyToUse(void) const { return m_bReadyToUse; }
 
@@ -196,8 +202,9 @@ private:
   static const char* ToString(GAME_ERROR error);
 
   ADDON::AddonVersion   m_apiVersion;
-  CGameClientProperties m_libraryProps; // Properties to pass to the DLL
-  bool                  m_bReadyToUse;  // True if this add-on is connected to the backend, false otherwise */
+  CGameClientProperties m_libraryProps;        // Properties to pass to the DLL
+  std::string           m_strGameClientPath;   // Path to the game client library
+  bool                  m_bReadyToUse;         // True if this add-on is connected to the backend, false otherwise */
 
   // Returned from the Game API
   std::string           m_strClientName;

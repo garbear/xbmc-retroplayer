@@ -20,6 +20,7 @@
  */
 
 #include "GameClient.h"
+#include "addons/AddonManager.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
@@ -41,6 +42,7 @@ using namespace std;
 #define EXTENSION_SEPARATOR          "|"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
+#define LIBRETRO_V1_HELPER           "library.xbmc.libretro"
 
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
@@ -119,6 +121,7 @@ void CGameClient::ResetProperties()
   m_pInfo->library_path = m_libraryProps.GetSaveDirectory();
 
   m_apiVersion = AddonVersion("0.0.0");
+  m_strGameClientPath = CAddon::LibPath();
   m_bReadyToUse = false;
   m_strClientName.clear();
   m_strClientVersion.clear();
@@ -238,6 +241,19 @@ bool CGameClient::GetAddonProperties(void)
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
 
   return true;
+}
+
+const CStdString CGameClient::LibPath() const
+{
+  // Use library.xbmc.libretro add-on to load libretro v1 clients
+  if (Version() == AddonVersion("1.0.0"))
+  {
+    AddonPtr addon;
+    if (CAddonMgr::Get().GetAddon(LIBRETRO_V1_HELPER, addon, ADDON_GAMEDLL) && addon)
+      return addon->LibPath();
+  }
+
+  return CAddon::LibPath();
 }
 
 bool CGameClient::CanOpen(const CFileItem& file) const
