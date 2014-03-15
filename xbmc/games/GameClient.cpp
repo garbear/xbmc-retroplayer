@@ -43,7 +43,7 @@ using namespace std;
 #define EXTENSION_SEPARATOR          "|"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
-#define LIBRETRO_V1_HELPER           "library.xbmc.libretro"
+#define LIBRETRO_WRAPPER_LIBRARY     "library.xbmc.libretro"
 
 #ifdef TARGET_WINDOWS
   #pragma warning (push)
@@ -121,10 +121,10 @@ void CGameClient::ResetProperties()
 {
   SAFE_DELETE(m_pInfo);
   m_pInfo = new game_client_properties;
-  m_pInfo->library_path = m_libraryProps.GetLibraryPath();
-  m_pInfo->library_path = m_libraryProps.GetSystemDirectory();
-  m_pInfo->library_path = m_libraryProps.GetContentDirectory();
-  m_pInfo->library_path = m_libraryProps.GetSaveDirectory();
+  m_pInfo->library_path      = m_libraryProps.GetLibraryPath();
+  m_pInfo->system_directory  = m_libraryProps.GetSystemDirectory();
+  m_pInfo->content_directory = m_libraryProps.GetContentDirectory();
+  m_pInfo->save_directory    = m_libraryProps.GetSaveDirectory();
 
   m_apiVersion = AddonVersion("0.0.0");
   m_strGameClientPath = CAddon::LibPath();
@@ -263,7 +263,7 @@ const CStdString CGameClient::LibPath() const
     if (gameApiVersion == AddonVersion("1.0.0"))
     {
       AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(LIBRETRO_V1_HELPER, addon, ADDON_GAMEDLL) && addon)
+      if (CAddonMgr::Get().GetAddon(LIBRETRO_WRAPPER_LIBRARY, addon, ADDON_GAMEDLL) && addon)
         return addon->LibPath();
     }
   }

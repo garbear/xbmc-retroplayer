@@ -20,6 +20,7 @@
 
 #include "GameClientProperties.h"
 #include "GameClient.h"
+#include "filesystem/SpecialProtocol.h"
 
 using namespace GAME;
 
@@ -34,7 +35,7 @@ CGameClientProperties::CGameClientProperties(const CGameClient* parent)
 const char* CGameClientProperties::GetLibraryPath()
 {
   if (m_strLibraryPath.empty())
-    m_strLibraryPath = m_parent->GameClientPath();
+    m_strLibraryPath = CSpecialProtocol::TranslatePath(m_parent->GameClientPath());
 
   return m_strLibraryPath.c_str();
 }
@@ -42,7 +43,7 @@ const char* CGameClientProperties::GetLibraryPath()
 const char* CGameClientProperties::GetSystemDirectory()
 {
   if (m_strSystemDirectory.empty())
-    m_strSystemDirectory = URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SYSTEM_DIRECTORY);
+    m_strSystemDirectory = CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SYSTEM_DIRECTORY));
 
   return m_strSystemDirectory.c_str();
 }
@@ -50,7 +51,7 @@ const char* CGameClientProperties::GetSystemDirectory()
 const char* CGameClientProperties::GetContentDirectory()
 {
   if (m_strContentDirectory.empty())
-    m_strContentDirectory = m_parent->GameClientPath();
+    m_strContentDirectory = CSpecialProtocol::TranslatePath(m_parent->GameClientPath());
 
   return m_strContentDirectory.c_str();
 }
@@ -58,7 +59,7 @@ const char* CGameClientProperties::GetContentDirectory()
 const char* CGameClientProperties::GetSaveDirectory()
 {
   if (m_strSaveDirectory.empty())
-    m_strSaveDirectory = URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SAVE_DIRECTORY);
+    m_strSaveDirectory = CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SAVE_DIRECTORY));
 
   return m_strSaveDirectory.c_str();
 }
