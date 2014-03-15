@@ -47,11 +47,8 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentSetRotation         = EnvironmentSetRotation;
   m_callbacks->EnvironmentGetOverscan         = EnvironmentGetOverscan;
   m_callbacks->EnvironmentCanDupe             = EnvironmentCanDupe;
-  m_callbacks->EnvironmentGetSystemDirectory  = EnvironmentGetSystemDirectory;
   m_callbacks->EnvironmentSetPixelFormat      = EnvironmentSetPixelFormat;
   m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
-  m_callbacks->EnvironmentGetContentDirectory = EnvironmentGetContentDirectory;
-  m_callbacks->EnvironmentGetSaveDirectory    = EnvironmentGetSaveDirectory;
   m_callbacks->EnvironmentSetSystemAvInfo     = EnvironmentSetSystemAvInfo;
   m_callbacks->VideoRefresh                   = VideoRefresh;
   m_callbacks->AudioSample                    = AudioSample;
@@ -104,7 +101,7 @@ CGameClient* CAddonCallbacksGame::GetGameClient(void* addonData)
 
 void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
 {
-  // TODO
+  // TODO: Call "ActivateWindow(shutdownmenu)"
 }
 
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)
@@ -122,21 +119,6 @@ bool CAddonCallbacksGame::EnvironmentCanDupe(void* addonData)
 {
   // TODO: Move to library.xbmc.libretro and remove callback
   return true;
-}
-
-char* CAddonCallbacksGame::EnvironmentGetSystemDirectory(void* addonData)
-{
-  CGameClient* gameClient = GetGameClient(addonData);
-  if (!gameClient)
-  {
-    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
-    return NULL;
-  }
-
-  string strSystemDirectory = gameClient->GetSystemFolder();
-
-  char* buffer = strdup(strSystemDirectory.c_str());
-  return buffer;
 }
 
 bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format)
@@ -161,18 +143,6 @@ bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_
 void CAddonCallbacksGame::EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count)
 {
   // TODO
-}
-
-char* CAddonCallbacksGame::EnvironmentGetContentDirectory(void* addonData)
-{
-  // Stub
-  return NULL;
-}
-
-char* CAddonCallbacksGame::EnvironmentGetSaveDirectory(void* addonData)
-{
-  // Stub
-  return NULL;
 }
 
 bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info)

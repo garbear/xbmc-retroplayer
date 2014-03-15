@@ -3197,6 +3197,9 @@
     <ClCompile Include="..\..\xbmc\games\GameClient.cpp">
       <Filter>games</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameClientProperties.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6308,6 +6311,9 @@
       <Filter>addons</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameClient.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameClientProperties.h">
       <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>

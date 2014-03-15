@@ -27,6 +27,8 @@
 
 namespace ADDON { class CHelper_libXBMC_addon; }
 
+struct game_client_properties;
+
 namespace LIBRETRO
 {
   class CLibretroDLL
@@ -36,9 +38,12 @@ namespace LIBRETRO
     ~CLibretroDLL(void) { Unload(); }
 
     void Unload(void);
-    bool Load(const char* libraryPath);
-
-    const std::string& GetLibraryPath() const { return m_libraryPath; }
+    bool Load(const game_client_properties* gameClientProps);
+    
+    const std::string& GetLibraryDirectory() const { return m_strLibraryDirectory; }
+    const std::string& GetSystemDirectory() const { return m_strSystemDirectory; }
+    const std::string& GetContentDirectory() const { return m_strContentDirectory; }
+    const std::string& GetSaveDirectory() const { return m_strSaveDirectory; }
 
     void     (*retro_set_environment)(retro_environment_t);
     void     (*retro_set_video_refresh)(retro_video_refresh_t);
@@ -69,6 +74,9 @@ namespace LIBRETRO
   private:
     ADDON::CHelper_libXBMC_addon* m_xbmc;
     void*                         m_libretroClient;
-    std::string                   m_libraryPath;
+    std::string                   m_strLibraryDirectory;
+    std::string                   m_strSystemDirectory;
+    std::string                   m_strContentDirectory;
+    std::string                   m_strSaveDirectory;
   };
 } // namespace LIBRETRO

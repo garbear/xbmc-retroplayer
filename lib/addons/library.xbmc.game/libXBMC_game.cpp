@@ -83,13 +83,6 @@ DLLEXPORT bool GAME_environment_can_dupe(AddonCB* frontend, CB_GameLib* cb)
   return cb->EnvironmentCanDupe(frontend->addonData);
 }
 
-DLLEXPORT char* GAME_environment_get_system_directory(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentGetSystemDirectory(frontend->addonData);
-}
-
 DLLEXPORT bool GAME_environment_set_pixel_format(AddonCB* frontend, CB_GameLib* cb, GAME_PIXEL_FORMAT format)
 {
   if (frontend == NULL || cb == NULL)
@@ -102,20 +95,6 @@ DLLEXPORT void GAME_environment_set_input_descriptors(AddonCB* frontend, CB_Game
   if (frontend == NULL || cb == NULL)
     return;
   return cb->EnvironmentSetInputDescriptors(frontend->addonData, descriptor, count);
-}
-
-DLLEXPORT char* GAME_environment_get_content_directory(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentGetContentDirectory(frontend->addonData);
-}
-
-DLLEXPORT char* GAME_environment_get_save_directory(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentGetSaveDirectory(frontend->addonData);
 }
 
 DLLEXPORT bool GAME_environment_set_system_av_info(AddonCB* frontend, CB_GameLib* cb, const struct game_system_av_info* info)

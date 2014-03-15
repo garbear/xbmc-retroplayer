@@ -102,11 +102,8 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_overscan)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_can_dupe)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_message)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_system_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_pixel_format)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_content_directory)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_save_directory)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_system_av_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_video_refresh)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_audio_sample)) throw false;
@@ -172,11 +169,6 @@ public:
     return GAME_environment_set_message(m_handle, m_callbacks, message);
   }
 
-  char* EnvironmentGetSystemDirectory(void)
-  {
-    return GAME_environment_get_system_directory(m_handle, m_callbacks);
-  }
-
   bool EnvironmentSetPixelFormat(enum GAME_PIXEL_FORMAT format)
   {
     return GAME_environment_set_pixel_format(m_handle, m_callbacks, format);
@@ -185,16 +177,6 @@ public:
   void EnvironmentSetInputDescriptors(const struct game_input_descriptor* descriptor, size_t count)
   {
     return GAME_environment_set_input_descriptors(m_handle, m_callbacks, descriptor, count);
-  }
-
-  char* EnvironmentGetContentDirectory(void)
-  {
-    return GAME_environment_get_content_directory(m_handle, m_callbacks);
-  }
-
-  char* EnvironmentGetSaveDirectory(void)
-  {
-    return GAME_environment_get_save_directory(m_handle, m_callbacks);
   }
 
   bool EnvironmentSetSystemAvInfo(const struct game_system_av_info* info)
@@ -355,11 +337,8 @@ protected:
     bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
     void (*GAME_environment_set_message)(void* handle, CB_GameLib* cb, const struct game_message *message);
-    char* (*GAME_environment_get_system_directory)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_set_pixel_format)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
-    char* (*GAME_environment_get_content_directory)(void* handle, CB_GameLib* cb);
-    char* (*GAME_environment_get_save_directory)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);
     void (*GAME_video_refresh)(void* handle, CB_GameLib* cb, const void *data, unsigned width, unsigned height, size_t pitch);
     void (*GAME_audio_sample)(void* handle, CB_GameLib* cb, int16_t left, int16_t right);

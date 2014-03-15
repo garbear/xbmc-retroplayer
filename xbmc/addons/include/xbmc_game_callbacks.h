@@ -60,20 +60,6 @@ typedef struct CB_GameLib
   bool (*EnvironmentCanDupe)(void* addonData);
 
   /*!
-    * Returns the "system" directory of the frontend. This directory can be
-    * used to store system specific ROMs such as BIOSes, configuration data,
-    * etc. If no such directory is defined, this returns false and it's up to
-    * the implementation to find a suitable directory. Must be freed with
-    * FreeString().
-    *
-    * NOTE: Some cores used this folder also for "save" data such as memory
-    * cards, etc, for lack of a better place to put it. This is now
-    * discouraged, and if possible, cores should try to use
-    * EnvironmentGetSaveDirectory(). Replaces RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY.
-    */
-  char* (*EnvironmentGetSystemDirectory)(void* addonData);
-
-  /*!
     * Sets the internal pixel format used by the implementation. The default
     * pixel format is GAME_PIXEL_FORMAT_0RGB1555. This pixel format however,
     * is deprecated (see enum GAME_PIXEL_FORMAT). If the call returns false,
@@ -90,31 +76,6 @@ typedef struct CB_GameLib
     * RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS.
     */
   void (*EnvironmentSetInputDescriptors)(void* addonData, const struct game_input_descriptor* descriptor, size_t count);
-
-  /*!
-    * Returns the "content" directory of the frontend. This directory can be
-    * used to store specific assets that the core relies upon, such as art
-    * assets, input data, etc etc. If this returns NULL, no such directory is
-    * defined, and it's up to the implementation to find a suitable directory.
-    * Must be freed with FreeString(). Replaces RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY.
-    */
-  char* (*EnvironmentGetContentDirectory)(void* addonData);
-
-  /*!
-    * Returns the "save" directory of the frontend. This directory can be used
-    * to store SRAM, memory cards, high scores, etc, if the game client
-    * cannot use the regular memory interface (GetMemoryData()). Must be freed
-    * with FreeString().
-    *
-    * NOTE: Game clients used to check EnvironmentGetSystemDirectory()
-    * for similar things before. They should still check
-    * EnvironmentGetSystemDirectory() if they want to be backwards-
-    * compatible. This should return NULL if the frontend user has not set a
-    * specific save path.
-    *
-    * Replaces RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY.
-    */
-  char* (*EnvironmentGetSaveDirectory)(void* addonData);
 
   /*!
     * Sets a new av_info structure. This can only be called from within

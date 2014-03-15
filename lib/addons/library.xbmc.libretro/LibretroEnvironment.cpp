@@ -131,19 +131,10 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        char* systemDir = m_frontend->EnvironmentGetSystemDirectory();
-        if (systemDir)
-        {
-          static char systemDirBuffer[8192];
-          memset(systemDirBuffer, 0, sizeof(systemDirBuffer));
-          strncpy(systemDirBuffer, systemDir, sizeof(systemDirBuffer));
-          *typedData = systemDirBuffer;
-          m_xbmc->FreeString(systemDir);
-        }
+        if (!m_client->GetSystemDirectory().empty())
+          *typedData = m_client->GetSystemDirectory().c_str();
         else
-        {
           *typedData = NULL;
-        }
       }
       break;
     }
@@ -338,21 +329,8 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        static string libretroPath;
-
-        if (libretroPath.empty())
-        {
-          string libretroClient = m_client->GetLibraryPath();
-          size_t pos = libretroClient.find_last_of("/\\");
-          if (pos != 0 && pos != string::npos)
-          {
-            // Don't include trailing slash, it makes some libretro clients fail
-            libretroPath = libretroClient.substr(0, pos);
-          }
-        }
-
-        if (!libretroPath.empty())
-          *typedData = libretroPath.c_str();
+        if (!m_client->GetLibraryDirectory().empty())
+          *typedData = m_client->GetLibraryDirectory().c_str();
         else
           *typedData = NULL;
       }
@@ -480,19 +458,10 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        char* contentDir = m_frontend->EnvironmentGetContentDirectory();
-        if (contentDir)
-        {
-          static char contentDirBuffer[8192];
-          memset(contentDirBuffer, 0, sizeof(contentDirBuffer));
-          strncpy(contentDirBuffer, contentDir, sizeof(contentDirBuffer));
-          *typedData = contentDirBuffer;
-          m_xbmc->FreeString(contentDir);
-        }
+        if (!m_client->GetContentDirectory().empty())
+          *typedData = m_client->GetContentDirectory().c_str();
         else
-        {
           *typedData = NULL;
-        }
       }
       break;
     }
@@ -501,19 +470,10 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const char** typedData = reinterpret_cast<const char**>(data);
       if (typedData)
       {
-        char* saveDir = m_frontend->EnvironmentGetSaveDirectory();
-        if (saveDir)
-        {
-          static char saveDirBuffer[8192];
-          memset(saveDirBuffer, 0, sizeof(saveDirBuffer));
-          strncpy(saveDirBuffer, saveDir, sizeof(saveDirBuffer));
-          *typedData = saveDirBuffer;
-          m_xbmc->FreeString(saveDir);
-        }
+        if (!m_client->GetSaveDirectory().empty())
+          *typedData = m_client->GetSaveDirectory().c_str();
         else
-        {
           *typedData = NULL;
-        }
       }
       break;
     }

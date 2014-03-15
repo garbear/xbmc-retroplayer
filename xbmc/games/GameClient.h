@@ -59,6 +59,7 @@
  *       function pointer as a protected member variable.
  */
 
+#include "GameClientProperties.h"
 #include "SerialState.h"
 //#include "tags/GameInfoTagLoader.h"
 #include "addons/Addon.h"
@@ -89,7 +90,7 @@ class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_clie
 public:
   CGameClient(const ADDON::AddonProps& props);
   CGameClient(const cp_extension_t* props);
-  virtual ~CGameClient(void) { Destroy(); }
+  virtual ~CGameClient(void);
 
   // Initialise the instance of this add-on
   ADDON_STATUS Create();
@@ -118,9 +119,6 @@ public:
 
   // Modify the value returned by GetFrameRate(), used to sync gameplay to audio
   void SetFrameRateCorrection(double correctionFactor);
-
-  // Because "GetSystemDirectory" is reserved under winbloze
-  std::string GetSystemFolder() const;
 
   /**
    * Perform the gamut of checks on the file: "gameclient" property, platform,
@@ -198,7 +196,8 @@ private:
   static const char* ToString(GAME_ERROR error);
 
   ADDON::AddonVersion   m_apiVersion;
-  bool                  m_bReadyToUse;          /*!< true if this add-on is connected to the backend, false otherwise */
+  CGameClientProperties m_libraryProps; // Properties to pass to the DLL
+  bool                  m_bReadyToUse;  // True if this add-on is connected to the backend, false otherwise */
 
   // Returned from the Game API
   std::string           m_strClientName;
@@ -209,13 +208,13 @@ private:
   //GamePlatforms         m_platforms;
 
   // Properties of the current playing file
-  bool                  m_bIsPlaying; // This is true between OpenFile() and CloseFile()
-  std::string           m_filePath; // The current playing file
-  CRetroPlayer*         m_retroPlayer; // The player core that called OpenFile()
-  GAME_REGION           m_region; // Region of the loaded game
-  double                m_frameRate; // Video framerate
+  bool                  m_bIsPlaying;          // This is true between OpenFile() and CloseFile()
+  std::string           m_filePath;            // The current playing file
+  CRetroPlayer*         m_retroPlayer;         // The player core that called OpenFile()
+  GAME_REGION           m_region;              // Region of the loaded game
+  double                m_frameRate;           // Video framerate
   double                m_frameRateCorrection; // Framerate correction factor (to sync to audio)
-  double                m_sampleRate; // Audio frequency
+  double                m_sampleRate;          // Audio frequency
 
   // Save/rewind functionality
   unsigned int          m_serializeSize;

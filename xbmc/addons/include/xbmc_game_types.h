@@ -619,7 +619,33 @@ struct game_hw_info
 /*! Properties passed to the game_init() method of a game client */
 typedef struct game_client_properties
 {
-  const char*  library_path;    // Path to the game client's shared library being loaded
+  /*!
+   * Path to the game client's shared library being loaded. Replaces
+   * RETRO_ENVIRONMENT_GET_LIBRETRO_PATH.
+   */
+  const char* library_path;
+
+  /*!
+   * The "system" directory of the frontend. This directory can be used to
+   * store system-specific ROMs such as BIOSes, configuration data, etc.
+   * Replaces RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY.
+   */
+  const char* system_directory;
+  
+  /*!
+    * The "content" directory of the frontend. This directory can be used to
+    * store specific assets that the core relies upon, such as art assets, input
+    * data, etc. Replaces RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY.
+    */
+  const char* content_directory;
+  
+  /*!
+    * The "save" directory of the frontend. This directory can be used to store
+    * SRAM, memory cards, high scores, etc, if the game client cannot use the
+    * regular memory interface, GetMemoryData(). Replaces
+    * RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY.
+    */
+  const char* save_directory;
 } game_client_properties;
 
 /*! Structure to transfer the methods from xbmc_game_dll.h to XBMC */

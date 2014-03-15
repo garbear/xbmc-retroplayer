@@ -20,6 +20,7 @@
 
 #include "LibretroDLL.h"
 #include "libXBMC_game.h"
+#include "xbmc_game_types.h"
 
 #ifdef _WIN32
   #include "dlfcn-win32.h"
@@ -31,6 +32,7 @@
 
 using namespace ADDON;
 using namespace LIBRETRO;
+using namespace std;
 
 CLibretroDLL::CLibretroDLL(CHelper_libXBMC_addon* xbmc)
  : m_xbmc(xbmc),
@@ -47,22 +49,39 @@ void CLibretroDLL::Unload(void)
     m_libretroClient = NULL;
   }
 
-  m_libraryPath.clear();
+  m_strLibraryDirectory.clear();
+  m_strSystemDirectory.clear();
+  m_strContentDirectory.clear();
+  m_strSaveDirectory.clear();
 }
 
+// Get directory part of path, or empty if path doesn't contain any directory separators
+string GetDirectory(const string& path)
+{
+  size_t pos = path.find_last_of("/\\");
+  if (pos != 0 && pos != string::npos)
+  {
+    // Don't include trailing slash, it causes some libretro clients to fail
+    return path.substr(0, pos);
+  }
+  return "";
+}
+
+// Convert functionPtr to a string literal
 #define LIBRETRO_REGISTER_SYMBOL(dll, functionPtr)  RegisterSymbol(dll, functionPtr, #functionPtr)
 
+// Register symbols from DLL, cast to type T and store in member variable
 template <typename T>
-bool RegisterSymbol(void* dll, T functionPtr, const char* strFunctionPtr)
+bool RegisterSymbol(void* dll, T& functionPtr, const char* strFunctionPtr)
 {
   return (functionPtr = (T)dlsym(dll, strFunctionPtr)) != NULL;
 }
 
-bool CLibretroDLL::Load(const char* libraryPath)
+bool CLibretroDLL::Load(const game_client_properties* gameClientProps)
 {
   Unload();
 
-  m_libretroClient = dlopen(libraryPath, RTLD_LAZY);
+  m_libretroClient = dlopen(gameClientProps->library_path, RTLD_LAZY);
   if (m_libretroClient == NULL)
   {
     m_xbmc->Log(LOG_ERROR, "Unable to load %s", dlerror());
@@ -103,7 +122,10 @@ bool CLibretroDLL::Load(const char* libraryPath)
     return bSuccess;
   }
 
-  m_libraryPath = libraryPath;
+  m_strLibraryDirectory = GetDirectory(gameClientProps->library_path);
+  m_strSystemDirectory  = gameClientProps->system_directory;
+  m_strContentDirectory = gameClientProps->content_directory;
+  m_strSaveDirectory    = gameClientProps->save_directory;
 
   return true;
 }

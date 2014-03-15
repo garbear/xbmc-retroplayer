@@ -47,11 +47,8 @@ public:
   static void EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation);
   static bool EnvironmentGetOverscan(void* addonData);
   static bool EnvironmentCanDupe(void* addonData);
-  static char* EnvironmentGetSystemDirectory(void* addonData);
   static bool EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format);
   static void EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count);
-  static char* EnvironmentGetContentDirectory(void* addonData);
-  static char* EnvironmentGetSaveDirectory(void* addonData);
   static bool EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info);
   static void VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch);
   static void AudioSample(void* addonData, int16_t left, int16_t right);

@@ -66,7 +66,7 @@ ADDON_STATUS ADDON_Create(void* callbacks, void* props)
       throw ADDON_STATUS_PERMANENT_FAILURE;
 
     CLIENT = new CLibretroDLL(XBMC);
-    if (!CLIENT->Load(gameClientProps->library_path))
+    if (!CLIENT->Load(gameClientProps))
     {
       XBMC->Log(LOG_ERROR, "Failed to load %s", gameClientProps->library_path);
       throw ADDON_STATUS_PERMANENT_FAILURE;
