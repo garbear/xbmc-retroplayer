@@ -34,7 +34,7 @@
 extern "C" {
 #endif
 
-DLLEXPORT CB_GameLib* GAME_register_frontend(AddonCB* frontend)
+DLLEXPORT CB_GameLib* GAME_register_me(AddonCB* frontend)
 {
   CB_GameLib* cb = NULL;
   if (!frontend)
@@ -48,7 +48,7 @@ DLLEXPORT CB_GameLib* GAME_register_frontend(AddonCB* frontend)
   return cb;
 }
 
-DLLEXPORT void GAME_unregister_frontend(AddonCB* frontend, CB_GameLib* cb)
+DLLEXPORT void GAME_unregister_me(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return;
