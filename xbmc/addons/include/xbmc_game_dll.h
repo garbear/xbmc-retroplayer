@@ -76,8 +76,7 @@ GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls);
 GAME_ERROR UnloadGame(void);
 
 /*!
- * Runs the game for one video frame. During Run(), input_poll callback
- * must be called at least once.
+ * Runs the game for one video frame.
  *
  * If a frame is not rendered for reasons where a game "dropped" a frame, this
  * still counts as a frame, and Run() should explicitly dupe a frame if

@@ -53,7 +53,6 @@ public:
   static void VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch);
   static void AudioSample(void* addonData, int16_t left, int16_t right);
   static size_t AudioSampleBatch(void* addonData, const int16_t *data, size_t frames);
-  static void InputPoll(void* addonData);
   static int16_t InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id);
   static uint64_t InputGetDeviceCapabilities(void* addonData);
   static bool RumbleSetState(void* addonData, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength);

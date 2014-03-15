@@ -53,7 +53,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->VideoRefresh                   = VideoRefresh;
   m_callbacks->AudioSample                    = AudioSample;
   m_callbacks->AudioSampleBatch               = AudioSampleBatch;
-  m_callbacks->InputPoll                      = InputPoll;
   m_callbacks->InputState                     = InputState;
   m_callbacks->InputGetDeviceCapabilities     = InputGetDeviceCapabilities;
   m_callbacks->RumbleSetState                 = RumbleSetState;
@@ -106,7 +105,20 @@ void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
 
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)
 {
-  // TODO
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
+    return;
+  }
+
+  gameClient->GetPlayer()->SetRotation(rotation);
 }
 
 bool CAddonCallbacksGame::EnvironmentGetOverscan(void* addonData)
@@ -147,47 +159,109 @@ void CAddonCallbacksGame::EnvironmentSetInputDescriptors(void* addonData, const 
 
 bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info)
 {
-  // Stub
+  // TODO
   return false;
 }
 
 void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch)
 {
-  // Stub
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
+    return;
+  }
+
+  // Verify all game client data. You don't know where that code's been.
+  if (data && width && height && pitch)
+    gameClient->GetPlayer()->VideoFrame(data, width, height, pitch);
 }
 
 void CAddonCallbacksGame::AudioSample(void* addonData, int16_t left, int16_t right)
 {
-  // Stub
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
+    return;
+  }
+
+  gameClient->GetPlayer()->AudioSample(left, right);
 }
 
 size_t CAddonCallbacksGame::AudioSampleBatch(void* addonData, const int16_t *data, size_t frames)
 {
-  // Stub
-  return 0;
-}
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return 0;
+  }
 
-void CAddonCallbacksGame::InputPoll(void* addonData)
-{
-  // Stub
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
+    return 0;
+  }
+
+  if (data && frames)
+    return gameClient->GetPlayer()->AudioSampleBatch(data, frames);
+  else
+    return 0;
 }
 
 int16_t CAddonCallbacksGame::InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id)
 {
-  // Stub
-  return 0;
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return 0;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
+    return 0;
+  }
+
+  return gameClient->GetPlayer()->GetInputState(port, device, index, id);
 }
 
 uint64_t CAddonCallbacksGame::InputGetDeviceCapabilities(void* addonData)
 {
-  // Stub
-  return 0;
+  // TODO
+  return (1 << GAME_DEVICE_JOYPAD);
 }
 
 bool CAddonCallbacksGame::RumbleSetState(void* addonData, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength)
 {
-  // Stub
-  return false;
+  CGameClient* gameClient = GetGameClient(addonData);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", __FUNCTION__);
+    return false;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", __FUNCTION__);
+    return false;
+  }
+
+  return gameClient->GetPlayer()->RumbleState(port, effect, strength);
 }
 
 game_time_t CAddonCallbacksGame::PerfGetTimeUsec(void* addonData)
@@ -198,115 +272,115 @@ game_time_t CAddonCallbacksGame::PerfGetTimeUsec(void* addonData)
 
 game_perf_tick_t CAddonCallbacksGame::PerfGetCounter(void* addonData)
 {
-  // Stub
+  // TODO
   return 0;
 }
 
 uint64_t CAddonCallbacksGame::PerfGetCpuFeatures(void* addonData)
 {
-  // Stub
+  // TODO
   return 0;
 }
 
 void CAddonCallbacksGame::PerfLog(void* addonData)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::PerfRegister(void* addonData, game_perf_counter *counter)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::PerfStart(void* addonData, game_perf_counter *counter)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::PerfStop(void* addonData, game_perf_counter *counter)
 {
-  // Stub
+  // TODO
 }
 
 bool CAddonCallbacksGame::SensorSetState(void* addonData, unsigned port, GAME_SENSOR_ACTION action, unsigned rate)
 {
-  // Stub
+  // TODO
   return false;
 }
 
 float CAddonCallbacksGame::SensorGetInput(void* addonData, unsigned port, unsigned id)
 {
-  // Stub
+  // TODO
   return 0.0f;
 }
 
 void CAddonCallbacksGame::CameraSetInfo(void* addonData, game_camera_info *camera_info)
 {
-  // Stub
+  // TODO
 }
 
 bool CAddonCallbacksGame::CameraStart(void* addonData)
 {
-  // Stub
+  // TODO
   return false;
 }
 
 void CAddonCallbacksGame::CameraStop(void* addonData)
 {
-  // Stub
+  // TODO
 }
 
 bool CAddonCallbacksGame::LocationStart(void* addonData)
 {
-  // Stub
+  // TODO
   return false;
 }
 
 void CAddonCallbacksGame::LocationStop(void* addonData)
 {
-  // Stub
+  // TODO
 }
 
 bool CAddonCallbacksGame::LocationGetPosition(void* addonData, double *lat, double *lon, double *horiz_accuracy, double *vert_accuracy)
 {
-  // Stub
+  // TODO
   return false;
 }
 
 void CAddonCallbacksGame::LocationSetInterval(void* addonData, unsigned interval_ms, unsigned interval_distance)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::LocationInitialized(void* addonData)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::LocationDeinitialized(void* addonData)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::FrameTimeSetReference(void* addonData, game_usec_t usec)
 {
-  // Stub
+  // TODO
 }
 
 void CAddonCallbacksGame::HwSetInfo(void* addonData, const game_hw_info *hw_info)
 {
-  // Stub
+  // TODO
 }
 
 uintptr_t CAddonCallbacksGame::HwGetCurrentFramebuffer(void* addonData)
 {
-  // Stub
+  // TODO
   return 0;
 }
 
 game_proc_address_t CAddonCallbacksGame::HwGetProcAddress(void* addonData, const char *sym)
 {
-  // Stub
+  // TODO
   return NULL;
 }
 

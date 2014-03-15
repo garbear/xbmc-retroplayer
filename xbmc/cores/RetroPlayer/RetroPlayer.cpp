@@ -289,9 +289,7 @@ void CRetroPlayer::CreateVideo(double framerate)
 
 void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
 {
-  // Verify all game client data. You don't know where that code's been.
-  if (data && width && height && pitch)
-    m_video.SendVideoFrame(reinterpret_cast<const uint8_t*>(data), width, height, pitch);
+  m_video.SendVideoFrame(reinterpret_cast<const uint8_t*>(data), width, height, pitch);
 }
 
 void CRetroPlayer::AudioSample(int16_t left, int16_t right)
@@ -301,7 +299,7 @@ void CRetroPlayer::AudioSample(int16_t left, int16_t right)
 
 size_t CRetroPlayer::AudioSampleBatch(const int16_t *data, size_t frames)
 {
-  if (data && frames && m_playSpeed == PLAYSPEED_NORMAL)
+  if (m_playSpeed == PLAYSPEED_NORMAL)
     m_audio.SendAudioFrames(data, frames);
   return frames;
 }
@@ -311,9 +309,20 @@ int16_t CRetroPlayer::GetInputState(unsigned port, unsigned device, unsigned ind
   return m_input.GetInput(port, device, index, id);
 }
 
+bool CRetroPlayer::RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength)
+{
+  // TODO
+  return false;
+}
+
 void CRetroPlayer::SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat)
 {
   m_video.SetPixelFormat(pixelFormat);
+}
+
+void CRetroPlayer::SetRotation(GAME_ROTATION rotation)
+{
+  // TODO
 }
 
 void CRetroPlayer::Pause()

@@ -64,7 +64,7 @@ typedef struct CB_GameLib
     * pixel format is GAME_PIXEL_FORMAT_0RGB1555. This pixel format however,
     * is deprecated (see enum GAME_PIXEL_FORMAT). If the call returns false,
     * the frontend does not support this pixel format. This function should be
-    * called inside GameLoad() or game_get_system_av_info(). Replaces
+    * called inside Load() or GetSystemAVInfo(). Replaces
     * RETRO_ENVIRONMENT_SET_PIXEL_FORMAT.
     */
   bool (*EnvironmentSetPixelFormat)(void* addonData, enum GAME_PIXEL_FORMAT format);
@@ -79,13 +79,13 @@ typedef struct CB_GameLib
 
   /*!
     * Sets a new av_info structure. This can only be called from within
-    * GameRun(). This should *only* be used if the core is completely
+    * Run(). This should *only* be used if the core is completely
     * altering the internal resolutions, aspect ratios, timings, sampling rate,
     * etc. Calling this can require a full reinitialization of video/audio
     * drivers in the frontend, so it is important to call it very sparingly,
     * and usually only with the users explicit consent. An eventual driver
     * reinit will happen so that video and audio callbacks happening after
-    * this call within the same GameRun() call will target the newly
+    * this call within the same Run() call will target the newly
     * initialized driver.
     *
     * This callback makes it possible to support configurable resolutions in
@@ -95,7 +95,7 @@ typedef struct CB_GameLib
     * ***HIGHLY RECOMMENDED*** Do not call this callback every time resolution
     * changes in an emulator core if it's expected to be a temporary change,
     * for the reasons of possible driver reinit. This call is not a free pass
-    * for not trying to provide correct values in GameGetSystemAVInfo().
+    * for not trying to provide correct values in GetSystemAVInfo().
     *
     * If this returns false, the frontend does not acknowledge a changed
     * av_info struct.
@@ -129,14 +129,11 @@ typedef struct CB_GameLib
     */
   size_t (*AudioSampleBatch)(void* addonData, const int16_t* data, size_t frames);
 
-  /*! Signal the frontend to pull for input */
-  void (*InputPoll)(void* addonData);
-
   /*!
     * Queries for input for player 'port'. device will be masked with
     * GAME_DEVICE_MASK. Specialization of devices such as
     * GAME_DEVICE_JOYPAD_MULTITAP that have been set with
-    * GameSetControllerPortDevice() will still use the higher level
+    * SetControllerPortDevice() will still use the higher level
     * GAME_DEVICE_JOYPAD to request input.
     */
   int16_t (*InputState)(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id);
@@ -147,7 +144,7 @@ typedef struct CB_GameLib
     * recognized always return 0 in input_state().
     *
     * Example bitmask: caps = (1 << GAME_DEVICE_JOYPAD) | (1 << GAME_DEVICE_ANALOG).
-    * Should only be called in GameRun().
+    * Should only be called in Run().
     *
     * Replaces RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES.
     */
@@ -169,7 +166,7 @@ typedef struct CB_GameLib
     * override weak rumble. Strength has a range of [0, 0xffff].
     *
     * Returns true if rumble state request was honored. Calling this before
-    * first GameRun() is likely to return false.
+    * first Run() is likely to return false.
     */
   bool (*RumbleSetState)(void* addonData, unsigned port, enum GAME_RUMBLE_EFFECT effect, uint16_t strength);
 
@@ -235,7 +232,7 @@ typedef struct CB_GameLib
     *   GAME_PERFORMANCE_STOP(cb, work_2);
     * }
     *
-    * void GameUnload(void)
+    * void Unload(void)
     * {
     *   perf_cb.perf_log(); // Log all perf counters here for example
     * }
@@ -253,9 +250,9 @@ typedef struct CB_GameLib
   /*!
     * Interface to a video camera driver. A game client can use this
     * interface to get access to a video camera. New video frames are
-    * delivered in a callback in same thread as GameRun().
+    * delivered in a callback in same thread as Run().
     *
-    * GET_CAMERA_INTERFACE should be called in GameLoad(). Depending
+    * GET_CAMERA_INTERFACE should be called in Load(). Depending
     * on the camera implementation used, camera frames will be delivered as a
     * raw framebuffer, or as an OpenGL texture directly.
     *
@@ -271,10 +268,10 @@ typedef struct CB_GameLib
     */
   void (*CameraSetInfo)(void* addonData, struct game_camera_info* camera_info);
 
-  /*! Starts the camera driver. Can only be called in GameRun() */
+  /*! Starts the camera driver. Can only be called in Run() */
   bool (*CameraStart)(void* addonData);
 
-  /*! Stops the camera driver. Can only be called in GameRun() */
+  /*! Stops the camera driver. Can only be called in Run() */
   void (*CameraStop)(void* addonData);
 
   /*!
@@ -331,12 +328,12 @@ typedef struct CB_GameLib
   void (*FrameTimeSetReference)(void* addonData, game_usec_t usec);
 
   /*!
-    * Hardware acceleration interface. Should be called in GameLoad().
+    * Hardware acceleration interface. Should be called in LoadGame().
     * If successful, game clients will be able to render to a frontend-
     * provided framebuffer. The size of framebuffer will be at least as large
-    * as max_width/max_height provided in game_get_system_av_info(). If HW
+    * as max_width/max_height provided in GetSystemAVInfo(). If HW
     * rendering is used, pass only GAME_HW_FRAME_BUFFER_VALID or NULL to
-    * GameVideoRefresh(). Replaces RETRO_ENVIRONMENT_SET_HW_RENDER.
+    * VideoRefresh(). Replaces RETRO_ENVIRONMENT_SET_HW_RENDER.
     */
   void (*HwSetInfo)(void* addonData, const struct game_hw_info* hw_info);
 

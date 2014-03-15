@@ -125,13 +125,6 @@ DLLEXPORT size_t GAME_audio_sample_batch(AddonCB* frontend, CB_GameLib* cb, cons
   return cb->AudioSampleBatch(frontend->addonData, data, frames);
 }
 
-DLLEXPORT void GAME_input_poll(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->InputPoll(frontend->addonData);
-}
-
 DLLEXPORT int16_t GAME_input_state(AddonCB* frontend, CB_GameLib* cb, unsigned port, unsigned device, unsigned index, unsigned id)
 {
   if (frontend == NULL || cb == NULL)
