@@ -1,7 +1,6 @@
 SRCS=GameClient.cpp \
      GameClientProperties.cpp \
      GameFileAutoLauncher.cpp \
-     GameFileLoader.cpp \
      GameManager.cpp \
      GameSettings.cpp \
      SerialState.cpp
