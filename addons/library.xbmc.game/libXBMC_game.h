@@ -59,7 +59,7 @@ public:
   }
 
   template <typename T>
-  static bool RegisterSymbol(void* dll, T functionPtr, const char* strFunctionPtr)
+  static bool RegisterSymbol(void* dll, T& functionPtr, const char* strFunctionPtr)
   {
     return (functionPtr = (T)dlsym(dll, strFunctionPtr)) != NULL;
   }
@@ -101,7 +101,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_rotation)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_overscan)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_can_dupe)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_message)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_pixel_format)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_system_av_info)) throw false;
@@ -161,11 +160,6 @@ public:
   bool EnvironmentCanDupe(void)
   {
     return GAME_environment_can_dupe(m_handle, m_callbacks);
-  }
-
-  void EnvironmentSetMessage(const struct game_message *message)
-  {
-    return GAME_environment_set_message(m_handle, m_callbacks, message);
   }
 
   bool EnvironmentSetPixelFormat(enum GAME_PIXEL_FORMAT format)
@@ -330,7 +324,6 @@ protected:
     void (*GAME_environment_set_rotation)(void* handle, CB_GameLib* cb, enum GAME_ROTATION rotation);
     bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
-    void (*GAME_environment_set_message)(void* handle, CB_GameLib* cb, const struct game_message *message);
     bool (*GAME_environment_set_pixel_format)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
     bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);
