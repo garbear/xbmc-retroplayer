@@ -252,7 +252,7 @@ GAME_ERROR LoadGame(const char* url)
 
     int64_t size = statStruct.st_size;
     if (size > 0)
-      data.reserve(size);
+      data.reserve((size_t)size);
 
     void* file = XBMC->OpenFile(url, 0);
     if (file)
