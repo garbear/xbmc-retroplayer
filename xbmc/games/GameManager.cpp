@@ -131,8 +131,16 @@ void CGameManager::UpdateRemoteAddons()
   if (database.Open())
   {
     VECADDONS addons;
+
+    // Get add-ons in remote repositories
     database.GetAddons(addons, ADDON_GAMEDLL);
     database.Close();
+
+    // Get enabled add-ons installed locally
+    CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, addons, true);
+
+    // Get disabled add-ons installed locally
+    CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, addons, false);
 
     CSingleLock lock(m_critSection);
 
