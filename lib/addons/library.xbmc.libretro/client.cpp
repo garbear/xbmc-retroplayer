@@ -27,6 +27,7 @@
 #include "xbmc_addon_dll.h"
 #include "xbmc_game_dll.h"
 
+#include <stdint.h>
 #include <string>
 
 using namespace ADDON;
@@ -35,6 +36,9 @@ using namespace std;
 
 #define GAME_CLIENT_NAME_UNKNOWN      "Unknown libretro core"
 #define GAME_CLIENT_VERSION_UNKNOWN   "0.0.0"
+
+// Read from VFS 1 megabyte at a time
+#define READ_SIZE  (1 * 1024 * 1024)
 
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(x)  do { delete x; x = NULL; } while (0)
@@ -237,6 +241,52 @@ GAME_ERROR LoadGame(const char* url)
   if (url == NULL)
     return GAME_ERROR_INVALID_PARAMETERS;
 
+  // If libretro client supports loading from memory, load the file using XBMC's VFS
+  struct __stat64 statStruct = { };
+
+  // Not all VFS protocols necessarily support stat(), so also check if file exists
+  if (SupportsVFS() && (XBMC->StatFile(url, &statStruct) == 0 || XBMC->FileExists(url, true)))
+  {
+    static vector<uint8_t> data;
+    data.clear();
+
+    int64_t size = statStruct.st_size;
+    if (size > 0)
+      data.reserve(size);
+
+    void* file = XBMC->OpenFile(url, 0);
+    if (file)
+    {
+      if (size > 0)
+      {
+        // Size is known, read entire file at once
+        XBMC->ReadFile(file, data.data(), size);
+      }
+      else
+      {
+        // Read file in chunks
+        unsigned int bytesRead;
+        uint8_t buffer[READ_SIZE];
+        while ((bytesRead = XBMC->ReadFile(file, buffer, sizeof(buffer))) > 0)
+        {
+          data.insert(data.end(), buffer, buffer + sizeof(buffer));
+          if (bytesRead < READ_SIZE)
+            break;
+        }
+      }
+
+      if (!data.empty())
+      {
+        retro_game_info info = { };
+        info.data = data.data();
+        info.size = data.size();
+        if (CLIENT->retro_load_game(&info))
+          return GAME_ERROR_NO_ERROR;
+      }
+    }
+  }
+  
+  // If loading via VFS isn't supported or fails for whatever reason, try loading via path
   retro_game_info info = { };
   info.path = url;
   bool result = CLIENT->retro_load_game(&info);
@@ -252,6 +302,7 @@ GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls)
   if (urls == NULL || num_urls == 0)
     return GAME_ERROR_INVALID_PARAMETERS;
 
+  // TODO: Support loading from memory as in LoadGame()
   retro_game_info* info = new retro_game_info[num_urls];
   for (unsigned int i = 0; i < num_urls; i++)
     info[i].path = urls[i];
