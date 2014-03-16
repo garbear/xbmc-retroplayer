@@ -631,14 +631,14 @@ typedef struct game_client_properties
    * Replaces RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY.
    */
   const char* system_directory;
-  
+
   /*!
     * The "content" directory of the frontend. This directory can be used to
     * store specific assets that the core relies upon, such as art assets, input
     * data, etc. Replaces RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY.
     */
   const char* content_directory;
-  
+
   /*!
     * The "save" directory of the frontend. This directory can be used to store
     * SRAM, memory cards, high scores, etc, if the game client cannot use the

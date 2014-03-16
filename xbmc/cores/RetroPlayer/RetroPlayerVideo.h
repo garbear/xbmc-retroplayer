@@ -81,7 +81,7 @@ private:
   bool ProcessFrame(const VideoFrame &frame);
   bool CheckConfiguration(const DVDVideoPicture &picture);
   void ColorspaceConversion(const VideoFrame &input, const DVDVideoPicture &output);
-  
+
   DllSwScale              m_dllSwScale;
   SwsContext*             m_swsContext;
 

@@ -184,7 +184,7 @@ private:
   void InitializeProperties(void);
 
   bool GetAddonProperties(void);
-  
+
   bool OpenInternal(const CFileItem& file);
 
   bool LoadGameInfo();

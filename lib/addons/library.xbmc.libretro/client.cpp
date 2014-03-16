@@ -158,7 +158,7 @@ void ADDON_FreeSettings()
 void ADDON_Announce(const char *flag, const char *sender, const char *message, const void *data)
 {
 }
-  
+
 const char* GetGameAPIVersion(void)
 {
   return GAME_API_VERSION;
@@ -173,7 +173,7 @@ const char* GetMininumGameAPIVersion(void)
 const char* GetClientName(void)
 {
   static string strClientName = GAME_CLIENT_NAME_UNKNOWN;
-  
+
   if (CLIENT)
   {
     retro_system_info info = { };
@@ -189,7 +189,7 @@ const char* GetClientName(void)
 const char* GetClientVersion(void)
 {
   static string strClientVersion = GAME_CLIENT_VERSION_UNKNOWN;
-  
+
   if (CLIENT)
   {
     retro_system_info info = { };
@@ -205,7 +205,7 @@ const char* GetClientVersion(void)
 const char* GetValidExtensions(void)
 {
   static string strValidExtensions;
-  
+
   if (CLIENT)
   {
     retro_system_info info = { };
@@ -221,7 +221,7 @@ const char* GetValidExtensions(void)
 bool SupportsVFS(void)
 {
   bool bSupportsVFS = false;
-  
+
   if (CLIENT)
   {
     retro_system_info info = { };
@@ -350,7 +350,7 @@ GAME_ERROR GetSystemAVInfo(game_system_av_info *info)
 {
   if (!CLIENT)
     return GAME_ERROR_FAILED;
-  
+
   if (info == NULL)
     return GAME_ERROR_INVALID_PARAMETERS;
 

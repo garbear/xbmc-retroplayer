@@ -45,7 +45,7 @@ namespace GAME
     // File path
     const std::string& GetURL() const { return m_strURL; }
     void SetURL(const std::string& strURL) { m_strURL = strURL; }
-    
+
     // Title
     const std::string& GetTitle() const { return m_strName; }
     void SetTitle(const std::string& strName) { m_strName = strName; }

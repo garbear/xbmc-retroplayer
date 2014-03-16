@@ -71,7 +71,7 @@ CStdString CGUIViewStateWindowGames::GetExtensions()
 VECSOURCES& CGUIViewStateWindowGames::GetSources()
 {
   m_sources.clear();
-  
+
   // Files
   {
     CMediaSource share;

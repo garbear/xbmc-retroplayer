@@ -114,7 +114,7 @@ void CGameFileAutoLauncher::Launch(const GameClientPtr& gameClient)
       return;
     file = m_queuedFile;
   }
-  
+
   if (!gameClient->CanOpen(*file))
     return;
 

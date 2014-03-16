@@ -30,7 +30,7 @@ void CFrontendBridge::LogFrontend(retro_log_level level, const char *fmt, ...)
 {
   if (!CLibretroEnvironment::GetXBMC())
     return;
-  
+
   addon_log_t xbmcLevel;
   switch (level)
   {

@@ -175,7 +175,7 @@ bool CGameClient::GetAddonProperties(void)
   string strValidExtensions;
   bool   bSupportsVFS;
   bool   bSupportsNoGame;
-  
+
   try { strClientName = m_pStruct->GetClientName(); }
   catch (...) { LogException("GetClientName()"); return false; }
 

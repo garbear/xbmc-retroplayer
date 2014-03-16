@@ -39,7 +39,7 @@ public:
 
   // Equal to CGameClient::GameClientPath(), passed to game client DLL
   const char* GetLibraryPath();
-  
+
   // "special://profile/addon_data/id/system", passed to game client DLL
   const char* GetSystemDirectory();
 

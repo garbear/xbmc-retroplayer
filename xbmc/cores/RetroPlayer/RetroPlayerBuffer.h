@@ -85,7 +85,7 @@ void CRetroPlayerPacket<MetaType>::Assign(const uint8_t *data, unsigned int size
  *
  * Subclasses provide IsFull() to indicate that incoming packets should
  * overwrite existing data, allowing them to determine the size of the buffer
- * (e.g. by packet count or buffer size). 
+ * (e.g. by packet count or buffer size).
  */
 class CRetroPlayerBuffer
 {

@@ -42,7 +42,7 @@
 using namespace std;
 
 CRetroPlayerAudio::CRetroPlayerAudio()
-  : CThread("RetroPlayerAudio"), 
+  : CThread("RetroPlayerAudio"),
     m_pAudioStream(NULL),
     m_buffer(this),
     m_frameType(FRAME_TYPE_UNKNOWN)

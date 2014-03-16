@@ -146,7 +146,7 @@ bool CGameInfoTagLoader::Load(const string& strPath, CGameInfoTag& tag)
   const PlatformInfo& platform = GetPlatformInfoByExtension(URIUtils::GetExtension(strPath));
   if (platform.id == PLATFORM_UNKNOWN)
     return false;
-  
+
   tag.SetPlatform(platform.name);
   tag.SetLoaded(true);
 

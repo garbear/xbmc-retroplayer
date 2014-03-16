@@ -109,7 +109,7 @@ namespace GAME
     // Initialize m_gameClients with enabled game clients
     virtual bool UpdateAddons();
     void UpdateExtensions();
-    
+
     /**
      * Create and maintain a cache of game client add-on information. If a file
      * has been placed in the queue via SetAutolaunch(), it will be launched if a
@@ -124,11 +124,11 @@ namespace GAME
     std::set<std::string> m_gameExtensions;
     CGameFileAutoLauncher m_fileLauncher;
     CCriticalSection      m_critSection;
-    
+
     struct AddonSortByIDFunctor
     {
       bool operator() (ADDON::AddonPtr i, ADDON::AddonPtr j) { return i->ID() < j->ID(); }
     };
-   
+
   };
 } // namespace GAME

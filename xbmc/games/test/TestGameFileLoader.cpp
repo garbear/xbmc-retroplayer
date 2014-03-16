@@ -99,7 +99,7 @@ TEST(TestGameFileLoader, CGameFileLoaderUseVFS)
 TEST(TestGameFileLoader, CGameFileLoaderUseParentZip)
 {
   CGameFileLoaderUseParentZip loaderParentZip;
-  
+
   GameClientConfig gc;
   GameClientConfig gc_zip;     gc_zip.extensions.insert(".zip");
   GameClientConfig gc_smc;     gc_smc.extensions.insert(".smc");
@@ -123,7 +123,7 @@ TEST(TestGameFileLoader, CGameFileLoaderUseParentZip)
   EXPECT_FALSE(loaderParentZip.CanLoad(gc_smc, localFile));
   EXPECT_FALSE(loaderParentZip.CanLoad(gc_zip_smc, localFile));
   EXPECT_FALSE(loaderParentZip.CanLoad(gc_noVFS, localFile));
-  
+
   // Scenario 3: Not in a zip's root directory
   CStdString strDeepZipPath;
   URIUtils::CreateArchivePath(strDeepZipPath, "zip", XBMC_REF_FILE_PATH("xbmc/games/test/LocalFile.zip"), "folder/ZipFile.smc");
@@ -160,13 +160,13 @@ TEST(TestGameFileLoader, CGameFileLoaderUseParentZip)
 TEST(TestGameFileLoader, CGameFileLoaderEnterZip)
 {
   CGameFileLoaderEnterZip loaderEnterZip;
-  
+
   GameClientConfig gc;
   GameClientConfig gc_smc;     gc_smc.extensions.insert(".smc");
   GameClientConfig gc_bin;     gc_bin.extensions.insert(".bin");
   GameClientConfig gc_nes_smc; gc_nes_smc.extensions.insert(".nes"); gc_nes_smc.extensions.insert(".smc");
   GameClientConfig gc_noVFS;   gc_smc.extensions.insert(".smc"); gc_noVFS.bAllowVFS = false;
-  
+
   // Scenario 1: Not a zip
   CFileItem localFile(XBMC_REF_FILE_PATH("xbmc/games/test/LocalFile.nes"), false);
   EXPECT_FALSE(loaderEnterZip.CanLoad(gc, localFile));
@@ -174,7 +174,7 @@ TEST(TestGameFileLoader, CGameFileLoaderEnterZip)
   EXPECT_FALSE(loaderEnterZip.CanLoad(gc_bin, localFile));
   EXPECT_FALSE(loaderEnterZip.CanLoad(gc_nes_smc, localFile));
   EXPECT_FALSE(loaderEnterZip.CanLoad(gc_noVFS, localFile));
-  
+
   // Scenario 2: Enter the zip file "xbmc/games/test/LocalFile.zip"
   // Contents of zip are:
   //   * giggley giggley garbear.smc

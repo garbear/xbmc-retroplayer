@@ -77,7 +77,7 @@ bool RegisterSymbol(void* dll, T& functionPtr, const char* strFunctionPtr)
   return (functionPtr = (T)dlsym(dll, strFunctionPtr)) != NULL;
 }
 
-// Trailing slash causes some libretro cores to fail  
+// Trailing slash causes some libretro cores to fail
 void RemoveSlashAtEnd(std::string& path)
 {
   if (!path.empty())

@@ -116,7 +116,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         unsigned int notificationTimeMs = DEFAULT_NOTIFICATION_TIME_MS;
         if (m_bFramerateKnown)
           notificationTimeMs = (unsigned int)(1000 * typedData->frames / m_fps);
-        
+
         // TODO: Include notification time parameter in QueueNotification()
         m_xbmc->QueueNotification(QUEUE_INFO, msg);
       }

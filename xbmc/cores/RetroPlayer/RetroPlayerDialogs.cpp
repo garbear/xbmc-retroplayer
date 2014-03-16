@@ -146,7 +146,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
 
     // If GetAddon() returns false, but addon is non-NULL, then the add-on exists but is disabled
     bool bEnabled = (addon.get() == NULL);
-    
+
     bool bBroken = !(*itRemote)->Props().broken.empty();
 
     if (bEnabled && bBroken)
@@ -197,7 +197,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
     return false; // Shouldn't happen
 
   GameClientPtr &gc = it->second;
-  
+
   // determining disabled status is the same test as earlier
   // TODO: Preserve disabled values in parallel array
   // TODO: Don't use parallel arrays

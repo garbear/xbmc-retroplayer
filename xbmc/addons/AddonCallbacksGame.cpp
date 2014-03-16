@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
+ *      Copyright (C) 2012-2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -154,7 +154,7 @@ bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return false;
-  
+
   return retroPlayer->SetPixelFormat(format);
 }
 
@@ -174,7 +174,7 @@ void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsign
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
-  
+
   return retroPlayer->VideoFrame(data, width, height, pitch);
 }
 
@@ -183,7 +183,7 @@ void CAddonCallbacksGame::AudioSample(void* addonData, int16_t left, int16_t rig
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
-  
+
   return retroPlayer->AudioSample(left, right);
 }
 
@@ -192,7 +192,7 @@ size_t CAddonCallbacksGame::AudioSampleBatch(void* addonData, const int16_t *dat
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return 0;
-  
+
   if (!data || !frames)
     return 0;
 
@@ -204,7 +204,7 @@ int16_t CAddonCallbacksGame::InputState(void* addonData, unsigned port, unsigned
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return 0;
-  
+
   return retroPlayer->GetInputState(port, device, index, id);
 }
 
@@ -219,7 +219,7 @@ bool CAddonCallbacksGame::RumbleSetState(void* addonData, unsigned port, GAME_RU
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return false;
-  
+
   return retroPlayer->RumbleState(port, effect, strength);
 }
 

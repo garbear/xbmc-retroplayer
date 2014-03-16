@@ -283,7 +283,7 @@ bool CGameManager::IsGame(const std::string &path) const
   StringUtils::ToLower(extension);
   if (extension.empty())
     return false;
-  
+
   CSingleLock lock(m_critSection);
 
   return m_gameExtensions.find(extension) != m_gameExtensions.end();
