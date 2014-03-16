@@ -352,10 +352,7 @@ void CGameManager::GetAllGameClients(ADDON::VECADDONS& addons)
   if (!addons.empty())
   {
     // Sort by ID and remove duplicates
-    struct AddonSortByIDFunctor
-    {
-      bool operator() (AddonPtr i, AddonPtr j) { return i->ID() < j->ID(); }
-    } AddonSortByID;
+    AddonSortByIDFunctor AddonSortByID;
     std::sort(addons.begin(), addons.end(), AddonSortByID);
     for (VECADDONS::iterator it = addons.begin(); it != addons.end() - 1; )
     {

@@ -125,5 +125,11 @@ namespace GAME
     std::set<std::string> m_gameExtensions;
     CGameFileAutoLauncher m_fileLauncher;
     CCriticalSection      m_critSection;
+    
+    struct AddonSortByIDFunctor
+    {
+      bool operator() (ADDON::AddonPtr i, ADDON::AddonPtr j) { return i->ID() < j->ID(); }
+    };
+   
   };
 } // namespace GAME
