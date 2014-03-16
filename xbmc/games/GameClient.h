@@ -179,9 +179,6 @@ public:
   bool IsExtensionValid(const std::string& strExtension) const;
 
 private:
-  // Resets all class members to their defaults. Called by the constructors
-  void ResetProperties();
-
   bool GetAddonProperties(void);
   
   bool OpenInternal(const CFileItem& file);

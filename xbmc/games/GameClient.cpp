@@ -52,9 +52,19 @@ using namespace std;
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
     m_apiVersion("0.0.0"),
-    m_libraryProps(this)
+    m_libraryProps(this),
+    m_bReadyToUse(false),
+    m_bIsPlaying(false),
+    m_player(NULL),
+    m_region(GAME_REGION_NTSC),
+    m_frameRate(0.0),
+    m_frameRateCorrection(1.0),
+    m_sampleRate(0.0),
+    m_serializeSize(0),
+    m_bRewindEnabled(false)
 {
-  ResetProperties();
+  m_pInfo = m_libraryProps.CreateProps();
+  m_strGameClientPath = CAddon::LibPath();
 
   InfoMap::const_iterator it;
   /*
@@ -72,9 +82,19 @@ CGameClient::CGameClient(const AddonProps& props)
 CGameClient::CGameClient(const cp_extension_t* ext)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(ext),
     m_apiVersion("0.0.0"),
-    m_libraryProps(this)
+    m_libraryProps(this),
+    m_bReadyToUse(false),
+    m_bIsPlaying(false),
+    m_player(NULL),
+    m_region(GAME_REGION_NTSC),
+    m_frameRate(0.0),
+    m_frameRateCorrection(1.0),
+    m_sampleRate(0.0),
+    m_serializeSize(0),
+    m_bRewindEnabled(false)
 {
-  ResetProperties();
+  m_pInfo = m_libraryProps.CreateProps();
+  m_strGameClientPath = CAddon::LibPath();
 
   if (ext)
   {
@@ -116,45 +136,12 @@ CGameClient::~CGameClient(void)
   SAFE_DELETE(m_pInfo);
 }
 
-void CGameClient::ResetProperties()
-{
-  SAFE_DELETE(m_pInfo);
-  m_pInfo = new game_client_properties;
-  m_pInfo->library_path      = m_libraryProps.GetLibraryPath();
-  m_pInfo->system_directory  = m_libraryProps.GetSystemDirectory();
-  m_pInfo->content_directory = m_libraryProps.GetContentDirectory();
-  m_pInfo->save_directory    = m_libraryProps.GetSaveDirectory();
-
-  m_apiVersion = AddonVersion("0.0.0");
-  m_strGameClientPath = CAddon::LibPath();
-  m_bReadyToUse = false;
-  m_strClientName.clear();
-  m_strClientVersion.clear();
-  m_extensions.clear();
-  m_bSupportsVFS = false;
-  m_bSupportsNoGame = false;
-  //m_platforms.clear();
-  m_bIsPlaying = false;
-  m_filePath.clear();
-  m_player = NULL;
-  m_region = GAME_REGION_NTSC;
-  m_frameRate = 0.0;
-  m_frameRateCorrection = 1.0;
-  m_sampleRate = 0.0;
-  m_serializeSize = 0;
-  m_bRewindEnabled = false;
-  m_serialState.Reset();
-}
-
 ADDON_STATUS CGameClient::Create(void)
 {
   ADDON_STATUS status = ADDON_STATUS_UNKNOWN;
 
   // Ensure that a previous instance is destroyed
   Destroy();
-
-  // Reset all properties to defaults
-  ResetProperties();
 
   // Initialise the add-on
   bool bReadyToUse = false;
@@ -187,9 +174,6 @@ void CGameClient::Destroy(void)
   // Destroy the add-on
   try { CAddonDll<DllGameClient, GameClient, game_client_properties>::Destroy(); }
   catch (...) { LogException(__FUNCTION__); }
-
-  // Reset all properties to defaults
-  ResetProperties();
 }
 
 bool CGameClient::GetAddonProperties(void)
@@ -222,7 +206,7 @@ bool CGameClient::GetAddonProperties(void)
   SetExtensions(strValidExtensions, extensions);
   if (m_extensions != extensions)
   {
-    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match the set from DLL (%s)", strValidExtensions.c_str());
+    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match DLL value (%s)", strValidExtensions.c_str());
     return false;
   }
   if (m_bSupportsVFS != bSupportsVFS)
