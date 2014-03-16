@@ -170,11 +170,7 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
   if (client->ID() == LIBRETRO_WRAPPER_LIBRARY)
     return false;
 
-  // This logic is from PVRClients.cpp. In addition to the enabled status, it
-  // also checks that the game client is installed and configured. If the client
-  // has been installed but is not configured yet, it will be disabled in the
-  // database.
-  if (!client->Enabled() || CAddonMgr::Get().IsAddonDisabled(client->ID()))
+  if (!client->Enabled())
     return false;
 
   if (!m_gameClients.empty())
