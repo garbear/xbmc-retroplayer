@@ -25,7 +25,7 @@ using namespace ADDON;
 using namespace LIBRETRO;
 using namespace std;
 
-#define READ_SIZE      (1 * 1024 * 1024)    // Read from VFS 1MB at a time
+#define READ_SIZE      (100 * 1024)         // Read from VFS 100KB at a time
 #define MAX_READ_SIZE  (100 * 1024 * 1024)  // Read at most 100MB from VFS
 
 CGameInfoLoader::CGameInfoLoader(const char* path, CHelper_libXBMC_addon* XBMC, bool bSupportsVFS)
@@ -39,18 +39,18 @@ CGameInfoLoader::CGameInfoLoader(const char* path, CHelper_libXBMC_addon* XBMC, 
     // Not all VFS protocols necessarily support StatFile(), so also check if file exists
     if (XBMC->StatFile(path, &statStruct) == 0 || XBMC->FileExists(path, true))
     {
-      int64_t size = statStruct.st_size;
-      if (size > 0)
-        m_dataBuffer.reserve((size_t)size);
-
       void* file = XBMC->OpenFile(path, 0);
       if (file)
       {
+        int64_t size = statStruct.st_size;
         if (size > 0)
         {
           // Size is known, read entire file at once (unless it is too big)
           if (size <= MAX_READ_SIZE)
+          {
+            m_dataBuffer.resize(size);
             XBMC->ReadFile(file, m_dataBuffer.data(), size);
+          }
         }
         else
         {
