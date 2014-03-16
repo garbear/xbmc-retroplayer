@@ -121,8 +121,13 @@ bool CGameManager::UpdateAddons()
   VECADDONS gameClients;
   if (CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, gameClients))
   {
+    CSingleLock lock(m_critSection);
+
     for (VECADDONS::const_iterator it = gameClients.begin(); it != gameClients.end(); it++)
-      RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it));
+    {
+      if (!RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it)))
+        UnregisterAddonByID((*it)->ID());
+    }
   }
   return true;
 }
@@ -151,7 +156,7 @@ void CGameManager::UpdateRemoteAddons()
       if (!bIsBroken && !gc->GetExtensions().empty())
         m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
     }
-    CLog::Log(LOGDEBUG, "GameManager: tracking %d remote extensions", (int)(m_gameExtensions.size()));
+    CLog::Log(LOGDEBUG, "GameManager: tracking %d extensions", (int)(m_gameExtensions.size()));
   }
 }
 
@@ -165,18 +170,12 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
   if (client->ID() == LIBRETRO_WRAPPER_LIBRARY)
     return false;
 
-  CAddonDatabase database;
-  if (!database.Open())
-    return false;
-
   // This logic is from PVRClients.cpp. In addition to the enabled status, it
   // also checks that the game client is installed and configured. If the client
   // has been installed but is not configured yet, it will be disabled in the
   // database.
   if (!client->Enabled() || CAddonMgr::Get().IsAddonDisabled(client->ID()))
     return false;
-
-  CSingleLock lock(m_critSection);
 
   if (!m_gameClients.empty())
   {
@@ -185,10 +184,8 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
       return true; // Already registered
   }
 
-  if (!client->Create())
+  if (client->Create() != ADDON_STATUS_OK)
   {
-    lock.Leave();
-
     CLog::Log(LOGERROR, "GameManager: failed to load DLL for %s, disabling in database", client->ID().c_str());
     CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
 
@@ -210,8 +207,6 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
 
 void CGameManager::UnregisterAddonByID(const string& strClientId)
 {
-  CSingleLock lock(m_critSection);
-
   GameClientMap::iterator it = m_gameClients.find(strClientId);
   if (it != m_gameClients.end())
   {
@@ -262,44 +257,42 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candi
 {
   CSingleLock lock(m_critSection);
 
-  string requestedClient = file.GetProperty("gameclient").asString();
+  const string strRequestedClient = file.GetProperty("gameclient").asString();
 
   for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
-    if (!requestedClient.empty() && requestedClient != it->first)
+    if (!strRequestedClient.empty() && strRequestedClient != it->first)
       continue;
 
     CLog::Log(LOGDEBUG, "GameManager: To open or not to open using %s, that is the question", it->second->ID().c_str());
-    // TODO
-    /*
-    if (CGameFileLoader::CanOpen(*it->second, file))
+    if (it->second->CanOpen(file))
     {
       CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", it->second->ID().c_str());
       candidates.push_back(it->second->ID());
     }
-    */
 
     // If the requested client isn't installed, there are no valid candidates
-    if (!requestedClient.empty())
+    if (!strRequestedClient.empty())
       break;
   }
 }
 
 void CGameManager::GetExtensions(vector<string> &exts) const
 {
+  CSingleLock lock(m_critSection);
   exts.insert(exts.end(), m_gameExtensions.begin(), m_gameExtensions.end());
 }
 
 bool CGameManager::IsGame(const std::string &path) const
 {
-  CSingleLock lock(m_critSection);
-
   // Get the file extension (must use a CURL, if the string is top-level zip
   // directory it might not end in .zip)
   string extension(URIUtils::GetExtension(CURL(path).GetFileNameWithoutPath()));
   StringUtils::ToLower(extension);
   if (extension.empty())
     return false;
+  
+  CSingleLock lock(m_critSection);
 
   return m_gameExtensions.find(extension) != m_gameExtensions.end();
 }
@@ -318,7 +311,10 @@ void CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
     return;
 
   if (addon->Type() == ADDON_GAMEDLL)
+  {
+    CSingleLock lock(m_critSection);
     RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
+  }
 }
 
 void CGameManager::AddonDisabled(AddonPtr addon)
@@ -327,20 +323,10 @@ void CGameManager::AddonDisabled(AddonPtr addon)
     return;
 
   if (addon->Type() == ADDON_GAMEDLL)
+  {
+    CSingleLock lock(m_critSection);
     UnregisterAddonByID(addon->ID());
-}
-
-namespace GAME
-{
-  struct AddonSortByIDFunctor
-  {
-    bool operator() (AddonPtr i, AddonPtr j) { return i->ID() < j->ID(); }
-  } AddonSortByID;
-  
-  struct AddonSortByNameFunctor
-  {
-    bool operator() (AddonPtr i, AddonPtr j) { return StringUtils::CompareNoCase(i->Name(), j->Name()) < 0; }
-  } AddonSortByName;
+  }
 }
 
 void CGameManager::GetAllGameClients(ADDON::VECADDONS& addons)
@@ -370,6 +356,10 @@ void CGameManager::GetAllGameClients(ADDON::VECADDONS& addons)
   if (!addons.empty())
   {
     // Sort by ID and remove duplicates
+    struct AddonSortByIDFunctor
+    {
+      bool operator() (AddonPtr i, AddonPtr j) { return i->ID() < j->ID(); }
+    } AddonSortByID;
     std::sort(addons.begin(), addons.end(), AddonSortByID);
     for (VECADDONS::iterator it = addons.begin(); it != addons.end() - 1; )
     {
@@ -378,8 +368,5 @@ void CGameManager::GetAllGameClients(ADDON::VECADDONS& addons)
       else
         ++it;
     }
-
-    /// Sort by name
-    std::sort(addons.begin(), addons.end(), AddonSortByName);
   }
 }
