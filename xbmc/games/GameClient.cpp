@@ -247,41 +247,6 @@ const CStdString CGameClient::LibPath() const
   return CAddon::LibPath();
 }
 
-bool CGameClient::CanOpen(const CFileItem& file) const
-{
-  // TODO
-  return true;
-}
-
-bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
-{
-  CSingleLock lock(m_critSection);
-
-  if (!ReadyToUse())
-    return false;
-
-  if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != ID())
-  {
-    CLog::Log(LOGERROR, "GAME: File's \"gameclient\" property set to %s, but it doesn't match mine!",
-      file.GetProperty("gameclient").asString().c_str());
-    return false;
-  }
-  
-  CloseFile();
-
-  if (OpenInternal(file))
-  {
-    m_player = player;
-    InitSerialization();
-
-    // TODO: Need an API call in libretro that lets us know the number of ports
-    SetDevice(0, GAME_DEVICE_JOYPAD);
-
-    return true;
-  }
-  return false;
-}
-
 bool HasLocalParentZip(const string& path, string& strParentZip)
 {
   // Can't use parent zip if path isn't a child file of a zip folder
@@ -300,6 +265,84 @@ bool HasLocalParentZip(const string& path, string& strParentZip)
 
   strParentZip = parentZip;
   return true;
+}
+
+bool CGameClient::CanOpen(const CFileItem& file) const
+{
+  // Game clients not supporting files can't open files
+  if (m_bSupportsNoGame)
+    return false;
+
+  // Filter by gameclient property
+  if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != ID())
+    return false;
+
+  CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+  if (translatedUrl.GetProtocol() == "file")
+    translatedUrl.SetProtocol("");
+
+  // Filter by extension
+  string strExtension = URIUtils::GetExtension(file.GetPath());
+  StringUtils::ToLower(strExtension);
+  if (!IsExtensionValid(strExtension))
+  {
+    // If the extension is .zip, try looking inside for files with valid extensions
+    if (strExtension == ".zip" && SupportsVFS())
+    {
+      // Enumerate the zip and look for a file inside the zip with a valid extension
+      CStdString strZipUrl;
+      URIUtils::CreateArchivePath(strZipUrl, "zip", translatedUrl.Get(), "");
+
+      string strValidExts;
+      for (set<string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
+        strValidExts += *it + "|";
+
+      CFileItemList itemList;
+      if (CDirectory::GetDirectory(strZipUrl, itemList, strValidExts, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO) && itemList.Size())
+      {
+        // Return true if any files matches the directory's extension filter
+        return itemList.Size() > 0;
+      }
+    }
+    return false;
+  }
+
+  // If the client supports VFS, it can load all URIs
+  if (SupportsVFS())
+    return true;
+
+  // If file is on the VFS, check if it is in the top-level directory of a local zip
+  if (!translatedUrl.GetProtocol().empty())
+  {
+    string strParentZip;
+    if (IsExtensionValid(".zip") && HasLocalParentZip(translatedUrl.Get(), strParentZip))
+      return true;
+    return false;
+  }
+
+  return true;
+}
+
+bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
+{
+  CSingleLock lock(m_critSection);
+
+  if (!ReadyToUse() || !CanOpen(file))
+    return false;
+
+  CloseFile();
+
+  if (OpenInternal(file))
+  {
+    m_player = player;
+    InitSerialization();
+
+    // TODO: Need an API call in libretro that lets us know the number of ports
+    SetDevice(0, GAME_DEVICE_JOYPAD);
+
+    return true;
+  }
+  return false;
 }
 
 bool CGameClient::OpenInternal(const CFileItem& file)

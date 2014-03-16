@@ -103,6 +103,7 @@ public:
   const std::string& GameClientPath() const { return m_strGameClientPath; }
 
   // Override LibPath() to return a helper library for v1 clients
+  // TODO: Don't make this function virtual, find another way
   virtual const CStdString LibPath() const;
 
   // Return true if this instance is initialised, false otherwise
