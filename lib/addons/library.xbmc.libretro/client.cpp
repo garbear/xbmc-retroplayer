@@ -37,8 +37,8 @@ using namespace std;
 #define GAME_CLIENT_NAME_UNKNOWN      "Unknown libretro core"
 #define GAME_CLIENT_VERSION_UNKNOWN   "0.0.0"
 
-// Read from VFS 1 megabyte at a time
-#define READ_SIZE  (1 * 1024 * 1024)
+#define READ_SIZE      (1 * 1024 * 1024)    // Read from VFS 1MB at a time
+#define MAX_READ_SIZE  (100 * 1024 * 1024)  // Read at most 100MB from VFS
 
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(x)  do { delete x; x = NULL; } while (0)
@@ -259,8 +259,9 @@ GAME_ERROR LoadGame(const char* url)
     {
       if (size > 0)
       {
-        // Size is known, read entire file at once
-        XBMC->ReadFile(file, data.data(), size);
+        // Size is known, read entire file at once (unless it is too big)
+        if (size <= MAX_READ_SIZE)
+          XBMC->ReadFile(file, data.data(), size);
       }
       else
       {
@@ -269,9 +270,19 @@ GAME_ERROR LoadGame(const char* url)
         uint8_t buffer[READ_SIZE];
         while ((bytesRead = XBMC->ReadFile(file, buffer, sizeof(buffer))) > 0)
         {
-          data.insert(data.end(), buffer, buffer + sizeof(buffer));
+          data.insert(data.end(), buffer, buffer + bytesRead);
+
+          // If we read less than READ_SIZE, assume we hit the end of the file
           if (bytesRead < READ_SIZE)
             break;
+
+          // If we have exceeded the VFS file size limit, don't try to load by
+          // VFS and fall back to loading by path
+          if (data.size() > MAX_READ_SIZE)
+          {
+            data.clear();
+            break;
+          }
         }
       }
 
