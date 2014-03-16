@@ -78,7 +78,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   assert((bool)gameClient);
 
   // Load the DLL and retrieve system info from the game client
-  if (!gameClient->Create())
+  if (gameClient->Create() != ADDON_STATUS_OK)
   {
     CLog::Log(LOGERROR, "RetroPlayer: Failed to init game client %s", gameClient->ID().c_str());
     return false;
