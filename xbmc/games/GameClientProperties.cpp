@@ -20,6 +20,7 @@
 
 #include "GameClientProperties.h"
 #include "GameClient.h"
+#include "addons/include/xbmc_game_types.h"
 #include "filesystem/SpecialProtocol.h"
 
 using namespace GAME;
@@ -62,4 +63,14 @@ const char* CGameClientProperties::GetSaveDirectory()
     m_strSaveDirectory = CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SAVE_DIRECTORY));
 
   return m_strSaveDirectory.c_str();
+}
+
+game_client_properties* CGameClientProperties::CreateProps()
+{
+  game_client_properties* props = new game_client_properties;
+  props->library_path      = GetLibraryPath();
+  props->system_directory  = GetSystemDirectory();
+  props->content_directory = GetContentDirectory();
+  props->save_directory    = GetSaveDirectory();
+  return props;
 }

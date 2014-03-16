@@ -21,6 +21,8 @@
 
 #include <string>
 
+struct game_client_properties;
+
 namespace GAME
 {
 
@@ -46,6 +48,8 @@ public:
 
   // "special://profile/addon_data/id/save", passed to game client DLL
   const char* GetSaveDirectory();
+
+  game_client_properties* CreateProps();
 
 private:
   const CGameClient* const m_parent;
