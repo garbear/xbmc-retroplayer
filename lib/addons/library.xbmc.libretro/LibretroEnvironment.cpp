@@ -57,6 +57,13 @@ void CLibretroEnvironment::Initialize(CHelper_libXBMC_addon* xbmc, CHelper_libXB
 
   // Install environment callback
   m_client->retro_set_environment(EnvironmentCallback);
+
+  // Install other callbacks
+  m_client->retro_set_video_refresh(CFrontendBridge::VideoRefresh);
+  m_client->retro_set_audio_sample(CFrontendBridge::AudioSample);
+  m_client->retro_set_audio_sample_batch(CFrontendBridge::AudioSampleBatch);
+  m_client->retro_set_input_poll(CFrontendBridge::InputPoll);
+  m_client->retro_set_input_state(CFrontendBridge::InputState);
 }
 
 void CLibretroEnvironment::Deinitialize()

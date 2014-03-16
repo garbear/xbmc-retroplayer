@@ -35,6 +35,11 @@ namespace LIBRETRO
     static void LogFrontend(retro_log_level level, const char *fmt, ...);
 
     // Forward to XBMC game API
+    static void VideoRefresh(const void* data, unsigned width, unsigned height, size_t pitch);
+    static void AudioSample(int16_t left, int16_t right);
+    static size_t AudioSampleBatch(const int16_t* data, size_t frames);
+    static void InputPoll(void);
+    static int16_t InputState(unsigned port, unsigned device, unsigned index, unsigned id);
     static uintptr_t HwGetCurrentFramebuffer(void);
     static retro_proc_address_t HwGetProcAddress(const char *sym);
     static bool RumbleSetState(unsigned port, retro_rumble_effect effect, uint16_t strength);

@@ -50,6 +50,43 @@ void CFrontendBridge::LogFrontend(retro_log_level level, const char *fmt, ...)
   CLibretroEnvironment::GetXBMC()->Log(xbmcLevel, buffer);
 }
 
+void CFrontendBridge::VideoRefresh(const void* data, unsigned width, unsigned height, size_t pitch)
+{
+  if (!CLibretroEnvironment::GetFrontend())
+    return;
+
+  return CLibretroEnvironment::GetFrontend()->VideoRefresh(data, width, height, pitch);
+}
+
+void CFrontendBridge::AudioSample(int16_t left, int16_t right)
+{
+  if (!CLibretroEnvironment::GetFrontend())
+    return;
+
+  return CLibretroEnvironment::GetFrontend()->AudioSample(left, right);
+}
+
+size_t CFrontendBridge::AudioSampleBatch(const int16_t* data, size_t frames)
+{
+  if (!CLibretroEnvironment::GetFrontend())
+    return 0;
+
+  return CLibretroEnvironment::GetFrontend()->AudioSampleBatch(data, frames);
+}
+
+void CFrontendBridge::InputPoll(void)
+{
+  // Not needed
+}
+
+int16_t CFrontendBridge::InputState(unsigned port, unsigned device, unsigned index, unsigned id)
+{
+  if (!CLibretroEnvironment::GetFrontend())
+    return 0;
+
+  return CLibretroEnvironment::GetFrontend()->InputState(port, device, index, id);
+}
+
 uintptr_t CFrontendBridge::HwGetCurrentFramebuffer(void)
 {
   if (!CLibretroEnvironment::GetFrontend())
