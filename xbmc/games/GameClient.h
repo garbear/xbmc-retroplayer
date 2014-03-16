@@ -179,6 +179,9 @@ public:
   bool IsExtensionValid(const std::string& strExtension) const;
 
 private:
+  // Called by the constructors
+  void InitializeProperties(void);
+
   bool GetAddonProperties(void);
   
   bool OpenInternal(const CFileItem& file);
@@ -201,7 +204,7 @@ private:
 
   ADDON::AddonVersion   m_apiVersion;
   CGameClientProperties m_libraryProps;        // Properties to pass to the DLL
-  std::string           m_strGameClientPath;   // Path to the game client library
+  const std::string     m_strGameClientPath;   // Path to the game client library
   bool                  m_bReadyToUse;         // True if this add-on is connected to the backend, false otherwise */
 
   // Returned from the Game API

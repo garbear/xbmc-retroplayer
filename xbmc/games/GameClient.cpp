@@ -53,18 +53,9 @@ CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
     m_apiVersion("0.0.0"),
     m_libraryProps(this),
-    m_bReadyToUse(false),
-    m_bIsPlaying(false),
-    m_player(NULL),
-    m_region(GAME_REGION_NTSC),
-    m_frameRate(0.0),
-    m_frameRateCorrection(1.0),
-    m_sampleRate(0.0),
-    m_serializeSize(0),
-    m_bRewindEnabled(false)
+    m_strGameClientPath(CAddon::LibPath())
 {
   m_pInfo = m_libraryProps.CreateProps();
-  m_strGameClientPath = CAddon::LibPath();
 
   InfoMap::const_iterator it;
   /*
@@ -83,18 +74,9 @@ CGameClient::CGameClient(const cp_extension_t* ext)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(ext),
     m_apiVersion("0.0.0"),
     m_libraryProps(this),
-    m_bReadyToUse(false),
-    m_bIsPlaying(false),
-    m_player(NULL),
-    m_region(GAME_REGION_NTSC),
-    m_frameRate(0.0),
-    m_frameRateCorrection(1.0),
-    m_sampleRate(0.0),
-    m_serializeSize(0),
-    m_bRewindEnabled(false)
+    m_strGameClientPath(CAddon::LibPath())
 {
-  m_pInfo = m_libraryProps.CreateProps();
-  m_strGameClientPath = CAddon::LibPath();
+  InitializeProperties();
 
   if (ext)
   {
@@ -128,6 +110,20 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       m_bSupportsNoGame = (strSupportsNoGame == "true" || strSupportsNoGame == "yes");
     }
   }
+}
+
+void CGameClient::InitializeProperties(void)
+{
+  m_bReadyToUse = false;
+  m_bIsPlaying = false;
+  m_player = NULL;
+  m_region = GAME_REGION_NTSC;
+  m_frameRate = 0.0;
+  m_frameRateCorrection = 1.0;
+  m_sampleRate = 0.0;
+  m_serializeSize = 0;
+  m_bRewindEnabled = false;
+  m_pInfo = m_libraryProps.CreateProps();
 }
 
 CGameClient::~CGameClient(void)
