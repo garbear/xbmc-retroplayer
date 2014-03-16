@@ -55,7 +55,7 @@ CGameClient::CGameClient(const AddonProps& props)
     m_libraryProps(this),
     m_strGameClientPath(CAddon::LibPath())
 {
-  m_pInfo = m_libraryProps.CreateProps();
+  InitializeProperties();
 
   InfoMap::const_iterator it;
   /*
@@ -88,21 +88,18 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       SetPlatforms(strPlatforms);
     }
     */
-
     string strExtensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
     if (!strExtensions.empty())
     {
       Props().extrainfo.insert(make_pair("extensions", strExtensions));
       SetExtensions(strExtensions, m_extensions);
     }
-
     string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_vfs");
     if (!strSupportsVFS.empty())
     {
       Props().extrainfo.insert(make_pair("supports_vfs", strSupportsVFS));
       m_bSupportsVFS = (strSupportsVFS == "true" || strSupportsVFS == "yes");
     }
-
     string strSupportsNoGame = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
     if (!strSupportsNoGame.empty())
     {
