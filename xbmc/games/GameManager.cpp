@@ -33,6 +33,8 @@
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
 
+#include <algorithm>
+
 using namespace ADDON;
 using namespace GAME;
 using namespace XFILE;
@@ -131,16 +133,7 @@ void CGameManager::UpdateRemoteAddons()
   if (database.Open())
   {
     VECADDONS addons;
-
-    // Get add-ons in remote repositories
-    database.GetAddons(addons, ADDON_GAMEDLL);
-    database.Close();
-
-    // Get enabled add-ons installed locally
-    CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, addons, true);
-
-    // Get disabled add-ons installed locally
-    CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, addons, false);
+    GetAllGameClients(addons);
 
     CSingleLock lock(m_critSection);
 
@@ -180,7 +173,7 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
   // also checks that the game client is installed and configured. If the client
   // has been installed but is not configured yet, it will be disabled in the
   // database.
-  if (!client->Enabled() || database.IsAddonDisabled(client->ID()))
+  if (!client->Enabled() || CAddonMgr::Get().IsAddonDisabled(client->ID()))
     return false;
 
   CSingleLock lock(m_critSection);
@@ -200,9 +193,7 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
     CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
 
     // Removes the game client from m_gameClients via CAddonDatabase callback
-    CAddonDatabase database;
-    if (database.Open())
-      database.DisableAddon(client->ID());
+    CAddonMgr::Get().DisableAddon(client->ID());
     return false;
   }
 
@@ -337,4 +328,58 @@ void CGameManager::AddonDisabled(AddonPtr addon)
 
   if (addon->Type() == ADDON_GAMEDLL)
     UnregisterAddonByID(addon->ID());
+}
+
+namespace GAME
+{
+  struct AddonSortByIDFunctor
+  {
+    bool operator() (AddonPtr i, AddonPtr j) { return i->ID() < j->ID(); }
+  } AddonSortByID;
+  
+  struct AddonSortByNameFunctor
+  {
+    bool operator() (AddonPtr i, AddonPtr j) { return StringUtils::CompareNoCase(i->Name(), j->Name()) < 0; }
+  } AddonSortByName;
+}
+
+void CGameManager::GetAllGameClients(ADDON::VECADDONS& addons)
+{
+  VECADDONS tempAddons;
+
+  // Get add-ons in remote repositories
+  CAddonDatabase database;
+  if (database.Open())
+  {
+    database.GetAddons(tempAddons, ADDON_GAMEDLL);
+    addons.insert(addons.end(), tempAddons.begin(), tempAddons.end());
+    tempAddons.clear();
+    database.Close();
+  }
+
+  // Get enabled add-ons installed locally
+  CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, tempAddons, true);
+  addons.insert(addons.end(), tempAddons.begin(), tempAddons.end());
+  tempAddons.clear();
+
+  // Get disabled add-ons installed locally
+  CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, tempAddons, false);
+  addons.insert(addons.end(), tempAddons.begin(), tempAddons.end());
+  tempAddons.clear();
+
+  if (!addons.empty())
+  {
+    // Sort by ID and remove duplicates
+    std::sort(addons.begin(), addons.end(), AddonSortByID);
+    for (VECADDONS::iterator it = addons.begin(); it != addons.end() - 1; )
+    {
+      if ((*it)->ID() == (*(it + 1))->ID())
+        addons.erase(it + 1);
+      else
+        ++it;
+    }
+
+    /// Sort by name
+    std::sort(addons.begin(), addons.end(), AddonSortByName);
+  }
 }

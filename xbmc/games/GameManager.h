@@ -103,6 +103,9 @@ namespace GAME
     virtual bool RequestRestart(ADDON::AddonPtr addon, bool datachanged) { return StopClient(addon, true); }
     virtual bool RequestRemoval(ADDON::AddonPtr addon)                   { return StopClient(addon, false); }
 
+    // Get all known add-ons, both local and remote
+    static void GetAllGameClients(ADDON::VECADDONS& addons);
+
   private:
     // Initialize m_gameClients with enabled game clients
     virtual bool UpdateAddons();
