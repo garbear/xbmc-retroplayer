@@ -123,12 +123,8 @@ bool CRetroPlayerDialogs::GameLauchDialog(const CFileItem &file, GameClientPtr &
 
 bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameClientPtr &result)
 {
-  // Get all remote add-ons
-  // TODO: filter by type (ADDON_GAMEDLL)
   VECADDONS addons;
-  CAddonDatabase database;
-  if (database.Open())
-    database.GetAddons(addons);
+  CGameManager::GetAllGameClients(addons);
 
   map<string, GameClientPtr> candidates;
   for (VECADDONS::const_iterator itRemote = addons.begin(); itRemote != addons.end(); ++itRemote)
@@ -137,11 +133,9 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
       continue;
     GameClientPtr gc = boost::dynamic_pointer_cast<CGameClient>(*itRemote);
 
-    /*
     // Only add game clients to the list if they provide extensions or platforms
-    if (!gc || (gc->GetExtensions().empty() && gc->GetPlatforms().empty()))
+    if (!gc || (gc->GetExtensions().empty() /* && gc->GetPlatforms().empty() */))
       continue;
-    */
 
     if (!gc->CanOpen(file))
       continue;
@@ -151,22 +145,18 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
     if (CAddonMgr::Get().GetAddon(gc->ID(), addon, ADDON_GAMEDLL, true))
       continue;
 
-    // If GetAddon() returns false, but the add-on still exists, then the
-    // add-on is disabled; include it and mark it as such
-    bool disabled = (bool)addon;
-    if (!disabled)
-    {
-      // Don't include broken remote add-ons
-      bool broken = !(*itRemote)->Props().broken.empty();
-      if (broken)
-        continue;
-    }
+    // If GetAddon() returns false, but addon is non-NULL, then the add-on exists but is disabled
+    bool bEnabled = (addon.get() == NULL);
+    
+    bool bBroken = !(*itRemote)->Props().broken.empty();
 
-    // Append "(disabled)" to the name if the add-on is disabled
+    if (bEnabled && bBroken)
+      continue;
+
     string strName = gc->Name();
-    // Make lower case for sorting purposes
-    StringUtils::ToLower(strName);
-    if (disabled)
+
+    // Append "(Disabled)" to the name if the add-on is disabled
+    if (!bEnabled)
       strName = StringUtils::Format("%s (%s)", strName.c_str(), g_localizeStrings.Get(1223).c_str());
 
     candidates[strName] = gc;
@@ -187,14 +177,12 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
   CContextButtons choicesInt;
   unsigned int i = 0;
 
+  // Vector to translate button IDs to game client pointers
   vector<string> choicesStr;
-  
   for (map<string, GameClientPtr>::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
   {
-    string strName = it->second->Name();
+    const string& strName = it->first;
     choicesInt.Add(i++, strName);
-    // Remember, our map keys are lower case
-    StringUtils::ToLower(strName);
     choicesStr.push_back(strName);
   }
 
@@ -205,7 +193,11 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
     return false;
   }
 
-  GameClientPtr &gc = candidates[choicesStr[btnid]];
+  map<string, GameClientPtr>::iterator it = candidates.find(choicesStr[btnid]);
+  if (it == candidates.end())
+    return false; // Shouldn't happen
+
+  GameClientPtr &gc = it->second;
   
   // determining disabled status is the same test as earlier
   // TODO: Preserve disabled values in parallel array
@@ -218,7 +210,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
     // TODO: Prompt the user to enable it
     CLog::Log(LOGDEBUG, "RetroPlayer: Game client %s installed but disabled, enabling it", gc->ID().c_str());
     CGameManager::Get().ClearAutoLaunch(); // Don't auto-launch queued game when the add-on is enabled
-    database.DisableAddon(gc->ID(), false);
+    CAddonMgr::Get().DisableAddon(gc->ID(), false);
 
     // Retrieve the newly-enabled add-on
     if (!CAddonMgr::Get().GetAddon(gc->ID(), addon) || !addon)
