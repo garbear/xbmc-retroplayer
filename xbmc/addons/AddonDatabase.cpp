@@ -624,30 +624,32 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
+    bool wasDisabled = IsAddonDisabled(addonID); // we need to know if service addon is running
     if (disable)
     {
-      if (!IsAddonDisabled(addonID)) // Enabled
-      {
-        CStdString sql = PrepareSQL("insert into disabled(id, addonID) values(NULL, '%s')", addonID.c_str());
-        m_pDS->exec(sql);
-
-        AddonPtr addon;
-        if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_UNKNOWN, false))
-          OnDisable(addon);
-        return true;
-      }
-      return false; // already disabled or failed query
-    }
-    else
-    {
-      bool disabled = IsAddonDisabled(addonID); //we need to know if service addon is running
-      CStdString sql = PrepareSQL("delete from disabled where addonID='%s'", addonID.c_str());
-      m_pDS->exec(sql);
+      if (wasDisabled)
+        return false; // already disabled or failed query
 
       AddonPtr addon;
       if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_UNKNOWN, false))
-        OnEnable(addon, disabled);
+        OnDisable(addon);
+
+      CStdString sql = PrepareSQL("insert into disabled(id, addonID) values(NULL, '%s')", addonID.c_str());
+      m_pDS->exec(sql);
     }
+    else
+    {
+      AddonPtr addon;
+      if (CAddonMgr::Get().GetAddon(addonID, addon, ADDON_UNKNOWN, false))
+      {
+        if (!OnEnable(addon, wasDisabled))
+          return false;
+      }
+
+      CStdString sql = PrepareSQL("delete from disabled where addonID='%s'", addonID.c_str());
+      m_pDS->exec(sql);
+    }
+
     return true;
   }
   catch (...)
@@ -657,14 +659,16 @@ bool CAddonDatabase::DisableAddon(const CStdString &addonID, bool disable /* = t
   return false;
 }
 
-void CAddonDatabase::OnEnable(const ADDON::AddonPtr &addon, bool bDisabled)
+bool CAddonDatabase::OnEnable(const ADDON::AddonPtr &addon, bool bDisabled)
 {
   if (!addon)
-    return;
+    return false;
   
   IAddonDatabaseCallback *cb = GetCallbackForType(addon->Type());
   if (cb)
-    cb->AddonEnabled(addon, bDisabled);
+    return cb->AddonEnabled(addon, bDisabled);
+
+  return true;
 }
 
 void CAddonDatabase::OnDisable(const ADDON::AddonPtr &addon)

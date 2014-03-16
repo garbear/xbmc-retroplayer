@@ -79,10 +79,10 @@ void CGameManager::Start()
   CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_GAMEDLL, this);
 
   // TODO: Run these off-thread
-  // CAddonMgr::Init() is called before CGameManager::Start(), so we won't
-  // receive the first ObservableMessageAddons message
+  // Must call UpdateAddons(), as CAddonMgr::Init() is called before CGameManager::Start(),
+  // so we won't receive the first ObservableMessageAddons message.
   UpdateAddons();
-  UpdateRemoteAddons();
+  UpdateExtensions();
 }
 
 void CGameManager::Stop()
@@ -118,20 +118,20 @@ bool CGameManager::StopClient(AddonPtr client, bool bRestart)
 bool CGameManager::UpdateAddons()
 {
   VECADDONS gameClients;
-  if (CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, gameClients))
+  if (CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, gameClients, true))
   {
     CSingleLock lock(m_critSection);
 
     for (VECADDONS::const_iterator it = gameClients.begin(); it != gameClients.end(); it++)
     {
       if (!RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it)))
-        UnregisterAddonByID((*it)->ID());
+        CAddonMgr::Get().DisableAddon((*it)->ID());
     }
   }
   return true;
 }
 
-void CGameManager::UpdateRemoteAddons()
+void CGameManager::UpdateExtensions()
 {
   CAddonDatabase database;
   if (database.Open())
@@ -181,11 +181,8 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
 
   if (client->Create() != ADDON_STATUS_OK)
   {
-    CLog::Log(LOGERROR, "GameManager: failed to load DLL for %s, disabling in database", client->ID().c_str());
+    CLog::Log(LOGERROR, "GameManager: failed to load DLL for %s", client->ID().c_str());
     CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(15023)); // Error loading DLL
-
-    // Removes the game client from m_gameClients via CAddonDatabase callback
-    CAddonMgr::Get().DisableAddon(client->ID());
     return false;
   }
 
@@ -297,19 +294,20 @@ void CGameManager::Notify(const Observable& obs, const ObservableMessage msg)
   if (msg == ObservableMessageAddons)
     UpdateAddons();
   else if (msg == ObservableMessageRemoteAddons)
-    UpdateRemoteAddons();
+    UpdateExtensions();
 }
 
-void CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
+bool CGameManager::AddonEnabled(AddonPtr addon, bool bDisabled)
 {
   if (!addon)
-    return;
+    return false;
 
   if (addon->Type() == ADDON_GAMEDLL)
   {
     CSingleLock lock(m_critSection);
-    RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
+    return RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(addon));
   }
+  return true;
 }
 
 void CGameManager::AddonDisabled(AddonPtr addon)

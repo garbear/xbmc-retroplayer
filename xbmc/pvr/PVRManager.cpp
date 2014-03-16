@@ -171,10 +171,11 @@ void CPVRManager::OnSettingAction(const CSetting *setting)
   }
 }
 
-void CPVRManager::AddonEnabled(ADDON::AddonPtr addon, bool bDisabled)
+bool CPVRManager::AddonEnabled(ADDON::AddonPtr addon, bool bDisabled)
 {
   // (re)start the pvr manager when enabling a pvr add-on
   Start(true);
+  return true;
 }
 
 void CPVRManager::AddonDisabled(ADDON::AddonPtr addon)

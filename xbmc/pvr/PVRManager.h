@@ -112,7 +112,7 @@ namespace PVR
     virtual void OnSettingAction(const CSetting *setting);
 
     // Inherited from IAddonDatabaseCallback
-    virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
+    virtual bool AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
     virtual void AddonDisabled(ADDON::AddonPtr addon);
 
     /*!

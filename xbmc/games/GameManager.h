@@ -95,7 +95,7 @@ namespace GAME
     virtual void Notify(const Observable& obs, const ObservableMessage msg);
 
     // Inherited from IAddonDatabaseCallback
-    virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
+    virtual bool AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
     virtual void AddonDisabled(ADDON::AddonPtr addon);
 
     // Inherited from IAddonMgrCallback
@@ -108,7 +108,7 @@ namespace GAME
   private:
     // Initialize m_gameClients with enabled game clients
     virtual bool UpdateAddons();
-    void UpdateRemoteAddons();
+    void UpdateExtensions();
     
     /**
      * Create and maintain a cache of game client add-on information. If a file

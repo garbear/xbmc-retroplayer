@@ -129,10 +129,10 @@ CServiceManager &CServiceManager::Get()
   return _singleton;
 }
 
-void CServiceManager::AddonEnabled(AddonPtr addon, bool bDisabled)
+bool CServiceManager::AddonEnabled(AddonPtr addon, bool bDisabled)
 {
   if (!addon)
-    return;
+    return false;
 
   // If the addon is a service, start it
   if (bDisabled)
@@ -141,6 +141,8 @@ void CServiceManager::AddonEnabled(AddonPtr addon, bool bDisabled)
     if (service)
       service->Start();
   }
+
+  return true;
 }
 
 void CServiceManager::AddonDisabled(AddonPtr addon)

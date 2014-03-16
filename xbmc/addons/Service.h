@@ -38,7 +38,7 @@ namespace ADDON
     static CServiceManager &Get();
 
     virtual void AddonDisabled(ADDON::AddonPtr addon);
-    virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
+    virtual bool AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
   };
 
   class CService: public CAddon

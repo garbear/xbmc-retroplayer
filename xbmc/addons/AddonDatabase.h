@@ -38,8 +38,9 @@ public:
     * Called when an add-on is enabled in the database.
     * @param addon - a pointer to the add-on
     * @param bDisabled - whether the add-on was disabled prior to being enabled
+    * @return False if add-on should remain disabled
     */
-  virtual void AddonEnabled(ADDON::AddonPtr addon, bool bDisabled) = 0;
+  virtual bool AddonEnabled(ADDON::AddonPtr addon, bool bDisabled) = 0;
   /**
     * Called when an add-on is disabled in the database.
     * @param addon - a pointer to the add-on
@@ -202,8 +203,9 @@ private:
    * Called when add-ons are enabled in the database.
    * @param addon - a pointer to the add-on
    * @param bDisabled - whether the add-on was disabled prior to being enabled
+   * @return False if the add-on should remain 
    */
-  void OnEnable(const ADDON::AddonPtr &addon, bool bDisabled);
+  bool OnEnable(const ADDON::AddonPtr &addon, bool bDisabled);
 
   /**
    * Called when add-ons are disabled in the database.
