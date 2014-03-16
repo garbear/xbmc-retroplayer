@@ -19,6 +19,7 @@
  */
 
 #include "ClientBridge.h"
+#include "GameInfoLoader.h"
 #include "libretro.h"
 #include "LibretroDLL.h"
 #include "LibretroEnvironment.h"
@@ -27,8 +28,8 @@
 #include "xbmc_addon_dll.h"
 #include "xbmc_game_dll.h"
 
-#include <stdint.h>
 #include <string>
+#include <vector>
 
 using namespace ADDON;
 using namespace LIBRETRO;
@@ -37,17 +38,25 @@ using namespace std;
 #define GAME_CLIENT_NAME_UNKNOWN      "Unknown libretro core"
 #define GAME_CLIENT_VERSION_UNKNOWN   "0.0.0"
 
-#define READ_SIZE      (1 * 1024 * 1024)    // Read from VFS 1MB at a time
-#define MAX_READ_SIZE  (100 * 1024 * 1024)  // Read at most 100MB from VFS
-
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(x)  do { delete x; x = NULL; } while (0)
 #endif
 
-CHelper_libXBMC_addon*  XBMC          = NULL;
-CHelper_libXBMC_game*   FRONTEND      = NULL;
-CLibretroDLL*           CLIENT        = NULL;
-CClientBridge*          CLIENT_BRIDGE = NULL;
+void SAFE_DELETE_GAME_INFO(vector<CGameInfoLoader*>& vec)
+{
+  for (vector<CGameInfoLoader*>::iterator it = vec.begin(); it != vec.end(); ++it)
+    delete *it;
+  vec.clear();
+}
+
+namespace LIBRETRO
+{
+  CHelper_libXBMC_addon*   XBMC          = NULL;
+  CHelper_libXBMC_game*    FRONTEND      = NULL;
+  CLibretroDLL*            CLIENT        = NULL;
+  CClientBridge*           CLIENT_BRIDGE = NULL;
+  vector<CGameInfoLoader*> GAME_INFO;
+}
 
 extern "C"
 {
@@ -116,6 +125,7 @@ void ADDON_Destroy()
   SAFE_DELETE(FRONTEND);
   SAFE_DELETE(CLIENT);
   SAFE_DELETE(CLIENT_BRIDGE);
+  SAFE_DELETE_GAME_INFO(GAME_INFO);
 }
 
 ADDON_STATUS ADDON_GetStatus()
@@ -241,65 +251,20 @@ GAME_ERROR LoadGame(const char* url)
   if (url == NULL)
     return GAME_ERROR_INVALID_PARAMETERS;
 
-  // If libretro client supports loading from memory, load the file using XBMC's VFS
-  struct __stat64 statStruct = { };
+  // Build info loader vector
+  SAFE_DELETE_GAME_INFO(GAME_INFO);
+  GAME_INFO.push_back(new CGameInfoLoader(url, XBMC, SupportsVFS()));
 
-  // Not all VFS protocols necessarily support stat(), so also check if file exists
-  if (SupportsVFS() && (XBMC->StatFile(url, &statStruct) == 0 || XBMC->FileExists(url, true)))
+  // Try to load via memory
+  retro_game_info info;
+  if (GAME_INFO[0]->GetMemoryStruct(info))
   {
-    static vector<uint8_t> data;
-    data.clear();
-
-    int64_t size = statStruct.st_size;
-    if (size > 0)
-      data.reserve((size_t)size);
-
-    void* file = XBMC->OpenFile(url, 0);
-    if (file)
-    {
-      if (size > 0)
-      {
-        // Size is known, read entire file at once (unless it is too big)
-        if (size <= MAX_READ_SIZE)
-          XBMC->ReadFile(file, data.data(), size);
-      }
-      else
-      {
-        // Read file in chunks
-        unsigned int bytesRead;
-        uint8_t buffer[READ_SIZE];
-        while ((bytesRead = XBMC->ReadFile(file, buffer, sizeof(buffer))) > 0)
-        {
-          data.insert(data.end(), buffer, buffer + bytesRead);
-
-          // If we read less than READ_SIZE, assume we hit the end of the file
-          if (bytesRead < READ_SIZE)
-            break;
-
-          // If we have exceeded the VFS file size limit, don't try to load by
-          // VFS and fall back to loading by path
-          if (data.size() > MAX_READ_SIZE)
-          {
-            data.clear();
-            break;
-          }
-        }
-      }
-
-      if (!data.empty())
-      {
-        retro_game_info info = { };
-        info.data = data.data();
-        info.size = data.size();
-        if (CLIENT->retro_load_game(&info))
-          return GAME_ERROR_NO_ERROR;
-      }
-    }
+    if (CLIENT->retro_load_game(&info))
+      return GAME_ERROR_NO_ERROR;
   }
-  
-  // If loading via VFS isn't supported or fails for whatever reason, try loading via path
-  retro_game_info info = { };
-  info.path = url;
+
+  // Fall back to loading via path
+  GAME_INFO[0]->GetPathStruct(info);
   bool result = CLIENT->retro_load_game(&info);
 
   return result ? GAME_ERROR_NO_ERROR : GAME_ERROR_FAILED;
@@ -313,24 +278,44 @@ GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls)
   if (urls == NULL || num_urls == 0)
     return GAME_ERROR_INVALID_PARAMETERS;
 
-  // TODO: Support loading from memory as in LoadGame()
-  retro_game_info* info = new retro_game_info[num_urls];
+  // Build info loader vector
+  SAFE_DELETE_GAME_INFO(GAME_INFO);
   for (unsigned int i = 0; i < num_urls; i++)
-    info[i].path = urls[i];
-  bool result = CLIENT->retro_load_game_special(type, info, num_urls);
-  delete[] info;
+    GAME_INFO.push_back(new CGameInfoLoader(urls[i], XBMC, SupportsVFS()));
+
+  // Try to load via memory
+  vector<retro_game_info> infoVec;
+  infoVec.resize(num_urls);
+  bool bLoadFromMemory = true;
+  for (unsigned int i = 0; bLoadFromMemory && i < num_urls; i++)
+    bLoadFromMemory &= GAME_INFO[i]->GetMemoryStruct(infoVec[i]);
+  if (bLoadFromMemory)
+  {
+    if (CLIENT->retro_load_game_special(type, infoVec.data(), num_urls))
+      return GAME_ERROR_NO_ERROR;
+  }
+
+  // Fall back to loading by path
+  for (unsigned int i = 0; i < num_urls; i++)
+    GAME_INFO[i]->GetPathStruct(infoVec[i]);
+  bool result = CLIENT->retro_load_game_special(type, infoVec.data(), num_urls);
 
   return result ? GAME_ERROR_NO_ERROR : GAME_ERROR_FAILED;
 }
 
 GAME_ERROR UnloadGame(void)
 {
-  if (!CLIENT)
-    return GAME_ERROR_FAILED;
+  GAME_ERROR error = GAME_ERROR_FAILED;
 
-  CLIENT->retro_unload_game();
+  if (CLIENT)
+  {
+    CLIENT->retro_unload_game();
+    error = GAME_ERROR_NO_ERROR;
+  }
 
-  return GAME_ERROR_NO_ERROR;
+  SAFE_DELETE_GAME_INFO(GAME_INFO);
+
+  return error;
 }
 
 GAME_ERROR Run(void)

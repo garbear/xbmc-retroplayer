@@ -25,6 +25,9 @@
     <ClCompile Include="..\..\client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\GameInfoLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ClientBridge.h">
@@ -46,6 +49,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\LibretroEnvironment.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GameInfoLoader.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

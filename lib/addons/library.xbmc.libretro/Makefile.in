@@ -6,6 +6,7 @@ LIBNAME=libXBMC_libretro
 OBJS=client.o \
      ClientBridge.o \
      FrontendBridge.o \
+     GameInfoLoader.o \
      LibretroDLL.o \
      LibretroEnvironment.o \
 

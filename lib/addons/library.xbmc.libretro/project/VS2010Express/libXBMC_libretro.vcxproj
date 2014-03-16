@@ -77,6 +77,7 @@
     <ClCompile Include="..\..\..\..\..\addons\library.xbmc.addon\dlfcn-win32.cpp" />
     <ClCompile Include="..\..\ClientBridge.cpp" />
     <ClCompile Include="..\..\FrontendBridge.cpp" />
+    <ClCompile Include="..\..\GameInfoLoader.cpp" />
     <ClCompile Include="..\..\LibretroDLL.cpp" />
     <ClCompile Include="..\..\LibretroEnvironment.cpp" />
     <ClCompile Include="..\..\client.cpp" />
@@ -86,6 +87,7 @@
     <ClInclude Include="..\..\..\..\..\addons\library.xbmc.game\libXBMC_game.h" />
     <ClInclude Include="..\..\ClientBridge.h" />
     <ClInclude Include="..\..\FrontendBridge.h" />
+    <ClInclude Include="..\..\GameInfoLoader.h" />
     <ClInclude Include="..\..\libretro.h" />
     <ClInclude Include="..\..\LibretroDLL.h" />
     <ClInclude Include="..\..\LibretroEnvironment.h" />
