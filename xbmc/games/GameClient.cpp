@@ -238,8 +238,11 @@ const CStdString CGameClient::LibPath() const
     if (gameApiVersion == AddonVersion("1.0.0"))
     {
       AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(LIBRETRO_WRAPPER_LIBRARY, addon, ADDON_GAMEDLL) && addon)
+      if (CAddonMgr::Get().GetAddon(LIBRETRO_WRAPPER_LIBRARY, addon, ADDON_GAMEDLL, true) ||
+          CAddonMgr::Get().GetAddon(LIBRETRO_WRAPPER_LIBRARY, addon, ADDON_GAMEDLL, false))
+      {
         return addon->LibPath();
+      }
     }
   }
 
