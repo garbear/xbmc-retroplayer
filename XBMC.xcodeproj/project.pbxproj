@@ -248,6 +248,9 @@
 		5558ED10176396CD00118C35 /* StereoscopicsManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5558ED0E176396CD00118C35 /* StereoscopicsManager.cpp */; };
 		55611BA31766672F00754072 /* RenderFlags.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55611BA21766672F00754072 /* RenderFlags.cpp */; };
 		55D3604E1826CAB900DA66D2 /* OverlayRendererGUI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55D3604C1826CAB900DA66D2 /* OverlayRendererGUI.cpp */; };
+		6800FB4C18DD03E800A65963 /* GameClientProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6800FB4A18DD03E800A65963 /* GameClientProperties.cpp */; };
+		6800FB4D18DD03E800A65963 /* GameClientProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6800FB4A18DD03E800A65963 /* GameClientProperties.cpp */; };
+		6800FB4E18DD03E800A65963 /* GameClientProperties.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6800FB4A18DD03E800A65963 /* GameClientProperties.cpp */; };
 		7C0B98A4154B79C30065A238 /* AEDeviceInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C0B98A1154B79C30065A238 /* AEDeviceInfo.cpp */; };
 		7C140989183224B8009F9411 /* ISetting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C14096F183224B8009F9411 /* ISetting.cpp */; };
 		7C14098A183224B8009F9411 /* ISetting.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C14096F183224B8009F9411 /* ISetting.cpp */; };
@@ -1652,10 +1655,8 @@
 		DFF8C83017F61836005B16DB /* RetroPlayerVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C81A17F61836005B16DB /* RetroPlayerVideo.cpp */; };
 		DFF8C88A17F61861005B16DB /* GameClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86517F61860005B16DB /* GameClient.cpp */; };
 		DFF8C88B17F61861005B16DB /* GameFileAutoLauncher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */; };
-		DFF8C88C17F61861005B16DB /* GameFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86A17F61860005B16DB /* GameFileLoader.cpp */; };
 		DFF8C88D17F61861005B16DB /* GameManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86C17F61860005B16DB /* GameManager.cpp */; };
 		DFF8C88E17F61861005B16DB /* GameSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86E17F61860005B16DB /* GameSettings.cpp */; };
-		DFF8C88F17F61861005B16DB /* LibretroEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87417F61861005B16DB /* LibretroEnvironment.cpp */; };
 		DFF8C89217F61861005B16DB /* SerialState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87817F61861005B16DB /* SerialState.cpp */; };
 		DFF8C89317F61861005B16DB /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */; };
 		DFF8C89417F61861005B16DB /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87D17F61861005B16DB /* GameInfoTagLoader.cpp */; };
@@ -1663,10 +1664,8 @@
 		DFF8C89917F61861005B16DB /* GUIWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C88717F61861005B16DB /* GUIWindowGames.cpp */; };
 		DFF8C89B17F61861005B16DB /* GameClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86517F61860005B16DB /* GameClient.cpp */; };
 		DFF8C89C17F61861005B16DB /* GameFileAutoLauncher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */; };
-		DFF8C89D17F61861005B16DB /* GameFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86A17F61860005B16DB /* GameFileLoader.cpp */; };
 		DFF8C89E17F61861005B16DB /* GameManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86C17F61860005B16DB /* GameManager.cpp */; };
 		DFF8C89F17F61861005B16DB /* GameSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86E17F61860005B16DB /* GameSettings.cpp */; };
-		DFF8C8A017F61861005B16DB /* LibretroEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87417F61861005B16DB /* LibretroEnvironment.cpp */; };
 		DFF8C8A317F61861005B16DB /* SerialState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87817F61861005B16DB /* SerialState.cpp */; };
 		DFF8C8A417F61861005B16DB /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */; };
 		DFF8C8A517F61861005B16DB /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87D17F61861005B16DB /* GameInfoTagLoader.cpp */; };
@@ -1674,10 +1673,8 @@
 		DFF8C8AB17F61861005B16DB /* GUIWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C88717F61861005B16DB /* GUIWindowGames.cpp */; };
 		DFF8C8AD17F61861005B16DB /* GameClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86517F61860005B16DB /* GameClient.cpp */; };
 		DFF8C8AE17F61861005B16DB /* GameFileAutoLauncher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */; };
-		DFF8C8AF17F61861005B16DB /* GameFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86A17F61860005B16DB /* GameFileLoader.cpp */; };
 		DFF8C8B017F61861005B16DB /* GameManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86C17F61860005B16DB /* GameManager.cpp */; };
 		DFF8C8B117F61861005B16DB /* GameSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C86E17F61860005B16DB /* GameSettings.cpp */; };
-		DFF8C8B217F61861005B16DB /* LibretroEnvironment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87417F61861005B16DB /* LibretroEnvironment.cpp */; };
 		DFF8C8B517F61861005B16DB /* SerialState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87817F61861005B16DB /* SerialState.cpp */; };
 		DFF8C8B617F61861005B16DB /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */; };
 		DFF8C8B717F61861005B16DB /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C87D17F61861005B16DB /* GameInfoTagLoader.cpp */; };
@@ -3761,6 +3758,8 @@
 		55611BA41766679200754072 /* RenderFlags.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderFlags.h; sourceTree = "<group>"; };
 		55D3604C1826CAB900DA66D2 /* OverlayRendererGUI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OverlayRendererGUI.cpp; sourceTree = "<group>"; };
 		55D3604D1826CAB900DA66D2 /* OverlayRendererGUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OverlayRendererGUI.h; sourceTree = "<group>"; };
+		6800FB4A18DD03E800A65963 /* GameClientProperties.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameClientProperties.cpp; sourceTree = "<group>"; };
+		6800FB4B18DD03E800A65963 /* GameClientProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameClientProperties.h; sourceTree = "<group>"; };
 		6E2FACD20E26E92800DF79EA /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6E97BDBF0DA2B620003A2A89 /* EventClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventClient.h; sourceTree = "<group>"; };
 		6E97BDC00DA2B620003A2A89 /* EventPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventPacket.h; sourceTree = "<group>"; };
@@ -4437,20 +4436,12 @@
 		DFF8C81B17F61836005B16DB /* RetroPlayerVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerVideo.h; sourceTree = "<group>"; };
 		DFF8C86517F61860005B16DB /* GameClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameClient.cpp; sourceTree = "<group>"; };
 		DFF8C86617F61860005B16DB /* GameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameClient.h; sourceTree = "<group>"; };
-		DFF8C86717F61860005B16DB /* GameClientDLL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameClientDLL.h; sourceTree = "<group>"; };
 		DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameFileAutoLauncher.cpp; sourceTree = "<group>"; };
 		DFF8C86917F61860005B16DB /* GameFileAutoLauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameFileAutoLauncher.h; sourceTree = "<group>"; };
-		DFF8C86A17F61860005B16DB /* GameFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameFileLoader.cpp; sourceTree = "<group>"; };
-		DFF8C86B17F61860005B16DB /* GameFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameFileLoader.h; sourceTree = "<group>"; };
 		DFF8C86C17F61860005B16DB /* GameManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameManager.cpp; sourceTree = "<group>"; };
 		DFF8C86D17F61860005B16DB /* GameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameManager.h; sourceTree = "<group>"; };
 		DFF8C86E17F61860005B16DB /* GameSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSettings.cpp; sourceTree = "<group>"; };
 		DFF8C86F17F61860005B16DB /* GameSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSettings.h; sourceTree = "<group>"; };
-		DFF8C87117F61860005B16DB /* libretro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libretro.h; sourceTree = "<group>"; };
-		DFF8C87217F61860005B16DB /* libretro_wrapped.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libretro_wrapped.h; sourceTree = "<group>"; };
-		DFF8C87317F61860005B16DB /* LibretroCallbacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibretroCallbacks.h; sourceTree = "<group>"; };
-		DFF8C87417F61861005B16DB /* LibretroEnvironment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LibretroEnvironment.cpp; sourceTree = "<group>"; };
-		DFF8C87517F61861005B16DB /* LibretroEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibretroEnvironment.h; sourceTree = "<group>"; };
 		DFF8C87817F61861005B16DB /* SerialState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerialState.cpp; sourceTree = "<group>"; };
 		DFF8C87917F61861005B16DB /* SerialState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialState.h; sourceTree = "<group>"; };
 		DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameInfoTag.cpp; sourceTree = "<group>"; };
@@ -7376,16 +7367,14 @@
 		DFF8C86417F61860005B16DB /* games */ = {
 			isa = PBXGroup;
 			children = (
-				DFF8C87017F61860005B16DB /* libretro */,
+				6800FB4A18DD03E800A65963 /* GameClientProperties.cpp */,
+				6800FB4B18DD03E800A65963 /* GameClientProperties.h */,
 				DFF8C87A17F61861005B16DB /* tags */,
 				DFF8C88417F61861005B16DB /* windows */,
 				DFF8C86517F61860005B16DB /* GameClient.cpp */,
 				DFF8C86617F61860005B16DB /* GameClient.h */,
-				DFF8C86717F61860005B16DB /* GameClientDLL.h */,
 				DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */,
 				DFF8C86917F61860005B16DB /* GameFileAutoLauncher.h */,
-				DFF8C86A17F61860005B16DB /* GameFileLoader.cpp */,
-				DFF8C86B17F61860005B16DB /* GameFileLoader.h */,
 				DFF8C86C17F61860005B16DB /* GameManager.cpp */,
 				DFF8C86D17F61860005B16DB /* GameManager.h */,
 				DFF8C86E17F61860005B16DB /* GameSettings.cpp */,
@@ -7394,18 +7383,6 @@
 				DFF8C87917F61861005B16DB /* SerialState.h */,
 			);
 			path = games;
-			sourceTree = "<group>";
-		};
-		DFF8C87017F61860005B16DB /* libretro */ = {
-			isa = PBXGroup;
-			children = (
-				DFF8C87117F61860005B16DB /* libretro.h */,
-				DFF8C87217F61860005B16DB /* libretro_wrapped.h */,
-				DFF8C87317F61860005B16DB /* LibretroCallbacks.h */,
-				DFF8C87417F61861005B16DB /* LibretroEnvironment.cpp */,
-				DFF8C87517F61861005B16DB /* LibretroEnvironment.h */,
-			);
-			path = libretro;
 			sourceTree = "<group>";
 		};
 		DFF8C87A17F61861005B16DB /* tags */ = {
@@ -10177,6 +10154,7 @@
 				E38E22570D25F9FE00618676 /* rs.cpp in Sources */,
 				E38E22580D25F9FE00618676 /* savepos.cpp in Sources */,
 				E38E22590D25F9FE00618676 /* scantree.cpp in Sources */,
+				6800FB4C18DD03E800A65963 /* GameClientProperties.cpp in Sources */,
 				E38E225A0D25F9FE00618676 /* sha1.cpp in Sources */,
 				E38E225D0D25F9FE00618676 /* strfn.cpp in Sources */,
 				E38E225E0D25F9FE00618676 /* strlist.cpp in Sources */,
@@ -10940,10 +10918,8 @@
 				DFF8C82217F61836005B16DB /* RetroPlayerVideo.cpp in Sources */,
 				DFF8C88A17F61861005B16DB /* GameClient.cpp in Sources */,
 				DFF8C88B17F61861005B16DB /* GameFileAutoLauncher.cpp in Sources */,
-				DFF8C88C17F61861005B16DB /* GameFileLoader.cpp in Sources */,
 				DFF8C88D17F61861005B16DB /* GameManager.cpp in Sources */,
 				DFF8C88E17F61861005B16DB /* GameSettings.cpp in Sources */,
-				DFF8C88F17F61861005B16DB /* LibretroEnvironment.cpp in Sources */,
 				DFF8C89217F61861005B16DB /* SerialState.cpp in Sources */,
 				DFF8C89317F61861005B16DB /* GameInfoTag.cpp in Sources */,
 				DFF8C89417F61861005B16DB /* GameInfoTagLoader.cpp in Sources */,
@@ -11367,6 +11343,7 @@
 				DFF0F23117528350002DA3A4 /* NptXbmcFile.cpp in Sources */,
 				DFF0F23217528350002DA3A4 /* NSFFileDirectory.cpp in Sources */,
 				DFF0F23317528350002DA3A4 /* OGGFileDirectory.cpp in Sources */,
+				6800FB4E18DD03E800A65963 /* GameClientProperties.cpp in Sources */,
 				DFF0F23417528350002DA3A4 /* PipeFile.cpp in Sources */,
 				DFF0F23517528350002DA3A4 /* PipesManager.cpp in Sources */,
 				DFF0F23617528350002DA3A4 /* PlaylistDirectory.cpp in Sources */,
@@ -12002,10 +11979,8 @@
 				DFF8C83017F61836005B16DB /* RetroPlayerVideo.cpp in Sources */,
 				DFF8C8AD17F61861005B16DB /* GameClient.cpp in Sources */,
 				DFF8C8AE17F61861005B16DB /* GameFileAutoLauncher.cpp in Sources */,
-				DFF8C8AF17F61861005B16DB /* GameFileLoader.cpp in Sources */,
 				DFF8C8B017F61861005B16DB /* GameManager.cpp in Sources */,
 				DFF8C8B117F61861005B16DB /* GameSettings.cpp in Sources */,
-				DFF8C8B217F61861005B16DB /* LibretroEnvironment.cpp in Sources */,
 				DFF8C8B517F61861005B16DB /* SerialState.cpp in Sources */,
 				DFF8C8B617F61861005B16DB /* GameInfoTag.cpp in Sources */,
 				DFF8C8B717F61861005B16DB /* GameInfoTagLoader.cpp in Sources */,
@@ -13027,6 +13002,7 @@
 				DF40BC2B178B4C07009DB567 /* ScriptInvocationManager.cpp in Sources */,
 				DFBB4308178B574E006CC20A /* AddonCallbacksCodec.cpp in Sources */,
 				F55BA70B17AB2264002A36D1 /* StereoscopicsManager.cpp in Sources */,
+				6800FB4D18DD03E800A65963 /* GameClientProperties.cpp in Sources */,
 				F55BA71017AB2293002A36D1 /* RenderFlags.cpp in Sources */,
 				F59EED7F17AD5174005BB7C6 /* ApplicationPlayer.cpp in Sources */,
 				DF28DF4E17B8379E0077F41A /* ProfilesOperations.cpp in Sources */,
@@ -13066,10 +13042,8 @@
 				DFF8C82917F61836005B16DB /* RetroPlayerVideo.cpp in Sources */,
 				DFF8C89B17F61861005B16DB /* GameClient.cpp in Sources */,
 				DFF8C89C17F61861005B16DB /* GameFileAutoLauncher.cpp in Sources */,
-				DFF8C89D17F61861005B16DB /* GameFileLoader.cpp in Sources */,
 				DFF8C89E17F61861005B16DB /* GameManager.cpp in Sources */,
 				DFF8C89F17F61861005B16DB /* GameSettings.cpp in Sources */,
-				DFF8C8A017F61861005B16DB /* LibretroEnvironment.cpp in Sources */,
 				DFF8C8A317F61861005B16DB /* SerialState.cpp in Sources */,
 				DFF8C8A417F61861005B16DB /* GameInfoTag.cpp in Sources */,
 				DFF8C8A517F61861005B16DB /* GameInfoTagLoader.cpp in Sources */,
