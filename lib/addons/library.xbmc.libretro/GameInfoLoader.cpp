@@ -19,6 +19,16 @@
  */
 
 #include "GameInfoLoader.h"
+
+// TODO: This must #defined before libXBMC_addon.h to fix compile on OS X
+#include <sys/stat.h>
+#if defined(TARGET_DARWIN) || defined(TARGET_FREEBSD)
+  #define stat64 stat
+  #define __stat64 stat
+#else
+  #define __stat64 stat64
+#endif
+
 #include "libXBMC_addon.h"
 
 using namespace ADDON;
