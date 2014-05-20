@@ -10,7 +10,7 @@ OBJS=client.o \
      LibretroDLL.o \
      LibretroEnvironment.o \
 
-LIB_SHARED=../../../addons/library.xbmc.libretro/$(LIBNAME)-$(ARCH).so
+LIB_SHARED=../../../addons/library.xbmc.libretro/$(LIBNAME).so
 
 all: $(LIB_SHARED)
 
