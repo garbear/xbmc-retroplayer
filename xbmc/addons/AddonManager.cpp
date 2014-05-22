@@ -118,6 +118,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_SCREENSAVER:
     case ADDON_PVRDLL:
     case ADDON_GAMEDLL:
+    case ADDON_SHARED_LIBRARY:
       { // begin temporary platform handling for Dlls
         // ideally platforms issues will be handled by C-Pluff
         // this is not an attempt at a solution
@@ -164,8 +165,12 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
         {
           return AddonPtr(new CGameClient(props));
         }
-        else
+        else if (type == ADDON_SCREENSAVER)
+        {
           return AddonPtr(new CScreenSaver(props));
+        }
+        else
+          return AddonPtr(new CAddon(props));
       }
     case ADDON_SKIN:
       return AddonPtr(new CSkinInfo(props));
