@@ -57,7 +57,8 @@ namespace ADDON
     ADDON_VIZ_LIBRARY, // add noninstallable after this and installable before
     ADDON_SCRAPER_LIBRARY,
     ADDON_SCRIPT_LIBRARY,
-    ADDON_SCRIPT_MODULE
+    ADDON_SCRIPT_MODULE,
+    ADDON_SHARED_LIBRARY,
   } TYPE;
 
   class IAddon;
