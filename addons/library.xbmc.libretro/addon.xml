@@ -6,7 +6,7 @@
   <requires>
     <import addon="xbmc.game" version="2.0.0"/>
   </requires>
-  <extension point="xbmc.gameclient"
+  <extension point="xbmc.shared-library"
        library_android="libXBMC_libretro.so"
        library_linux="libXBMC_libretro.so"
        library_osx="libXBMC_libretro.so"
