@@ -315,7 +315,7 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
 
   // i becomes the index of the final item (choice to go to the add-on manager)
   const unsigned int iAddonMgr = i;
-  choicesInt.Add(iAddonMgr, 24025); // "Manage emulators..."
+  choicesInt.Add(iAddonMgr, 27005); // "Manage emulators..."
 
   int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choicesInt);
   if (btnid < 0 || btnid > (int)iAddonMgr)
