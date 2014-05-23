@@ -240,7 +240,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       if (typedData)
       {
         // Default case
-        typedData->value = NULL;
+        typedData->value = ""; // NULL crashes libretro cores
 
         const char* key = typedData->key;
         if (!key)
