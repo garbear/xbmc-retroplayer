@@ -1632,22 +1632,6 @@
 		DFF0F49F1752838E002DA3A4 /* XBMCAppliance.mm in Sources */ = {isa = PBXBuildFile; fileRef = DFF0F4951752838E002DA3A4 /* XBMCAppliance.mm */; };
 		DFF0F4A11752838E002DA3A4 /* xbmcclientwrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = DFF0F4991752838E002DA3A4 /* xbmcclientwrapper.mm */; };
 		DFF0F4A21752838E002DA3A4 /* XBMCController.mm in Sources */ = {isa = PBXBuildFile; fileRef = DFF0F49B1752838E002DA3A4 /* XBMCController.mm */; };
-		DFFA43FF19104C0800C3923B /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D019104BFA00C3923B /* AppIcon.png */; };
-		DFFA440019104C0800C3923B /* XBMC.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D119104BFA00C3923B /* XBMC.png */; };
-		DFFA440119104C1300C3923B /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D619104BFA00C3923B /* AppIcon29x29.png */; };
-		DFFA440219104C1300C3923B /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D719104BFA00C3923B /* AppIcon29x29@2x.png */; };
-		DFFA440319104C1300C3923B /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D819104BFA00C3923B /* AppIcon40x40.png */; };
-		DFFA440419104C1300C3923B /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D919104BFA00C3923B /* AppIcon40x40@2x.png */; };
-		DFFA440519104C1300C3923B /* AppIcon50x50.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DA19104BFA00C3923B /* AppIcon50x50.png */; };
-		DFFA440619104C1300C3923B /* AppIcon50x50@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DB19104BFA00C3923B /* AppIcon50x50@2x.png */; };
-		DFFA440719104C1300C3923B /* AppIcon57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DC19104BFA00C3923B /* AppIcon57x57.png */; };
-		DFFA440819104C1300C3923B /* AppIcon57x57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DD19104BFA00C3923B /* AppIcon57x57@2x.png */; };
-		DFFA440919104C1300C3923B /* AppIcon60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DE19104BFA00C3923B /* AppIcon60x60.png */; };
-		DFFA440A19104C1300C3923B /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DF19104BFA00C3923B /* AppIcon60x60@2x.png */; };
-		DFFA440B19104C1300C3923B /* AppIcon72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E019104BFA00C3923B /* AppIcon72x72.png */; };
-		DFFA440C19104C1300C3923B /* AppIcon72x72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E119104BFA00C3923B /* AppIcon72x72@2x.png */; };
-		DFFA440D19104C1300C3923B /* AppIcon76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E219104BFA00C3923B /* AppIcon76x76.png */; };
-		DFFA440E19104C1300C3923B /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E319104BFA00C3923B /* AppIcon76x76@2x.png */; };
 		DFF8C81D17F61836005B16DB /* RetroPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C81017F61836005B16DB /* RetroPlayer.cpp */; };
 		DFF8C81E17F61836005B16DB /* RetroPlayerAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C81217F61836005B16DB /* RetroPlayerAudio.cpp */; };
 		DFF8C81F17F61836005B16DB /* RetroPlayerBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C81417F61836005B16DB /* RetroPlayerBuffer.cpp */; };
@@ -1699,8 +1683,22 @@
 		DFF8C8C617F618D8005B16DB /* JoystickManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C8C117F618D8005B16DB /* JoystickManager.cpp */; };
 		DFF8C8C717F618D8005B16DB /* Joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C8BF17F618D8005B16DB /* Joystick.cpp */; };
 		DFF8C8C817F618D8005B16DB /* JoystickManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DFF8C8C117F618D8005B16DB /* JoystickManager.cpp */; };
-		DFFC52D017527E8B00C937AB /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFC52CF17527E8B00C937AB /* AppIcon.png */; };
-		DFFC52D217527EFC00C937AB /* XBMC.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFC52D117527EFC00C937AB /* XBMC.png */; };
+		DFFA43FF19104C0800C3923B /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D019104BFA00C3923B /* AppIcon.png */; };
+		DFFA440019104C0800C3923B /* XBMC.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D119104BFA00C3923B /* XBMC.png */; };
+		DFFA440119104C1300C3923B /* AppIcon29x29.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D619104BFA00C3923B /* AppIcon29x29.png */; };
+		DFFA440219104C1300C3923B /* AppIcon29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D719104BFA00C3923B /* AppIcon29x29@2x.png */; };
+		DFFA440319104C1300C3923B /* AppIcon40x40.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D819104BFA00C3923B /* AppIcon40x40.png */; };
+		DFFA440419104C1300C3923B /* AppIcon40x40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43D919104BFA00C3923B /* AppIcon40x40@2x.png */; };
+		DFFA440519104C1300C3923B /* AppIcon50x50.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DA19104BFA00C3923B /* AppIcon50x50.png */; };
+		DFFA440619104C1300C3923B /* AppIcon50x50@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DB19104BFA00C3923B /* AppIcon50x50@2x.png */; };
+		DFFA440719104C1300C3923B /* AppIcon57x57.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DC19104BFA00C3923B /* AppIcon57x57.png */; };
+		DFFA440819104C1300C3923B /* AppIcon57x57@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DD19104BFA00C3923B /* AppIcon57x57@2x.png */; };
+		DFFA440919104C1300C3923B /* AppIcon60x60.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DE19104BFA00C3923B /* AppIcon60x60.png */; };
+		DFFA440A19104C1300C3923B /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43DF19104BFA00C3923B /* AppIcon60x60@2x.png */; };
+		DFFA440B19104C1300C3923B /* AppIcon72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E019104BFA00C3923B /* AppIcon72x72.png */; };
+		DFFA440C19104C1300C3923B /* AppIcon72x72@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E119104BFA00C3923B /* AppIcon72x72@2x.png */; };
+		DFFA440D19104C1300C3923B /* AppIcon76x76.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E219104BFA00C3923B /* AppIcon76x76.png */; };
+		DFFA440E19104C1300C3923B /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFFA43E319104BFA00C3923B /* AppIcon76x76@2x.png */; };
 		E306D12E0DDF7B590052C2AD /* XBMCHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E306D12C0DDF7B590052C2AD /* XBMCHelper.cpp */; };
 		E33206380D5070AA00435CE3 /* DVDDemuxVobsub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E33206370D5070AA00435CE3 /* DVDDemuxVobsub.cpp */; };
 		E33466A60D2E5103005A65EC /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E33466A50D2E5103005A65EC /* IOKit.framework */; };
@@ -3996,7 +3994,7 @@
 		88ACB01D0DCF409E0083CFDF /* ASAPCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASAPCodec.h; sourceTree = "<group>"; };
 		88ACB01E0DCF409E0083CFDF /* DllASAP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DllASAP.h; sourceTree = "<group>"; };
 		88ECB6580DE013C4003396A7 /* DiskArbitration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiskArbitration.framework; path = /System/Library/Frameworks/DiskArbitration.framework; sourceTree = "<absolute>"; };
-		8DD76F7E0486A8DE00D96B5E /* XBMC */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = XBMC; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DD76F7E0486A8DE00D96B5E /* XBMC */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XBMC; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE4E87A517354C4A00D15206 /* XSLTUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XSLTUtils.cpp; sourceTree = "<group>"; };
 		AE4E87A617354C4A00D15206 /* XSLTUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XSLTUtils.h; sourceTree = "<group>"; };
 		AE84CB5915A5B8A600A3810E /* TagLibVFSStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TagLibVFSStream.cpp; sourceTree = "<group>"; };
@@ -4449,6 +4447,41 @@
 		DFF0F49A1752838E002DA3A4 /* XBMCController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBMCController.h; sourceTree = "<group>"; };
 		DFF0F49B1752838E002DA3A4 /* XBMCController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = XBMCController.mm; sourceTree = "<group>"; };
 		DFF0F49C1752838E002DA3A4 /* XBMCDebugHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBMCDebugHelpers.h; sourceTree = "<group>"; };
+		DFF8C81017F61836005B16DB /* RetroPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayer.cpp; sourceTree = "<group>"; };
+		DFF8C81117F61836005B16DB /* RetroPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayer.h; sourceTree = "<group>"; };
+		DFF8C81217F61836005B16DB /* RetroPlayerAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerAudio.cpp; sourceTree = "<group>"; };
+		DFF8C81317F61836005B16DB /* RetroPlayerAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerAudio.h; sourceTree = "<group>"; };
+		DFF8C81417F61836005B16DB /* RetroPlayerBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerBuffer.cpp; sourceTree = "<group>"; };
+		DFF8C81517F61836005B16DB /* RetroPlayerBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerBuffer.h; sourceTree = "<group>"; };
+		DFF8C81617F61836005B16DB /* RetroPlayerDialogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerDialogs.cpp; sourceTree = "<group>"; };
+		DFF8C81717F61836005B16DB /* RetroPlayerDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerDialogs.h; sourceTree = "<group>"; };
+		DFF8C81817F61836005B16DB /* RetroPlayerInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerInput.cpp; sourceTree = "<group>"; };
+		DFF8C81917F61836005B16DB /* RetroPlayerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerInput.h; sourceTree = "<group>"; };
+		DFF8C81A17F61836005B16DB /* RetroPlayerVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerVideo.cpp; sourceTree = "<group>"; };
+		DFF8C81B17F61836005B16DB /* RetroPlayerVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerVideo.h; sourceTree = "<group>"; };
+		DFF8C86517F61860005B16DB /* GameClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameClient.cpp; sourceTree = "<group>"; };
+		DFF8C86617F61860005B16DB /* GameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameClient.h; sourceTree = "<group>"; };
+		DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameFileAutoLauncher.cpp; sourceTree = "<group>"; };
+		DFF8C86917F61860005B16DB /* GameFileAutoLauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameFileAutoLauncher.h; sourceTree = "<group>"; };
+		DFF8C86C17F61860005B16DB /* GameManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameManager.cpp; sourceTree = "<group>"; };
+		DFF8C86D17F61860005B16DB /* GameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameManager.h; sourceTree = "<group>"; };
+		DFF8C86E17F61860005B16DB /* GameSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSettings.cpp; sourceTree = "<group>"; };
+		DFF8C86F17F61860005B16DB /* GameSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSettings.h; sourceTree = "<group>"; };
+		DFF8C87817F61861005B16DB /* SerialState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerialState.cpp; sourceTree = "<group>"; };
+		DFF8C87917F61861005B16DB /* SerialState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialState.h; sourceTree = "<group>"; };
+		DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameInfoTag.cpp; sourceTree = "<group>"; };
+		DFF8C87C17F61861005B16DB /* GameInfoTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoTag.h; sourceTree = "<group>"; };
+		DFF8C87D17F61861005B16DB /* GameInfoTagLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameInfoTagLoader.cpp; sourceTree = "<group>"; };
+		DFF8C87E17F61861005B16DB /* GameInfoTagLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoTagLoader.h; sourceTree = "<group>"; };
+		DFF8C88517F61861005B16DB /* GUIViewStateWindowGames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIViewStateWindowGames.cpp; sourceTree = "<group>"; };
+		DFF8C88617F61861005B16DB /* GUIViewStateWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIViewStateWindowGames.h; sourceTree = "<group>"; };
+		DFF8C88717F61861005B16DB /* GUIWindowGames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIWindowGames.cpp; sourceTree = "<group>"; };
+		DFF8C88817F61861005B16DB /* GUIWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIWindowGames.h; sourceTree = "<group>"; };
+		DFF8C8BF17F618D8005B16DB /* Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Joystick.cpp; sourceTree = "<group>"; };
+		DFF8C8C017F618D8005B16DB /* Joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Joystick.h; sourceTree = "<group>"; };
+		DFF8C8C117F618D8005B16DB /* JoystickManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JoystickManager.cpp; sourceTree = "<group>"; };
+		DFF8C8C217F618D8005B16DB /* JoystickManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JoystickManager.h; sourceTree = "<group>"; };
+		DFF8C8CC17F6191A005B16DB /* IInputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IInputHandler.h; sourceTree = "<group>"; };
 		DFFA43D019104BFA00C3923B /* AppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon.png; sourceTree = "<group>"; };
 		DFFA43D119104BFA00C3923B /* XBMC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = XBMC.png; sourceTree = "<group>"; };
 		DFFA43D319104BFA00C3923B /* iTunesArtwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iTunesArtwork.png; sourceTree = "<group>"; };
@@ -4491,41 +4524,6 @@
 		DFFA43FC19104BFA00C3923B /* icon_32x32@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_32x32@2x.png"; sourceTree = "<group>"; };
 		DFFA43FD19104BFA00C3923B /* icon_512x512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_512x512.png; sourceTree = "<group>"; };
 		DFFA43FE19104BFA00C3923B /* icon_512x512@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_512x512@2x.png"; sourceTree = "<group>"; };
-		DFF8C81017F61836005B16DB /* RetroPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayer.cpp; sourceTree = "<group>"; };
-		DFF8C81117F61836005B16DB /* RetroPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayer.h; sourceTree = "<group>"; };
-		DFF8C81217F61836005B16DB /* RetroPlayerAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerAudio.cpp; sourceTree = "<group>"; };
-		DFF8C81317F61836005B16DB /* RetroPlayerAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerAudio.h; sourceTree = "<group>"; };
-		DFF8C81417F61836005B16DB /* RetroPlayerBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerBuffer.cpp; sourceTree = "<group>"; };
-		DFF8C81517F61836005B16DB /* RetroPlayerBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerBuffer.h; sourceTree = "<group>"; };
-		DFF8C81617F61836005B16DB /* RetroPlayerDialogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerDialogs.cpp; sourceTree = "<group>"; };
-		DFF8C81717F61836005B16DB /* RetroPlayerDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerDialogs.h; sourceTree = "<group>"; };
-		DFF8C81817F61836005B16DB /* RetroPlayerInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerInput.cpp; sourceTree = "<group>"; };
-		DFF8C81917F61836005B16DB /* RetroPlayerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerInput.h; sourceTree = "<group>"; };
-		DFF8C81A17F61836005B16DB /* RetroPlayerVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RetroPlayerVideo.cpp; sourceTree = "<group>"; };
-		DFF8C81B17F61836005B16DB /* RetroPlayerVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RetroPlayerVideo.h; sourceTree = "<group>"; };
-		DFF8C86517F61860005B16DB /* GameClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameClient.cpp; sourceTree = "<group>"; };
-		DFF8C86617F61860005B16DB /* GameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameClient.h; sourceTree = "<group>"; };
-		DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameFileAutoLauncher.cpp; sourceTree = "<group>"; };
-		DFF8C86917F61860005B16DB /* GameFileAutoLauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameFileAutoLauncher.h; sourceTree = "<group>"; };
-		DFF8C86C17F61860005B16DB /* GameManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameManager.cpp; sourceTree = "<group>"; };
-		DFF8C86D17F61860005B16DB /* GameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameManager.h; sourceTree = "<group>"; };
-		DFF8C86E17F61860005B16DB /* GameSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSettings.cpp; sourceTree = "<group>"; };
-		DFF8C86F17F61860005B16DB /* GameSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSettings.h; sourceTree = "<group>"; };
-		DFF8C87817F61861005B16DB /* SerialState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerialState.cpp; sourceTree = "<group>"; };
-		DFF8C87917F61861005B16DB /* SerialState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialState.h; sourceTree = "<group>"; };
-		DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameInfoTag.cpp; sourceTree = "<group>"; };
-		DFF8C87C17F61861005B16DB /* GameInfoTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoTag.h; sourceTree = "<group>"; };
-		DFF8C87D17F61861005B16DB /* GameInfoTagLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameInfoTagLoader.cpp; sourceTree = "<group>"; };
-		DFF8C87E17F61861005B16DB /* GameInfoTagLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoTagLoader.h; sourceTree = "<group>"; };
-		DFF8C88517F61861005B16DB /* GUIViewStateWindowGames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIViewStateWindowGames.cpp; sourceTree = "<group>"; };
-		DFF8C88617F61861005B16DB /* GUIViewStateWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIViewStateWindowGames.h; sourceTree = "<group>"; };
-		DFF8C88717F61861005B16DB /* GUIWindowGames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GUIWindowGames.cpp; sourceTree = "<group>"; };
-		DFF8C88817F61861005B16DB /* GUIWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIWindowGames.h; sourceTree = "<group>"; };
-		DFF8C8BF17F618D8005B16DB /* Joystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Joystick.cpp; sourceTree = "<group>"; };
-		DFF8C8C017F618D8005B16DB /* Joystick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Joystick.h; sourceTree = "<group>"; };
-		DFF8C8C117F618D8005B16DB /* JoystickManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JoystickManager.cpp; sourceTree = "<group>"; };
-		DFF8C8C217F618D8005B16DB /* JoystickManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JoystickManager.h; sourceTree = "<group>"; };
-		DFF8C8CC17F6191A005B16DB /* IInputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IInputHandler.h; sourceTree = "<group>"; };
 		DFFC52CB17527B3100C937AB /* XBMC.frappliance */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XBMC.frappliance; sourceTree = BUILT_PRODUCTS_DIR; };
 		E306D12C0DDF7B590052C2AD /* XBMCHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XBMCHelper.cpp; sourceTree = "<group>"; };
 		E306D12D0DDF7B590052C2AD /* XBMCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBMCHelper.h; sourceTree = "<group>"; };
@@ -7432,6 +7430,68 @@
 			path = atv2;
 			sourceTree = "<group>";
 		};
+		DFF8C80E17F61836005B16DB /* RetroPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				DFF8C81017F61836005B16DB /* RetroPlayer.cpp */,
+				DFF8C81117F61836005B16DB /* RetroPlayer.h */,
+				DFF8C81217F61836005B16DB /* RetroPlayerAudio.cpp */,
+				DFF8C81317F61836005B16DB /* RetroPlayerAudio.h */,
+				DFF8C81417F61836005B16DB /* RetroPlayerBuffer.cpp */,
+				DFF8C81517F61836005B16DB /* RetroPlayerBuffer.h */,
+				DFF8C81617F61836005B16DB /* RetroPlayerDialogs.cpp */,
+				DFF8C81717F61836005B16DB /* RetroPlayerDialogs.h */,
+				DFF8C81817F61836005B16DB /* RetroPlayerInput.cpp */,
+				DFF8C81917F61836005B16DB /* RetroPlayerInput.h */,
+				DFF8C81A17F61836005B16DB /* RetroPlayerVideo.cpp */,
+				DFF8C81B17F61836005B16DB /* RetroPlayerVideo.h */,
+			);
+			path = RetroPlayer;
+			sourceTree = "<group>";
+		};
+		DFF8C86417F61860005B16DB /* games */ = {
+			isa = PBXGroup;
+			children = (
+				6800FB4A18DD03E800A65963 /* GameClientProperties.cpp */,
+				6800FB4B18DD03E800A65963 /* GameClientProperties.h */,
+				DFF8C87A17F61861005B16DB /* tags */,
+				DFF8C88417F61861005B16DB /* windows */,
+				DFF8C86517F61860005B16DB /* GameClient.cpp */,
+				DFF8C86617F61860005B16DB /* GameClient.h */,
+				DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */,
+				DFF8C86917F61860005B16DB /* GameFileAutoLauncher.h */,
+				DFF8C86C17F61860005B16DB /* GameManager.cpp */,
+				DFF8C86D17F61860005B16DB /* GameManager.h */,
+				DFF8C86E17F61860005B16DB /* GameSettings.cpp */,
+				DFF8C86F17F61860005B16DB /* GameSettings.h */,
+				DFF8C87817F61861005B16DB /* SerialState.cpp */,
+				DFF8C87917F61861005B16DB /* SerialState.h */,
+			);
+			path = games;
+			sourceTree = "<group>";
+		};
+		DFF8C87A17F61861005B16DB /* tags */ = {
+			isa = PBXGroup;
+			children = (
+				DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */,
+				DFF8C87C17F61861005B16DB /* GameInfoTag.h */,
+				DFF8C87D17F61861005B16DB /* GameInfoTagLoader.cpp */,
+				DFF8C87E17F61861005B16DB /* GameInfoTagLoader.h */,
+			);
+			path = tags;
+			sourceTree = "<group>";
+		};
+		DFF8C88417F61861005B16DB /* windows */ = {
+			isa = PBXGroup;
+			children = (
+				DFF8C88517F61861005B16DB /* GUIViewStateWindowGames.cpp */,
+				DFF8C88617F61861005B16DB /* GUIViewStateWindowGames.h */,
+				DFF8C88717F61861005B16DB /* GUIWindowGames.cpp */,
+				DFF8C88817F61861005B16DB /* GUIWindowGames.h */,
+			);
+			path = windows;
+			sourceTree = "<group>";
+		};
 		DFFA43CE19104BFA00C3923B /* media */ = {
 			isa = PBXGroup;
 			children = (
@@ -7528,68 +7588,6 @@
 				DFFA43FE19104BFA00C3923B /* icon_512x512@2x.png */,
 			);
 			path = icon.iconset;
-			sourceTree = "<group>";
-		};
-		DFF8C80E17F61836005B16DB /* RetroPlayer */ = {
-			isa = PBXGroup;
-			children = (
-				DFF8C81017F61836005B16DB /* RetroPlayer.cpp */,
-				DFF8C81117F61836005B16DB /* RetroPlayer.h */,
-				DFF8C81217F61836005B16DB /* RetroPlayerAudio.cpp */,
-				DFF8C81317F61836005B16DB /* RetroPlayerAudio.h */,
-				DFF8C81417F61836005B16DB /* RetroPlayerBuffer.cpp */,
-				DFF8C81517F61836005B16DB /* RetroPlayerBuffer.h */,
-				DFF8C81617F61836005B16DB /* RetroPlayerDialogs.cpp */,
-				DFF8C81717F61836005B16DB /* RetroPlayerDialogs.h */,
-				DFF8C81817F61836005B16DB /* RetroPlayerInput.cpp */,
-				DFF8C81917F61836005B16DB /* RetroPlayerInput.h */,
-				DFF8C81A17F61836005B16DB /* RetroPlayerVideo.cpp */,
-				DFF8C81B17F61836005B16DB /* RetroPlayerVideo.h */,
-			);
-			path = RetroPlayer;
-			sourceTree = "<group>";
-		};
-		DFF8C86417F61860005B16DB /* games */ = {
-			isa = PBXGroup;
-			children = (
-				6800FB4A18DD03E800A65963 /* GameClientProperties.cpp */,
-				6800FB4B18DD03E800A65963 /* GameClientProperties.h */,
-				DFF8C87A17F61861005B16DB /* tags */,
-				DFF8C88417F61861005B16DB /* windows */,
-				DFF8C86517F61860005B16DB /* GameClient.cpp */,
-				DFF8C86617F61860005B16DB /* GameClient.h */,
-				DFF8C86817F61860005B16DB /* GameFileAutoLauncher.cpp */,
-				DFF8C86917F61860005B16DB /* GameFileAutoLauncher.h */,
-				DFF8C86C17F61860005B16DB /* GameManager.cpp */,
-				DFF8C86D17F61860005B16DB /* GameManager.h */,
-				DFF8C86E17F61860005B16DB /* GameSettings.cpp */,
-				DFF8C86F17F61860005B16DB /* GameSettings.h */,
-				DFF8C87817F61861005B16DB /* SerialState.cpp */,
-				DFF8C87917F61861005B16DB /* SerialState.h */,
-			);
-			path = games;
-			sourceTree = "<group>";
-		};
-		DFF8C87A17F61861005B16DB /* tags */ = {
-			isa = PBXGroup;
-			children = (
-				DFF8C87B17F61861005B16DB /* GameInfoTag.cpp */,
-				DFF8C87C17F61861005B16DB /* GameInfoTag.h */,
-				DFF8C87D17F61861005B16DB /* GameInfoTagLoader.cpp */,
-				DFF8C87E17F61861005B16DB /* GameInfoTagLoader.h */,
-			);
-			path = tags;
-			sourceTree = "<group>";
-		};
-		DFF8C88417F61861005B16DB /* windows */ = {
-			isa = PBXGroup;
-			children = (
-				DFF8C88517F61861005B16DB /* GUIViewStateWindowGames.cpp */,
-				DFF8C88617F61861005B16DB /* GUIViewStateWindowGames.h */,
-				DFF8C88717F61861005B16DB /* GUIWindowGames.cpp */,
-				DFF8C88817F61861005B16DB /* GUIWindowGames.h */,
-			);
-			path = windows;
 			sourceTree = "<group>";
 		};
 		E37D5CB40D3023BB0081D327 /* osx */ = {
