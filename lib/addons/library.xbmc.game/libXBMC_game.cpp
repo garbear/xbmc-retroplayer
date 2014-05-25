@@ -83,13 +83,6 @@ DLLEXPORT bool GAME_environment_can_dupe(AddonCB* frontend, CB_GameLib* cb)
   return cb->EnvironmentCanDupe(frontend->addonData);
 }
 
-DLLEXPORT bool GAME_environment_set_pixel_format(AddonCB* frontend, CB_GameLib* cb, GAME_PIXEL_FORMAT format)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentSetPixelFormat(frontend->addonData, format);
-}
-
 DLLEXPORT void GAME_environment_set_input_descriptors(AddonCB* frontend, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count)
 {
   if (frontend == NULL || cb == NULL)
@@ -104,11 +97,11 @@ DLLEXPORT bool GAME_environment_set_system_av_info(AddonCB* frontend, CB_GameLib
   return cb->EnvironmentSetSystemAvInfo(frontend->addonData, info);
 }
 
-DLLEXPORT void GAME_video_refresh(AddonCB* frontend, CB_GameLib* cb, const void *data, unsigned width, unsigned height, size_t pitch)
+DLLEXPORT void GAME_video_refresh(AddonCB* frontend, CB_GameLib* cb, const void *data, unsigned width, unsigned height, size_t pitch, unsigned int pixelFormat)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->VideoRefresh(frontend->addonData, data, width, height, pitch);
+  return cb->VideoRefresh(frontend->addonData, data, width, height, pitch, (GAME_PIXEL_FORMAT)pixelFormat);
 }
 
 DLLEXPORT void GAME_audio_sample(AddonCB* frontend, CB_GameLib* cb, int16_t left, int16_t right)

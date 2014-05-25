@@ -48,10 +48,9 @@ public:
   static void EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation);
   static bool EnvironmentGetOverscan(void* addonData);
   static bool EnvironmentCanDupe(void* addonData);
-  static bool EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format);
   static void EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count);
   static bool EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info);
-  static void VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch);
+  static void VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat);
   static void AudioSample(void* addonData, int16_t left, int16_t right);
   static size_t AudioSampleBatch(void* addonData, const int16_t *data, size_t frames);
   static int16_t InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id);

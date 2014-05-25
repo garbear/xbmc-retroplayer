@@ -60,16 +60,6 @@ typedef struct CB_GameLib
   bool (*EnvironmentCanDupe)(void* addonData);
 
   /*!
-    * Sets the internal pixel format used by the implementation. The default
-    * pixel format is GAME_PIXEL_FORMAT_0RGB1555. This pixel format however,
-    * is deprecated (see enum GAME_PIXEL_FORMAT). If the call returns false,
-    * the frontend does not support this pixel format. This function should be
-    * called inside LoadGame() or GetSystemAVInfo(). Replaces
-    * RETRO_ENVIRONMENT_SET_PIXEL_FORMAT.
-    */
-  bool (*EnvironmentSetPixelFormat)(void* addonData, enum GAME_PIXEL_FORMAT format);
-
-  /*!
     * Sets an array of game_input_descriptors. It is up to the frontend to
     * present this in a usable way. This function can be called at any time,
     * but it is recommended to call it as early as possible. Replaces
@@ -113,7 +103,7 @@ typedef struct CB_GameLib
     * pitch == width * byte_per_pixel. Certain graphic APIs, such as OpenGL ES,
     * do not like textures that are not packed in memory.
     */
-  void (*VideoRefresh)(void* addonData, const void* data, unsigned width, unsigned height, size_t pitch);
+  void (*VideoRefresh)(void* addonData, const void* data, unsigned width, unsigned height, size_t pitch, enum GAME_PIXEL_FORMAT pixelFormat);
 
   /*!
     * Renders a single audio frame. Should only be used if implementation

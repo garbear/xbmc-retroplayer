@@ -101,7 +101,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_rotation)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_overscan)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_can_dupe)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_pixel_format)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_system_av_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_video_refresh)) throw false;
@@ -162,11 +161,6 @@ public:
     return GAME_environment_can_dupe(m_handle, m_callbacks);
   }
 
-  bool EnvironmentSetPixelFormat(enum GAME_PIXEL_FORMAT format)
-  {
-    return GAME_environment_set_pixel_format(m_handle, m_callbacks, format);
-  }
-
   void EnvironmentSetInputDescriptors(const struct game_input_descriptor* descriptor, size_t count)
   {
     return GAME_environment_set_input_descriptors(m_handle, m_callbacks, descriptor, count);
@@ -177,9 +171,9 @@ public:
     return GAME_environment_set_system_av_info(m_handle, m_callbacks, info);
   }
 
-  void VideoRefresh(const void *data, unsigned width, unsigned height, size_t pitch)
+  void VideoRefresh(const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat)
   {
-    return GAME_video_refresh(m_handle, m_callbacks, data, width, height, pitch);
+    return GAME_video_refresh(m_handle, m_callbacks, data, width, height, pitch, (unsigned int)pixelFormat);
   }
 
   void AudioSample(int16_t left, int16_t right)
@@ -324,10 +318,9 @@ protected:
     void (*GAME_environment_set_rotation)(void* handle, CB_GameLib* cb, enum GAME_ROTATION rotation);
     bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
-    bool (*GAME_environment_set_pixel_format)(void* handle, CB_GameLib* cb, enum GAME_PIXEL_FORMAT format);
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
     bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);
-    void (*GAME_video_refresh)(void* handle, CB_GameLib* cb, const void *data, unsigned width, unsigned height, size_t pitch);
+    void (*GAME_video_refresh)(void* handle, CB_GameLib* cb, const void *data, unsigned width, unsigned height, size_t pitch, unsigned int pixelFormat);
     void (*GAME_audio_sample)(void* handle, CB_GameLib* cb, int16_t left, int16_t right);
     size_t (*GAME_audio_sample_batch)(void* handle, CB_GameLib* cb, const int16_t *data, size_t frames);
     int16_t (*GAME_input_state)(void* handle, CB_GameLib* cb, unsigned port, unsigned device, unsigned index, unsigned id);

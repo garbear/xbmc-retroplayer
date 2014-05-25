@@ -47,7 +47,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentSetRotation         = EnvironmentSetRotation;
   m_callbacks->EnvironmentGetOverscan         = EnvironmentGetOverscan;
   m_callbacks->EnvironmentCanDupe             = EnvironmentCanDupe;
-  m_callbacks->EnvironmentSetPixelFormat      = EnvironmentSetPixelFormat;
   m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
   m_callbacks->EnvironmentSetSystemAvInfo     = EnvironmentSetSystemAvInfo;
   m_callbacks->VideoRefresh                   = VideoRefresh;
@@ -149,15 +148,6 @@ bool CAddonCallbacksGame::EnvironmentCanDupe(void* addonData)
   return true;
 }
 
-bool CAddonCallbacksGame::EnvironmentSetPixelFormat(void* addonData, GAME_PIXEL_FORMAT format)
-{
-  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
-  if (!retroPlayer)
-    return false;
-
-  return retroPlayer->SetPixelFormat(format);
-}
-
 void CAddonCallbacksGame::EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count)
 {
   // TODO
@@ -169,13 +159,13 @@ bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game
   return false;
 }
 
-void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch)
+void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat)
 {
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
 
-  return retroPlayer->VideoFrame(data, width, height, pitch);
+  return retroPlayer->VideoFrame(data, width, height, pitch, pixelFormat);
 }
 
 void CAddonCallbacksGame::AudioSample(void* addonData, int16_t left, int16_t right)
