@@ -181,37 +181,6 @@ bool CGameClient::GetAddonProperties(void)
 
   try { strClientVersion = m_pStruct->GetClientVersion(); }
   catch (...) { LogException("GetClientVersion()"); return false; }
-
-  try { strValidExtensions = m_pStruct->GetValidExtensions(); }
-  catch (...) { LogException("GetValidExtensions()"); return false; }
-
-  try { bSupportsVFS = m_pStruct->SupportsVFS(); }
-  catch (...) { LogException("SupportsVFS()"); return false; }
-
-  try { bSupportsNoGame = m_pStruct->SupportsNoGame(); }
-  catch (...) { LogException("SupportsNoGame()"); return false; }
-
-  // These properties are declared in addon.xml. Make sure they match the values
-  // reported by the game client. This is primarily to avoid errors when adding
-  // addon.xml files to libretro cores.
-  set<string> extensions;
-  SetExtensions(strValidExtensions, extensions);
-  if (m_extensions != extensions)
-  {
-    CLog::Log(LOGERROR, "GAME: <extensions> tag in addon.xml doesn't match DLL value (%s)", strValidExtensions.c_str());
-    return false;
-  }
-  if (m_bSupportsVFS != bSupportsVFS)
-  {
-    CLog::Log(LOGERROR, "GAME: <supports_vfs> tag in addon.xml doesn't match DLL value (%s)", bSupportsVFS ? "true" : "false");
-    return false;
-  }
-  if (m_bSupportsNoGame != bSupportsNoGame)
-  {
-    CLog::Log(LOGERROR, "GAME: <supports_no_game> tag in addon.xml doesn't match DLL value (%s)", bSupportsNoGame ? "true" : "false");
-    return false;
-  }
-
   // Update client name and version
   m_strClientName    = strClientName;
   m_strClientVersion = strClientVersion;
