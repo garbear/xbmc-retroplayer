@@ -35,9 +35,10 @@ class CRetroPlayerVideo : public CThread
 {
   struct VideoInfo
   {
-    unsigned int width;
-    unsigned int height;
-    size_t       pitch;
+    unsigned int      width;
+    unsigned int      height;
+    size_t            pitch;
+    GAME_PIXEL_FORMAT format;
   };
 
   class CRetroPlayerVideoBuffer : public CRetroPlayerBuffer
@@ -65,21 +66,14 @@ public:
    * Send a video frame to be rendered by this class. The pixel format is
    * specified by m_pixelFormat.
    */
-  void SendVideoFrame(const uint8_t *data, unsigned width, unsigned height, size_t pitch);
-
-  /**
-   * Set the m_pixelFormat to match the format used by the game client. If this
-   * function is not called, m_pixelFormat defaults to LIBRETRO::RETRO_PIXEL_FORMAT_0RGB1555.
-   * For a list of valid pixel formats, see libretro.h.
-   */
-  bool SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat) { m_pixelFormat = pixelFormat; return true; }
+  void SendVideoFrame(const uint8_t *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT format);
 
 protected:
   virtual void Process();
 
 private:
   bool ProcessFrame(const VideoFrame &frame);
-  bool CheckConfiguration(const DVDVideoPicture &picture);
+  bool CheckConfiguration(const DVDVideoPicture &picture, GAME_PIXEL_FORMAT sourceFormat);
   void ColorspaceConversion(const VideoFrame &input, const DVDVideoPicture &output);
 
   DllSwScale              m_dllSwScale;

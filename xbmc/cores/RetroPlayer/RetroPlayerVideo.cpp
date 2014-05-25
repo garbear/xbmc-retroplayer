@@ -97,7 +97,7 @@ bool CRetroPlayerVideo::ProcessFrame(const VideoFrame &frame)
     pPicture->iDuration      = 1.0 / m_framerate;
 
     // Got the picture, now make sure we're ready to render it
-    if (!CheckConfiguration(*pPicture))
+    if (!CheckConfiguration(*pPicture, frame.meta.format))
       throw false;
 
     // CheckConfiguration() should have set up our SWScale context
@@ -138,14 +138,15 @@ bool CRetroPlayerVideo::ProcessFrame(const VideoFrame &frame)
   return true;
 }
 
-bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
+bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture, GAME_PIXEL_FORMAT sourceFormat)
 {
   const double framerate = 1 / picture.iDuration;
 
   if (g_renderManager.IsConfigured() &&
       m_outputWidth == picture.iWidth &&
       m_outputHeight == picture.iHeight &&
-      m_outputFramerate == framerate)
+      m_outputFramerate == framerate &&
+      m_pixelFormat == sourceFormat)
   {
     // Already configured properly
     return true;
@@ -183,30 +184,31 @@ bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture)
   m_outputWidth = picture.iWidth;
   m_outputHeight = picture.iHeight;
   m_outputFramerate = framerate;
+  m_pixelFormat = sourceFormat;
 
-  PixelFormat format;
-  switch (m_pixelFormat)
+  PixelFormat pixelFormat;
+  switch (sourceFormat)
   {
-  case GAME_PIXEL_FORMAT_XRGB8888:
-    CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: XRGB8888, using PIX_FMT_0RGB32");
-    format = PIX_FMT_0RGB32;
-    break;
-  case GAME_PIXEL_FORMAT_RGB565:
-  	CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: RGB565, using PIX_FMT_RGB565");
-    format = PIX_FMT_RGB565;
-    break;
-  case GAME_PIXEL_FORMAT_0RGB1555:
-  default:
-    CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: 0RGB1555, using PIX_FMT_RGB555");
-    format = PIX_FMT_RGB555;
-    break;
+    case GAME_PIXEL_FORMAT_XRGB8888:
+      CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: XRGB8888, using PIX_FMT_0RGB32");
+      pixelFormat = PIX_FMT_0RGB32;
+      break;
+    case GAME_PIXEL_FORMAT_RGB565:
+      CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: RGB565, using PIX_FMT_RGB565");
+      pixelFormat = PIX_FMT_RGB565;
+      break;
+    case GAME_PIXEL_FORMAT_0RGB1555:
+    default:
+      CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: 0RGB1555, using PIX_FMT_RGB555");
+      pixelFormat = PIX_FMT_RGB555;
+      break;
   }
 
   if (m_swsContext)
     m_dllSwScale.sws_freeContext(m_swsContext);
 
   m_swsContext = m_dllSwScale.sws_getContext(
-    picture.iWidth, picture.iHeight, format,
+    picture.iWidth, picture.iHeight, pixelFormat,
     picture.iWidth, picture.iHeight, PIX_FMT_YUV420P,
     SWS_FAST_BILINEAR | SwScaleCPUFlags(), NULL, NULL, NULL
   );
@@ -226,11 +228,11 @@ void CRetroPlayerVideo::ColorspaceConversion(const VideoFrame &input, const DVDV
   m_dllSwScale.sws_scale(m_swsContext, src, srcStride, 0, input.meta.height, dst, dstStride);
 }
 
-void CRetroPlayerVideo::SendVideoFrame(const uint8_t *data, unsigned width, unsigned height, size_t pitch)
+void CRetroPlayerVideo::SendVideoFrame(const uint8_t *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT format)
 {
   if (!m_bStop && IsRunning())
   {
-    VideoInfo info = { width, height, pitch };
+    VideoInfo info = { width, height, pitch, format };
 
     m_buffer.AddPacket(data, pitch * height, info);
 

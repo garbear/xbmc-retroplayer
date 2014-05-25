@@ -286,9 +286,9 @@ void CRetroPlayer::CreateVideo(double framerate)
   m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
 }
 
-void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch)
+void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat)
 {
-  m_video.SendVideoFrame(reinterpret_cast<const uint8_t*>(data), width, height, pitch);
+  m_video.SendVideoFrame(reinterpret_cast<const uint8_t*>(data), width, height, pitch, pixelFormat);
 }
 
 void CRetroPlayer::AudioSample(int16_t left, int16_t right)
@@ -312,11 +312,6 @@ bool CRetroPlayer::RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_
 {
   // TODO
   return false;
-}
-
-bool CRetroPlayer::SetPixelFormat(GAME_PIXEL_FORMAT pixelFormat)
-{
-  return m_video.SetPixelFormat(pixelFormat);
 }
 
 void CRetroPlayer::SetRotation(GAME_ROTATION rotation)
