@@ -41,9 +41,10 @@ CHelper_libXBMC_game*  CLibretroEnvironment::m_frontend = NULL;
 CLibretroDLL*          CLibretroEnvironment::m_client = NULL;
 CClientBridge*         CLibretroEnvironment::m_clientBridge = NULL;
 
-bool   CLibretroEnvironment::m_bSupportsNoGame = false;
-double CLibretroEnvironment::m_fps = 0.0;
-bool   CLibretroEnvironment::m_bFramerateKnown = false;
+bool              CLibretroEnvironment::m_bSupportsNoGame = false;
+double            CLibretroEnvironment::m_fps = 0.0;
+bool              CLibretroEnvironment::m_bFramerateKnown = false;
+GAME_PIXEL_FORMAT CLibretroEnvironment::m_pixelFormat = GAME_PIXEL_FORMAT_0RGB1555; // Default per libretro.h
 
 map<string, set<string> > CLibretroEnvironment::m_variables;
 map<string, string> CLibretroEnvironment::m_settings;
@@ -151,9 +152,8 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       if (!typedData)
         return false;
 
-      if (!m_frontend->EnvironmentSetPixelFormat((GAME_PIXEL_FORMAT)*typedData))
-        return false;
-
+      m_pixelFormat = (GAME_PIXEL_FORMAT)*typedData;
+      
       break;
     }
   case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:

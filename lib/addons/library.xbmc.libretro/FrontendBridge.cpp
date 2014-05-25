@@ -55,7 +55,7 @@ void CFrontendBridge::VideoRefresh(const void* data, unsigned width, unsigned he
   if (!CLibretroEnvironment::GetFrontend())
     return;
 
-  return CLibretroEnvironment::GetFrontend()->VideoRefresh(data, width, height, pitch);
+  return CLibretroEnvironment::GetFrontend()->VideoRefresh(data, width, height, pitch, CLibretroEnvironment::GetPixelFormat());
 }
 
 void CFrontendBridge::AudioSample(int16_t left, int16_t right)

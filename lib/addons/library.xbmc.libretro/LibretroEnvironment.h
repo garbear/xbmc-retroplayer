@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "xbmc_game_types.h"
+
 #include <map>
 #include <set>
 #include <string>
@@ -52,6 +54,13 @@ namespace LIBRETRO
      */
     static void UpdateFramerate(double fps);
 
+    /*!
+     * Returns the pixel format set by the libretro core. Instead of forwarding
+     * this to the frontend, we store the value and report it on calls to
+     * VideoRefresh().
+     */
+    static GAME_PIXEL_FORMAT GetPixelFormat() { return m_pixelFormat; }
+
   private:
     static bool EnvironmentCallback(unsigned cmd, void *data);
 
@@ -60,9 +69,10 @@ namespace LIBRETRO
     static CLibretroDLL*                 m_client;
     static CClientBridge*                m_clientBridge;
 
-    static bool   m_bSupportsNoGame;
-    static double m_fps;
-    static bool   m_bFramerateKnown; // true if UpdateFramerate() has been called
+    static bool              m_bSupportsNoGame;
+    static double            m_fps;
+    static bool              m_bFramerateKnown; // true if UpdateFramerate() has been called
+    static GAME_PIXEL_FORMAT m_pixelFormat;
 
     // Record the variables reported by libretro core
     static std::map<std::string, std::set<std::string> > m_variables;
