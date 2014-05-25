@@ -42,13 +42,6 @@ namespace LIBRETRO
     static CHelper_libXBMC_game* GetFrontend() { return m_frontend; }
 
     /*!
-     * Relies on a value provided by an environment command. Allows the game
-     * client to provide this value to the frontend directly without using an
-     * unnecessary frontend callback.
-     */
-    static bool SupportsNoGame() { return m_bSupportsNoGame; }
-
-    /*!
      * FPS info is used to calculate timing for toast messages and possibly
      * other things.
      */
@@ -69,7 +62,6 @@ namespace LIBRETRO
     static CLibretroDLL*                 m_client;
     static CClientBridge*                m_clientBridge;
 
-    static bool              m_bSupportsNoGame;
     static double            m_fps;
     static bool              m_bFramerateKnown; // true if UpdateFramerate() has been called
     static GAME_PIXEL_FORMAT m_pixelFormat;

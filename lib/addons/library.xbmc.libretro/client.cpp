@@ -202,22 +202,6 @@ const char* GetClientVersion(void)
 }
 
 // Split out from retro_get_system_info()
-const char* GetValidExtensions(void)
-{
-  static string strValidExtensions;
-
-  if (CLIENT)
-  {
-    retro_system_info info = { };
-    CLIENT->retro_get_system_info(&info);
-    if (info.valid_extensions)
-      strValidExtensions = info.valid_extensions;
-  }
-
-  return strValidExtensions.c_str();
-}
-
-// Split out from retro_get_system_info()
 bool SupportsVFS(void)
 {
   bool bSupportsVFS = false;
@@ -235,12 +219,6 @@ bool SupportsVFS(void)
   }
 
   return bSupportsVFS;
-}
-
-// Removes the need for an extra frontend callback
-bool SupportsNoGame(void)
-{
-  return CLibretroEnvironment::SupportsNoGame();
 }
 
 GAME_ERROR LoadGame(const char* url)
