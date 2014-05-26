@@ -169,58 +169,6 @@ const char* GetMininumGameAPIVersion(void)
   return GAME_MIN_API_VERSION;
 }
 
-// Split out from retro_get_system_info()
-const char* GetClientName(void)
-{
-  static string strClientName = GAME_CLIENT_NAME_UNKNOWN;
-
-  if (CLIENT)
-  {
-    retro_system_info info = { };
-    CLIENT->retro_get_system_info(&info);
-    if (info.library_name)
-      strClientName = info.library_name;
-  }
-
-  return strClientName.c_str();
-}
-
-// Split out from retro_get_system_info()
-const char* GetClientVersion(void)
-{
-  static string strClientVersion = GAME_CLIENT_VERSION_UNKNOWN;
-
-  if (CLIENT)
-  {
-    retro_system_info info = { };
-    CLIENT->retro_get_system_info(&info);
-    if (info.library_version)
-      strClientVersion = info.library_version;
-  }
-
-  return strClientVersion.c_str();
-}
-
-// Split out from retro_get_system_info()
-bool SupportsVFS(void)
-{
-  bool bSupportsVFS = false;
-
-  if (CLIENT)
-  {
-    retro_system_info info = { };
-    CLIENT->retro_get_system_info(&info);
-
-    // need_fullpath indicates that libretro requires a valid pathname in
-    // retro_game_info::path when calling retro_load_game(). Conversely, if
-    // need_fullpath is false, retro_load_game() can load from the memory
-    // block specified by retro_game_info::data.
-    bSupportsVFS = !info.need_fullpath;
-  }
-
-  return bSupportsVFS;
-}
-
 GAME_ERROR LoadGame(const char* url)
 {
   if (!CLIENT)
@@ -229,21 +177,30 @@ GAME_ERROR LoadGame(const char* url)
   if (url == NULL)
     return GAME_ERROR_INVALID_PARAMETERS;
 
+  retro_system_info systemInfo = { };
+  CLIENT->retro_get_system_info(&systemInfo);
+
+  // need_fullpath indicates that libretro requires a valid pathname in
+  // retro_game_info::path when calling retro_load_game(). Conversely, if
+  // need_fullpath is false, retro_load_game() can load from the memory
+  // block specified by retro_game_info::data.
+  const bool bSupportsVFS = !systemInfo.need_fullpath;
+
   // Build info loader vector
   SAFE_DELETE_GAME_INFO(GAME_INFO);
-  GAME_INFO.push_back(new CGameInfoLoader(url, XBMC, SupportsVFS()));
+  GAME_INFO.push_back(new CGameInfoLoader(url, XBMC, bSupportsVFS));
 
   // Try to load via memory
-  retro_game_info info;
-  if (GAME_INFO[0]->GetMemoryStruct(info))
+  retro_game_info gameInfo;
+  if (GAME_INFO[0]->GetMemoryStruct(gameInfo))
   {
-    if (CLIENT->retro_load_game(&info))
+    if (CLIENT->retro_load_game(&gameInfo))
       return GAME_ERROR_NO_ERROR;
   }
 
   // Fall back to loading via path
-  GAME_INFO[0]->GetPathStruct(info);
-  bool result = CLIENT->retro_load_game(&info);
+  GAME_INFO[0]->GetPathStruct(gameInfo);
+  bool result = CLIENT->retro_load_game(&gameInfo);
 
   return result ? GAME_ERROR_NO_ERROR : GAME_ERROR_FAILED;
 }
@@ -256,10 +213,14 @@ GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls)
   if (urls == NULL || num_urls == 0)
     return GAME_ERROR_INVALID_PARAMETERS;
 
+  retro_system_info info = { };
+  CLIENT->retro_get_system_info(&info);
+  const bool bSupportsVFS = !info.need_fullpath;
+
   // Build info loader vector
   SAFE_DELETE_GAME_INFO(GAME_INFO);
   for (unsigned int i = 0; i < num_urls; i++)
-    GAME_INFO.push_back(new CGameInfoLoader(urls[i], XBMC, SupportsVFS()));
+    GAME_INFO.push_back(new CGameInfoLoader(urls[i], XBMC, bSupportsVFS));
 
   // Try to load via memory
   vector<retro_game_info> infoVec;
