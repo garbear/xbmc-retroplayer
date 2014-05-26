@@ -196,14 +196,7 @@ void CGameManager::UnregisterAddonByID(const string& strClientId)
 {
   GameClientMap::iterator it = m_gameClients.find(strClientId);
   if (it != m_gameClients.end())
-  {
-    it->second->Destroy();
     m_gameClients.erase(it);
-  }
-  else
-  {
-    CLog::Log(LOGERROR, "GameManager: can't unregister %s - not registered!", strClientId.c_str());
-  }
 }
 
 bool CGameManager::GetClient(const string& strClientId, GameClientPtr& addon) const
