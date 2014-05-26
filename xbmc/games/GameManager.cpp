@@ -190,27 +190,6 @@ bool CGameManager::GetClient(const string& strClientId, GameClientPtr& addon) co
   return false;
 }
 
-bool CGameManager::GetConnectedClient(const string& strClientId, GameClientPtr& addon) const
-{
-  return GetClient(strClientId, addon) && addon->ReadyToUse();
-}
-
-bool CGameManager::IsConnectedClient(const string &strClientId) const
-{
-  GameClientPtr client;
-  return GetConnectedClient(strClientId, client);
-}
-
-bool CGameManager::IsConnectedClient(const AddonPtr addon) const
-{
-  // See if we are tracking the client
-  CSingleLock lock(m_critSection);
-  GameClientMap::const_iterator itr = m_gameClients.find(addon->ID());
-  if (itr != m_gameClients.end())
-    return itr->second->ReadyToUse();
-  return false;
-}
-
 void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candidates) const
 {
   CSingleLock lock(m_critSection);

@@ -54,9 +54,6 @@ namespace GAME
     virtual void Stop();
 
     virtual bool GetClient(const std::string& strClientId, GameClientPtr& addon) const;
-    virtual bool GetConnectedClient(const std::string& strClientId, GameClientPtr& addon) const;
-    virtual bool IsConnectedClient(const std::string& strClientId) const;
-    virtual bool IsConnectedClient(const ADDON::AddonPtr addon) const;
 
     /**
      * Resolve a file item to a list of game client IDs.
