@@ -142,7 +142,10 @@ ADDON_STATUS CGameClient::Create(void)
   {
     status = CAddonDll<DllGameClient, GameClient, game_client_properties>::Create();
     if (status == ADDON_STATUS_OK)
-      bReadyToUse = GetAddonProperties();
+    {
+      bReadyToUse = true;
+      LogAddonProperties();
+    }
   }
   catch (...) { LogException(__FUNCTION__); }
 
@@ -161,39 +164,24 @@ void CGameClient::Destroy(void)
     return;
   m_bReadyToUse = false;
 
-  CLog::Log(LOGDEBUG, "GAME: %s - destroying game add-on '%s'", __FUNCTION__, m_strClientName.c_str());
+  CLog::Log(LOGDEBUG, "GAME: %s - destroying game add-on %s", __FUNCTION__, ID().c_str());
 
   // Destroy the add-on
   try { CAddonDll<DllGameClient, GameClient, game_client_properties>::Destroy(); }
   catch (...) { LogException(__FUNCTION__); }
 }
 
-bool CGameClient::GetAddonProperties(void)
+void CGameClient::LogAddonProperties(void)
 {
-  string strClientName;
-  string strClientVersion;
-  string strValidExtensions;
-  bool   bSupportsVFS;
-  bool   bSupportsNoGame;
-
-  try { strClientName = m_pStruct->GetClientName(); }
-  catch (...) { LogException("GetClientName()"); return false; }
-
-  try { strClientVersion = m_pStruct->GetClientVersion(); }
-  catch (...) { LogException("GetClientVersion()"); return false; }
-  // Update client name and version
-  m_strClientName    = strClientName;
-  m_strClientVersion = strClientVersion;
+  vector<string> vecExtensions(m_extensions.begin(), m_extensions.end());
 
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
   CLog::Log(LOGINFO, "GAME: Loaded DLL for %s", ID().c_str());
-  CLog::Log(LOGINFO, "GAME: Client: %s at version %s", m_strClientName.c_str(), m_strClientVersion.c_str());
-  CLog::Log(LOGINFO, "GAME: Valid extensions: %s", strValidExtensions.c_str());
+  CLog::Log(LOGINFO, "GAME: Client: %s at version %s", Name().c_str(), Version().c_str());
+  CLog::Log(LOGINFO, "GAME: Valid extensions: %s", StringUtils::Join(vecExtensions, " ").c_str());
   CLog::Log(LOGINFO, "GAME: Supports VFS: %s", m_bSupportsVFS ? "yes" : "no");
   CLog::Log(LOGINFO, "GAME: Supports no game: %s", m_bSupportsNoGame ? "yes" : "no");
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
-
-  return true;
 }
 
 const CStdString CGameClient::LibPath() const
@@ -610,7 +598,7 @@ bool CGameClient::LogError(GAME_ERROR error, const char* strMethod) const
   if (error != GAME_ERROR_NO_ERROR)
   {
     CLog::Log(LOGERROR, "GAME - %s - addon '%s' returned an error: %s",
-        strMethod, m_strClientName.c_str(), ToString(error));
+        strMethod, ID().c_str(), ToString(error));
     return false;
   }
   return true;
@@ -618,8 +606,8 @@ bool CGameClient::LogError(GAME_ERROR error, const char* strMethod) const
 
 void CGameClient::LogException(const char* strFunctionName) const
 {
-  CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on '%s'",
-      strFunctionName, GetClientName().c_str());
+  CLog::Log(LOGERROR, "GAME: exception caught while trying to call '%s' on add-on %s",
+      strFunctionName, ID().c_str());
   CLog::Log(LOGERROR, "Please contact the developer of this add-on: %s", Author().c_str());
 }
 

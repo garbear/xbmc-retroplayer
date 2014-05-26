@@ -110,8 +110,6 @@ public:
   bool ReadyToUse(void) const { return m_bReadyToUse; }
 
   // Query properties of the game client
-  const std::string&           GetClientName() const    { return m_strClientName; }
-  const std::string&           GetClientVersion() const { return m_strClientVersion; }
   const std::set<std::string>& GetExtensions() const    { return m_extensions; }
   bool                         SupportsVFS() const      { return m_bSupportsVFS; }
   bool                         SupportsNoGame() const   { return m_bSupportsNoGame; }
@@ -183,7 +181,7 @@ private:
   // Called by the constructors
   void InitializeProperties(void);
 
-  bool GetAddonProperties(void);
+  void LogAddonProperties(void);
 
   bool OpenInternal(const CFileItem& file);
 
@@ -208,9 +206,7 @@ private:
   const std::string     m_strGameClientPath;   // Path to the game client library
   bool                  m_bReadyToUse;         // True if this add-on is connected to the backend, false otherwise */
 
-  // Returned from the Game API
-  std::string           m_strClientName;
-  std::string           m_strClientVersion;
+  // Game API xml parameters
   std::set<std::string> m_extensions;
   bool                  m_bSupportsVFS;
   bool                  m_bSupportsNoGame;
