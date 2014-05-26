@@ -84,7 +84,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   }
 
   CLog::Log(LOGINFO, "RetroPlayer: Using game client %s at version %s",
-    gameClient->GetClientName().c_str(), gameClient->GetClientVersion().c_str());
+    gameClient->ID().c_str(), gameClient->Version().c_str());
 
   if (!gameClient->OpenFile(file, this))
   {
