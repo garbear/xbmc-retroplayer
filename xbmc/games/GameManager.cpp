@@ -78,7 +78,6 @@ void CGameManager::Start()
   CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_GAMEDLL, this);
   // TODO: CAddonMgr::Get().RegisterAddonMgrCallback(ADDON_GAMEDLL, this);
 
-  // TODO: Run these off-thread
   // Must call UpdateAddons(), as CAddonMgr::Init() is called before CGameManager::Start(),
   // so we won't receive the first ObservableMessageAddons message.
   UpdateAddons();
@@ -102,7 +101,7 @@ bool CGameManager::UpdateAddons()
 
     for (VECADDONS::const_iterator it = gameClients.begin(); it != gameClients.end(); it++)
     {
-      if (!RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it)))
+      if (!RegisterAddon(boost::dynamic_pointer_cast<CGameClient>(*it)) && (*it)->Enabled())
         CAddonMgr::Get().DisableAddon((*it)->ID());
     }
   }
@@ -129,7 +128,7 @@ void CGameManager::UpdateExtensions()
       if (!gc)
         continue;
 
-      bool bIsBroken = !gc->Props().broken.empty();
+      const bool bIsBroken = !gc->Props().broken.empty();
       if (!bIsBroken && !gc->GetExtensions().empty())
         m_gameExtensions.insert(gc->GetExtensions().begin(), gc->GetExtensions().end());
     }
@@ -151,15 +150,6 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
     if (it != m_gameClients.end())
       return true; // Already registered
   }
-
-  if (client->Create() != ADDON_STATUS_OK)
-  {
-    CLog::Log(LOGERROR, "GameManager: failed to load DLL for %s", client->ID().c_str());
-    CGUIDialogKaiToast::QueueNotification(client->Icon(), client->Name(), g_localizeStrings.Get(27003)); // Error loading DLL
-    return false;
-  }
-
-  client->Destroy();
 
   m_gameClients[client->ID()] = client;
   CLog::Log(LOGDEBUG, "GameManager: Registered add-on %s", client->ID().c_str());
@@ -218,6 +208,12 @@ void CGameManager::GetExtensions(vector<string> &exts) const
 {
   CSingleLock lock(m_critSection);
   exts.insert(exts.end(), m_gameExtensions.begin(), m_gameExtensions.end());
+}
+
+const std::set<std::string>& CGameManager::GetExtensions() const
+{
+  CSingleLock lock(m_critSection);
+  return m_gameExtensions;
 }
 
 bool CGameManager::IsGame(const std::string &path) const
@@ -296,7 +292,7 @@ void CGameManager::GetAllGameClients(ADDON::VECADDONS& addons)
     // Sort by ID and remove duplicates
     AddonSortByIDFunctor AddonSortByID;
     std::sort(addons.begin(), addons.end(), AddonSortByID);
-    for (VECADDONS::iterator it = addons.begin(); it != addons.end() - 1; )
+    for (VECADDONS::iterator it = addons.begin(); it + 1 != addons.end(); )
     {
       if ((*it)->ID() == (*(it + 1))->ID())
         addons.erase(it + 1);

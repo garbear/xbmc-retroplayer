@@ -74,6 +74,7 @@ namespace GAME
      * addon.xml). Includes game clients in remote repositories.
      */
     void GetExtensions(std::vector<std::string>& exts) const;
+    const std::set<std::string>& GetExtensions() const;
 
     /**
      * Returns true if the file extension is supported by an add-on in an enabled
