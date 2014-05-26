@@ -164,11 +164,6 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
   if (!client)
     return false;
 
-  // This special game client is a wrapper for libretro cores. It shouldn't be
-  // registered as a real game client.
-  if (client->ID() == LIBRETRO_WRAPPER_LIBRARY)
-    return false;
-
   if (!client->Enabled())
     return false;
 
