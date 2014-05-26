@@ -43,12 +43,6 @@ const char* GetGameAPIVersion(void);
  */
 const char* GetMininumGameAPIVersion(void);
 
-/*! Descriptive name of the game client. Should not contain any version numbers. */
-const char* GetClientName(void);
-
-/*! Descriptive version of the game client version. "X.Y.Z" format not requried. */
-const char* GetClientVersion(void);
-
 /*! Loads a game */
 GAME_ERROR LoadGame(const char* url);
 
@@ -296,8 +290,6 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
 {
   pClient->GetGameAPIVersion        = GetGameAPIVersion;
   pClient->GetMininumGameAPIVersion = GetMininumGameAPIVersion;
-  pClient->GetClientName            = GetClientName;
-  pClient->GetClientVersion         = GetClientVersion;
   pClient->LoadGame                 = LoadGame;
   pClient->LoadGameSpecial          = LoadGameSpecial;
   pClient->UnloadGame               = UnloadGame;

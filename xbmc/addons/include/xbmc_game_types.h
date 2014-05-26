@@ -653,8 +653,6 @@ typedef struct GameClient
 {
   const char* (__cdecl* GetGameAPIVersion)(void);
   const char* (__cdecl* GetMininumGameAPIVersion)(void);
-  const char* (__cdecl* GetClientName)(void);
-  const char* (__cdecl* GetClientVersion)(void);
   GAME_ERROR  (__cdecl* LoadGame)(const char* url);
   GAME_ERROR  (__cdecl* LoadGameSpecial)(GAME_TYPE type, const char** urls, size_t num_urls);
   GAME_ERROR  (__cdecl* UnloadGame)(void);
