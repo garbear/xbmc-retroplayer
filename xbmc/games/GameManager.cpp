@@ -73,10 +73,10 @@ CGameManager& CGameManager::Get()
 
 void CGameManager::Start()
 {
-  CAddonMgr::Get().RegisterAddonMgrCallback(ADDON_GAMEDLL, this);
   CAddonMgr::Get().RegisterObserver(this);
   CAddonInstaller::Get().RegisterObserver(this);
   CAddonDatabase::RegisterAddonDatabaseCallback(ADDON_GAMEDLL, this);
+  // TODO: CAddonMgr::Get().RegisterAddonMgrCallback(ADDON_GAMEDLL, this);
 
   // TODO: Run these off-thread
   // Must call UpdateAddons(), as CAddonMgr::Init() is called before CGameManager::Start(),
@@ -87,32 +87,10 @@ void CGameManager::Start()
 
 void CGameManager::Stop()
 {
-  CAddonMgr::Get().UnregisterAddonMgrCallback(ADDON_GAMEDLL);
   CAddonMgr::Get().UnregisterObserver(this);
   // TODO: Why does this crash?
   //CAddonInstaller::Get().UnregisterObserver(this);
   CAddonDatabase::UnregisterAddonDatabaseCallback(ADDON_GAMEDLL);
-}
-
-bool CGameManager::StopClient(AddonPtr client, bool bRestart)
-{
-  // This lock is to ensure that ReCreate() or Destroy() are not started from
-  // multiple threads.
-  CSingleLock lock(m_critSection);
-
-  GameClientPtr mappedClient;
-  if (GetClient(client->ID(), mappedClient))
-  {
-    CLog::Log(LOGDEBUG, "%s - %s add-on '%s'", __FUNCTION__, bRestart ? "restarting" : "stopping", mappedClient->Name().c_str());
-    if (bRestart)
-      mappedClient->Create();
-    else
-      mappedClient->Destroy();
-
-    return bRestart ? mappedClient->ReadyToUse() : true;
-  }
-
-  return false;
 }
 
 bool CGameManager::UpdateAddons()

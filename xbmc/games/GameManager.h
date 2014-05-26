@@ -20,7 +20,6 @@
 #pragma once
 
 #include "addons/AddonDatabase.h"
-#include "addons/AddonManager.h"
 #include "GameClient.h"
 #include "GameFileAutoLauncher.h"
 #include "FileItem.h"
@@ -42,7 +41,7 @@ namespace GAME
    * querying it directly, so it is desirable to only do this once and cache the
    * information.
    */
-  class CGameManager : public ADDON::IAddonMgrCallback, public IAddonDatabaseCallback, public Observer
+  class CGameManager : public IAddonDatabaseCallback, public Observer
   {
   protected:
     CGameManager() { }
@@ -53,8 +52,6 @@ namespace GAME
 
     virtual void Start();
     virtual void Stop();
-
-    virtual bool StopClient(ADDON::AddonPtr client, bool bRestart);
 
     virtual bool GetClient(const std::string& strClientId, GameClientPtr& addon) const;
     virtual bool GetConnectedClient(const std::string& strClientId, GameClientPtr& addon) const;
@@ -97,10 +94,6 @@ namespace GAME
     // Inherited from IAddonDatabaseCallback
     virtual bool AddonEnabled(ADDON::AddonPtr addon, bool bDisabled);
     virtual void AddonDisabled(ADDON::AddonPtr addon);
-
-    // Inherited from IAddonMgrCallback
-    virtual bool RequestRestart(ADDON::AddonPtr addon, bool datachanged) { return StopClient(addon, true); }
-    virtual bool RequestRemoval(ADDON::AddonPtr addon)                   { return StopClient(addon, false); }
 
     // Get all known add-ons, both local and remote
     static void GetAllGameClients(ADDON::VECADDONS& addons);
