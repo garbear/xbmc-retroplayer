@@ -22,8 +22,8 @@
 #include "xbmc_game_types.h"
 
 #include <map>
-#include <set>
 #include <string>
+#include <vector>
 
 namespace ADDON { class CHelper_libXBMC_addon; }
 class CHelper_libXBMC_game;
@@ -67,8 +67,8 @@ namespace LIBRETRO
     static GAME_PIXEL_FORMAT m_pixelFormat;
 
     // Record the variables reported by libretro core
-    static std::map<std::string, std::set<std::string> > m_variables;
+    static std::map<std::string, std::vector<std::string> > m_variables;
     // Record the settings reported by XBMC
-    static std::map<std::string, std::string> m_settings;
+    static std::map<std::string, unsigned int> m_settings;
   };
 } // namespace LIBRETRO

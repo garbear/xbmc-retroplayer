@@ -35,6 +35,7 @@ using namespace LIBRETRO;
 using namespace std;
 
 #define DEFAULT_NOTIFICATION_TIME_MS  3000 // Time to display toast dialogs, from AddonCallbacksAddon.cpp
+#define SETTING_INVALID               -1
 
 CHelper_libXBMC_addon* CLibretroEnvironment::m_xbmc = NULL;
 CHelper_libXBMC_game*  CLibretroEnvironment::m_frontend = NULL;
@@ -45,8 +46,8 @@ double            CLibretroEnvironment::m_fps = 0.0;
 bool              CLibretroEnvironment::m_bFramerateKnown = false;
 GAME_PIXEL_FORMAT CLibretroEnvironment::m_pixelFormat = GAME_PIXEL_FORMAT_0RGB1555; // Default per libretro.h
 
-map<string, set<string> > CLibretroEnvironment::m_variables;
-map<string, string> CLibretroEnvironment::m_settings;
+map<string, vector<string> > CLibretroEnvironment::m_variables;
+map<string, unsigned int>    CLibretroEnvironment::m_settings;
 
 void CLibretroEnvironment::Initialize(CHelper_libXBMC_addon* xbmc, CHelper_libXBMC_game* frontend, CLibretroDLL* client, CClientBridge *clientBridge)
 {
@@ -152,7 +153,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         return false;
 
       m_pixelFormat = (GAME_PIXEL_FORMAT)*typedData;
-      
+
       break;
     }
   case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
@@ -238,30 +239,32 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       retro_variable* typedData = reinterpret_cast<retro_variable*>(data);
       if (typedData)
       {
-        // Default case
-        typedData->value = ""; // NULL crashes libretro cores
-
-        const char* key = typedData->key;
-        if (!key)
+        const char* strKey = typedData->key;
+        if (!strKey)
           break;
 
         // Ask XBMC for the setting's value
-        char valueBuffer[1024] = { };
-        m_xbmc->GetSetting(key, valueBuffer);
-        string value = valueBuffer;
-        if (value.empty())
-          break;
+        int iValue = SETTING_INVALID;
+        m_xbmc->GetSetting(strKey, &iValue);
 
-        // Error-log if the value is invalid
-        if (m_variables[key].find(value) == m_variables[key].end())
+        // Translate setting into value that libretro expects
+        const vector<string>& vecValues = m_variables[strKey];
+        if (0 <= iValue && static_cast<unsigned int>(iValue) < vecValues.size())
         {
-          m_xbmc->Log(LOG_ERROR, "Setting \"%s\" has invalid value: \"%s\"", key, value.c_str());
-          break;
+          // Store the setting in m_settings and return its value
+          m_settings[strKey] = static_cast<unsigned int>(iValue);
+          typedData->value = vecValues[iValue].c_str();
         }
-
-        // Store the setting in m_settings and return its value
-        m_settings[key] = value;
-        typedData->value = m_settings[key].c_str();
+        else if (iValue <= SETTING_INVALID)
+        {
+          m_xbmc->Log(LOG_ERROR, "Setting \"%s\" not found", strKey);
+          return false;
+        }
+        else
+        {
+          m_xbmc->Log(LOG_ERROR, "Setting \"%s\" has invalid value: %d", strKey, iValue);
+          return false;
+        }
       }
       break;
     }
@@ -270,15 +273,16 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       const retro_variable* typedData = reinterpret_cast<const retro_variable*>(data);
       if (typedData)
       {
-        char valueBuffer[1024];
         for (const retro_variable* variable = typedData; variable->key && variable->value; variable++)
         {
-          m_xbmc->Log(LOG_INFO, "Checking for settings %s (value is \"%s\")", variable->key, variable->value);
-          // This will error-log if the setting can't be found
-          m_xbmc->GetSetting(variable->key, valueBuffer);
+          int iValue = SETTING_INVALID;
+          m_xbmc->Log(LOG_INFO, "Checking settings for %s (value is \"%s\")", variable->key, variable->value);
 
-          // Record the variable
-          string key = variable->key;
+          // This will error-log if the setting can't be found
+          if (!m_xbmc->GetSetting(variable->key, &iValue) || iValue <= SETTING_INVALID)
+            continue;
+
+          string key    = variable->key;
           string values = variable->value;
 
           // Look for ; separating the description from the pipe-separated values
@@ -294,18 +298,28 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
           // Split the values on | delimiter
           while (!values.empty())
           {
-            pos = values.find('|');
-            if (pos == string::npos)
+            string strValue;
+
+            if ((pos = values.find('|')) == string::npos)
             {
-              m_variables[key].insert(values);
+              strValue = values;
               values.clear();
             }
             else
             {
-              m_variables[key].insert(values.substr(0, pos));
+              strValue = values.substr(0, pos);
               values.erase(0, pos + 1);
             }
+
+            m_variables[key].push_back(strValue);
           }
+
+          // Record XBMC's value for the setting
+          if (static_cast<unsigned int>(iValue) >= m_variables[key].size())
+            m_xbmc->Log(LOG_ERROR, "Setting value out of range: %d (%d possible values)", iValue, m_variables[key].size());
+          else
+            m_xbmc->Log(LOG_DEBUG, "%s has value \"%s\" in XBMC", key.c_str(), m_variables[key][iValue].c_str());
+          m_settings[key] = iValue;
         }
       }
       break;
@@ -315,8 +329,26 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       bool* typedData = reinterpret_cast<bool*>(data);
       if (typedData)
       {
-        // TODO: Need to return true if the setting's value has changed
         *typedData = false;
+
+        // TODO: Implement an observer for when settings change
+        // For now, we must enumerate all settings
+        for (map<string, unsigned int>::const_iterator it = m_settings.begin(); it != m_settings.end(); ++it)
+        {
+          const string& strKey = it->first;
+          const int iOldValue  = it->second;
+
+          int iCurrentValue = SETTING_INVALID;
+          if (m_xbmc->GetSetting(strKey.c_str(), &iCurrentValue) && iCurrentValue > SETTING_INVALID)
+          {
+            if (iOldValue != iCurrentValue)
+            {
+              *typedData = true;
+              break;
+            }
+          }
+
+        }
       }
       break;
     }
