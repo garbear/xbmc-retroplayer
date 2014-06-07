@@ -286,10 +286,10 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
           if ((pos = values.find(';')) != string::npos)
           {
             pos++;
-            while (values[pos] == ' ')
+            while (pos < values.size() && values[pos] == ' ')
               pos++;
+            values = values.substr(pos);
           }
-          values = values.substr(pos);
 
           // Split the values on | delimiter
           while (!values.empty())
