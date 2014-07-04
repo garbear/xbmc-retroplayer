@@ -703,7 +703,7 @@ int CBuiltins::Execute(const CStdString& execString)
         if (containsMusic && containsVideo)
           break;
       }
-      
+
       CGUIViewState *state = CGUIViewState::GetViewState(containsVideo ? WINDOW_VIDEO_NAV : WINDOW_MUSIC, items);
       if (state)
         items.Sort(state->GetSortMethod());
@@ -719,7 +719,7 @@ int CBuiltins::Execute(const CStdString& execString)
             items.Remove(i);
         }
       }
-      
+
       g_playlistPlayer.ClearPlaylist(playlist);
       g_playlistPlayer.Add(playlist, items);
       g_playlistPlayer.SetCurrentPlaylist(playlist);
