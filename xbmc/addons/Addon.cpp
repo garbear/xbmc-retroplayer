@@ -379,7 +379,6 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
   {
     switch (m_props.type)
     {
-      case ADDON_SCREENSAVER:
       case ADDON_SCRIPT:
       case ADDON_SCRIPT_LIBRARY:
       case ADDON_SCRIPT_LYRICS:
@@ -392,7 +391,6 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
       case ADDON_SCRAPER_MUSICVIDEOS:
       case ADDON_SCRAPER_TVSHOWS:
       case ADDON_SCRAPER_LIBRARY:
-      case ADDON_PVRDLL:
       case ADDON_PLUGIN:
       case ADDON_WEB_INTERFACE:
       case ADDON_SERVICE:
@@ -403,6 +401,15 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
         {
           std::string temp = CAddonMgr::Get().GetExtValue(extension->configuration, "@library");
           m_strLibName = temp;
+        }
+        break;
+      case ADDON_VIZ:
+      case ADDON_SCREENSAVER:
+      case ADDON_PVRDLL:
+        {
+          // if library attribute isn't present, look for a system-dependent one
+          if (m_strLibName.empty())
+            m_strLibName = CAddonMgr::Get().GetPlatformLibraryName(extension->configuration);
         }
         break;
       default:
