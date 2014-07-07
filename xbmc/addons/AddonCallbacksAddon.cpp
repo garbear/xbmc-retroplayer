@@ -205,13 +205,13 @@ bool CAddonCallbacksAddon::GetAddonSetting(void *addonData, const char *strSetti
               strcmpi(type, "folder") == 0 || strcmpi(type, "action")    == 0 ||
               strcmpi(type, "music")  == 0 || strcmpi(type, "pictures")  == 0 ||
               strcmpi(type, "folder") == 0 || strcmpi(type, "programs")  == 0 ||
-              strcmpi(type, "file")  == 0 || strcmpi(type, "fileenum")  == 0)
+              strcmpi(type, "file")  == 0 || strcmpi(type, "fileenum")  == 0 ||
+              strcmpi(type, "labelenum") == 0)
           {
             strcpy((char*) settingValue, addonHelper->m_addon->GetSetting(id).c_str());
             return true;
           }
-          else if (strcmpi(type, "number") == 0 || strcmpi(type, "enum") == 0 ||
-                   strcmpi(type, "labelenum") == 0)
+          else if (strcmpi(type, "number") == 0 || strcmpi(type, "enum") == 0)
           {
             *(int*) settingValue = (int) atoi(addonHelper->m_addon->GetSetting(id));
             return true;
