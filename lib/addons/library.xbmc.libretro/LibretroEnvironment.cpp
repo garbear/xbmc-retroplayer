@@ -26,16 +26,19 @@
 #include "libXBMC_addon.h"
 #include "libXBMC_game.h"
 
+#include <algorithm>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
 using namespace ADDON;
 using namespace LIBRETRO;
+//using namespace PLATFORM; // TODO
 using namespace std;
 
 #define DEFAULT_NOTIFICATION_TIME_MS  3000 // Time to display toast dialogs, from AddonCallbacksAddon.cpp
 
+// Define static members
 CHelper_libXBMC_addon* CLibretroEnvironment::m_xbmc = NULL;
 CHelper_libXBMC_game*  CLibretroEnvironment::m_frontend = NULL;
 CLibretroDLL*          CLibretroEnvironment::m_client = NULL;
@@ -45,8 +48,10 @@ double            CLibretroEnvironment::m_fps = 0.0;
 bool              CLibretroEnvironment::m_bFramerateKnown = false;
 GAME_PIXEL_FORMAT CLibretroEnvironment::m_pixelFormat = GAME_PIXEL_FORMAT_0RGB1555; // Default per libretro.h
 
-map<string, set<string> > CLibretroEnvironment::m_variables;
-map<string, string> CLibretroEnvironment::m_settings;
+map<string, vector<string> > CLibretroEnvironment::m_variables;
+map<string, string>          CLibretroEnvironment::m_settings;
+volatile bool                CLibretroEnvironment::m_bSettingsChanged = false;
+//CMutex                       CLibretroEnvironment::m_settingsMutex; // TODO
 
 void CLibretroEnvironment::Initialize(CHelper_libXBMC_addon* xbmc, CHelper_libXBMC_game* frontend, CLibretroDLL* client, CClientBridge *clientBridge)
 {
@@ -74,6 +79,38 @@ void CLibretroEnvironment::UpdateFramerate(double fps)
 {
   m_fps = fps;
   m_bFramerateKnown = true;
+}
+
+void CLibretroEnvironment::SetSetting(const char* name, const char* value)
+{
+  //CLockObject lock(m_settingsMutex); // TODO
+
+  if (m_variables.empty())
+  {
+    // RETRO_ENVIRONMENT_SET_VARIABLES hasn't been called yet. We don't need to
+    // record the setting now, because m_settings will be initialized along with
+    // m_variables.
+    return;
+  }
+
+  // Check to make sure value is a valid value reported by libretro
+  if (m_variables.find(name) == m_variables.end())
+  {
+    m_xbmc->Log(LOG_ERROR, "XBMC setting %s unknown to libretro!", name);
+    return;
+  }
+  vector<string>& values = m_variables[name];
+  if (std::find(values.begin(), values.end(), value) == values.end())
+  {
+    m_xbmc->Log(LOG_ERROR, "\"%s\" is not a valid value for setting %s", value, name);
+    return;
+  }
+
+  if (m_settings[name] != value)
+  {
+    m_settings[name] = value;
+    m_bSettingsChanged = true;
+  }
 }
 
 bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
@@ -131,6 +168,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
     {
       const unsigned* typedData = reinterpret_cast<const unsigned*>(data);
       // Removed from Game API
+      (void)typedData;
       break;
     }
   case RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
@@ -152,7 +190,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
         return false;
 
       m_pixelFormat = (GAME_PIXEL_FORMAT)*typedData;
-      
+
       break;
     }
   case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
@@ -238,75 +276,88 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       retro_variable* typedData = reinterpret_cast<retro_variable*>(data);
       if (typedData)
       {
-        // Default case
-        typedData->value = ""; // NULL crashes libretro cores
+        const char* strKey = typedData->key;
+         if (!strKey)
+           return false;
 
-        const char* key = typedData->key;
-        if (!key)
-          break;
+         //CLockObject lock(m_settingsMutex); // TODO
 
-        // Ask XBMC for the setting's value
-        char valueBuffer[1024] = { };
-        m_xbmc->GetSetting(key, valueBuffer);
-        string value = valueBuffer;
-        if (value.empty())
-          break;
+         if (m_settings.find(strKey) == m_settings.end())
+         {
+           m_xbmc->Log(LOG_ERROR, "Unknown setting ID: %s", strKey);
+           return false;
+         }
 
-        // Error-log if the value is invalid
-        if (m_variables[key].find(value) == m_variables[key].end())
-        {
-          m_xbmc->Log(LOG_ERROR, "Setting \"%s\" has invalid value: \"%s\"", key, value.c_str());
-          break;
-        }
+         typedData->value = m_settings[strKey].c_str();
 
-        // Store the setting in m_settings and return its value
-        m_settings[key] = value;
-        typedData->value = m_settings[key].c_str();
-      }
-      break;
+         m_bSettingsChanged = false;
+       }
+       break;
     }
   case RETRO_ENVIRONMENT_SET_VARIABLES:
     {
       const retro_variable* typedData = reinterpret_cast<const retro_variable*>(data);
       if (typedData)
       {
-        char valueBuffer[1024];
+        //CLockObject lock(m_settingsMutex); // TODO
+
+        // Example retro_variable:
+        //      { "foo_option", "Speed hack coprocessor X; false|true" }
+
+        // Text before first ';' is description. This ';' must be followed by
+        // a space, and followed by a list of possible values split up with '|'.
+        // Here, we break up this horrible messy string into the m_variables
+        // data structure and initialize m_settings with XBMC's settings.
         for (const retro_variable* variable = typedData; variable->key && variable->value; variable++)
         {
-          m_xbmc->Log(LOG_INFO, "Checking for settings %s (value is \"%s\")", variable->key, variable->value);
-          // This will error-log if the setting can't be found
-          m_xbmc->GetSetting(variable->key, valueBuffer);
-
-          // Record the variable
-          string key = variable->key;
-          string values = variable->value;
+          const string strKey = variable->key;
+          string strValues = variable->value;
 
           // Look for ; separating the description from the pipe-separated values
           size_t pos;
-          if ((pos = values.find(';')) != string::npos)
+          if ((pos = strValues.find(';')) != string::npos)
           {
             pos++;
-            while (pos < values.size() && values[pos] == ' ')
+            while (pos < strValues.size() && strValues[pos] == ' ')
               pos++;
-            values = values.substr(pos);
+            strValues = strValues.substr(pos);
           }
 
-          // Split the values on | delimiter
-          while (!values.empty())
+          // Split the values on | delimiter and build m_variables array
+          vector<string>& vecValues = m_variables[strKey];
+          while (!strValues.empty())
           {
-            pos = values.find('|');
-            if (pos == string::npos)
+            string strValue;
+
+            if ((pos = strValues.find('|')) == string::npos)
             {
-              m_variables[key].insert(values);
-              values.clear();
+              strValue = strValues;
+              strValues.clear();
             }
             else
             {
-              m_variables[key].insert(values.substr(0, pos));
-              values.erase(0, pos + 1);
+              strValue = strValues.substr(0, pos);
+              strValues.erase(0, pos + 1);
             }
+
+            vecValues.push_back(strValue);
           }
+
+          // Record XBMC's current value for this variable in m_settings
+          char valueBuf[1024] = { };
+          if (!m_xbmc->GetSetting(variable->key, valueBuf))
+            continue;
+          if (std::find(vecValues.begin(), vecValues.end(), valueBuf) == vecValues.end())
+          {
+            m_xbmc->Log(LOG_ERROR, "Setting %s: invalid value \"%s\" (values are: %s)", strKey.c_str(), valueBuf, variable->value);
+            continue;
+          }
+
+          m_xbmc->Log(LOG_DEBUG, "Setting %s has value \"%s\" in XBMC", strKey.c_str(), valueBuf);
+          m_settings[strKey] = valueBuf;
         }
+
+        m_bSettingsChanged = true;
       }
       break;
     }
@@ -315,8 +366,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
       bool* typedData = reinterpret_cast<bool*>(data);
       if (typedData)
       {
-        // TODO: Need to return true if the setting's value has changed
-        *typedData = false;
+        *typedData = m_bSettingsChanged;
       }
       break;
     }

@@ -19,11 +19,12 @@
  */
 #pragma once
 
+//#include "lib/platform/threads/mutex.h" // TODO
 #include "xbmc_game_types.h"
 
 #include <map>
-#include <set>
 #include <string>
+#include <vector>
 
 namespace ADDON { class CHelper_libXBMC_addon; }
 class CHelper_libXBMC_game;
@@ -54,6 +55,11 @@ namespace LIBRETRO
      */
     static GAME_PIXEL_FORMAT GetPixelFormat() { return m_pixelFormat; }
 
+    /*!
+     * Invoked when XBMC transfers a setting to the add-on.
+     */
+    static void SetSetting(const char* name, const char* value);
+
   private:
     static bool EnvironmentCallback(unsigned cmd, void *data);
 
@@ -66,9 +72,9 @@ namespace LIBRETRO
     static bool              m_bFramerateKnown; // true if UpdateFramerate() has been called
     static GAME_PIXEL_FORMAT m_pixelFormat;
 
-    // Record the variables reported by libretro core
-    static std::map<std::string, std::set<std::string> > m_variables;
-    // Record the settings reported by XBMC
-    static std::map<std::string, std::string> m_settings;
+    static std::map<std::string, std::vector<std::string> > m_variables; // Record the variables reported by libretro core (key -> values)
+    static std::map<std::string, std::string>               m_settings;  // Record the settings reported by XBMC (key -> current value)
+    static volatile bool                                    m_bSettingsChanged;
+    //static PLATFORM::CMutex                                 m_settingsMutex; // TODO
   };
 } // namespace LIBRETRO

@@ -148,6 +148,8 @@ ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
   if (!settingName || !settingValue)
     return ADDON_STATUS_UNKNOWN;
 
+  CLibretroEnvironment::SetSetting(settingName, static_cast<const char*>(settingValue));
+
   return ADDON_STATUS_OK;
 }
 
