@@ -37,8 +37,6 @@ using namespace ADDON;
 using namespace GAME;
 using namespace std;
 
-#define GAME_CLIENT_NAME_UNKNOWN     "Unknown"
-#define GAME_CLIENT_VERSION_UNKNOWN  "v0.0.0"
 #define EXTENSION_SEPARATOR          "|"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
