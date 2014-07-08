@@ -27,6 +27,7 @@
 #include "libXBMC_game.h"
 
 #include <algorithm>
+#include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -324,7 +325,7 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
           }
 
           // Split the values on | delimiter and build m_variables array
-          vector<string>& vecValues = m_variables[strKey];
+          vector<string> vecValues;
           while (!strValues.empty())
           {
             string strValue;
@@ -343,18 +344,33 @@ bool CLibretroEnvironment::EnvironmentCallback(unsigned int cmd, void *data)
             vecValues.push_back(strValue);
           }
 
-          // Record XBMC's current value for this variable in m_settings
+          if (vecValues.empty())
+            continue;
+
+          m_variables[strKey] = vecValues;
+
+          // Query value for setting in XBMC
           char valueBuf[1024] = { };
-          if (!m_xbmc->GetSetting(variable->key, valueBuf))
-            continue;
-          if (std::find(vecValues.begin(), vecValues.end(), valueBuf) == vecValues.end())
+          if (m_xbmc->GetSetting(variable->key, valueBuf))
           {
-            m_xbmc->Log(LOG_ERROR, "Setting %s: invalid value \"%s\" (values are: %s)", strKey.c_str(), valueBuf, variable->value);
-            continue;
+            if (std::find(vecValues.begin(), vecValues.end(), valueBuf) != vecValues.end())
+            {
+              m_xbmc->Log(LOG_DEBUG, "Setting %s has value \"%s\" in XBMC", strKey.c_str(), valueBuf);
+              m_settings[strKey] = valueBuf;
+            }
+            else
+            {
+              m_xbmc->Log(LOG_ERROR, "Setting %s: invalid value \"%s\" (values are: %s)", strKey.c_str(), valueBuf, variable->value);
+              m_settings[strKey] = vecValues[0]; // Default to first value per libretro api
+            }
+          }
+          else
+          {
+            m_xbmc->Log(LOG_ERROR, "Setting %s not found by XBMC", strKey.c_str());
+            m_settings[strKey] = vecValues[0];
           }
 
-          m_xbmc->Log(LOG_DEBUG, "Setting %s has value \"%s\" in XBMC", strKey.c_str(), valueBuf);
-          m_settings[strKey] = valueBuf;
+          assert(m_settings.find(strKey) != m_settings.end());
         }
 
         m_bSettingsChanged = true;
