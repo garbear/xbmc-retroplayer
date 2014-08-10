@@ -616,7 +616,7 @@ struct game_hw_info
   bool     debug_context;       // Creates a debug context.
 };
 
-/*! Properties passed to the game_init() method of a game client */
+/*! Properties passed to the ADDON_Create() method of a game client */
 typedef struct game_client_properties
 {
   /*!
