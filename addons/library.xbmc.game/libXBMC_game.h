@@ -130,6 +130,7 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_frame_time_set_reference)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_hw_set_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_hw_get_current_framebuffer)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_hw_get_proc_address)) throw false;
     }
     catch (const bool& bSuccess)
     {
