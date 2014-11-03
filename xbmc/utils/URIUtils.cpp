@@ -20,6 +20,7 @@
 
 #include "network/Network.h"
 #include "URIUtils.h"
+#include "addons/ContentAddons.h"
 #include "Application.h"
 #include "FileItem.h"
 #include "filesystem/MultiPathDirectory.h"
@@ -35,6 +36,7 @@
 #include <arpa/inet.h>
 
 using namespace std;
+using namespace ADDON;
 using namespace XFILE;
 
 bool URIUtils::IsInPath(const std::string &uri, const std::string &baseURI)
@@ -785,7 +787,11 @@ bool URIUtils::IsSpecial(const std::string& strFile)
 bool URIUtils::IsPlugin(const std::string& strFile)
 {
   CURL url(strFile);
-  return url.IsProtocol("plugin");
+  if (url.IsProtocol("plugin"))
+    return true;
+  else if (CContentAddons::IsPlugin(strFile))
+    return true;
+  return false;
 }
 
 bool URIUtils::IsScript(const std::string& strFile)
