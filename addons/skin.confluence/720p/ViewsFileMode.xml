@@ -39,7 +39,7 @@
 					<control type="label">
 						<left>280</left>
 						<top>0</top>
-						<width>400</width>
+						<width>380</width>
 						<height>40</height>
 						<font>font12</font>
 						<textcolor>grey2</textcolor>
@@ -89,6 +89,13 @@
 						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos)</visible>
 					</control>
+					<control type="image">
+						<posx>665</posx>
+						<posy>12</posy>
+						<width>20</width>
+						<height>20</height>
+						<texture>$INFO[ListItem.Property(provider_icon)]</texture>
+					</control>
 				</itemlayout>
 				<focusedlayout height="40" width="580">
 					<control type="image">
@@ -132,7 +139,7 @@
 					<control type="label">
 						<left>280</left>
 						<top>0</top>
-						<width>400</width>
+						<width>380</width>
 						<height>40</height>
 						<font>font12</font>
 						<textcolor>grey2</textcolor>
@@ -181,6 +188,13 @@
 						<texture>$INFO[ListItem.Overlay]</texture>
 						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos)</visible>
+					</control>
+					<control type="image">
+						<posx>665</posx>
+						<posy>12</posy>
+						<width>20</width>
+						<height>20</height>
+						<texture>$INFO[ListItem.Property(provider_icon)]</texture>
 					</control>
 				</focusedlayout>
 			</control>
@@ -287,6 +301,13 @@
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[ListItem.Overlay]</texture>
 					</control>
+					<control type="image">
+						<posx>150</posx>
+						<posy>120</posy>
+						<width>30</width>
+						<height>30</height>
+						<texture>$INFO[ListItem.Property(provider_icon)]</texture>
+					</control>
 				</itemlayout>
 				<focusedlayout condition="!Container.Content(Movies) + !Container.Content(Seasons) + !Container.Content(TVShows) + !Container.Content(Sets)" height="186" width="216">
 					<control type="image">
@@ -330,6 +351,13 @@
 						<height>30</height>
 						<aspectratio>keep</aspectratio>
 						<texture>$INFO[ListItem.Overlay]</texture>
+					</control>
+					<control type="image">
+						<posx>150</posx>
+						<posy>120</posy>
+						<width>30</width>
+						<height>30</height>
+						<texture>$INFO[ListItem.Property(provider_icon)]</texture>
 					</control>
 				</focusedlayout>
 				<itemlayout condition="Container.Content(Movies) | Container.Content(Seasons) | Container.Content(TVShows) | Container.Content(Sets)" height="279" width="216">
@@ -539,7 +567,7 @@
 					<control type="label">
 						<left>60</left>
 						<top>0</top>
-						<width>1000</width>
+						<width>975</width>
 						<height>40</height>
 						<font>font12</font>
 						<textcolor>grey2</textcolor>
@@ -588,6 +616,13 @@
 						<texture>$INFO[ListItem.Overlay]</texture>
 						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos)</visible>
+					</control>
+					<control type="image">
+						<posx>1040</posx>
+						<posy>12</posy>
+						<width>20</width>
+						<height>20</height>
+						<texture>$INFO[ListItem.Property(provider_icon)]</texture>
 					</control>
 				</itemlayout>
 				<focusedlayout height="40" width="1080">
@@ -640,7 +675,7 @@
 					<control type="label">
 						<left>60</left>
 						<top>0</top>
-						<width>1000</width>
+						<width>975</width>
 						<height>40</height>
 						<font>font12</font>
 						<textcolor>grey2</textcolor>
@@ -689,6 +724,13 @@
 						<texture>$INFO[ListItem.Overlay]</texture>
 						<aspectratio>keep</aspectratio>
 						<visible>Window.IsVisible(Videos)</visible>
+					</control>
+					<control type="image">
+						<posx>1040</posx>
+						<posy>12</posy>
+						<width>20</width>
+						<height>20</height>
+						<texture>$INFO[ListItem.Property(provider_icon)]</texture>
 					</control>
 				</focusedlayout>
 			</control>
