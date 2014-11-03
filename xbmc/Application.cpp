@@ -88,6 +88,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "utils/CPUInfo.h"
 #include "utils/SeekHandler.h"
+#include "addons/ContentAddons.h"
 
 #include "input/KeyboardLayoutManager.h"
 
@@ -1316,10 +1317,13 @@ void CApplication::StartServices()
   CLog::Log(LOGNOTICE, "start dvd mediatype detection");
   m_DetectDVDType.Create(false, THREAD_MINSTACKSIZE);
 #endif
+
+  ADDON::CContentAddons::Get().Start();
 }
 
 void CApplication::StopServices()
 {
+  ADDON::CContentAddons::Get().Stop();
   m_network->NetworkMessage(CNetwork::SERVICES_DOWN, 0);
 
 #if !defined(TARGET_WINDOWS) && defined(HAS_DVD_DRIVE)
@@ -2708,7 +2712,7 @@ void CApplication::Stop(int exitCode)
 bool CApplication::PlayMedia(const CFileItem& item, int iPlaylist)
 {
   //If item is a plugin, expand out now and run ourselves again
-  if (item.IsPlugin())
+  if (StringUtils::StartsWith(item.GetPath(), "plugin://"))
   {
     CFileItem item_new(item);
     if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new))
@@ -2976,7 +2980,7 @@ PlayBackRet CApplication::PlayFile(const CFileItem& item, bool bRestart)
   if (item.IsPlayList())
     return PLAYBACK_FAIL;
 
-  if (item.IsPlugin())
+  if (StringUtils::StartsWith(item.GetPath(), "plugin://"))
   { // we modify the item so that it becomes a real URL
     CFileItem item_new(item);
     if (XFILE::CPluginDirectory::GetPluginResult(item.GetPath(), item_new))

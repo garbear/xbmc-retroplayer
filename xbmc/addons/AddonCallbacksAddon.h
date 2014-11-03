@@ -60,12 +60,17 @@ public:
   static bool FileExists(const void* addonData, const char *strFileName, bool bUseCache);
   static int StatFile(const void* addonData, const char *strFileName, struct __stat64* buffer);
   static bool DeleteFile(const void* addonData, const char *strFileName);
+  static bool RenameFile(const void* addonData, const char *strFileName, const char* strFileNameNew);
   static bool CanOpenDirectory(const void* addonData, const char* strURL);
   static bool CreateDirectory(const void* addonData, const char *strPath);
   static bool DirectoryExists(const void* addonData, const char *strPath);
+  static bool GetDirectory(const void* addonData, const char *strPath, CONTENT_ADDON_FILELIST** directory);
+  static void FreeDirectory(const void* addonData, CONTENT_ADDON_FILELIST* directory);
   static bool RemoveDirectory(const void* addonData, const char *strPath);
 
 private:
+  static std::string TranslatePath(const void* addonData, const std::string& strURL);
+
   CB_AddOnLib  *m_callbacks; /*!< callback addresses */
   CAddon       *m_addon;     /*!< the add-on */
 };

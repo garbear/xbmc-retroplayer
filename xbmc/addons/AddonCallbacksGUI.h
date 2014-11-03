@@ -144,6 +144,13 @@ public:
   static void         RenderAddon_SetCallbacks(void *addonData, GUIHANDLE handle, GUIHANDLE clienthandle, bool (*createCB)(GUIHANDLE,int,int,int,int,void*), void (*renderCB)(GUIHANDLE), void (*stopCB)(GUIHANDLE), bool (*dirtyCB)(GUIHANDLE));
   static void         RenderAddon_Delete(void *addonData, GUIHANDLE handle);
   static void         RenderAddon_MarkDirty(void *addonData, GUIHANDLE handle);
+  static void         Dialog_OK(const char* heading, const char* line1, const char* line2, const char* line3);
+  static bool         Dialog_YesNo(const char* heading, const char* line1, const char* line2, const char* line3);
+  static GUIHANDLE    ProgressBar_GetHandle(void *addonData, const char *title);
+  static void         ProgressBar_SetText(void *addonData, GUIHANDLE handle, const char *text);
+  static void         ProgressBar_SetPercentage(void *addonData, GUIHANDLE handle, float percentage);
+  static float        ProgressBar_GetPercentage(void *addonData, GUIHANDLE handle);
+  static void         ProgressBar_MarkFinished(void *addonData, GUIHANDLE handle);
 
   static bool         Dialog_Keyboard_ShowAndGetInput(char &aTextString, unsigned int iMaxStringSize, bool allowEmptyResult, unsigned int autoCloseMs);
   static bool         Dialog_Keyboard_ShowAndGetInputWithHead(char &aTextString, unsigned int iMaxStringSize, const char *heading, bool allowEmptyResult, bool hiddenInput, unsigned int autoCloseMs);

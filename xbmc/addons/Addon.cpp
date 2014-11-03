@@ -100,6 +100,7 @@ static const TypeMapping types[] =
    {"xbmc.service",                      ADDON_SERVICE,             24018, "DefaultAddonService.png" },
    {"kodi.resource.language",            ADDON_RESOURCE_LANGUAGE,   24026, "DefaultAddonLanguage.png" },
    {"kodi.resource.uisounds",            ADDON_RESOURCE_UISOUNDS,   24006, "DefaultAddonUISounds.png" },
+   {"xbmc.content",                      ADDON_CONTENTDLL,          24024, "" },
   };
 
 const std::string TranslateType(const ADDON::TYPE &type, bool pretty/*=false*/)
@@ -371,6 +372,9 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
     case ADDON_PVRDLL:
       ext = ADDON_PVRDLL_EXT;
       break;
+    case ADDON_CONTENTDLL:
+      ext = ADDON_CONTENTDLL_EXT;
+      break;
     case ADDON_SCRIPT:
     case ADDON_SCRIPT_LIBRARY:
     case ADDON_SCRIPT_LYRICS:
@@ -409,6 +413,7 @@ void CAddon::BuildLibName(const cp_extension_t *extension)
       case ADDON_SCRAPER_MUSICVIDEOS:
       case ADDON_SCRAPER_TVSHOWS:
       case ADDON_SCRAPER_LIBRARY:
+      case ADDON_CONTENTDLL:
       case ADDON_PLUGIN:
       case ADDON_WEB_INTERFACE:
       case ADDON_SERVICE:

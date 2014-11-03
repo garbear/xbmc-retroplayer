@@ -87,7 +87,7 @@ void CAddonStatusHandler::Process()
   /* AddOn lost connection to his backend (for ones that use Network) */
   if (m_status == ADDON_STATUS_LOST_CONNECTION)
   {
-    if (m_addon->Type() == ADDON_PVRDLL)
+    if (m_addon->Type() == ADDON_PVRDLL || m_addon->Type() == ADDON_CONTENTDLL)
     {
       if (!CSettings::Get().GetBool("pvrmanager.hideconnectionlostwarning"))
         CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, m_addon->Name().c_str(), g_localizeStrings.Get(36030)); // connection lost

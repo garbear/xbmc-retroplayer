@@ -22,6 +22,7 @@
 #include "AddonCallbacks.h"
 #include "AddonCallbacksAddon.h"
 #include "AddonCallbacksCodec.h"
+#include "AddonCallbacksContent.h"
 #include "AddonCallbacksGUI.h"
 #include "AddonCallbacksPeripheral.h"
 #include "AddonCallbacksPVR.h"
@@ -41,6 +42,7 @@ CAddonCallbacks::CAddonCallbacks(CAddon* addon)
   m_helperPeripheral = NULL;
   m_helperPVR   = NULL;
   m_helperCODEC = NULL;
+  m_helperContent = NULL;
   m_helperGame  = NULL;
 
   m_callbacks->libBasePath           = strdup(CSpecialProtocol::TranslatePath("special://xbmcbin/addons").c_str());
@@ -49,6 +51,8 @@ CAddonCallbacks::CAddonCallbacks(CAddon* addon)
   m_callbacks->AddOnLib_UnRegisterMe = CAddonCallbacks::AddOnLib_UnRegisterMe;
   m_callbacks->CODECLib_RegisterMe   = CAddonCallbacks::CODECLib_RegisterMe;
   m_callbacks->CODECLib_UnRegisterMe = CAddonCallbacks::CODECLib_UnRegisterMe;
+  m_callbacks->ContentLib_RegisterMe   = CAddonCallbacks::ContentLib_RegisterMe;
+  m_callbacks->ContentLib_UnRegisterMe = CAddonCallbacks::ContentLib_UnRegisterMe;
   m_callbacks->GUILib_RegisterMe     = CAddonCallbacks::GUILib_RegisterMe;
   m_callbacks->GUILib_UnRegisterMe   = CAddonCallbacks::GUILib_UnRegisterMe;
   m_callbacks->PeripheralLib_RegisterMe   = CAddonCallbacks::PeripheralLib_RegisterMe;
@@ -128,6 +132,32 @@ void CAddonCallbacks::CODECLib_UnRegisterMe(void *addonData, CB_CODECLib *cbTabl
 
   delete addon->m_helperCODEC;
   addon->m_helperCODEC = NULL;
+}
+
+CB_ContentLib* CAddonCallbacks::ContentLib_RegisterMe(void *addonData)
+{
+  CAddonCallbacks* addon = (CAddonCallbacks*) addonData;
+  if (addon == NULL)
+  {
+    CLog::Log(LOGERROR, "CAddonCallbacks - %s - called with a null pointer", __FUNCTION__);
+    return NULL;
+  }
+
+  addon->m_helperContent = new CAddonCallbacksContent(addon->m_addon);
+  return addon->m_helperContent->GetCallbacks();
+}
+
+void CAddonCallbacks::ContentLib_UnRegisterMe(void *addonData, CB_ContentLib *cbTable)
+{
+  CAddonCallbacks* addon = (CAddonCallbacks*) addonData;
+  if (addon == NULL)
+  {
+    CLog::Log(LOGERROR, "CAddonCallbacks - %s - called with a null pointer", __FUNCTION__);
+    return;
+  }
+
+  delete addon->m_helperContent;
+  addon->m_helperContent = NULL;
 }
 
 CB_GUILib* CAddonCallbacks::GUILib_RegisterMe(void *addonData)

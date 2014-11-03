@@ -47,6 +47,7 @@ namespace ADDON
   const std::string ADDON_PVRDLL_EXT           = "*.pvr";
   const std::string ADDON_DSP_AUDIO_EXT        = "*.adsp";
   const std::string ADDON_GAME_CONTROLLER_EXT  = "*.xml";
+  const std::string ADDON_CONTENTDLL_EXT       = "*.content";
   const std::string ADDON_VERSION_RE = "(?<Major>\\d*)\\.?(?<Minor>\\d*)?\\.?(?<Build>\\d*)?\\.?(?<Revision>\\d*)?";
 
   /**
@@ -148,6 +149,12 @@ namespace ADDON
     \param addon addon to be checked
     */
     bool CanAddonBeInstalled(const AddonPtr& addon);
+
+    /*! \brief Extract the add-on ID from a plugin or content add-on URI.
+     \param strPath The item URI, such as plugin://addon.id/file or musicdb://99/addon.id/file.
+     \return An AddonPtr from the ID in the URI, or an empty shared pointer.
+     */
+    AddonPtr GetAddonFromURI(const std::string& strPath);
 
     /* libcpluff */
     std::string GetExtValue(cp_cfg_element_t *base, const char *path) const;

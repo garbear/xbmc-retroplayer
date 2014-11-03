@@ -2,6 +2,7 @@ SRCS=Addon.cpp \
      AddonCallbacks.cpp \
      AddonCallbacksAddon.cpp \
      AddonCallbacksCodec.cpp \
+     AddonCallbacksContent.cpp \
      AddonCallbacksGame.cpp \
      AddonCallbacksGUI.cpp \
      AddonCallbacksPeripheral.cpp \
@@ -12,6 +13,8 @@ SRCS=Addon.cpp \
      AddonStatusHandler.cpp \
      AddonVersion.cpp \
      AudioEncoder.cpp \
+     ContentAddon.cpp \
+     ContentAddons.cpp \
      ContextItemAddon.cpp \
      AudioDecoder.cpp \
      GUIDialogAddonInfo.cpp \

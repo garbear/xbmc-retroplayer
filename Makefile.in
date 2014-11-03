@@ -244,6 +244,7 @@ endif
 LIBADDON_DIRS=\
 	lib/addons/library.xbmc.addon \
 	lib/addons/library.xbmc.codec \
+	lib/addons/library.xbmc.content \
 	lib/addons/library.xbmc.pvr \
 	lib/addons/library.kodi.guilib \
 	lib/addons/library.kodi.game \
@@ -397,6 +398,7 @@ screensavers: $(SS_DIRS)
 libaddon: exports
 	$(MAKE) -C lib/addons/library.xbmc.addon
 	$(MAKE) -C lib/addons/library.xbmc.codec
+	$(MAKE) -C lib/addons/library.xbmc.content
 	$(MAKE) -C lib/addons/library.kodi.guilib
 	$(MAKE) -C lib/addons/library.kodi.game
 	$(MAKE) -C lib/addons/library.kodi.peripheral

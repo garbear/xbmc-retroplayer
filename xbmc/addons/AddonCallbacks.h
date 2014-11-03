@@ -27,6 +27,7 @@
 #include "addons/include/xbmc_codec_types.h"
 #include "addons/include/kodi_game_callbacks.h"
 #include "addons/include/kodi_peripheral_callbacks.h"
+#include "../../addons/library.xbmc.content/libXBMC_content.h"
 
 #ifdef TARGET_WINDOWS
 #ifndef _SSIZE_T_DEFINED
@@ -59,9 +60,12 @@ typedef int (*AddOnGetFileChunkSize)(const void* addonData, void* file);
 typedef bool (*AddOnFileExists)(const void* addonData, const char *strFileName, bool bUseCache);
 typedef int (*AddOnStatFile)(const void* addonData, const char *strFileName, struct __stat64* buffer);
 typedef bool (*AddOnDeleteFile)(const void* addonData, const char *strFileName);
+typedef bool (*AddOnRenameFile)(const void* addonData, const char *strFileName, const char* strFileNameNew);
 typedef bool (*AddOnCanOpenDirectory)(const void* addonData, const char* strURL);
 typedef bool (*AddOnCreateDirectory)(const void* addonData, const char *strPath);
 typedef bool (*AddOnDirectoryExists)(const void* addonData, const char *strPath);
+typedef bool (*AddOnGetDirectory)(const void* addonData, const char *strPath, CONTENT_ADDON_FILELIST** directory);
+typedef void (*AddOnFreeDirectory)(const void* addonData, CONTENT_ADDON_FILELIST* directory);
 typedef bool (*AddOnRemoveDirectory)(const void* addonData, const char *strPath);
 
 typedef struct CB_AddOn
@@ -90,9 +94,12 @@ typedef struct CB_AddOn
   AddOnFileExists         FileExists;
   AddOnStatFile           StatFile;
   AddOnDeleteFile         DeleteFile;
+  AddOnRenameFile         RenameFile;
   AddOnCanOpenDirectory   CanOpenDirectory;
   AddOnCreateDirectory    CreateDirectory;
   AddOnDirectoryExists    DirectoryExists;
+  AddOnGetDirectory       GetDirectory;
+  AddOnFreeDirectory      FreeDirectory;
   AddOnRemoveDirectory    RemoveDirectory;
 } CB_AddOnLib;
 
@@ -198,6 +205,13 @@ typedef void        (*GUIListItem_SetPath)(void *addonData, GUIHANDLE handle, co
 typedef void        (*GUIRenderAddon_SetCallbacks)(void *addonData, GUIHANDLE handle, GUIHANDLE clienthandle, bool (*createCB)(GUIHANDLE,int,int,int,int,void*), void (*renderCB)(GUIHANDLE), void (*stopCB)(GUIHANDLE), bool (*dirtyCB)(GUIHANDLE));
 typedef void        (*GUIRenderAddon_Delete)(void *addonData, GUIHANDLE handle);
 typedef void        (*GUIRenderAddon_MarkDirty)(void *addonData, GUIHANDLE handle);
+typedef void        (*GUIDialog_OK)(const char* heading, const char* line1, const char* line2, const char* line3);
+typedef bool        (*GUIDialog_YesNo)(const char* heading, const char* line1, const char* line2, const char* line3);
+typedef GUIHANDLE   (*GUIProgressBar_GetHandle)(void *addonData, const char *title);
+typedef void        (*GUIProgressBar_SetText)(void *addonData, GUIHANDLE handle, const char *text);
+typedef void        (*GUIProgressBar_SetPercentage)(void *addonData, GUIHANDLE handle, float percentage);
+typedef float       (*GUIProgressBar_GetPercentage)(void *addonData, GUIHANDLE handle);
+typedef void        (*GUIProgressBar_MarkFinished)(void *addonData, GUIHANDLE handle);
 
 typedef bool        (*GUIDialog_Keyboard_ShowAndGetInputWithHead)(char &strTextString, unsigned int iMaxStringSize, const char *heading, bool allowEmptyResult, bool hiddenInput, unsigned int autoCloseMs);
 typedef bool        (*GUIDialog_Keyboard_ShowAndGetInput)(char &strTextString, unsigned int iMaxStringSize, bool allowEmptyResult, unsigned int autoCloseMs);
@@ -301,6 +315,13 @@ typedef struct CB_GUILib
   GUIListItem_SetPath                 ListItem_SetPath;
   GUIRenderAddon_SetCallbacks         RenderAddon_SetCallbacks;
   GUIRenderAddon_Delete               RenderAddon_Delete;
+  GUIDialog_OK                        Dialog_OK;
+  GUIDialog_YesNo                     Dialog_YesNo;
+  GUIProgressBar_GetHandle            ProgressBar_GetHandle;
+  GUIProgressBar_SetText              ProgressBar_SetText;
+  GUIProgressBar_SetPercentage        ProgressBar_SetPercentage;
+  GUIProgressBar_GetPercentage        ProgressBar_GetPercentage;
+  GUIProgressBar_MarkFinished         ProgressBar_MarkFinished;
 
   GUIWindow_GetControl_Slider                         Window_GetControl_Slider;
   GUIControl_Slider_SetVisible                        Control_Slider_SetVisible;
@@ -402,11 +423,19 @@ typedef struct CB_PVRLib
 
 } CB_PVRLib;
 
+typedef void (*CONTENTSetPlaystate)(void *userData, CONTENT_ADDON_PLAYSTATE newState);
+
+typedef struct CB_ContentLib
+{
+  CONTENTSetPlaystate SetPlaystate;
+} CB_ContentLib;
 
 typedef CB_AddOnLib* (*XBMCAddOnLib_RegisterMe)(void *addonData);
 typedef void (*XBMCAddOnLib_UnRegisterMe)(void *addonData, CB_AddOnLib *cbTable);
 typedef CB_CODECLib* (*XBMCCODECLib_RegisterMe)(void *addonData);
 typedef void (*XBMCCODECLib_UnRegisterMe)(void *addonData, CB_CODECLib *cbTable);
+typedef CB_ContentLib* (*XBMCContentLib_RegisterMe)(void *addonData);
+typedef void (*XBMCContentLib_UnRegisterMe)(void *addonData, CB_ContentLib *cbTable);
 typedef CB_GUILib* (*XBMCGUILib_RegisterMe)(void *addonData);
 typedef void (*XBMCGUILib_UnRegisterMe)(void *addonData, CB_GUILib *cbTable);
 typedef CB_PeripheralLib* (*XBMCPeripheralLib_RegisterMe)(void *addonData);
@@ -424,6 +453,8 @@ typedef struct AddonCB
   XBMCAddOnLib_UnRegisterMe  AddOnLib_UnRegisterMe;
   XBMCCODECLib_RegisterMe    CODECLib_RegisterMe;
   XBMCCODECLib_UnRegisterMe  CODECLib_UnRegisterMe;
+  XBMCContentLib_RegisterMe   ContentLib_RegisterMe;
+  XBMCContentLib_UnRegisterMe ContentLib_UnRegisterMe;
   XBMCGUILib_RegisterMe      GUILib_RegisterMe;
   XBMCGUILib_UnRegisterMe    GUILib_UnRegisterMe;
   XBMCPeripheralLib_RegisterMe   PeripheralLib_RegisterMe;
@@ -441,6 +472,7 @@ namespace ADDON
 class CAddon;
 class CAddonCallbacksAddon;
 class CAddonCallbacksCodec;
+class CAddonCallbacksContent;
 class CAddonCallbacksGUI;
 class CAddonCallbacksPeripheral;
 class CAddonCallbacksPVR;
@@ -457,6 +489,8 @@ public:
   static void AddOnLib_UnRegisterMe(void *addonData, CB_AddOnLib *cbTable);
   static CB_CODECLib* CODECLib_RegisterMe(void *addonData);
   static void CODECLib_UnRegisterMe(void *addonData, CB_CODECLib *cbTable);
+  static CB_ContentLib* ContentLib_RegisterMe(void *addonData);
+  static void ContentLib_UnRegisterMe(void *addonData, CB_ContentLib *cbTable);
   static CB_GUILib* GUILib_RegisterMe(void *addonData);
   static void GUILib_UnRegisterMe(void *addonData, CB_GUILib *cbTable);
   static CB_PeripheralLib* PeripheralLib_RegisterMe(void *addonData);
@@ -466,8 +500,9 @@ public:
   static CB_GameLib* GameLib_RegisterMe(void *addonData);
   static void GameLib_UnRegisterMe(void *addonData, CB_GameLib *cbTable);
 
-  CAddonCallbacksAddon *GetHelperAddon() { return m_helperAddon; }
+  CAddonCallbacksAddon *GetHelperAddon() const { return m_helperAddon; }
   CAddonCallbacksCodec *GetHelperCodec() { return m_helperCODEC; }
+  CAddonCallbacksContent* GetHelperContent() { return m_helperContent; }
   CAddonCallbacksGUI *GetHelperGUI() { return m_helperGUI; }
   CAddonCallbacksPeripheral *GetHelperPeripheral() { return m_helperPeripheral; }
   CAddonCallbacksPVR *GetHelperPVR() { return m_helperPVR; }
@@ -478,6 +513,7 @@ private:
   CAddon              *m_addon;
   CAddonCallbacksAddon *m_helperAddon;
   CAddonCallbacksCodec *m_helperCODEC;
+  CAddonCallbacksContent* m_helperContent;
   CAddonCallbacksGUI   *m_helperGUI;
   CAddonCallbacksPeripheral *m_helperPeripheral;
   CAddonCallbacksPVR   *m_helperPVR;

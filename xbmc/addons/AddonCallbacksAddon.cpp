@@ -20,17 +20,25 @@
 
 #include "Application.h"
 #include "Addon.h"
+#include "URL.h"
+#include "Util.h"
 #include "AddonCallbacksAddon.h"
 #include "utils/log.h"
 #include "LangInfo.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"
+#include "music/tags/MusicInfoTag.h"
+#include "video/VideoInfoTag.h"
+#include "network/Network.h"
 #include "FileItem.h"
 #include "network/Network.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
+
+#include "addons/include/xbmc_file_utils.hpp"
 
 using namespace XFILE;
 
@@ -67,10 +75,13 @@ CAddonCallbacksAddon::CAddonCallbacksAddon(CAddon* addon)
   m_callbacks->FileExists         = FileExists;
   m_callbacks->StatFile           = StatFile;
   m_callbacks->DeleteFile         = DeleteFile;
+  m_callbacks->RenameFile         = RenameFile;
 
   m_callbacks->CanOpenDirectory   = CanOpenDirectory;
   m_callbacks->CreateDirectory    = CreateDirectory;
   m_callbacks->DirectoryExists    = DirectoryExists;
+  m_callbacks->GetDirectory       = GetDirectory;
+  m_callbacks->FreeDirectory      = FreeDirectory;
   m_callbacks->RemoveDirectory    = RemoveDirectory;
 }
 
@@ -304,7 +315,7 @@ void* CAddonCallbacksAddon::OpenFile(const void* addonData, const char* strFileN
     return NULL;
 
   CFile* file = new CFile;
-  if (file->Open(strFileName, flags))
+  if (file->Open(TranslatePath(addonData, strFileName), flags))
     return ((void*)file);
 
   delete file;
@@ -318,7 +329,7 @@ void* CAddonCallbacksAddon::OpenFileForWrite(const void* addonData, const char* 
     return NULL;
 
   CFile* file = new CFile;
-  if (file->OpenForWrite(strFileName, bOverwrite))
+  if (file->OpenForWrite(TranslatePath(addonData, strFileName), bOverwrite))
     return ((void*)file);
 
   delete file;
@@ -462,7 +473,7 @@ bool CAddonCallbacksAddon::FileExists(const void* addonData, const char *strFile
   if (!helper)
     return false;
 
-  return CFile::Exists(strFileName, bUseCache);
+  return CFile::Exists(TranslatePath(addonData, strFileName), bUseCache);
 }
 
 int CAddonCallbacksAddon::StatFile(const void* addonData, const char *strFileName, struct __stat64* buffer)
@@ -480,7 +491,16 @@ bool CAddonCallbacksAddon::DeleteFile(const void* addonData, const char *strFile
   if (!helper)
     return false;
 
-  return CFile::Delete(strFileName);
+  return CFile::Delete(TranslatePath(addonData, strFileName));
+}
+
+bool CAddonCallbacksAddon::RenameFile(const void* addonData, const char *strFileName, const char* strFileNameNew)
+{
+  CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
+  if (!helper)
+    return false;
+
+  return CFile::Rename(TranslatePath(addonData, strFileName), TranslatePath(addonData, strFileNameNew));
 }
 
 bool CAddonCallbacksAddon::CanOpenDirectory(const void* addonData, const char* strURL)
@@ -490,7 +510,7 @@ bool CAddonCallbacksAddon::CanOpenDirectory(const void* addonData, const char* s
     return false;
 
   CFileItemList items;
-  return CDirectory::GetDirectory(strURL, items);
+  return CDirectory::GetDirectory(TranslatePath(addonData, strURL), items);
 }
 
 bool CAddonCallbacksAddon::CreateDirectory(const void* addonData, const char *strPath)
@@ -499,7 +519,7 @@ bool CAddonCallbacksAddon::CreateDirectory(const void* addonData, const char *st
   if (!helper)
     return false;
 
-  return CDirectory::Create(strPath);
+  return CDirectory::Create(TranslatePath(addonData, strPath));
 }
 
 bool CAddonCallbacksAddon::DirectoryExists(const void* addonData, const char *strPath)
@@ -508,7 +528,93 @@ bool CAddonCallbacksAddon::DirectoryExists(const void* addonData, const char *st
   if (!helper)
     return false;
 
-  return CDirectory::Exists(strPath);
+  return CDirectory::Exists(TranslatePath(addonData, strPath));
+}
+
+bool CAddonCallbacksAddon::GetDirectory(const void* addonData, const char *strPath, CONTENT_ADDON_FILELIST** directory)
+{
+  CAddonCallbacks* helper = (CAddonCallbacks*) addonData;
+  if (!helper || !directory)
+    return false;
+
+  CFileItemList items;
+  if (CDirectory::GetDirectory(TranslatePath(addonData, strPath), items))
+  {
+    AddonFileItemList list;
+    for (int i = 0; i < items.Size(); i++)
+    {
+      AddonFileItem* item = NULL;
+      if (items[i]->HasVideoInfoTag())
+      {
+        AddonFileVideo* video = new AddonFileVideo(items[i]->GetPath(), items[i]->GetLabel());
+        if (!video)
+          continue;
+
+        //items[i]->GetVideoInfoTag()->ToAddonFileVideo(*video); // TODO
+        item = video;
+      }
+      else if (items[i]->HasMusicInfoTag())
+      {
+        const MUSIC_INFO::CMusicInfoTag* tag = items[i]->GetMusicInfoTag();
+        if (tag->GetType() == "artist")
+        {
+          AddonFileArtist* artist = new AddonFileArtist(items[i]->GetPath(), items[i]->GetLabel());
+          if (!artist)
+            continue;
+
+          //items[i]->GetMusicInfoTag()->ToAddonFileArtist(*artist); // TODO
+          if (items[i]->HasProperty("artist_description"))
+            artist->SetBiography(items[i]->GetProperty("artist_description").asString());
+          item = artist;
+        }
+        else if (tag->GetType() == "album")
+        {
+          AddonFileAlbum* album = new AddonFileAlbum(items[i]->GetPath(), items[i]->GetLabel());
+          if (!album)
+            continue;
+
+          //items[i]->GetMusicInfoTag()->ToAddonFileAlbum(*album); // TODO
+          item = album;
+        }
+        else if (tag->GetType() == "song")
+        {
+          AddonFileSong* song = new AddonFileSong(items[i]->GetPath(), items[i]->GetLabel());
+          if (!song)
+            continue;
+
+          //items[i]->GetMusicInfoTag()->ToAddonFileSong(*song); // TODO
+          item = song;
+        }
+      }
+      else if (items[i]->m_bIsFolder)
+      {
+        item = new AddonFileDirectory(items[i]->GetPath(), items[i]->GetLabel());
+      }
+      else
+      {
+        item = new AddonFileFile(items[i]->GetPath(), items[i]->GetLabel());
+      }
+
+      if (item)
+      {
+        item->SetThumb(items[i]->GetIconImage()); // Or should this be items[i]->GetArt("thumb")?
+        item->SetFanart(items[i]->GetArt("fanart"));
+        list.AddFileItem(*item);
+      }
+    }
+    CONTENT_ADDON_FILELIST* result = list.AsFileList();
+    if (result)
+    {
+      *directory = result;
+      return true;
+    }
+  }
+  return false;
+}
+
+void CAddonCallbacksAddon::FreeDirectory(const void* addonData, CONTENT_ADDON_FILELIST* directory)
+{
+  AddonFileItemList::Free(directory);
 }
 
 bool CAddonCallbacksAddon::RemoveDirectory(const void* addonData, const char *strPath)
@@ -519,11 +625,49 @@ bool CAddonCallbacksAddon::RemoveDirectory(const void* addonData, const char *st
 
   // Empty directory
   CFileItemList fileItems;
-  CDirectory::GetDirectory(strPath, fileItems);
+  std::string strTranslatedPath = TranslatePath(addonData, strPath);
+  CDirectory::GetDirectory(strTranslatedPath, fileItems);
   for (int i = 0; i < fileItems.Size(); ++i)
     CFile::Delete(fileItems.Get(i)->GetPath());
 
-  return CDirectory::Remove(strPath);
+  return CDirectory::Remove(strTranslatedPath);
+}
+
+std::string CAddonCallbacksAddon::TranslatePath(const void* addonData, const std::string& strURL)
+{
+  const CURL url(strURL);
+
+  // check for special-protocol, if not, return
+  if (url.GetProtocol() != "special")
+    return url.Get();
+
+  const CAddonCallbacks* addon = static_cast<const CAddonCallbacks*>(addonData);
+  if (!addon || !addon->GetHelperAddon()->m_addon)
+    return url.Get();
+
+  std::string FullFileName = url.GetFileName();
+
+  std::string translatedPath;
+  std::string FileName;
+  std::string RootDir;
+
+  // Split up into the special://root and the rest of the filename
+  size_t pos = FullFileName.find('/');
+  if (pos != std::string::npos && pos > 1)
+  {
+    RootDir = FullFileName.substr(0, pos);
+
+    if (pos < FullFileName.size())
+      FileName = FullFileName.substr(pos + 1);
+  }
+  else
+    RootDir = FullFileName;
+
+  if (RootDir == "addonprofile")
+    translatedPath = URIUtils::AddFileToFolder(addon->GetHelperAddon()->m_addon->Profile(), FileName);
+
+  //no validation or recursion. do that in the real SpecialProtocol
+  return translatedPath;
 }
 
 }; /* namespace ADDON */

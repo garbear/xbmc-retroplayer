@@ -22,6 +22,9 @@
 #include "ApplicationMessenger.h"
 #include "Addon.h"
 #include "AddonCallbacksGUI.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
+#include "dialogs/GUIDialogOK.h"
+#include "dialogs/GUIDialogYesNo.h"
 #include "utils/log.h"
 #include "Skin.h"
 #include "FileItem.h"
@@ -199,6 +202,12 @@ CAddonCallbacksGUI::CAddonCallbacksGUI(CAddon* addon)
   m_callbacks->Dialog_TextViewer                            = CAddonCallbacksGUI::Dialog_TextViewer;
 
   m_callbacks->Dialog_Select                                = CAddonCallbacksGUI::Dialog_Select;
+
+  m_callbacks->ProgressBar_GetHandle          = CAddonCallbacksGUI::ProgressBar_GetHandle;
+  m_callbacks->ProgressBar_SetText            = CAddonCallbacksGUI::ProgressBar_SetText;
+  m_callbacks->ProgressBar_SetPercentage      = CAddonCallbacksGUI::ProgressBar_SetPercentage;
+  m_callbacks->ProgressBar_GetPercentage      = CAddonCallbacksGUI::ProgressBar_GetPercentage;
+  m_callbacks->ProgressBar_MarkFinished       = CAddonCallbacksGUI::ProgressBar_MarkFinished;
 }
 
 CAddonCallbacksGUI::~CAddonCallbacksGUI()
@@ -1904,6 +1913,51 @@ int CAddonCallbacksGUI::Dialog_Select(const char *heading, const char *entries[]
   return pDialog->GetSelectedLabel();
 }
 //@}
+
+GUIHANDLE CAddonCallbacksGUI::ProgressBar_GetHandle(void *addonData, const char *title)
+{
+  CGUIDialogExtendedProgressBar *progressDialog = (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
+  if (!progressDialog)
+    return NULL;
+
+  return progressDialog->GetHandle(title);
+}
+
+void CAddonCallbacksGUI::ProgressBar_SetText(void *addonData, GUIHANDLE handle, const char *text)
+{
+  if (!handle)
+    return;
+
+  CGUIDialogProgressBarHandle *progressDialogHandle = (CGUIDialogProgressBarHandle*)handle;
+  progressDialogHandle->SetText(text);
+}
+
+void CAddonCallbacksGUI::ProgressBar_SetPercentage(void *addonData, GUIHANDLE handle, float percentage)
+{
+  if (!handle)
+    return;
+
+  CGUIDialogProgressBarHandle *progressDialogHandle = (CGUIDialogProgressBarHandle*)handle;
+  progressDialogHandle->SetPercentage(percentage);
+}
+
+float CAddonCallbacksGUI::ProgressBar_GetPercentage(void *addonData, GUIHANDLE handle)
+{
+  if (!handle)
+    return 0.0f;
+
+  CGUIDialogProgressBarHandle *progressDialogHandle = (CGUIDialogProgressBarHandle*)handle;
+  return progressDialogHandle->Percentage();
+}
+
+void CAddonCallbacksGUI::ProgressBar_MarkFinished(void *addonData, GUIHANDLE handle)
+{
+  if (!handle)
+    return;
+
+  CGUIDialogProgressBarHandle *progressDialogHandle = (CGUIDialogProgressBarHandle*)handle;
+  progressDialogHandle->MarkFinished();
+}
 
 CGUIAddonWindow::CGUIAddonWindow(int id, const std::string& strXML, CAddon* addon)
  : CGUIMediaWindow(id, strXML.c_str())

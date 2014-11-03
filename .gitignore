@@ -128,6 +128,7 @@ config.log
 /addons/xbmc.addon/addon.xml
 /addons/xbmc.json/addon.xml
 /addons/kodi.guilib/addon.xml
+/addons/content.*
 
 # /lib/
 /lib/Makefile
@@ -150,12 +151,15 @@ config.log
 /lib/addons/library.xbmc.addon/Makefile
 /lib/addons/library.xbmc.pvr/Makefile
 /lib/addons/library.xbmc.codec/Makefile
+/lib/addons/library.xbmc.content/Makefile
 /lib/addons/library.kodi.game/Makefile
 /lib/addons/library.kodi.peripheral/Makefile
 /lib/addons/library.xbmc.addon/project/VS2010Express/Release
 /lib/addons/library.xbmc.addon/project/VS2010Express/Debug
 /lib/addons/library.xbmc.codec/project/VS2010Express/Release
 /lib/addons/library.xbmc.codec/project/VS2010Express/Debug
+/lib/addons/library.xbmc.content/project/VS2010Express/Release
+/lib/addons/library.xbmc.content/project/VS2010Express/Debug
 /lib/addons/library.xbmc.pvr/project/VS2010Express/Release
 /lib/addons/library.xbmc.pvr/project/VS2010Express/Debug
 /lib/addons/library.kodi.game/project/VS2010Express/Release
@@ -931,6 +935,8 @@ lib/cpluff/stamp-h1
 /addons/library.xbmc.addon/libXBMC_addon.lib
 /addons/library.xbmc.codec/libXBMC_codec.dll
 /addons/library.xbmc.codec/libXBMC_codec.lib
+/addons/library.kodi.content/libKODI_content.dll
+/addons/library.kodi.content/libKODI_content.lib
 /addons/library.kodi.guilib/libKODI_guilib.dll
 /addons/library.kodi.guilib/libKODI_guilib.lib
 /addons/library.xbmc.pvr/libXBMC_pvr.dll

@@ -29,6 +29,8 @@
 #include "utils/StringUtils.h"
 #include "utils/JobManager.h"
 #include "threads/SingleLock.h"
+#include "filesystem/MusicDatabaseDirectory.h"
+#include "filesystem/VideoDatabaseDirectory.h"
 #include "LangInfo.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
@@ -53,7 +55,9 @@
 #include "Repository.h"
 #include "Skin.h"
 #include "Service.h"
+#include "ContentAddons.h"
 #include "ContextItemAddon.h"
+#include "URL.h"
 #include "Util.h"
 #include "addons/Webinterface.h"
 
@@ -126,6 +130,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_AUDIOENCODER:
     case ADDON_AUDIODECODER:
     case ADDON_PERIPHERALDLL:
+    case ADDON_CONTENTDLL:
       { // begin temporary platform handling for Dlls
         // ideally platforms issues will be handled by C-Pluff
         // this is not an attempt at a solution
@@ -175,6 +180,8 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
           return AddonPtr(new CAudioDecoder(props));
         else if (type == ADDON_PERIPHERALDLL)
           return AddonPtr(new PERIPHERALS::CPeripheralAddon(props));
+        else if (type == ADDON_CONTENTDLL)
+          return AddonPtr(new CContentAddon(props));
         else
           return AddonPtr(new CAddon(props));
       }
@@ -547,6 +554,12 @@ bool CAddonMgr::GetAddon(const std::string &str, AddonPtr &addon, const TYPE &ty
       AddonPtr runningAddon = addon->GetRunningInstance();
       if (runningAddon)
         addon = runningAddon;
+      if (addon->Type() == ADDON_CONTENTDLL)
+      {
+        CONTENT_ADDON contentAddon;
+        if (CContentAddons::Get().GetClient(addon->Profile(), contentAddon))
+          addon = contentAddon;
+      }
     }
     return NULL != addon.get();
   }
@@ -867,6 +880,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new GAME::CGameController(addonProps));
     case ADDON_GAMEDLL:
       return AddonPtr(new GAME::CGameClient(addonProps));
+    case ADDON_CONTENTDLL:
+      return AddonPtr(new CContentAddon(addonProps));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(addonProps));
     case ADDON_CONTEXT_ITEM:
@@ -1035,6 +1050,22 @@ AddonPtr CAddonMgr::GetAddonFromDescriptor(const cp_plugin_info_t *info,
   return AddonPtr();
 }
 
+AddonPtr CAddonMgr::GetAddonFromURI(const std::string& strPath)
+{
+  AddonPtr addon;
+
+  CURL url(strPath);
+  /* TODO
+  if (url.GetProtocol() == "musicdb")
+    addon = CMusicDatabaseDirectory::GetAddon(strPath);
+  else if (url.GetProtocol() == "videodb")
+    addon = CVideoDatabaseDirectory::GetAddon(strPath);
+  else */if (URIUtils::IsPlugin(strPath) || URIUtils::IsScript(strPath))
+    GetAddon(url.GetHostName(), addon); // URI is plugin://addon.id/etc
+
+  return addon;
+}
+
 // FIXME: This function may not be required
 bool CAddonMgr::LoadAddonDescription(const std::string &path, AddonPtr &addon)
 {
@@ -1108,10 +1139,10 @@ bool CAddonMgr::StartServices(const bool beforelogin)
   CLog::Log(LOGDEBUG, "ADDON: Starting service addons.");
 
   VECADDONS services;
-  if (!GetAddons(ADDON_SERVICE, services))
-    return false;
+  GetAddons(ADDON_SERVICE, services);
 
-  bool ret = true;
+  //TODO
+  bool ret = !services.empty();
   for (IVECADDONS it = services.begin(); it != services.end(); ++it)
   {
     std::shared_ptr<CService> service = std::dynamic_pointer_cast<CService>(*it);
@@ -1131,8 +1162,7 @@ void CAddonMgr::StopServices(const bool onlylogin)
   CLog::Log(LOGDEBUG, "ADDON: Stopping service addons.");
 
   VECADDONS services;
-  if (!GetAddons(ADDON_SERVICE, services))
-    return;
+  GetAddons(ADDON_SERVICE, services);
 
   for (IVECADDONS it = services.begin(); it != services.end(); ++it)
   {

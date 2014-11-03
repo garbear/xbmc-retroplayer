@@ -40,6 +40,7 @@
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "URL.h"
+#include "ContentAddons.h"
 
 #include <functional>
 
@@ -931,6 +932,12 @@ CAddonUnInstallJob::CAddonUnInstallJob(const AddonPtr &addon)
 bool CAddonUnInstallJob::DoWork()
 {
   ADDON::OnPreUnInstall(m_addon);
+  // TODO move to OnPreUnInstall()
+  if (m_addon->Type() == ADDON_CONTENTDLL)
+  {
+    // close the connection to content add-ons
+    ADDON::CContentAddons::Get().Stop();
+  }
 
   AddonPtr repoPtr = CAddonInstallJob::GetRepoForAddon(m_addon);
   RepositoryPtr therepo = std::dynamic_pointer_cast<CRepository>(repoPtr);
@@ -985,4 +992,8 @@ void CAddonUnInstallJob::ClearFavourites()
 
   if (bSave)
     CFavouritesDirectory::Save(items);
+
+  // TODO move to OnPostUnInstall()
+  if (m_addon->Type() == ADDON_CONTENTDLL)
+    ADDON::CContentAddons::Get().Start();
 }

@@ -244,6 +244,14 @@ DLLEXPORT bool XBMC_delete_file(void *hdl, void* cb, const char *strFileName)
   return ((CB_AddOnLib*)cb)->DeleteFile(((AddonCB*)hdl)->addonData, strFileName);
 }
 
+DLLEXPORT bool XBMC_rename_file(void *hdl, void* cb, const char *strFileName, const char* strFileNameNew)
+{
+  if (cb == NULL)
+    return false;
+
+  return ((CB_AddOnLib*)cb)->RenameFile(((AddonCB*)hdl)->addonData, strFileName, strFileNameNew);
+}
+
 DLLEXPORT bool XBMC_can_open_directory(void *hdl, void* cb, const char* strURL)
 {
   if (cb == NULL)
@@ -266,6 +274,22 @@ DLLEXPORT bool XBMC_directory_exists(void *hdl, void* cb, const char *strPath)
     return false;
 
   return ((CB_AddOnLib*)cb)->DirectoryExists(((AddonCB*)hdl)->addonData, strPath);
+}
+
+DLLEXPORT bool XBMC_get_directory(void *hdl, void* cb, const char *strPath, CONTENT_ADDON_FILELIST** directory)
+{
+  if (cb == NULL)
+    return false;
+
+  return ((CB_AddOnLib*)cb)->GetDirectory(((AddonCB*)hdl)->addonData, strPath, directory);
+}
+
+DLLEXPORT void XBMC_free_directory(void *hdl, void* cb, CONTENT_ADDON_FILELIST* directory)
+{
+  if (cb == NULL)
+    return;
+
+  ((CB_AddOnLib*)cb)->FreeDirectory(((AddonCB*)hdl)->addonData, directory);
 }
 
 DLLEXPORT bool XBMC_remove_directory(void *hdl, void* cb, const char *strPath)

@@ -25,6 +25,7 @@
 #include "utils/StringUtils.h"
 #include "XBDateTime.h"
 #include "dbwrappers/dataset.h"
+#include "ContentAddons.h"
 
 using namespace ADDON;
 using namespace std;

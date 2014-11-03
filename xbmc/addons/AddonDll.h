@@ -338,7 +338,8 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::GetStatus()
 {
   try
   {
-    return m_pDll->GetStatus();
+    if (m_pDll)
+      return m_pDll->GetStatus();
   }
   catch (std::exception &e)
   {
@@ -446,6 +447,9 @@ std::string CAddonDll<TheDll, TheStruct, TheProps>::GetSetting(const std::string
 template<class TheDll, typename TheStruct, typename TheProps>
 ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
 {
+  if (!m_pDll)
+    return ADDON_STATUS_UNKNOWN;
+
   bool restart = false;
   ADDON_STATUS reportStatus = ADDON_STATUS_OK;
 
@@ -553,7 +557,8 @@ template<class TheDll, typename TheStruct, typename TheProps>
 void CAddonDll<TheDll, TheStruct, TheProps>::HandleException(std::exception &e, const char* context)
 {
   m_initialized = false;
-  m_pDll->Unload();
+  if (m_pDll)
+    m_pDll->Unload();
   CLog::Log(LOGERROR, "ADDON: Dll %s, throws an exception '%s' during %s. Contact developer '%s' with bug reports", Name().c_str(), e.what(), context, Author().c_str());
 }
 
