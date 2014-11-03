@@ -140,7 +140,11 @@ void CDirectoryHistory::ClearPathHistory()
 
 bool CDirectoryHistory::IsMusicSearchUrl(CPathHistoryItem &i)
 {
-  return StringUtils::StartsWith(i.GetPath(), "musicsearch://");
+  /* TODO
+  return StringUtils::StartsWith(i.GetPath(), "musicsearch://") ||
+         URIUtils::IsMusicSearchPath(i.GetPath()); // TODO clean up after rebase, this may be a dupe check
+  */
+  return false;
 }
 
 void CDirectoryHistory::ClearSearchHistory()

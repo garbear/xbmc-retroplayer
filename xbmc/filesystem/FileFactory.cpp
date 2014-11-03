@@ -84,10 +84,12 @@
 #include "SlingboxFile.h"
 #include "ImageFile.h"
 #include "ResourceFile.h"
+#include "ContentAddonFile.h"
 #include "Application.h"
 #include "URL.h"
 #include "utils/log.h"
 #include "network/WakeOnAccess.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
@@ -124,6 +126,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
   }
   else if (url.IsProtocol("musicdb")) return new CMusicDatabaseFile();
   else if (url.IsProtocol("videodb")) return NULL;
+  //else if (URIUtils::IsMusicSearchPath(url.Get())) return NULL; // TODO
   else if (url.IsProtocol("special")) return new CSpecialProtocolFile();
   else if (url.IsProtocol("multipath")) return new CMultiPathFile();
   else if (url.IsProtocol("image")) return new CImageFile();
@@ -182,6 +185,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
 #ifdef HAS_UPNP
     else if (url.IsProtocol("upnp")) return new CUPnPFile();
 #endif
+    else if (url.IsProtocol("content")) return new CContentAddonFile();
   }
 
   CLog::Log(LOGWARNING, "%s - %sunsupported protocol(%s) in %s", __FUNCTION__, networkAvailable ? "" : "Network down or ", url.GetProtocol().c_str(), url.GetRedacted().c_str());

@@ -63,8 +63,10 @@ bool CSourcesDirectory::GetDirectory(const VECSOURCES &sources, CFileItemList &i
   {
     const CMediaSource& share = sources[i];
     CFileItemPtr pItem(new CFileItem(share));
-    if (URIUtils::IsProtocol(pItem->GetPath(), "musicsearch"))
+    /* TODO
+    if (URIUtils::IsMusicSearchPath(pItem->GetPath()))
       pItem->SetCanQueue(false);
+    */
     
     std::string strIcon;
     // We have the real DVD-ROM, set icon on disktype
@@ -82,8 +84,8 @@ bool CSourcesDirectory::GetDirectory(const VECSOURCES &sources, CFileItemList &i
              || pItem->IsMusicDb()
              || pItem->IsPlugin()
              || pItem->IsPath("special://musicplaylists/")
-             || pItem->IsPath("special://videoplaylists/")
-             || pItem->IsPath("musicsearch://"))
+             || pItem->IsPath("special://videoplaylists/")/* TODO
+             || URIUtils::IsMusicSearchPath(pItem->GetPath())*/)
       strIcon = "DefaultFolder.png";
     else if (pItem->IsRemote())
       strIcon = "DefaultNetwork.png";

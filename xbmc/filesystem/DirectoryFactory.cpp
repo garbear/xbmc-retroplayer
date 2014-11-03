@@ -25,6 +25,7 @@
 #include "network/Network.h"
 #include "system.h"
 #include "DirectoryFactory.h"
+#include "ContentAddonDirectory.h"
 #include "SpecialProtocolDirectory.h"
 #include "MultiPathDirectory.h"
 #include "StackDirectory.h"
@@ -44,6 +45,7 @@
 #include "Application.h"
 #include "utils/log.h"
 #include "network/WakeOnAccess.h"
+#include "utils/URIUtils.h"
 
 #ifdef TARGET_POSIX
 #include "posix/PosixDirectory.h"
@@ -155,7 +157,7 @@ IDirectory* CDirectoryFactory::Create(const CURL& url)
   if (url.IsProtocol("playlistmusic")) return new CPlaylistDirectory();
   if (url.IsProtocol("playlistvideo")) return new CPlaylistDirectory();
   if (url.IsProtocol("musicdb")) return new CMusicDatabaseDirectory();
-  if (url.IsProtocol("musicsearch")) return new CMusicSearchDirectory();
+  //if (URIUtils::IsMusicSearchPath(url.Get())) return new CMusicSearchDirectory(); // TODO
   if (url.IsProtocol("videodb")) return new CVideoDatabaseDirectory();
   if (url.IsProtocol("library")) return new CLibraryDirectory();
   if (url.IsProtocol("favourites")) return new CFavouritesDirectory();
@@ -209,6 +211,7 @@ IDirectory* CDirectoryFactory::Create(const CURL& url)
     if (url.IsProtocol("nfs")) return new CNFSDirectory();
 #endif
   }
+  if (url.IsProtocol("content")) return new CContentAddonDirectory();
 
   CLog::Log(LOGWARNING, "%s - %sunsupported protocol(%s) in %s", __FUNCTION__, networkAvailable ? "" : "Network down or ", url.GetProtocol().c_str(), url.GetRedacted().c_str() );
   return NULL;
