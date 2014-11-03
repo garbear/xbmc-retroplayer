@@ -62,6 +62,7 @@
 #include <memory>
 #include <functional>
 #include "cores/DataCacheCore.h"
+#include "addons/ContentAddons.h"
 
 // stuff for current song
 #include "music/MusicInfoLoader.h"
@@ -1783,7 +1784,15 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
       {
         CURL url(((CGUIMediaWindow*)window)->CurrentDirectory().GetPath());
         if (url.IsProtocol("plugin"))
+        {
           strLabel = URIUtils::GetFileName(url.GetHostName());
+        }
+        else
+        {
+          AddonPtr addon = CAddonMgr::Get().GetAddonFromURI(((CGUIMediaWindow*)window)->CurrentDirectory().GetPath());
+          if (addon)
+            strLabel = addon->ID();
+        }
       }
       break;
     }
@@ -5728,12 +5737,16 @@ bool CGUIInfoManager::GetLibraryBool(int condition)
   if (condition == LIBRARY_HAS_MUSIC)
   {
     if (m_libraryHasMusic < 0)
-    { // query
-      CMusicDatabase db;
-      if (db.Open())
+    {
+      m_libraryHasMusic = ADDON::CContentAddons::Get().MusicHasAvailableAddons() ? 1 : 0;
+      if (!m_libraryHasMusic)
       {
-        m_libraryHasMusic = (db.GetSongsCount() > 0) ? 1 : 0;
-        db.Close();
+        CMusicDatabase db;
+        if (db.Open())
+        {
+          m_libraryHasMusic = (db.GetSongsCount() > 0) ? 1 : 0;
+          db.Close();
+        }
       }
     }
     return m_libraryHasMusic > 0;
@@ -5742,11 +5755,15 @@ bool CGUIInfoManager::GetLibraryBool(int condition)
   {
     if (m_libraryHasMovies < 0)
     {
-      CVideoDatabase db;
-      if (db.Open())
+      m_libraryHasMovies = ADDON::CContentAddons::Get().VideoHasAvailableAddons(CONTENT_VIDEO_TYPE_MOVIES) ? 1 : 0;
+      if (!m_libraryHasMovies)
       {
-        m_libraryHasMovies = db.HasContent(VIDEODB_CONTENT_MOVIES) ? 1 : 0;
-        db.Close();
+        CVideoDatabase db;
+        if (db.Open())
+        {
+          m_libraryHasMovies = db.HasContent(VIDEODB_CONTENT_MOVIES) ? 1 : 0;
+          db.Close();
+        }
       }
     }
     return m_libraryHasMovies > 0;
@@ -5768,11 +5785,15 @@ bool CGUIInfoManager::GetLibraryBool(int condition)
   {
     if (m_libraryHasTVShows < 0)
     {
-      CVideoDatabase db;
-      if (db.Open())
+      m_libraryHasTVShows = ADDON::CContentAddons::Get().VideoHasAvailableAddons(CONTENT_VIDEO_TYPE_TVSHOWS) ? 1 : 0;
+      if (!m_libraryHasTVShows)
       {
-        m_libraryHasTVShows = db.HasContent(VIDEODB_CONTENT_TVSHOWS) ? 1 : 0;
-        db.Close();
+        CVideoDatabase db;
+        if (db.Open())
+        {
+          m_libraryHasTVShows = db.HasContent(VIDEODB_CONTENT_TVSHOWS) ? 1 : 0;
+          db.Close();
+        }
       }
     }
     return m_libraryHasTVShows > 0;
@@ -5781,11 +5802,15 @@ bool CGUIInfoManager::GetLibraryBool(int condition)
   {
     if (m_libraryHasMusicVideos < 0)
     {
-      CVideoDatabase db;
-      if (db.Open())
+      m_libraryHasMusicVideos = ADDON::CContentAddons::Get().VideoHasAvailableAddons(CONTENT_VIDEO_TYPE_MUSICVIDEOS) ? 1 : 0;
+      if (!m_libraryHasMusicVideos)
       {
-        m_libraryHasMusicVideos = db.HasContent(VIDEODB_CONTENT_MUSICVIDEOS) ? 1 : 0;
-        db.Close();
+        CVideoDatabase db;
+        if (db.Open())
+        {
+          m_libraryHasMusicVideos = db.HasContent(VIDEODB_CONTENT_MUSICVIDEOS) ? 1 : 0;
+          db.Close();
+        }
       }
     }
     return m_libraryHasMusicVideos > 0;
