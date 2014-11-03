@@ -44,6 +44,7 @@
 #include "FileItem.h"
 #include "filesystem/AddonsDirectory.h"
 #include "guilib/TextureManager.h"
+#include "utils/StringUtils.h"
 
 #if defined(TARGET_ANDROID)
 #include "filesystem/AndroidAppDirectory.h"
@@ -557,9 +558,9 @@ CGUIViewStateFromItems::CGUIViewStateFromItems(const CFileItemList &items) : CGU
     if (CAddonMgr::Get().GetAddon(url.GetHostName(), addon, ADDON_PLUGIN))
     {
       PluginPtr plugin = std::static_pointer_cast<CPluginSource>(addon);
-      if (plugin->Provides(CPluginSource::AUDIO))
+      if (plugin && plugin->Provides(CPluginSource::AUDIO))
         m_playlist = PLAYLIST_MUSIC;
-      if (plugin->Provides(CPluginSource::VIDEO))
+      if (plugin && plugin->Provides(CPluginSource::VIDEO))
         m_playlist = PLAYLIST_VIDEO;
     }
   }

@@ -30,6 +30,7 @@
 #include "URL.h"
 #include "Util.h"
 #include "addons/AddonManager.h"
+#include "addons/ContentAddons.h"
 #include "addons/GUIDialogAddonSettings.h"
 #include "addons/PluginSource.h"
 #if defined(TARGET_ANDROID)
@@ -44,6 +45,7 @@
 #include "filesystem/File.h"
 #include "filesystem/FileDirectoryFactory.h"
 #include "filesystem/MultiPathDirectory.h"
+#include "filesystem/MusicDatabaseDirectory.h"
 #include "filesystem/PluginDirectory.h"
 #include "filesystem/SmartPlaylistDirectory.h"
 #include "guilib/GUIEditControl.h"
@@ -934,6 +936,20 @@ bool CGUIMediaWindow::OnClick(int iItem)
     }
   }
 
+  /* TODO
+  // Open the add-on settings dialog for content add-ons that need to be configured
+  if (StringUtils::StartsWith(pItem->GetPath(), "musicdb://") && XFILE::CMusicDatabaseDirectory::IsContentAddonRoot(pItem->GetPath()))
+  {
+    CONTENT_ADDON addon = XFILE::CMusicDatabaseDirectory::GetAddon(pItem->GetPath());
+    if (addon && addon->GetStatus() == ADDON_STATUS_NEED_SETTINGS)
+    {
+      CGUIDialogAddonSettings::ShowAndGetInput(addon, true);
+      Update(m_vecItems->GetPath());
+      return true;
+    }
+  }
+  */
+
   if (pItem->m_bIsFolder)
   {
     if ( pItem->m_bIsShareOrDrive )
@@ -982,7 +998,7 @@ bool CGUIMediaWindow::OnClick(int iItem)
 
     return true;
   }
-  else if (pItem->IsPlugin() && !pItem->GetProperty("isplayable").asBoolean())
+  else if (StringUtils::StartsWith(pItem->GetPath(), "plugin://") && !pItem->GetProperty("isplayable").asBoolean())
   {
     return XFILE::CPluginDirectory::RunScriptWithParams(pItem->GetPath());
   }
@@ -1022,19 +1038,25 @@ bool CGUIMediaWindow::OnClick(int iItem)
       CSettings::Get().GetBool("karaoke.autopopupselector") && pItem->IsKaraoke();
     bool autoplay = m_guiState.get() && m_guiState->AutoPlayNextItem();
 
-    if (m_vecItems->IsPlugin())
+    AddonPtr addon;
+    if (m_vecItems->IsPlugin() && (addon = CAddonMgr::Get().GetAddonFromURI(m_vecItems->GetPath())))
     {
-      CURL url(m_vecItems->GetPath());
-      AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(url.GetHostName(),addon))
+      bool providesAudio = false;
+      if (addon->Type() == ADDON_PLUGIN)
       {
         PluginPtr plugin = std::dynamic_pointer_cast<CPluginSource>(addon);
-        if (plugin && plugin->Provides(CPluginSource::AUDIO))
-        {
-          CFileItemList items;
-          unique_ptr<CGUIViewState> state(CGUIViewState::GetViewState(GetID(), items));
-          autoplay = state.get() && state->AutoPlayNextItem();
-        }
+        providesAudio = plugin && plugin->Provides(CPluginSource::AUDIO);
+      }
+      else if (addon->Type() == ADDON_CONTENTDLL)
+      {
+        CONTENT_ADDON contentAddon = std::dynamic_pointer_cast<CContentAddon>(addon);
+        providesAudio = contentAddon && contentAddon->ProvidesMusicFiles();
+      }
+      if (providesAudio)
+      {
+        CFileItemList items;
+        unique_ptr<CGUIViewState> state(CGUIViewState::GetViewState(GetID(), items));
+        autoplay = state.get() && state->AutoPlayNextItem();
       }
     }
 
@@ -1547,8 +1569,8 @@ void CGUIMediaWindow::GetContextButtons(int itemNumber, CContextButtons &buttons
 
   // TODO: FAVOURITES Conditions on masterlock and localisation
   if (!item->IsParentFolder() && !item->IsPath("add") && !item->IsPath("newplaylist://") &&
-      !URIUtils::IsProtocol(item->GetPath(), "newsmartplaylist") && !URIUtils::IsProtocol(item->GetPath(), "newtag") &&
-      !URIUtils::PathStarts(item->GetPath(), "addons://more/") && !URIUtils::IsProtocol(item->GetPath(), "musicsearch"))
+      !URIUtils::IsProtocol(item->GetPath(), "newsmartplaylist") && !URIUtils::IsProtocol(item->GetPath(), "newtag") /* TODO &&
+      !URIUtils::PathStarts(item->GetPath(), "addons://more/") && !URIUtils::IsMusicSearchPath(item->GetPath())*/)
   {
     if (XFILE::CFavouritesDirectory::IsFavourite(item.get(), GetID()))
       buttons.Add(CONTEXT_BUTTON_ADD_FAVOURITE, 14077);     // Remove Favourite
@@ -1582,14 +1604,9 @@ bool CGUIMediaWindow::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_PLUGIN_SETTINGS:
     {
       CFileItemPtr item = m_vecItems->Get(itemNumber);
-      // CONTEXT_BUTTON_PLUGIN_SETTINGS can be called for plugin item
-      // or script item; or for the plugin directory current listing.
-      bool isPluginOrScriptItem = (item && (item->IsPlugin() || item->IsScript()));
-      CURL plugin(isPluginOrScriptItem ? item->GetPath() : m_vecItems->GetPath());
-      ADDON::AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(plugin.GetHostName(), addon))
-        if (CGUIDialogAddonSettings::ShowAndGetInput(addon))
-          Refresh();
+      AddonPtr addon = CAddonMgr::Get().GetAddonFromURI(item ? item->GetPath() : "");
+      if (addon && CGUIDialogAddonSettings::ShowAndGetInput(addon))
+        Refresh();
       return true;
     }
   case CONTEXT_BUTTON_BROWSE_INTO:

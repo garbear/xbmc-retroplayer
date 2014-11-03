@@ -528,3 +528,4 @@ void CGUIDialogContentSettings::FillScraperList()
   CGUIMessage msg2(GUI_MSG_ITEM_SELECT, GetID(), CONTROL_SCRAPER_LIST, selectedIndex);
   OnMessage(msg2);
 }
+
