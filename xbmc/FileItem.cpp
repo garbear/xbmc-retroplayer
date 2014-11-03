@@ -61,6 +61,7 @@
 #include "games/GameManager.h"
 #include "games/tags/GameInfoTag.h"
 #include "games/tags/GameInfoTagLoader.h"
+#include "addons/ContentAddons.h"
 
 #include <assert.h>
 #include <algorithm>
@@ -1168,6 +1169,17 @@ bool CFileItem::IsRemovable() const
   return IsOnDVD() || IsCDDA() || m_iDriveType == CMediaSource::SOURCE_TYPE_REMOVABLE;
 }
 
+bool CFileItem::IsContentAddon() const
+{
+  return StringUtils::StartsWith(m_strPath, CONTENT_NODE);
+}
+
+bool CFileItem::SupportsConcurrentStreams() const
+{
+  return !IsContentAddon() ||
+          ADDON::CContentAddons::Get().SupportsConcurrentStreams(m_strPath);
+}
+
 bool CFileItem::IsReadOnly() const
 {
   if (IsParentFolder())
@@ -1677,6 +1689,33 @@ bool CFileItem::LoadTracksFromCueDocument(CFileItemList& scannedItems)
   return tracksFound != 0;
 }
 
+void CFileItem::Combine(const CFileItem& pItem)
+{
+  // ignore this item if we already got it in
+  if (m_strPath.find(pItem.m_strPath) != std::string::npos)
+    return;
+
+  // combine paths
+  std::set<std::string> pathSet;
+  pathSet.insert(m_strPath);
+  pathSet.insert(pItem.m_strPath);
+  SetPath(CMultiPathDirectory::ConstructMultiPath(pathSet));
+
+  /* TODO
+  // combine metadata
+  if (HasMusicInfoTag() && pItem.HasMusicInfoTag())
+    GetMusicInfoTag()->Combine(*pItem.GetMusicInfoTag());
+  // TODO add other types
+  */
+
+  // combine properties
+  for (PropertyMap::const_iterator it = pItem.m_mapProperties.begin(); it != pItem.m_mapProperties.end(); it++)
+  {
+    PropertyMap::const_iterator it2 = m_mapProperties.find(it->first);
+    if (it2 == m_mapProperties.end() || it2->second.empty())
+      m_mapProperties.insert(make_pair(it->first, it->second));
+  }
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 /////
@@ -1791,10 +1830,41 @@ void CFileItemList::ClearItems()
   m_map.clear();
 }
 
-void CFileItemList::Add(const CFileItemPtr &pItem)
+void CFileItemList::Add(const CFileItemPtr &pItem, ADD_TYPE type /* = ADD_STANDARD */)
 {
   CSingleLock lock(m_lock);
 
+  if (type == ADD_COMBINE || type == ADD_REPLACE || type == ADD_IGNORE)
+  {
+    for (IVECFILEITEMS it = m_items.begin(); it != m_items.end(); it++)
+    {
+      if ((*it)->GetLabel() == pItem->GetLabel() &&
+          (*it)->m_bIsFolder == pItem->m_bIsFolder)
+      {
+        switch (type)
+        {
+        case ADD_COMBINE:
+          // try to combine metadata and return
+          (*it)->Combine(*pItem);
+          break;
+        case ADD_REPLACE:
+          // erase previous entry
+          m_map.erase((*it)->GetPath());
+          *it = pItem;
+          if (m_fastLookup)
+            m_map.insert(MAPFILEITEMSPAIR(pItem->GetPath(), pItem));
+          break;
+        case ADD_IGNORE:
+          // ignore new entry and return
+        default:
+          break;
+        }
+        return;
+      }
+    }
+  }
+
+  // standard add
   m_items.push_back(pItem);
   if (m_fastLookup)
   {

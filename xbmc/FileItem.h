@@ -224,6 +224,7 @@ public:
   bool IsParentFolder() const;
   bool IsFileFolder(EFileFolderType types = EFILEFOLDER_MASK_ALL) const;
   bool IsRemovable() const;
+  bool IsContentAddon() const;
   bool IsHDHomeRun() const;
   bool IsSlingbox() const;
   bool IsPVR() const;
@@ -242,6 +243,7 @@ public:
   bool SortsOnTop() const { return m_specialSort == SortSpecialOnTop; }
   bool SortsOnBottom() const { return m_specialSort == SortSpecialOnBottom; }
   void SetSpecialSort(SortSpecial sort) { m_specialSort = sort; }
+  bool SupportsConcurrentStreams(void) const;
 
   inline bool HasMusicInfoTag() const
   {
@@ -467,6 +469,12 @@ public:
    */
   void SetFromSong(const CSong &song);
 
+  /*!
+   * \brief Try to combine the information in this fileitem with the provided one
+   * \param item The item to combine this one with
+   */
+  void Combine(const CFileItem& pItem);
+
   bool m_bIsShareOrDrive;    ///< is this a root share/drive
   int m_iDriveType;     ///< If \e m_bIsShareOrDrive is \e true, use to get the share type. Types see: CMediaSource::m_iDriveType
   CDateTime m_dateTime;             ///< file creation date & time
@@ -562,6 +570,13 @@ class CFileItemList : public CFileItem
 {
 public:
   enum CACHE_TYPE { CACHE_NEVER = 0, CACHE_IF_SLOW, CACHE_ALWAYS };
+  enum ADD_TYPE
+  {
+    ADD_STANDARD = 0, /*!< add to this CFileItemList */
+    ADD_COMBINE,      /*!< try to combine metadata if a duplicate label is found. add otherwise */
+    ADD_REPLACE,      /*!< replace previous entry if a duplicate label is found. add otherwise */
+    ADD_IGNORE        /*!< ignore new entry if a duplicate label is found. add otherwise */
+  };
 
   CFileItemList();
   explicit CFileItemList(const std::string& strPath);
@@ -573,7 +588,7 @@ public:
   const CFileItemPtr operator[] (const std::string& strPath) const;
   void Clear();
   void ClearItems();
-  void Add(const CFileItemPtr &pItem);
+  void Add(const CFileItemPtr &pItem, ADD_TYPE type = ADD_STANDARD);
   void AddFront(const CFileItemPtr &pItem, int itemPosition);
   void Remove(CFileItem* pItem);
   void Remove(int iItem);
