@@ -175,6 +175,7 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksAddon.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksCodec.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGUI.cpp" />
+    <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPeripheral.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPVR.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonInstaller.cpp" />
@@ -183,6 +184,7 @@
     <ClCompile Include="..\..\xbmc\addons\GUIDialogAddonSettings.cpp" />
     <ClCompile Include="..\..\xbmc\addons\GUIViewStateAddonBrowser.cpp" />
     <ClCompile Include="..\..\xbmc\addons\GUIWindowAddonBrowser.cpp" />
+    <ClCompile Include="..\..\xbmc\addons\PeripheralAddon.cpp" />
     <ClCompile Include="..\..\xbmc\addons\PluginSource.cpp" />
     <ClCompile Include="..\..\xbmc\addons\Repository.cpp" />
     <ClCompile Include="..\..\xbmc\addons\Service.cpp" />
@@ -496,7 +498,6 @@
     <ClCompile Include="..\..\xbmc\input\touch\ITouchInputHandling.cpp" />
     <ClCompile Include="..\..\xbmc\input\windows\IRServerSuite.cpp" />
     <ClCompile Include="..\..\xbmc\input\windows\IrssMessage.cpp" />
-    <ClCompile Include="..\..\xbmc\input\windows\WINJoystick.cpp" />
     <ClCompile Include="..\..\xbmc\input\XBMC_keytable.cpp" />
     <ClCompile Include="..\..\xbmc\interfaces\AnnouncementManager.cpp" />
     <ClCompile Include="..\..\xbmc\interfaces\Builtins.cpp" />
@@ -659,6 +660,7 @@
     <ClCompile Include="..\..\xbmc\PartyModeManager.cpp" />
     <ClCompile Include="..\..\xbmc\PasswordManager.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBus.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\win32\PeripheralBusUSB.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\Peripheral.cpp" />
@@ -666,6 +668,7 @@
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralCecAdapter.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralDisk.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralHID.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralNIC.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralNyxboard.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralImon.cpp" />
@@ -802,6 +805,8 @@
     <ClCompile Include="..\..\xbmc\TextureDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\DatabaseManager.cpp" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksCodec.h" />
+    <ClInclude Include="..\..\xbmc\addons\AddonCallbacksPeripheral.h" />
+    <ClInclude Include="..\..\xbmc\addons\PeripheralAddon.h" />
     <ClInclude Include="..\..\xbmc\ApplicationPlayer.h" />
     <ClInclude Include="..\..\xbmc\AppParamParser.h" />
     <ClInclude Include="..\..\xbmc\CompileInfo.h" />
@@ -875,7 +880,6 @@
     <ClInclude Include="..\..\xbmc\input\touch\ITouchInputHandler.h" />
     <ClInclude Include="..\..\xbmc\input\touch\ITouchInputHandling.h" />
     <ClInclude Include="..\..\xbmc\input\touch\TouchTypes.h" />
-    <ClInclude Include="..\..\xbmc\input\windows\WINJoystick.h" />
     <ClInclude Include="..\..\xbmc\interfaces\generic\ILanguageInvocationHandler.h" />
     <ClInclude Include="..\..\xbmc\interfaces\generic\ILanguageInvoker.h" />
     <ClInclude Include="..\..\xbmc\interfaces\generic\LanguageInvokerThread.h" />
@@ -930,8 +934,10 @@
     <ClInclude Include="..\..\xbmc\media\MediaType.h" />
     <ClInclude Include="..\..\xbmc\music\karaoke\karaokevideobackground.h" />
     <ClInclude Include="..\..\xbmc\network\NetworkServices.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.h" />
     <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.h" />
     <ClInclude Include="..\..\xbmc\network\upnp\UPnPSettings.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.h" />
     <ClInclude Include="..\..\xbmc\playlists\SmartPlaylistFileItemListModifier.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogLockSettings.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogProfileSettings.h" />

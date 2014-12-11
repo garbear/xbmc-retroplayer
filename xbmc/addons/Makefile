@@ -3,6 +3,7 @@ SRCS=Addon.cpp \
      AddonCallbacksAddon.cpp \
      AddonCallbacksCodec.cpp \
      AddonCallbacksGUI.cpp \
+     AddonCallbacksPeripheral.cpp \
      AddonCallbacksPVR.cpp \
      AddonDatabase.cpp \
      AddonInstaller.cpp \
@@ -14,6 +15,7 @@ SRCS=Addon.cpp \
      GUIDialogAddonSettings.cpp \
      GUIViewStateAddonBrowser.cpp \
      GUIWindowAddonBrowser.cpp \
+     PeripheralAddon.cpp \
      PluginSource.cpp \
      Repository.cpp \
      Scraper.cpp \
