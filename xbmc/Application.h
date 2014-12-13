@@ -472,7 +472,6 @@ protected:
   bool ProcessGamepad(float frameTime);
   bool ProcessEventServer(float frameTime);
   bool ProcessPeripherals(float frameTime);
-  bool ProcessJoystickEvent(const std::string& joystickName, int button, short inputType, float fAmount, unsigned int holdTime = 0);
   bool ExecuteInputAction(const CAction &action);
   int  GetActiveWindowID(void);
 
