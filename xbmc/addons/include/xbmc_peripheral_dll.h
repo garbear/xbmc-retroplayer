@@ -22,71 +22,93 @@
 
 #include "xbmc_peripheral_types.h"
 
+#define PERIPHERAL_ADDON_JOYSTICKS // temp
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-  /*!
-   * Peripheral operations
-   */
+  /// @name Peripheral operations
   ///{
   /*!
-   * Get the PERIPHERAL_API_VERSION_STRING that was used to compile this
-   * peripheral add-on. Used to check if the implementation is compatible with
-   * the frontend.
+   * @brief  Get the PERIPHERAL_API_VERSION_STRING used to compile this peripheral add-on
+   * @return XBMC_PERIPHERAL_API_VERSION from xbmc_peripheral_types
+   * @remarks Valid implementation required
+   *
+   * Used to check if the implementation is compatible with the frontend.
    */
   const char* GetPeripheralAPIVersion(void);
 
   /*!
-   * Get the PERIPHERAL_MIN_API_VERSION_STRING that was used to compile this
-   * peripheral add-on. Used to check if the implementation is compatible with
-   * the frontend.
+   * @brief Get the PERIPHERAL_MIN_API_VERSION_STRING used to compile this peripheral add-on
+   * @return XBMC_PERIPHERAL_MIN_API_VERSION from xbmc_peripheral_types
+   * @remarks Valid implementation required
+   *
+   * Used to check if the implementation is compatible with the frontend.
    */
   const char* GetMinimumPeripheralAPIVersion(void);
 
   /*!
-   * Get the list of features that this add-on provides.
-   * Called by the frontend to query the add-on's capabilities and supported
-   * peripherals. All capabilities that the add-on supports should be set to true.
+   * @brief Get the list of features that this add-on provides
    * @param pCapabilities The add-on's capabilities.
    * @return PERIPHERAL_NO_ERROR if the properties were fetched successfully.
    * @remarks Valid implementation required.
+   *
+   * Called by the frontend to query the add-on's capabilities and supported
+   * peripherals. All capabilities that the add-on supports should be set to true.
+   *
    */
   PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES *pCapabilities);
   ///}
 
   /*!
    * Joystick operations
+   *
+   * @note #define PERIPHERAL_ADDON_JOYSTICKS before including xbmc_peripheral_dll.h
+   * in the add-on if the add-on provides joysticks and add provides_joysticks="true"
+   * to the xbmc.peripheral extension point node in addon.xml.
    */
   ///{
+#ifdef PERIPHERAL_ADDON_JOYSTICKS
   /*!
    * @brief Perform a scan for joysticks
+   * @return PERIPHERAL_NO_ERROR if successful; joysticks must be freed using
+   * FreeJoysticks() in this case
+   *
    * The frontend calls this when a hardware change is detected. If an add-on
    * detects a hardware change, it can trigger this function using the
    * TriggerScan() callback.
-   *
-   * @return PERIPHERAL_NO_ERROR if successful. Joysticks must be freed using FreeJoysticks() in this case.
    */
-  PERIPHERAL_ERROR PerformJoystickScan(unsigned int* joystick_count, JOYSTICK** joysticks);
-  void             FreeJoysticks(unsigned int joystick_count, JOYSTICK* joysticks);
+  PERIPHERAL_ERROR PerformJoystickScan(unsigned int* joystick_count, JOYSTICK_CONFIGURATION** joysticks);
+  void             FreeJoysticks(unsigned int joystick_count, JOYSTICK_CONFIGURATION* joysticks);
 
   /*!
-   * @brief Assign the specified button a standardized ID and label
+   * @brief Assign a button index to a button ID and label
    */
-  PERIPHERAL_ERROR SetButton(unsigned int button_index, JOYSTICK_ID_BUTTON new_id, const char* new_label);
+  PERIPHERAL_ERROR RegisterButton(unsigned int joystick_index, JOYSTICK_MAP_BUTTON* button);
+  void             UnregisterButton(unsigned int joystick_index, unsigned int button_index);
 
   /*!
-   * @brief Add/remove a trigger
+   * @brief Assign an axis index and direction to a trigger ID and label
    */
-  PERIPHERAL_ERROR AddTrigger(JOYSTICK_TRIGGER* trigger);
-  PERIPHERAL_ERROR RemoveTrigger(unsigned int trigger_index);
+  PERIPHERAL_ERROR RegisterTrigger(unsigned int joystick_index, JOYSTICK_MAP_TRIGGER* trigger);
+  void             UnregisterTrigger(unsigned int joystick_index, unsigned int trigger_index);
 
   /*!
-   * @brief Add/remove an analog stick
+   * @brief Assign two axes to an analog stick ID and label
    */
-  PERIPHERAL_ERROR AddAnalogStick(JOYSTICK_ANALOG_STICK* stick);
-  PERIPHERAL_ERROR RemoveAnalogStick(unsigned int stick_index);
+  PERIPHERAL_ERROR RegisterAnalogStick(unsigned int joystick_index, JOYSTICK_MAP_ANALOG_STICK* analog_stick);
+  void             UnregisterAnalogStick(unsigned int joystick_index, unsigned int analog_stick_index);
+
+  /*!
+   * @brief Get all events that have occurred since the last call to GetEvents()
+   * @return PERIPHERAL_NO_ERROR if successful; events must be freed using
+   * FreeEvents() in this case
+   */
+  PERIPHERAL_ERROR GetEvents(unsigned int* event_count, JOYSTICK_EVENT** events);
+  void             FreeEvents(unsigned int event_count, JOYSTICK_EVENT* events);
+#endif
   ///}
 
   /*!
@@ -99,13 +121,19 @@ extern "C"
     pClient->GetPeripheralAPIVersion        = GetPeripheralAPIVersion;
     pClient->GetMinimumPeripheralAPIVersion = GetMinimumPeripheralAPIVersion;
     pClient->GetAddonCapabilities           = GetAddonCapabilities;
+
+#ifdef PERIPHERAL_ADDON_JOYSTICKS
     pClient->PerformJoystickScan            = PerformJoystickScan;
     pClient->FreeJoysticks                  = FreeJoysticks;
-    pClient->SetButton                      = SetButton;
-    pClient->AddTrigger                     = AddTrigger;
-    pClient->RemoveTrigger                  = RemoveTrigger;
-    pClient->AddAnalogStick                 = AddAnalogStick;
-    pClient->RemoveAnalogStick              = RemoveAnalogStick;
+    pClient->RegisterButton                 = RegisterButton;
+    pClient->UnregisterButton               = UnregisterButton;
+    pClient->RegisterTrigger                = RegisterTrigger;
+    pClient->UnregisterTrigger              = UnregisterTrigger;
+    pClient->RegisterAnalogStick            = RegisterAnalogStick;
+    pClient->UnregisterAnalogStick          = UnregisterAnalogStick;
+    pClient->GetEvents                      = GetEvents;
+    pClient->FreeEvents                     = FreeEvents;
+#endif
   };
 
 #ifdef __cplusplus

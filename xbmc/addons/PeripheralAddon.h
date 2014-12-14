@@ -68,14 +68,14 @@ public:
   //@}
   /** @name Joystick methods */
   //@{
-
-  bool PerformJoystickScan(std::vector<AddonJoystick>& joysticks);
-  bool SetButton(unsigned int buttonIndex, JOYSTICK_ID_BUTTON newId, const std::string& strNewLabel);
-  bool AddTrigger(const AddonTrigger& trigger);
-  bool RemoveTrigger(unsigned int triggerIndex);
-  bool AddAnalogStick(const AddonAnalogStick& analogStick);
-  bool RemoveAnalogStick(unsigned int analogStickIndex);
-
+  bool PerformJoystickScan(std::vector<JoystickConfiguration>& joysticks);
+  bool RegisterButton(unsigned int joystickIndex, const ButtonMap& buttonMap);
+  void UnregisterButton(unsigned int joystickIndex, unsigned int buttonIndex);
+  bool RegisterTrigger(unsigned int joystickIndex, const TriggerMap& triggerMap);
+  void UnregisterTrigger(unsigned int joystickIndex, unsigned int triggerIndex);
+  bool RegisterAnalogStick(unsigned int joystickIndex, const AnalogStickMap& analogStickMap);
+  void UnregisterAnalogStick(unsigned int joystickIndex, unsigned int analogStickIndex);
+  bool ProcessEvents(void);
   //@}
 
 protected:

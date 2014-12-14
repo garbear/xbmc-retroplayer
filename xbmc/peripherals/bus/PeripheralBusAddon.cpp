@@ -66,11 +66,11 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
 
     for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
     {
-      std::vector<AddonJoystick> joysticks;
+      std::vector<JoystickConfiguration> joysticks;
       if (!(*itAddon)->PerformJoystickScan(joysticks))
         continue;
 
-      for (std::vector<AddonJoystick>::const_iterator itJoystick = joysticks.begin(); itJoystick != joysticks.end(); ++itJoystick)
+      for (std::vector<JoystickConfiguration>::const_iterator itJoystick = joysticks.begin(); itJoystick != joysticks.end(); ++itJoystick)
       {
         PeripheralScanResult result(m_type);
         result.m_type          = PERIPHERAL_JOYSTICK;

@@ -27,375 +27,303 @@
 
 namespace ADDON
 {
-  class AddonButton
+  class ButtonMap
   {
   public:
-    AddonButton(void) : m_index(0), m_id(JOYSTICK_ID_BUTTON_UNKNOWN), m_state(JOYSTICK_BUTTON_STATE_UP) { }
+    ButtonMap(void) : m_index(0), m_id(JOYSTICK_ID_BUTTON_UNKNOWN) { }
 
-    AddonButton(const JOYSTICK_BUTTON& button)
-    : m_index(button.index),
-      m_id(button.button_id),
-      m_strLabel(button.label ? button.label : ""),
-      m_state(button.state)
+    ButtonMap(const JOYSTICK_MAP_BUTTON& buttonMap)
+    : m_index(buttonMap.index),
+      m_id(buttonMap.id),
+      m_strLabel(buttonMap.label ? buttonMap.label : "")
     {
     }
 
-    unsigned int Index(void) const { return m_index; }
-    void SetIndex(unsigned int index) { m_index = index; }
-
-    JOYSTICK_ID_BUTTON ID(void) const { return m_id; }
-    void SetID(JOYSTICK_ID_BUTTON buttonId) { m_id = buttonId; }
-
+    unsigned int       Index(void) const { return m_index; }
+    JOYSTICK_ID_BUTTON ID(void) const    { return m_id; }
     const std::string& Label(void) const { return m_strLabel; }
+
+    void SetIndex(unsigned int index)          { m_index = index; }
+    void SetID(JOYSTICK_ID_BUTTON buttonId)    { m_id = buttonId; }
     void SetLabel(const std::string& strLabel) { m_strLabel = strLabel; }
 
-    JOYSTICK_BUTTON_STATE State(void) const { return m_state; }
-    void SetState(JOYSTICK_BUTTON_STATE state) { m_state = state; }
-
-    void ToButton(JOYSTICK_BUTTON& button) const
+    void ToButtonMap(JOYSTICK_MAP_BUTTON& buttonMap) const
     {
-      button.index = m_index;
-      button.button_id = m_id;
-      button.label = new char[m_strLabel.size() + 1];
-      std::strcpy(button.label, m_strLabel.c_str());
-      button.state = m_state;
+      buttonMap.index = m_index;
+      buttonMap.id    = m_id;
+      buttonMap.label = new char[m_strLabel.size() + 1];
+      std::strcpy(buttonMap.label, m_strLabel.c_str());
     }
 
-    static void Free(JOYSTICK_BUTTON& button)
+    static void Free(JOYSTICK_MAP_BUTTON& buttonMap)
     {
-      delete[] button.label;
-    }
-
-  private:
-    unsigned int          m_index;
-    JOYSTICK_ID_BUTTON    m_id;
-    std::string           m_strLabel;
-    JOYSTICK_BUTTON_STATE m_state;
-  };
-
-  class AddonHat
-  {
-  public:
-    AddonHat(void) : m_index(0), m_state(JOYSTICK_HAT_STATE_UNPRESSED) { }
-
-    AddonHat(const JOYSTICK_HAT& hat) : m_index(hat.index), m_state(hat.state) { }
-
-    unsigned int Index(void) const { return m_index; }
-    void SetIndex(unsigned int index) { m_index = index; }
-
-    JOYSTICK_HAT_STATE State(void) const { return m_state; }
-    void SetState(JOYSTICK_HAT_STATE state) { m_state = state; }
-
-    void ToHat(JOYSTICK_HAT& hat) const
-    {
-      hat.index = m_index;
-      hat.state = m_state;
-    }
-
-    static void Free(JOYSTICK_HAT& hat)
-    {
+      delete[] buttonMap.label;
     }
 
   private:
     unsigned int       m_index;
-    JOYSTICK_HAT_STATE m_state;
+    JOYSTICK_ID_BUTTON m_id;
+    std::string        m_strLabel;
   };
 
-  class AddonAxis
+  class TriggerMap
   {
   public:
-    AddonAxis(void) : m_index(0), m_state(0.0f) { }
+    TriggerMap(void) : m_axisIndex(0), m_axisSign(JOYSTICK_AXIS_POSITIVE), m_id(JOYSTICK_ID_TRIGGER_UNKNOWN) { }
 
-    AddonAxis(const JOYSTICK_AXIS& axis) : m_index(axis.index), m_state(axis.state) { }
-
-    unsigned int Index(void) const { return m_index; }
-    void SetIndex(unsigned int index) { m_index = index; }
-
-    float State(void) const { return m_state; }
-    void SetState(float state) { m_state = state; }
-
-    void ToAxis(JOYSTICK_AXIS& axis) const
+    TriggerMap(const JOYSTICK_MAP_TRIGGER& triggerMap)
+    : m_axisIndex(triggerMap.axis_index),
+      m_axisSign(triggerMap.axis_sign),
+      m_id(triggerMap.id),
+      m_strLabel(triggerMap.label ? triggerMap.label : "")
     {
-      axis.index = m_index;
-      axis.state = m_state;
     }
 
-    static void Free(JOYSTICK_AXIS& axis)
+    unsigned int        AxisIndex(void) const { return m_axisIndex; }
+    JOYSTICK_AXIS_SIGN  AxisSign(void) const  { return m_axisSign; }
+    JOYSTICK_ID_TRIGGER ID(void) const        { return m_id; }
+    const std::string&  Label(void) const     { return m_strLabel; }
+
+    void SetAxisIndex(unsigned int axisIndex)     { m_axisIndex = axisIndex; }
+    void SetAxisSign(JOYSTICK_AXIS_SIGN axisSign) { m_axisSign = axisSign; }
+    void SetID(JOYSTICK_ID_TRIGGER triggerId)     { m_id = triggerId; }
+    void SetLabel(const std::string& strLabel)    { m_strLabel = strLabel; }
+
+    void ToTriggerMap(JOYSTICK_MAP_TRIGGER& triggerMap) const
     {
+      triggerMap.axis_index = m_axisIndex;
+      triggerMap.axis_sign  = m_axisSign;
+      triggerMap.id         = m_id;
+      triggerMap.label      = new char[m_strLabel.size() + 1];
+      std::strcpy(triggerMap.label, m_strLabel.c_str());
+    }
+
+    static void Free(JOYSTICK_MAP_TRIGGER& triggerMap)
+    {
+      delete[] triggerMap.label;
     }
 
   private:
-    unsigned int m_index;
-    float        m_state;
-  };
-
-  class AddonTrigger
-  {
-  public:
-    AddonTrigger(unsigned int axisIndex, JOYSTICK_AXIS_SIGN axisSign)
-    : m_index(0),
-      m_axisIndex(axisIndex),
-      m_axisSign(axisSign),
-      m_id(JOYSTICK_ID_TRIGGER_UNKNOWN),
-      m_state(0.0f)
-    {
-    }
-
-    AddonTrigger(const JOYSTICK_TRIGGER& trigger)
-    : m_index(trigger.index),
-      m_axisIndex(trigger.axis_index),
-      m_axisSign(trigger.axis_sign),
-      m_id(trigger.trigger_id),
-      m_strLabel(trigger.label ? trigger.label : ""),
-      m_state(trigger.state)
-    {
-    }
-
-    unsigned int Index(void) const { return m_index; }
-    void SetIndex(unsigned int index) { m_index = index; }
-
-    unsigned int AxisIndex(void) const { return m_axisIndex; }
-
-    JOYSTICK_AXIS_SIGN AxisSign(void) const { return m_axisSign; }
-
-    JOYSTICK_ID_TRIGGER ID(void) const { return m_id; }
-    void SetID(JOYSTICK_ID_TRIGGER triggerId) { m_id = triggerId; }
-
-    const std::string& Label(void) const { return m_strLabel; }
-    void SetLabel(const std::string& strLabel) { m_strLabel = strLabel; }
-
-    float State(void) const { return m_state; }
-    void SetState(float state) { m_state = state; }
-
-    void ToTrigger(JOYSTICK_TRIGGER& trigger) const
-    {
-      trigger.index = m_index;
-      trigger.axis_index = m_axisIndex;
-      trigger.axis_sign = m_axisSign;
-      trigger.label = new char[m_strLabel.size() + 1];
-      std::strcpy(trigger.label, m_strLabel.c_str());
-      trigger.state = m_state;
-    }
-
-    static void Free(JOYSTICK_TRIGGER& trigger)
-    {
-      delete[] trigger.label;
-    }
-
-  private:
-    unsigned int        m_index;
     unsigned int        m_axisIndex;
     JOYSTICK_AXIS_SIGN  m_axisSign;
     JOYSTICK_ID_TRIGGER m_id;
     std::string         m_strLabel;
-    float               m_state;
   };
 
-  class AddonAnalogStick
+  class AnalogStickMap
   {
   public:
-    AddonAnalogStick(unsigned int horizAxisIndex, JOYSTICK_DIRECTION horizAxisPositiveDir,
-                     unsigned int vertAxisIndex, JOYSTICK_DIRECTION vertAxisPositiveDir)
-    : m_index(0),
-      m_horizAxisIndex(horizAxisIndex),
-      m_horizAxisPositiveDir(horizAxisPositiveDir),
-      m_vertAxisIndex(vertAxisIndex),
-      m_vertAxisPositiveDir(vertAxisPositiveDir),
-      m_id(JOYSTICK_ID_ANALOG_STICK_UNKNOWN),
-      m_horizState(0.0f),
-      m_vertState(0.0f)
+    AnalogStickMap(void)
+    : m_horizAxisIndex(0),
+      m_horizPositiveDir(JOYSTICK_POSITIVE_DIR_UP_RIGHT),
+      m_vertAxisIndex(0),
+      m_vertPositiveDir(JOYSTICK_POSITIVE_DIR_UP_RIGHT),
+      m_id(JOYSTICK_ID_ANALOG_STICK_UNKNOWN)
+   {
+   }
+
+    AnalogStickMap(const JOYSTICK_MAP_ANALOG_STICK& analogStickMap)
+    : m_horizAxisIndex(analogStickMap.horiz_axis_index),
+      m_horizPositiveDir(analogStickMap.horiz_positive_dir),
+      m_vertAxisIndex(analogStickMap.vert_axis_index),
+      m_vertPositiveDir(analogStickMap.vert_positive_dir),
+      m_id(analogStickMap.id),
+      m_strLabel(analogStickMap.label ? analogStickMap.label : "")
     {
     }
 
-    AddonAnalogStick(const JOYSTICK_ANALOG_STICK& analogStick)
-    : m_index(analogStick.index),
-      m_horizAxisIndex(analogStick.horiz_axis_index),
-      m_horizAxisPositiveDir(analogStick.horiz_axis_positive_dir),
-      m_vertAxisIndex(analogStick.vert_axis_index),
-      m_vertAxisPositiveDir(analogStick.vert_axis_positive_dir),
-      m_id(analogStick.analog_stick_id),
-      m_strLabel(analogStick.label ? analogStick.label : ""),
-      m_horizState(analogStick.horiz_state),
-      m_vertState(analogStick.vert_state)
+    unsigned int             HorizAxisIndex(void) const { return m_horizAxisIndex; }
+    JOYSTICK_POSITIVE_DIR    HorizAxisSign(void) const  { return m_horizPositiveDir; }
+    unsigned int             VertAxisIndex(void) const  { return m_vertAxisIndex; }
+    JOYSTICK_POSITIVE_DIR    VertAxisSign(void) const   { return m_vertPositiveDir; }
+    JOYSTICK_ID_ANALOG_STICK ID(void) const             { return m_id; }
+    const std::string&       Label(void) const          { return m_strLabel; }
+
+    void SetHorizAxisIndex(unsigned int horizAxisIndex)           { m_horizAxisIndex = horizAxisIndex; }
+    void SetHorizAxisSign(JOYSTICK_POSITIVE_DIR horizPositiveDir) { m_horizPositiveDir = horizPositiveDir; }
+    void SetVertAxisIndex(unsigned int vertAxisIndex)             { m_vertAxisIndex = vertAxisIndex; }
+    void SetVertAxisSign(JOYSTICK_POSITIVE_DIR vertPositiveDir)   { m_vertPositiveDir = vertPositiveDir; }
+    void SetID(JOYSTICK_ID_ANALOG_STICK analogStickId)            { m_id = analogStickId; }
+    void SetLabel(const std::string& strLabel)                    { m_strLabel = strLabel; }
+
+    void ToAnalogStickMap(JOYSTICK_MAP_ANALOG_STICK& analogStickMap) const
     {
+      analogStickMap.horiz_axis_index   = m_horizAxisIndex;
+      analogStickMap.horiz_positive_dir = m_horizPositiveDir;
+      analogStickMap.vert_axis_index    = m_vertAxisIndex;
+      analogStickMap.vert_positive_dir  = m_vertPositiveDir;
+      analogStickMap.id                 = m_id;
+      analogStickMap.label              = new char[m_strLabel.size() + 1];
+      std::strcpy(analogStickMap.label, m_strLabel.c_str());
     }
 
-    unsigned int Index(void) const { return m_index; }
-    void SetIndex(unsigned int index) { m_index = index; }
-
-    unsigned int HorizAxisIndex(void) const { return m_horizAxisIndex; }
-
-    JOYSTICK_DIRECTION HorizAxisPositiveDir(void) const { return m_horizAxisPositiveDir; }
-
-    unsigned int vertAxisIndex(void) const { return m_vertAxisIndex; }
-
-    JOYSTICK_DIRECTION VertAxisPositiveDir(void) const { return m_vertAxisPositiveDir; }
-
-    JOYSTICK_ID_ANALOG_STICK ID(void) const { return m_id; }
-    void SetID(JOYSTICK_ID_ANALOG_STICK analogStickId) { m_id = analogStickId; }
-
-    const std::string& Label(void) const { return m_strLabel; }
-    void SetLabel(const std::string& strLabel) { m_strLabel = strLabel; }
-
-    float HorizState(void) const { return m_horizState; }
-    void SetHorizState(float horizState) { m_horizState = horizState; }
-
-    float VertState(void) const { return m_vertState; }
-    void SetVertState(float vertState) { m_vertState = vertState; }
-
-    void ToAnalogStick(JOYSTICK_ANALOG_STICK& analogStick) const
+    static void Free(JOYSTICK_MAP_ANALOG_STICK& analogStickMap)
     {
-      // TODO
-    }
-
-    static void Free(JOYSTICK_ANALOG_STICK& analogStick)
-    {
-      // TODO
+      delete[] analogStickMap.label;
     }
 
   private:
-    unsigned int             m_index;
     unsigned int             m_horizAxisIndex;
-    JOYSTICK_DIRECTION       m_horizAxisPositiveDir;
+    JOYSTICK_POSITIVE_DIR    m_horizPositiveDir;
     unsigned int             m_vertAxisIndex;
-    JOYSTICK_DIRECTION       m_vertAxisPositiveDir;
+    JOYSTICK_POSITIVE_DIR    m_vertPositiveDir;
     JOYSTICK_ID_ANALOG_STICK m_id;
     std::string              m_strLabel;
-    float                    m_horizState;
-    float                    m_vertState;
   };
 
-  class AddonJoystick
+  class JoystickLayout
   {
   public:
-    AddonJoystick(void) : m_index(0), m_requestedPlayer(0) { }
+    JoystickLayout(void) { }
 
-    AddonJoystick(const JOYSTICK& joystick)
+    JoystickLayout(const JOYSTICK_LAYOUT& layout)
+    {
+      for (unsigned int i = 0; i < layout.button_count; i++)
+        m_buttonMap.push_back(layout.buttons[i]);
+
+      for (unsigned int i = 0; i < layout.trigger_count; i++)
+        m_triggerMap.push_back(layout.triggers[i]);
+
+      for (unsigned int i = 0; i < layout.analog_stick_count; i++)
+        m_analogStickMap.push_back(layout.analog_sticks[i]);
+    }
+
+    const std::vector<ButtonMap>&      ButtonMaps(void) const      { return m_buttonMap; }
+    const std::vector<TriggerMap>&     TriggerMaps(void) const     { return m_triggerMap; }
+    const std::vector<AnalogStickMap>& AnalogStickMaps(void) const { return m_analogStickMap; }
+
+    std::vector<ButtonMap>&      ButtonMaps(void)      { return m_buttonMap; }
+    std::vector<TriggerMap>&     TriggerMaps(void)     { return m_triggerMap; }
+    std::vector<AnalogStickMap>& AnalogStickMaps(void) { return m_analogStickMap; }
+
+    void ToJoystickLayout(JOYSTICK_LAYOUT& layout) const
+    {
+      layout.button_count = m_buttonMap.size();
+      layout.buttons = new JOYSTICK_MAP_BUTTON[m_buttonMap.size()];
+      for (unsigned int i = 0; i < m_buttonMap.size(); i++)
+        m_buttonMap[i].ToButtonMap(layout.buttons[i]);
+
+      layout.trigger_count = m_triggerMap.size();
+      layout.triggers = new JOYSTICK_MAP_TRIGGER[m_triggerMap.size()];
+      for (unsigned int i = 0; i < m_triggerMap.size(); i++)
+        m_triggerMap[i].ToTriggerMap(layout.triggers[i]);
+
+      layout.analog_stick_count = m_analogStickMap.size();
+      layout.analog_sticks = new JOYSTICK_MAP_ANALOG_STICK[m_analogStickMap.size()];
+      for (unsigned int i = 0; i < m_analogStickMap.size(); i++)
+        m_analogStickMap[i].ToAnalogStickMap(layout.analog_sticks[i]);
+    }
+
+    static void Free(JOYSTICK_LAYOUT& layout)
+    {
+      for (unsigned int i = 0; i < layout.button_count; i++)
+        ButtonMap::Free(layout.buttons[i]);
+      delete[] layout.buttons;
+
+      for (unsigned int i = 0; i < layout.trigger_count; i++)
+        TriggerMap::Free(layout.triggers[i]);
+      delete[] layout.triggers;
+
+      for (unsigned int i = 0; i < layout.analog_stick_count; i++)
+        AnalogStickMap::Free(layout.analog_sticks[i]);
+      delete[] layout.analog_sticks;
+    }
+
+  private:
+    std::vector<ButtonMap>      m_buttonMap;
+    std::vector<TriggerMap>     m_triggerMap;
+    std::vector<AnalogStickMap> m_analogStickMap;
+  };
+
+  class JoystickConfiguration
+  {
+  public:
+    JoystickConfiguration(void) : m_index(0), m_requestedPlayer(0) { }
+
+    JoystickConfiguration(const JOYSTICK_CONFIGURATION& joystick)
     : m_index(joystick.index),
       m_requestedPlayer(joystick.requested_player),
       m_strName(joystick.name ? joystick.name : ""),
-      m_strIconPath(joystick.icon_path ? joystick.icon_path : "")
+      m_strIconPath(joystick.icon_path ? joystick.icon_path : ""),
+      m_layout(joystick.layout)
     {
-      m_buttons.reserve(joystick.button_count);
+      m_buttonIndexes.reserve(joystick.button_count);
       for (unsigned int i = 0; i < joystick.button_count; i++)
-        m_buttons.push_back(joystick.buttons[i]);
+        m_buttonIndexes.push_back(joystick.buttons[i]);
 
-      m_hats.reserve(joystick.hat_count);
+      m_hatIndexes.reserve(joystick.hat_count);
       for (unsigned int i = 0; i < joystick.hat_count; i++)
-        m_hats.push_back(joystick.hats[i]);
+        m_hatIndexes.push_back(joystick.hats[i]);
 
-      m_axes.reserve(joystick.axis_count);
+      m_axisIndexes.reserve(joystick.axis_count);
       for (unsigned int i = 0; i < joystick.axis_count; i++)
-        m_axes.push_back(joystick.axes[i]);
-
-      m_triggers.reserve(joystick.trigger_count);
-      for (unsigned int i = 0; i < joystick.trigger_count; i++)
-        m_triggers.push_back(joystick.triggers[i]);
-
-      m_analogSticks.reserve(joystick.analog_stick_count);
-      for (unsigned int i = 0; i < joystick.analog_stick_count; i++)
-        m_analogSticks.push_back(joystick.analog_sticks[i]);
+        m_axisIndexes.push_back(joystick.axes[i]);
     }
 
-    unsigned int Index(void) const { return m_index; }
-    void SetIndex(unsigned int index) { m_index = index; }
-
-    unsigned int RequestedPlayer(void) const { return m_requestedPlayer; }
-    void SetRequestedPlayer(unsigned int requestedPlayer) { m_requestedPlayer = requestedPlayer; }
-
+    unsigned int       Index(void) const { return m_index; }
+    unsigned int       RequestedPlayer(void) const { return m_requestedPlayer; }
     const std::string& Name(void) const { return m_strName; }
-    void SetName(const std::string& strName) { m_strName = strName; }
-
     const std::string& IconPath(void) const { return m_strIconPath; }
-    void SetIconPath(const std::string& strIconPath) { m_strIconPath = strIconPath; }
 
-    const std::vector<AddonButton>& Buttons(void) const { return m_buttons; }
-          std::vector<AddonButton>& Buttons(void)       { return m_buttons; }
+    const std::vector<unsigned int>& ButtonIndexes(void) const { return m_buttonIndexes; }
+    const std::vector<unsigned int>& HatIndexes(void) const    { return m_hatIndexes; }
+    const std::vector<unsigned int>& AxisIndexes(void) const   { return m_axisIndexes; }
 
-    const std::vector<AddonHat>& Hats(void) const { return m_hats; }
-          std::vector<AddonHat>& Hats(void)       { return m_hats; }
+    void SetIndex(unsigned int index)                     { m_index = index; }
+    void SetRequestedPlayer(unsigned int requestedPlayer) { m_requestedPlayer = requestedPlayer; }
+    void SetName(const std::string& strName)              { m_strName = strName; }
+    void SetIconPath(const std::string& strIconPath)      { m_strIconPath = strIconPath; }
 
-    const std::vector<AddonAxis>& Axes(void) const { return m_axes; }
-          std::vector<AddonAxis>& Axes(void)       { return m_axes; }
+    std::vector<unsigned int>& ButtonIndexes(void) { return m_buttonIndexes; }
+    std::vector<unsigned int>& HatIndexes(void)    { return m_hatIndexes; }
+    std::vector<unsigned int>& AxisIndexes(void)   { return m_axisIndexes; }
 
-    const std::vector<AddonTrigger>& Triggers(void) const { return m_triggers; }
-          std::vector<AddonTrigger>& Triggers(void)       { return m_triggers; }
-
-    const std::vector<AddonAnalogStick>& AnalogSticks(void) const { return m_analogSticks; }
-          std::vector<AddonAnalogStick>& AnalogSticks(void)       { return m_analogSticks; }
-
-    void ToJoystick(JOYSTICK& joystick) const
+    void ToJoystickConfiguration(JOYSTICK_CONFIGURATION& joystick) const
     {
-      joystick.index = m_index;
+      joystick.index            = m_index;
       joystick.requested_player = m_requestedPlayer;
-
-      joystick.name = new char[m_strName.length() + 1];
+      joystick.name             = new char[m_strName.length() + 1];
       std::strcpy(joystick.name, m_strName.c_str());
-
-      joystick.icon_path = new char[m_strIconPath.length() + 1];
+      joystick.icon_path        = new char[m_strIconPath.length() + 1];
       std::strcpy(joystick.icon_path, m_strIconPath.c_str());
 
-      joystick.button_count = m_buttons.size();
-      joystick.buttons = new JOYSTICK_BUTTON[m_buttons.size()];
-      for (unsigned int i = 0; i < m_buttons.size(); i++)
-        m_buttons[i].ToButton(joystick.buttons[i]);
+      joystick.button_count = m_buttonIndexes.size();
+      joystick.buttons = new unsigned int[m_buttonIndexes.size()];
+      for (unsigned int i = 0; i < m_buttonIndexes.size(); i++)
+        joystick.buttons[i] = m_buttonIndexes[i];
 
-      joystick.hat_count = m_hats.size();
-      joystick.hats = new JOYSTICK_HAT[m_hats.size()];
-      for (unsigned int i = 0; i < m_hats.size(); i++)
-        m_hats[i].ToHat(joystick.hats[i]);
+      joystick.hat_count = m_hatIndexes.size();
+      joystick.hats = new unsigned int[m_hatIndexes.size()];
+      for (unsigned int i = 0; i < m_hatIndexes.size(); i++)
+        joystick.hats[i] = m_hatIndexes[i];
 
-      joystick.axis_count = m_axes.size();
-      joystick.axes = new JOYSTICK_AXIS[m_axes.size()];
-      for (unsigned int i = 0; i < m_axes.size(); i++)
-        m_axes[i].ToAxis(joystick.axes[i]);
+      joystick.axis_count = m_axisIndexes.size();
+      joystick.axes = new unsigned int[m_axisIndexes.size()];
+      for (unsigned int i = 0; i < m_axisIndexes.size(); i++)
+        joystick.axes[i] = m_axisIndexes[i];
 
-      joystick.trigger_count = m_triggers.size();
-      joystick.triggers = new JOYSTICK_TRIGGER[m_triggers.size()];
-      for (unsigned int i = 0; i < m_triggers.size(); i++)
-        m_triggers[i].ToTrigger(joystick.triggers[i]);
-
-      joystick.analog_stick_count = m_analogSticks.size();
-      joystick.analog_sticks = new JOYSTICK_ANALOG_STICK[m_analogSticks.size()];
-      for (unsigned int i = 0; i < m_analogSticks.size(); i++)
-        m_analogSticks[i].ToAnalogStick(joystick.analog_sticks[i]);
+      m_layout.ToJoystickLayout(joystick.layout);
     }
 
-    static void Free(JOYSTICK& joystick)
+    static void Free(JOYSTICK_CONFIGURATION& joystick)
     {
       delete[] joystick.name;
       delete[] joystick.icon_path;
-
-      for (unsigned int i = 0; i < joystick.button_count; i++)
-        AddonButton::Free(joystick.buttons[i]);
       delete[] joystick.buttons;
-
-      for (unsigned int i = 0; i < joystick.hat_count; i++)
-        AddonHat::Free(joystick.hats[i]);
       delete[] joystick.hats;
-
-      for (unsigned int i = 0; i < joystick.axis_count; i++)
-        AddonAxis::Free(joystick.axes[i]);
       delete[] joystick.axes;
 
-      for (unsigned int i = 0; i < joystick.trigger_count; i++)
-        AddonTrigger::Free(joystick.triggers[i]);
-      delete[] joystick.triggers;
-
-      for (unsigned int i = 0; i < joystick.analog_stick_count; i++)
-        AddonAnalogStick::Free(joystick.analog_sticks[i]);
-      delete[] joystick.analog_sticks;
+      JoystickLayout::Free(joystick.layout);
     }
 
   private:
-    unsigned int                  m_index;
-    unsigned int                  m_requestedPlayer;
-    std::string                   m_strName;
-    std::string                   m_strIconPath;
-    std::vector<AddonButton>      m_buttons;
-    std::vector<AddonHat>         m_hats;
-    std::vector<AddonAxis>        m_axes;
-    std::vector<AddonTrigger>     m_triggers;
-    std::vector<AddonAnalogStick> m_analogSticks;
+    unsigned int              m_index;
+    unsigned int              m_requestedPlayer;
+    std::string               m_strName;
+    std::string               m_strIconPath;
+    std::vector<unsigned int> m_buttonIndexes;
+    std::vector<unsigned int> m_hatIndexes;
+    std::vector<unsigned int> m_axisIndexes;
+    JoystickLayout            m_layout;
   };
 }
