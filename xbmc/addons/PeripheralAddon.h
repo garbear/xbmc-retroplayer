@@ -70,11 +70,11 @@ public:
   //@{
 
   bool PerformJoystickScan(std::vector<AddonJoystick>& joysticks);
-  bool SetButton(unsigned int button_index, JOYSTICK_ID_BUTTON new_id, const std::string& new_label);
+  bool SetButton(unsigned int buttonIndex, JOYSTICK_ID_BUTTON newId, const std::string& strNewLabel);
   bool AddTrigger(const AddonTrigger& trigger);
-  bool RemoveTrigger(unsigned int trigger_index);
-  bool AddStick(const AddonAnalogStick& stick);
-  bool RemoveStick(unsigned int stick_index);
+  bool RemoveTrigger(unsigned int triggerIndex);
+  bool AddAnalogStick(const AddonAnalogStick& analogStick);
+  bool RemoveAnalogStick(unsigned int analogStickIndex);
 
   //@}
 

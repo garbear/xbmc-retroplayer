@@ -260,8 +260,8 @@ extern "C"
     PERIPHERAL_ERROR (__cdecl* SetButton)(unsigned int, JOYSTICK_ID_BUTTON, const char*);
     PERIPHERAL_ERROR (__cdecl* AddTrigger)(JOYSTICK_TRIGGER*);
     PERIPHERAL_ERROR (__cdecl* RemoveTrigger)(unsigned int);
-    PERIPHERAL_ERROR (__cdecl* AddStick)(JOYSTICK_ANALOG_STICK*);
-    PERIPHERAL_ERROR (__cdecl* RemoveStick)(unsigned int);
+    PERIPHERAL_ERROR (__cdecl* AddAnalogStick)(JOYSTICK_ANALOG_STICK*);
+    PERIPHERAL_ERROR (__cdecl* RemoveAnalogStick)(unsigned int);
     ///}
   } PeripheralAddon;
 

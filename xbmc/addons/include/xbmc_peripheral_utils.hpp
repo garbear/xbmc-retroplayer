@@ -52,7 +52,7 @@ namespace ADDON
     JOYSTICK_BUTTON_STATE State(void) const { return m_state; }
     void SetState(JOYSTICK_BUTTON_STATE state) { m_state = state; }
 
-    void ToButton(JOYSTICK_BUTTON& button)
+    void ToButton(JOYSTICK_BUTTON& button) const
     {
       button.index = m_index;
       button.button_id = m_id;
@@ -86,7 +86,7 @@ namespace ADDON
     JOYSTICK_HAT_STATE State(void) const { return m_state; }
     void SetState(JOYSTICK_HAT_STATE state) { m_state = state; }
 
-    void ToHat(JOYSTICK_HAT& hat)
+    void ToHat(JOYSTICK_HAT& hat) const
     {
       hat.index = m_index;
       hat.state = m_state;
@@ -114,7 +114,7 @@ namespace ADDON
     float State(void) const { return m_state; }
     void SetState(float state) { m_state = state; }
 
-    void ToAxis(JOYSTICK_AXIS& axis)
+    void ToAxis(JOYSTICK_AXIS& axis) const
     {
       axis.index = m_index;
       axis.state = m_state;
@@ -167,7 +167,7 @@ namespace ADDON
     float State(void) const { return m_state; }
     void SetState(float state) { m_state = state; }
 
-    void ToTrigger(JOYSTICK_TRIGGER& trigger)
+    void ToTrigger(JOYSTICK_TRIGGER& trigger) const
     {
       trigger.index = m_index;
       trigger.axis_index = m_axisIndex;
@@ -243,7 +243,7 @@ namespace ADDON
     float VertState(void) const { return m_vertState; }
     void SetVertState(float vertState) { m_vertState = vertState; }
 
-    void ToAnalogStick(JOYSTICK_ANALOG_STICK& analogStick)
+    void ToAnalogStick(JOYSTICK_ANALOG_STICK& analogStick) const
     {
       // TODO
     }
@@ -324,7 +324,7 @@ namespace ADDON
     const std::vector<AddonAnalogStick>& AnalogSticks(void) const { return m_analogSticks; }
           std::vector<AddonAnalogStick>& AnalogSticks(void)       { return m_analogSticks; }
 
-    void ToJoystick(JOYSTICK& joystick)
+    void ToJoystick(JOYSTICK& joystick) const
     {
       joystick.index = m_index;
       joystick.requested_player = m_requestedPlayer;

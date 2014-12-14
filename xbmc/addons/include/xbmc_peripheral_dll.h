@@ -85,8 +85,8 @@ extern "C"
   /*!
    * @brief Add/remove an analog stick
    */
-  PERIPHERAL_ERROR AddStick(JOYSTICK_ANALOG_STICK* stick);
-  PERIPHERAL_ERROR RemoveStick(unsigned int stick_index);
+  PERIPHERAL_ERROR AddAnalogStick(JOYSTICK_ANALOG_STICK* stick);
+  PERIPHERAL_ERROR RemoveAnalogStick(unsigned int stick_index);
   ///}
 
   /*!
@@ -104,8 +104,8 @@ extern "C"
     pClient->SetButton                      = SetButton;
     pClient->AddTrigger                     = AddTrigger;
     pClient->RemoveTrigger                  = RemoveTrigger;
-    pClient->AddStick                       = AddStick;
-    pClient->RemoveStick                    = RemoveStick;
+    pClient->AddAnalogStick                 = AddAnalogStick;
+    pClient->RemoveAnalogStick              = RemoveAnalogStick;
   };
 
 #ifdef __cplusplus

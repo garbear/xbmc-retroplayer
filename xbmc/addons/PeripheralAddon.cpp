@@ -24,7 +24,7 @@
 #include "peripherals/bus/PeripheralBusAddon.h"
 #include "utils/log.h"
 
-#include <cstring>
+#include <string.h>
 
 using namespace ADDON;
 using namespace PERIPHERALS;
@@ -62,7 +62,7 @@ void CPeripheralAddon::ResetProperties(void)
   m_pInfo->user_path   = m_strUserPath.c_str();
   m_strClientPath      = CSpecialProtocol::TranslatePath(Path());
   m_pInfo->addon_path  = m_strClientPath.c_str();
-  std::memset(&m_addonCapabilities, 0, sizeof(m_addonCapabilities));
+  memset(&m_addonCapabilities, 0, sizeof(m_addonCapabilities));
   m_apiVersion = AddonVersion("0.0.0");
 }
 
@@ -113,12 +113,11 @@ void CPeripheralAddon::Destroy(void)
 
 bool CPeripheralAddon::GetAddonProperties(void)
 {
-  PERIPHERAL_CAPABILITIES addonCapabilities;
+  PERIPHERAL_CAPABILITIES addonCapabilities = { };
 
   /* get the capabilities */
   try
   {
-    memset(&addonCapabilities, 0, sizeof(addonCapabilities));
     PERIPHERAL_ERROR retVal = m_pStruct->GetAddonCapabilities(&addonCapabilities);
     if (retVal != PERIPHERAL_NO_ERROR)
     {
@@ -166,32 +165,87 @@ bool CPeripheralAddon::IsCompatibleAPIVersion(const AddonVersion &minVersion, co
 
 bool CPeripheralAddon::PerformJoystickScan(std::vector<AddonJoystick>& joysticks)
 {
-  return false; // TODO
+  unsigned int joystickCount;
+  JOYSTICK* pJoysticks;
+
+  PERIPHERAL_ERROR retVal;
+
+  try { retVal = m_pStruct->PerformJoystickScan(&joystickCount, &pJoysticks); }
+  catch (std::exception &e) { LogException(e, "PerformJoystickScan()"); return false;  }
+
+  if (retVal == PERIPHERAL_NO_ERROR)
+  {
+    for (unsigned int i = 0; i < joystickCount; i++)
+      joysticks.push_back(pJoysticks[i]);
+
+    try { m_pStruct->FreeJoysticks(joystickCount, pJoysticks); }
+    catch (std::exception &e) { LogException(e, "FreeJoysticks()"); }
+
+    return true;
+  }
+
+  LogError(retVal, "PerformJoystickScan()");
+  return false;
 }
 
-bool CPeripheralAddon::SetButton(unsigned int button_index, JOYSTICK_ID_BUTTON new_id, const std::string& new_label)
+bool CPeripheralAddon::SetButton(unsigned int buttonIndex, JOYSTICK_ID_BUTTON newId, const std::string& strNewLabel)
 {
-  return false; // TODO
+  PERIPHERAL_ERROR retVal;
+
+  try { LogError(retVal = m_pStruct->SetButton(buttonIndex, newId, strNewLabel.c_str()), "SetButton()"); }
+  catch (std::exception &e) { LogException(e, "SetButton()"); return false; }
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
 bool CPeripheralAddon::AddTrigger(const AddonTrigger& trigger)
 {
-  return false; // TODO
+  PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
+
+  JOYSTICK_TRIGGER triggerStruct;
+  trigger.ToTrigger(triggerStruct);
+
+  try { LogError(retVal = m_pStruct->AddTrigger(&triggerStruct), "AddTrigger()"); }
+  catch (std::exception &e) { LogException(e, "AddTrigger()"); }
+
+  AddonTrigger::Free(triggerStruct);
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
-bool CPeripheralAddon::RemoveTrigger(unsigned int trigger_index)
+bool CPeripheralAddon::RemoveTrigger(unsigned int triggerIndex)
 {
-  return false; // TODO
+  PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
+
+  try { LogError(retVal = m_pStruct->RemoveTrigger(triggerIndex), "RemoveTrigger()"); }
+  catch (std::exception &e) { LogException(e, "RemoveTrigger()"); }
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
-bool CPeripheralAddon::AddStick(const AddonAnalogStick& stick)
+bool CPeripheralAddon::AddAnalogStick(const AddonAnalogStick& analogStick)
 {
-  return false; // TODO
+  PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
+
+  JOYSTICK_ANALOG_STICK analogStickStruct;
+  analogStick.ToAnalogStick(analogStickStruct);
+
+  try { LogError(retVal = m_pStruct->AddAnalogStick(&analogStickStruct), "AddTrigger()"); }
+  catch (std::exception &e) { LogException(e, "AddTrigger()"); }
+
+  AddonAnalogStick::Free(analogStickStruct);
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
-bool CPeripheralAddon::RemoveStick(unsigned int stick_index)
+bool CPeripheralAddon::RemoveAnalogStick(unsigned int analogStickIndex)
 {
-  return false; // TODO
+  PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
+
+  try { LogError(retVal = m_pStruct->RemoveAnalogStick(analogStickIndex), "RemoveAnalogStick()"); }
+  catch (std::exception &e) { LogException(e, "RemoveAnalogStick()"); }
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
 const char *CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
