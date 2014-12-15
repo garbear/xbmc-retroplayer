@@ -43,8 +43,6 @@ public:
 
   virtual AddonPtr GetRunningInstance(void) const;
 
-  static const char *ToString(PERIPHERAL_ERROR error);
-
   /** @name Peripheral add-on methods */
   //@{
 
@@ -65,18 +63,22 @@ public:
    */
   PERIPHERAL_CAPABILITIES GetAddonCapabilities(void) const;
 
+  bool ProvidesJoystick(void) const { return m_bProvidesJoysticks; }
+
   //@}
   /** @name Joystick methods */
   //@{
   bool PerformJoystickScan(std::vector<JoystickConfiguration>& joysticks);
   bool RegisterButton(unsigned int joystickIndex, const ButtonMap& buttonMap);
-  void UnregisterButton(unsigned int joystickIndex, unsigned int buttonIndex);
+  bool UnregisterButton(unsigned int joystickIndex, unsigned int buttonIndex);
   bool RegisterTrigger(unsigned int joystickIndex, const TriggerMap& triggerMap);
-  void UnregisterTrigger(unsigned int joystickIndex, unsigned int triggerIndex);
+  bool UnregisterTrigger(unsigned int joystickIndex, unsigned int triggerIndex);
   bool RegisterAnalogStick(unsigned int joystickIndex, const AnalogStickMap& analogStickMap);
-  void UnregisterAnalogStick(unsigned int joystickIndex, unsigned int analogStickIndex);
+  bool UnregisterAnalogStick(unsigned int joystickIndex, unsigned int analogStickIndex);
   bool ProcessEvents(void);
   //@}
+
+  static const char *ToString(PERIPHERAL_ERROR error);
 
 protected:
   /*!
@@ -110,6 +112,7 @@ private:
 
   PERIPHERAL_CAPABILITIES m_addonCapabilities;     /*!< the cached add-on capabilities */
   AddonVersion            m_apiVersion;
+  bool                    m_bProvidesJoysticks;
 
 };
 

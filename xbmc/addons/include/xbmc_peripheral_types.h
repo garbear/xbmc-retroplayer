@@ -279,15 +279,15 @@ extern "C"
     /// @name Joystick operations
     ///{
     PERIPHERAL_ERROR (__cdecl* PerformJoystickScan)(unsigned int*, JOYSTICK_CONFIGURATION**);
-    void             (__cdecl* FreeJoysticks)(unsigned int, JOYSTICK_CONFIGURATION*);
+    PERIPHERAL_ERROR (__cdecl* FreeJoysticks)(unsigned int, JOYSTICK_CONFIGURATION*);
     PERIPHERAL_ERROR (__cdecl* RegisterButton)(unsigned int, JOYSTICK_MAP_BUTTON*);
-    void             (__cdecl* UnregisterButton)(unsigned int, unsigned int);
+    PERIPHERAL_ERROR (__cdecl* UnregisterButton)(unsigned int, unsigned int);
     PERIPHERAL_ERROR (__cdecl* RegisterTrigger)(unsigned int, JOYSTICK_MAP_TRIGGER*);
-    void             (__cdecl* UnregisterTrigger)(unsigned int, unsigned int);
+    PERIPHERAL_ERROR (__cdecl* UnregisterTrigger)(unsigned int, unsigned int);
     PERIPHERAL_ERROR (__cdecl* RegisterAnalogStick)(unsigned int, JOYSTICK_MAP_ANALOG_STICK*);
-    void             (__cdecl* UnregisterAnalogStick)(unsigned int, unsigned int);
+    PERIPHERAL_ERROR (__cdecl* UnregisterAnalogStick)(unsigned int, unsigned int);
     PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, JOYSTICK_EVENT**);
-    void             (__cdecl* FreeEvents)(unsigned int, JOYSTICK_EVENT*);
+    PERIPHERAL_ERROR (__cdecl* FreeEvents)(unsigned int, JOYSTICK_EVENT*);
     ///}
   } PeripheralAddon;
 

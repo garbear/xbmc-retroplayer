@@ -81,25 +81,25 @@ extern "C"
    * TriggerScan() callback.
    */
   PERIPHERAL_ERROR PerformJoystickScan(unsigned int* joystick_count, JOYSTICK_CONFIGURATION** joysticks);
-  void             FreeJoysticks(unsigned int joystick_count, JOYSTICK_CONFIGURATION* joysticks);
+  PERIPHERAL_ERROR FreeJoysticks(unsigned int joystick_count, JOYSTICK_CONFIGURATION* joysticks);
 
   /*!
    * @brief Assign a button index to a button ID and label
    */
   PERIPHERAL_ERROR RegisterButton(unsigned int joystick_index, JOYSTICK_MAP_BUTTON* button);
-  void             UnregisterButton(unsigned int joystick_index, unsigned int button_index);
+  PERIPHERAL_ERROR UnregisterButton(unsigned int joystick_index, unsigned int button_index);
 
   /*!
    * @brief Assign an axis index and direction to a trigger ID and label
    */
   PERIPHERAL_ERROR RegisterTrigger(unsigned int joystick_index, JOYSTICK_MAP_TRIGGER* trigger);
-  void             UnregisterTrigger(unsigned int joystick_index, unsigned int trigger_index);
+  PERIPHERAL_ERROR UnregisterTrigger(unsigned int joystick_index, unsigned int trigger_index);
 
   /*!
    * @brief Assign two axes to an analog stick ID and label
    */
   PERIPHERAL_ERROR RegisterAnalogStick(unsigned int joystick_index, JOYSTICK_MAP_ANALOG_STICK* analog_stick);
-  void             UnregisterAnalogStick(unsigned int joystick_index, unsigned int analog_stick_index);
+  PERIPHERAL_ERROR UnregisterAnalogStick(unsigned int joystick_index, unsigned int analog_stick_index);
 
   /*!
    * @brief Get all events that have occurred since the last call to GetEvents()
@@ -107,7 +107,7 @@ extern "C"
    * FreeEvents() in this case
    */
   PERIPHERAL_ERROR GetEvents(unsigned int* event_count, JOYSTICK_EVENT** events);
-  void             FreeEvents(unsigned int event_count, JOYSTICK_EVENT* events);
+  PERIPHERAL_ERROR FreeEvents(unsigned int event_count, JOYSTICK_EVENT* events);
 #endif
   ///}
 

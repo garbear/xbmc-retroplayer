@@ -19,10 +19,12 @@
 */
 
 #include "PeripheralAddon.h"
+#include "AddonManager.h"
 #include "filesystem/SpecialProtocol.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 #include <string.h>
 
@@ -35,7 +37,8 @@ using namespace PERIPHERALS;
 
 CPeripheralAddon::CPeripheralAddon(const AddonProps& props)
  : CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>(props),
-   m_apiVersion("0.0.0")
+   m_apiVersion("0.0.0"),
+   m_bProvidesJoysticks(false)
 {
   ResetProperties();
 }
@@ -45,6 +48,10 @@ CPeripheralAddon::CPeripheralAddon(const cp_extension_t *ext)
    m_apiVersion("0.0.0")
 {
   ResetProperties();
+
+  std::string strProvidesJoysticks = CAddonMgr::Get().GetExtValue(ext->configuration, "@provides_joysticks");
+
+  m_bProvidesJoysticks = StringUtils::EqualsNoCase(strProvidesJoysticks, "true");
 }
 
 CPeripheralAddon::~CPeripheralAddon(void)
@@ -165,6 +172,9 @@ bool CPeripheralAddon::IsCompatibleAPIVersion(const AddonVersion &minVersion, co
 
 bool CPeripheralAddon::PerformJoystickScan(std::vector<JoystickConfiguration>& joysticks)
 {
+  if (!ProvidesJoystick())
+    return false;
+
   unsigned int joystickCount;
   JOYSTICK_CONFIGURATION* pJoysticks;
 
@@ -189,6 +199,9 @@ bool CPeripheralAddon::PerformJoystickScan(std::vector<JoystickConfiguration>& j
 
 bool CPeripheralAddon::RegisterButton(unsigned int joystickIndex, const ButtonMap& buttonMap)
 {
+  if (!ProvidesJoystick())
+    return false;
+
   PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
 
   JOYSTICK_MAP_BUTTON buttonMapStruct;
@@ -202,14 +215,24 @@ bool CPeripheralAddon::RegisterButton(unsigned int joystickIndex, const ButtonMa
   return retVal == PERIPHERAL_NO_ERROR;
 }
 
-void CPeripheralAddon::UnregisterButton(unsigned int joystickIndex, unsigned int buttonIndex)
+bool CPeripheralAddon::UnregisterButton(unsigned int joystickIndex, unsigned int buttonIndex)
 {
-  try { m_pStruct->UnregisterButton(joystickIndex, buttonIndex); }
+  if (!ProvidesJoystick())
+    return false;
+
+  PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
+
+  try { LogError(retVal = m_pStruct->UnregisterButton(joystickIndex, buttonIndex), "UnregisterButton()"); }
   catch (std::exception &e) { LogException(e, "UnregisterButton()"); }
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
 bool CPeripheralAddon::RegisterTrigger(unsigned int joystickIndex, const TriggerMap& triggerMap)
 {
+  if (!ProvidesJoystick())
+    return false;
+
   PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
 
   JOYSTICK_MAP_TRIGGER triggerMapStruct;
@@ -223,14 +246,24 @@ bool CPeripheralAddon::RegisterTrigger(unsigned int joystickIndex, const Trigger
   return retVal == PERIPHERAL_NO_ERROR;
 }
 
-void CPeripheralAddon::UnregisterTrigger(unsigned int joystickIndex, unsigned int triggerIndex)
+bool CPeripheralAddon::UnregisterTrigger(unsigned int joystickIndex, unsigned int triggerIndex)
 {
-  try { m_pStruct->UnregisterTrigger(joystickIndex, triggerIndex); }
+  if (!ProvidesJoystick())
+    return false;
+
+  PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
+
+  try { LogError(retVal = m_pStruct->UnregisterTrigger(joystickIndex, triggerIndex), "UnregisterTrigger()"); }
   catch (std::exception &e) { LogException(e, "UnregisterTrigger()"); }
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
 bool CPeripheralAddon::RegisterAnalogStick(unsigned int joystickIndex, const AnalogStickMap& analogStickMap)
 {
+  if (!ProvidesJoystick())
+    return false;
+
   PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
 
   JOYSTICK_MAP_ANALOG_STICK analogStickMapStruct;
@@ -244,14 +277,24 @@ bool CPeripheralAddon::RegisterAnalogStick(unsigned int joystickIndex, const Ana
   return retVal == PERIPHERAL_NO_ERROR;
 }
 
-void CPeripheralAddon::UnregisterAnalogStick(unsigned int joystickIndex, unsigned int analogStickIndex)
+bool CPeripheralAddon::UnregisterAnalogStick(unsigned int joystickIndex, unsigned int analogStickIndex)
 {
-  try { m_pStruct->UnregisterAnalogStick(joystickIndex, analogStickIndex); }
+  if (!ProvidesJoystick())
+    return false;
+
+  PERIPHERAL_ERROR retVal(PERIPHERAL_ERROR_FAILED);
+
+  try { LogError(retVal = m_pStruct->UnregisterAnalogStick(joystickIndex, analogStickIndex), "UnregisterAnalogStick()"); }
   catch (std::exception &e) { LogException(e, "UnregisterAnalogStick()"); }
+
+  return retVal == PERIPHERAL_NO_ERROR;
 }
 
 bool CPeripheralAddon::ProcessEvents(void)
 {
+  if (!ProvidesJoystick())
+    return false;
+
   unsigned int eventCount;
   JOYSTICK_EVENT* pEvents;
 
