@@ -150,7 +150,7 @@ PERIPHERAL_CAPABILITIES CPeripheralAddon::GetAddonCapabilities(void) const
 bool CPeripheralAddon::CheckAPIVersion(void)
 {
   /* check the API version */
-  AddonVersion minVersion = AddonVersion(XBMC_PERIPHERAL_MIN_API_VERSION);
+  AddonVersion minVersion = AddonVersion(PERIPHERAL_MIN_API_VERSION);
   try { m_apiVersion = AddonVersion(m_pStruct->GetPeripheralAPIVersion()); }
   catch (std::exception &e) { LogException(e, "GetPeripheralAPIVersion()"); return false;  }
 
@@ -165,8 +165,8 @@ bool CPeripheralAddon::CheckAPIVersion(void)
 
 bool CPeripheralAddon::IsCompatibleAPIVersion(const AddonVersion &minVersion, const AddonVersion &version)
 {
-  AddonVersion myMinVersion = AddonVersion(XBMC_PERIPHERAL_MIN_API_VERSION);
-  AddonVersion myVersion = AddonVersion(XBMC_PERIPHERAL_API_VERSION);
+  AddonVersion myMinVersion = AddonVersion(PERIPHERAL_MIN_API_VERSION);
+  AddonVersion myVersion = AddonVersion(PERIPHERAL_API_VERSION);
   return (version >= myMinVersion && minVersion <= myVersion);
 }
 
@@ -307,7 +307,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   {
     for (unsigned int i = 0; i < eventCount; i++)
     {
-      if (pEvents[i].type == JOYSTICK_EVENT_TYPE_NONE || ~pEvents[i].event)
+      if (pEvents[i].type == JOYSTICK_EVENT_TYPE_NONE || !pEvents[i].event)
         continue;
 
       const unsigned int joystickIndex = pEvents[i].joystick_index;
