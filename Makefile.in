@@ -449,6 +449,11 @@ endif
 imagelib: dllloader
 	$(MAKE) -C lib/cximage-6.0
 
+peripheraladdons: exports
+ifeq (@USE_PERIPHERAL_ADDONS@,1)
+	$(MAKE) -C peripheral-addons
+endif
+
 pvraddons: exports
 ifeq (@USE_PVR_ADDONS@,1)
 	$(MAKE) -C pvr-addons
@@ -718,7 +723,8 @@ endif
 clean-codecs: clean-dvdpcodecs clean-papcodecs
 
 clean-externals: clean-codecs clean-eventclients clean-xbmctex clean-libs \
-	clean-screensavers clean-visualisations clean-libaddons clean-pvraddons
+	clean-screensavers clean-visualisations clean-libaddons clean-pvraddons \
+	clean-peripheraladdons
 
 ifeq (1,@GTEST_CONFIGURED@)
 check: testsuite
