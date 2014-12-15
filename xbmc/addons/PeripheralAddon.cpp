@@ -307,7 +307,53 @@ bool CPeripheralAddon::ProcessEvents(void)
   {
     for (unsigned int i = 0; i < eventCount; i++)
     {
-      // TODO
+      if (pEvents[i].type == JOYSTICK_EVENT_TYPE_NONE || ~pEvents[i].event)
+        continue;
+
+      const unsigned int joystickIndex = pEvents[i].joystick_index;
+
+      switch (pEvents[i].type)
+      {
+        case JOYSTICK_EVENT_TYPE_RAW_BUTTON:
+        {
+          const JOYSTICK_EVENT_RAW_BUTTON& buttonEvent = *static_cast<JOYSTICK_EVENT_RAW_BUTTON*>(pEvents[i].event);
+          // TODO
+          break;
+        }
+        case JOYSTICK_EVENT_TYPE_RAW_HAT:
+        {
+          const JOYSTICK_EVENT_RAW_HAT& hatEvent = *static_cast<JOYSTICK_EVENT_RAW_HAT*>(pEvents[i].event);
+          // TODO
+          break;
+        }
+        case JOYSTICK_EVENT_TYPE_RAW_AXIS:
+        {
+          const JOYSTICK_EVENT_RAW_BUTTON& axisEvent = *static_cast<JOYSTICK_EVENT_RAW_BUTTON*>(pEvents[i].event);
+          // TODO
+          break;
+        }
+        case JOYSTICK_EVENT_TYPE_MAPPED_BUTTON:
+        {
+          const JOYSTICK_EVENT_MAPPED_BUTTON& buttonEvent = *static_cast<JOYSTICK_EVENT_MAPPED_BUTTON*>(pEvents[i].event);
+          // TODO
+          break;
+        }
+        case JOYSTICK_EVENT_TYPE_MAPPED_TRIGGER:
+        {
+          const JOYSTICK_EVENT_MAPPED_TRIGGER& triggerEvent = *static_cast<JOYSTICK_EVENT_MAPPED_TRIGGER*>(pEvents[i].event);
+          // TODO
+          break;
+        }
+        case JOYSTICK_EVENT_TYPE_MAPPED_ANALOG_STICK:
+        {
+          const JOYSTICK_EVENT_MAPPED_ANALOG_STICK& analogStickEvent = *static_cast<JOYSTICK_EVENT_MAPPED_ANALOG_STICK*>(pEvents[i].event);
+          // TODO
+          break;
+        }
+        case JOYSTICK_EVENT_TYPE_NONE:
+        default:
+          break;
+      }
     }
 
     try { m_pStruct->FreeEvents(eventCount, pEvents); }

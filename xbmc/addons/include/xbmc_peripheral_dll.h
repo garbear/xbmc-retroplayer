@@ -22,8 +22,6 @@
 
 #include "xbmc_peripheral_types.h"
 
-#define PERIPHERAL_ADDON_JOYSTICKS // temp
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -32,7 +30,7 @@ extern "C"
   /// @name Peripheral operations
   ///{
   /*!
-   * @brief  Get the PERIPHERAL_API_VERSION_STRING used to compile this peripheral add-on
+   * @brief  Get the PERIPHERAL_API_VERSION used to compile this peripheral add-on
    * @return XBMC_PERIPHERAL_API_VERSION from xbmc_peripheral_types
    * @remarks Valid implementation required
    *
@@ -41,7 +39,7 @@ extern "C"
   const char* GetPeripheralAPIVersion(void);
 
   /*!
-   * @brief Get the PERIPHERAL_MIN_API_VERSION_STRING used to compile this peripheral add-on
+   * @brief Get the XBMC_PERIPHERAL_MIN_API_VERSION used to compile this peripheral add-on
    * @return XBMC_PERIPHERAL_MIN_API_VERSION from xbmc_peripheral_types
    * @remarks Valid implementation required
    *
@@ -81,7 +79,7 @@ extern "C"
    * TriggerScan() callback.
    */
   PERIPHERAL_ERROR PerformJoystickScan(unsigned int* joystick_count, JOYSTICK_CONFIGURATION** joysticks);
-  PERIPHERAL_ERROR FreeJoysticks(unsigned int joystick_count, JOYSTICK_CONFIGURATION* joysticks);
+  void FreeJoysticks(unsigned int joystick_count, JOYSTICK_CONFIGURATION* joysticks);
 
   /*!
    * @brief Assign a button index to a button ID and label
@@ -107,7 +105,7 @@ extern "C"
    * FreeEvents() in this case
    */
   PERIPHERAL_ERROR GetEvents(unsigned int* event_count, JOYSTICK_EVENT** events);
-  PERIPHERAL_ERROR FreeEvents(unsigned int event_count, JOYSTICK_EVENT* events);
+  void FreeEvents(unsigned int event_count, JOYSTICK_EVENT* events);
 #endif
   ///}
 

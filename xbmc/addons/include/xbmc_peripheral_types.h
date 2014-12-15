@@ -37,10 +37,10 @@
 #endif
 
 /* current Peripheral API version */
-#define XBMC_PERIPHERAL_API_VERSION "1.0.0"
+#define PERIPHERAL_API_VERSION "1.0.0"
 
 /* min. Peripheral API version */
-#define XBMC_PERIPHERAL_MIN_API_VERSION "1.0.0"
+#define PERIPHERAL_MIN_API_VERSION "1.0.0"
 
 #ifdef __cplusplus
 extern "C"
@@ -279,7 +279,7 @@ extern "C"
     /// @name Joystick operations
     ///{
     PERIPHERAL_ERROR (__cdecl* PerformJoystickScan)(unsigned int*, JOYSTICK_CONFIGURATION**);
-    PERIPHERAL_ERROR (__cdecl* FreeJoysticks)(unsigned int, JOYSTICK_CONFIGURATION*);
+    void             (__cdecl* FreeJoysticks)(unsigned int, JOYSTICK_CONFIGURATION*);
     PERIPHERAL_ERROR (__cdecl* RegisterButton)(unsigned int, JOYSTICK_MAP_BUTTON*);
     PERIPHERAL_ERROR (__cdecl* UnregisterButton)(unsigned int, unsigned int);
     PERIPHERAL_ERROR (__cdecl* RegisterTrigger)(unsigned int, JOYSTICK_MAP_TRIGGER*);
@@ -287,7 +287,7 @@ extern "C"
     PERIPHERAL_ERROR (__cdecl* RegisterAnalogStick)(unsigned int, JOYSTICK_MAP_ANALOG_STICK*);
     PERIPHERAL_ERROR (__cdecl* UnregisterAnalogStick)(unsigned int, unsigned int);
     PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, JOYSTICK_EVENT**);
-    PERIPHERAL_ERROR (__cdecl* FreeEvents)(unsigned int, JOYSTICK_EVENT*);
+    void             (__cdecl* FreeEvents)(unsigned int, JOYSTICK_EVENT*);
     ///}
   } PeripheralAddon;
 
