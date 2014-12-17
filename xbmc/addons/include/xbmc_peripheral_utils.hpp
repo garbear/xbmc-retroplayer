@@ -326,4 +326,103 @@ namespace ADDON
     std::vector<unsigned int> m_axisIndexes;
     JoystickLayout            m_layout;
   };
+
+  class JoystickEvent
+  {
+  public:
+    virtual ~JoystickEvent(void) { }
+    virtual JOYSTICK_EVENT_TYPE Type(void) const = 0;
+  };
+
+  class RawEvent : public JoystickEvent
+  {
+  public:
+    RawEvent(void) : m_index(0) { }
+    unsigned int Index(void) const { return m_index; }
+    void SetIndex(unsigned int index) { m_index = index; }
+
+  private:
+    unsigned int m_index;
+  };
+
+  class ButtonEvent : public RawEvent
+  {
+  public:
+    ButtonEvent(void) : RawEvent(), m_state() { }
+    virtual JOYSTICK_EVENT_TYPE Type(void) const { return JOYSTICK_EVENT_TYPE_RAW_BUTTON; }
+    JOYSTICK_STATE_BUTTON State(void) const { return m_state; }
+    void SetState(JOYSTICK_STATE_BUTTON state) { m_state = state; }
+
+  private:
+    JOYSTICK_STATE_BUTTON m_state;
+  };
+
+  class HatEvent : public RawEvent
+  {
+  public:
+    HatEvent(void) : RawEvent(), m_state() { }
+    virtual JOYSTICK_EVENT_TYPE Type(void) const { return JOYSTICK_EVENT_TYPE_RAW_HAT; }
+    JOYSTICK_STATE_HAT State(void) const { return m_state; }
+    void SetState(JOYSTICK_STATE_HAT state) { m_state = state; }
+
+  private:
+    JOYSTICK_STATE_HAT m_state;
+  };
+
+  class AxisEvent : public RawEvent
+  {
+  public:
+    AxisEvent(void) : RawEvent(), m_state() { }
+    virtual JOYSTICK_EVENT_TYPE Type(void) const { return JOYSTICK_EVENT_TYPE_RAW_AXIS; }
+    JOYSTICK_STATE_AXIS State(void) const { return m_state; }
+    void SetState(JOYSTICK_STATE_AXIS state) { m_state = state; }
+
+  private:
+    JOYSTICK_STATE_AXIS m_state;
+  };
+
+  template <typename ID_TYPE>
+  class MappedEvent : public JoystickEvent
+  {
+  public:
+    MappedEvent(void) : m_id() { }
+    ID_TYPE ID(void) const { return m_id; }
+    void SetIndex(ID_TYPE id) { m_id = id; }
+
+  private:
+    ID_TYPE m_id;
+  };
+
+  class MappedButtonEvent : public MappedEvent<JOYSTICK_ID_BUTTON>
+  {
+  public:
+    MappedButtonEvent(void) : MappedEvent<JOYSTICK_ID_BUTTON>(), m_state() { }
+    JOYSTICK_STATE_BUTTON State(void) const { return m_state; }
+    void SetState(JOYSTICK_STATE_BUTTON state) { m_state = state; }
+
+  private:
+    JOYSTICK_STATE_BUTTON m_state;
+  };
+
+  class MappedTriggerEvent : public MappedEvent<JOYSTICK_ID_TRIGGER>
+  {
+  public:
+    MappedTriggerEvent(void) : MappedEvent<JOYSTICK_ID_TRIGGER>(), m_state() { }
+    JOYSTICK_STATE_TRIGGER State(void) const { return m_state; }
+    void SetState(JOYSTICK_STATE_TRIGGER state) { m_state = state; }
+
+  private:
+    JOYSTICK_STATE_TRIGGER m_state;
+  };
+
+  class MappedAnalogStickEvent : public MappedEvent<JOYSTICK_ID_ANALOG_STICK>
+  {
+  public:
+    MappedAnalogStickEvent(void) : MappedEvent<JOYSTICK_ID_ANALOG_STICK>(), m_state() { }
+    JOYSTICK_STATE_ANALOG_STICK State(void) const { return m_state; }
+    void SetState(JOYSTICK_STATE_ANALOG_STICK state) { m_state = state; }
+
+  private:
+    JOYSTICK_STATE_ANALOG_STICK m_state;
+  };
 }
