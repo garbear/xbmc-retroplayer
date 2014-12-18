@@ -3089,6 +3089,9 @@
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.cpp">
       <Filter>peripherals\devices</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\PlayerManager.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6045,6 +6048,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.h">
       <Filter>peripherals\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\PlayerManager.h">
+      <Filter>input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
