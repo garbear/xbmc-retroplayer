@@ -20,6 +20,7 @@
  */
 
 #include "Peripheral.h"
+#include "addons/PeripheralAddon.h"
 
 namespace PERIPHERALS
 {
@@ -27,6 +28,12 @@ namespace PERIPHERALS
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
-    virtual ~CPeripheralJoystick(void) {};
+    virtual ~CPeripheralJoystick(void) { }
+
+    virtual bool InitialiseFeature(const PeripheralFeature feature);
+
+  private:
+    ADDON::PeripheralAddonPtr m_addon;
+    unsigned int              m_joystickIndex;
   };
 }

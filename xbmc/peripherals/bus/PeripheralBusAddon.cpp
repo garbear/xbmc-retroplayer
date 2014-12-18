@@ -74,6 +74,7 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
       {
         PeripheralScanResult result(m_type);
         result.m_type          = PERIPHERAL_JOYSTICK;
+        result.m_strDeviceName = itJoystick->Name();
         result.m_strLocation   = StringUtils::Format("%s/%d", (*itAddon)->ID().c_str(), itJoystick->Index());
         result.m_iVendorId     = 0; // itJoystick->VendorID(); // TODO
         result.m_iProductId    = 0; // itJoystick->ProductID(); // TODO
