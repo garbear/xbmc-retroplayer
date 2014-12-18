@@ -20,20 +20,31 @@
 #ifndef __PERIPHERAL_TYPES_H__
 #define __PERIPHERAL_TYPES_H__
 
+#ifdef TARGET_WINDOWS
+  #include <windows.h>
+#else
+  #ifndef __cdecl
+    #define __cdecl
+  #endif
+  #ifndef __declspec
+    #define __declspec(X)
+  #endif
+#endif
+
 #undef ATTRIBUTE_PACKED
 #undef PRAGMA_PACK_BEGIN
 #undef PRAGMA_PACK_END
 
 #if defined(__GNUC__)
-#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95)
-#define ATTRIBUTE_PACKED __attribute__ ((packed))
-#define PRAGMA_PACK 0
-#endif
+  #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 95)
+    #define ATTRIBUTE_PACKED __attribute__ ((packed))
+    #define PRAGMA_PACK 0
+  #endif
 #endif
 
 #if !defined(ATTRIBUTE_PACKED)
-#define ATTRIBUTE_PACKED
-#define PRAGMA_PACK 1
+  #define ATTRIBUTE_PACKED
+  #define PRAGMA_PACK 1
 #endif
 
 /* current Peripheral API version */
