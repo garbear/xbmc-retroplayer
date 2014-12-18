@@ -469,7 +469,6 @@ protected:
   PlayBackRet PlayStack(const CFileItem& item, bool bRestart);
   bool ProcessMouse();
   bool ProcessRemote(float frameTime);
-  bool ProcessGamepad(float frameTime);
   bool ProcessEventServer(float frameTime);
   bool ProcessPeripherals(float frameTime);
   bool ExecuteInputAction(const CAction &action);

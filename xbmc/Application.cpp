@@ -2909,7 +2909,6 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
 
     // process input actions
     ProcessRemote(frameTime);
-    ProcessGamepad(frameTime);
     ProcessEventServer(frameTime);
     ProcessPeripherals(frameTime);
     if (processGUI && m_renderGUI)
@@ -2924,11 +2923,6 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
       g_windowManager.Process(CTimeUtils::GetFrameTime());
     g_windowManager.FrameMove();
   }
-}
-
-bool CApplication::ProcessGamepad(float frameTime)
-{
-  return false;
 }
 
 bool CApplication::ProcessRemote(float frameTime)
