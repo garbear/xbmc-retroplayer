@@ -463,7 +463,8 @@ codecs: papcodecs dvdpcodecs dvdpextcodecs
 
 libs: $(LIBSSE4) libhdhomerun imagelib libexif system/libcpluff-@ARCH@.so $(CMYTH)
 
-externals: codecs libs visualizations screensavers libaddon pvraddons
+externals: codecs libs visualizations screensavers libaddon pvraddons \
+	peripheraladdons
 
 xcode_depends: \
 	codecs libs visualizations screensavers eventclients skins libaddon \
@@ -718,6 +719,10 @@ clean-libaddons:
 clean-pvraddons:
 ifeq (@USE_PVR_ADDONS@,1)
 	if test -f pvr-addons/Makefile; then $(MAKE) -C pvr-addons clean; fi;
+endif
+clean-peripheraladdons:
+ifeq (@USE_PERIPHERAL_ADDONS@,1)
+	if test -f peripheral-addons/Makefile; then $(MAKE) -C peripheral-addons clean; fi;
 endif
 
 clean-codecs: clean-dvdpcodecs clean-papcodecs
