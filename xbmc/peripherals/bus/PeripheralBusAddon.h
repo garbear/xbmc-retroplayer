@@ -19,13 +19,15 @@
  *
  */
 
+#include "guilib/IWindowManagerCallback.h"
 #include "peripherals/bus/PeripheralBus.h"
 #include "peripherals/PeripheralAddon.h"
 #include "threads/CriticalSection.h"
 
 namespace PERIPHERALS
 {
-  class CPeripheralBusAddon : public CPeripheralBus
+  class CPeripheralBusAddon : public CPeripheralBus,
+                              public IWindowManagerCallback
   {
   public:
     CPeripheralBusAddon(CPeripherals *manager);
@@ -42,6 +44,10 @@ namespace PERIPHERALS
     virtual bool HasFeature(const PeripheralFeature feature) const;
 
     virtual CPeripheral *GetPeripheral(const CStdString &strLocation) const;
+
+    virtual void FrameMove(bool processEvents, bool processGUI = true);
+    virtual void Render() { }
+    virtual void Process() { }
 
   private:
     PeripheralAddonVector m_addons;

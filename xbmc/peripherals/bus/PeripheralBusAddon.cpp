@@ -106,9 +106,6 @@ bool CPeripheralBusAddon::HasFeature(const PeripheralFeature feature) const
 CPeripheral *CPeripheralBusAddon::GetPeripheral(const CStdString &strLocation) const
 {
   CPeripheral *peripheral(NULL);
-
-
-
   CSingleLock lock(m_critSection);
   for (unsigned int iPeripheralPtr = 0; iPeripheralPtr < m_peripherals.size(); iPeripheralPtr++)
   {
@@ -119,4 +116,15 @@ CPeripheral *CPeripheralBusAddon::GetPeripheral(const CStdString &strLocation) c
     }
   }
   return peripheral;
+}
+
+void CPeripheralBusAddon::FrameMove(bool processEvents, bool processGUI /* = true */)
+{
+  CSingleLock lock(m_critSection);
+
+  if (processEvents)
+  {
+    for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
+      (*itAddon)->ProcessEvents();
+  }
 }
