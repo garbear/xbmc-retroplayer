@@ -112,7 +112,7 @@ public:
 
   CGUIWindow* GetWindow(int id) const;
   void ProcessRenderLoop(bool renderOnly = false);
-  void SetCallback(IWindowManagerCallback& callback);
+  void RegisterCallback(IWindowManagerCallback& callback);
   void DeInitialize();
 
   void RouteToWindow(CGUIWindow* dialog);
@@ -168,7 +168,7 @@ private:
 
   std::stack<int> m_windowHistory;
 
-  IWindowManagerCallback* m_pCallback;
+  std::vector<IWindowManagerCallback*> m_pCallbacks;
   std::list < std::pair<CGUIMessage*,int> > m_vecThreadMessages;
   CCriticalSection m_critSection;
   std::vector <IMsgTargetCallback*> m_vecMsgTargets;
