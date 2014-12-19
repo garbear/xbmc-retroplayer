@@ -47,6 +47,8 @@
   #define PRAGMA_PACK 1
 #endif
 
+#define PERIPHERAL_NAME_STRING_LENGTH   1024
+
 /* current Peripheral API version */
 #define PERIPHERAL_API_VERSION "1.0.0"
 
@@ -92,105 +94,196 @@ extern "C"
   ///}
 
   /// @name Joystick types
-  ///{
-  typedef enum JOYSTICK_ID_BUTTON
-  {
-    JOYSTICK_ID_BUTTON_UNKNOWN = 0,      /*!< @brief no data exists to associate button with ID */
-    JOYSTICK_ID_BUTTON_1,                /*!< @brief corresponds to A (generic) or Cross (Sony) */
-    JOYSTICK_ID_BUTTON_2,                /*!< @brief corresponds to B (generic) or Circle (Sony) */
-    JOYSTICK_ID_BUTTON_3,                /*!< @brief corresponds to C or X (generic), Square (Sony), C-down (N64) or One (Wii)*/
-    JOYSTICK_ID_BUTTON_4,                /*!< @brief corresponds to Y (generic), Triangle (Sony), C-left (N64) or Two (Wii) */
-    JOYSTICK_ID_BUTTON_5,                /*!< @brief corresponds to Black (Xbox) or C-right (N64) */
-    JOYSTICK_ID_BUTTON_6,                /*!< @brief corresponds to White (Xbox) or C-up (N64) */
-    JOYSTICK_ID_BUTTON_START,            /*!< @brief corresponds to Start (generic) */
-    JOYSTICK_ID_BUTTON_SELECT,           /*!< @brief corresponds to Select (generic) or Back (Xbox) */
-    JOYSTICK_ID_BUTTON_UP,               /*!< @brief corresponds to Up on the directional pad */
-    JOYSTICK_ID_BUTTON_DOWN,             /*!< @brief corresponds to Down on the directional pad */
-    JOYSTICK_ID_BUTTON_LEFT,             /*!< @brief corresponds to Left on the directional pad */
-    JOYSTICK_ID_BUTTON_RIGHT,            /*!< @brief corresponds to Right on the directional pad */
-    JOYSTICK_ID_BUTTON_L,                /*!< @brief corresponds to Left shoulder button (generic) */
-    JOYSTICK_ID_BUTTON_R,                /*!< @brief corresponds to Right shoulder button (generic) */
-    JOYSTICK_ID_BUTTON_L2,               /*!< @brief corresponds to L2 (Sony) or ZL (Wii) */
-    JOYSTICK_ID_BUTTON_R2,               /*!< @brief corresponds to R2 (Sony) or ZR (Wii) */
-    JOYSTICK_ID_BUTTON_L_STICK,          /*!< @brief corresponds to Left stick (Xbox, Sony) */
-    JOYSTICK_ID_BUTTON_R_STICK,          /*!< @brief corresponds to Right stick (Xbox, Sony) */
-  } JOYSTICK_ID_BUTTON;
+  typedef unsigned int JOYSTICK_VIRTUAL_BUTTON_INDEX;
 
-  typedef enum JOYSTICK_ID_TRIGGER
-  {
-    JOYSTICK_ID_TRIGGER_UNKNOWN,     /*!< @brief trigger isn't associated with an ID */
-    JOYSTICK_ID_TRIGGER_L,           /*!< @brief corresponds to Left trigger (generic) or L2 (Sony) */
-    JOYSTICK_ID_TRIGGER_R,           /*!< @brief corresponds to Right trigger (generic) or R2 (Sony) */
-  } JOYSTICK_ID_TRIGGER;
+  typedef unsigned int JOYSTICK_VIRTUAL_HAT_INDEX;
 
-  typedef enum JOYSTICK_ID_ANALOG_STICK
+  typedef enum JOYSTICK_VIRTUAL_HAT_DIRECTION
   {
-    JOYSTICK_ID_ANALOG_STICK_UNKNOWN,      /*!< @brief analog stick isn't associated with an ID */
-    JOYSTICK_ID_ANALOG_STICK_LEFT,         /*!< @brief corresponds to Left analog stick */
-    JOYSTICK_ID_ANALOG_STICK_RIGHT,        /*!< @brief corresponds to Right analog stick */
-  } JOYSTICK_ID_ANALOG_STICK;
+    JOYSTICK_VIRTUAL_HAT_DIRECTION_UP,
+    JOYSTICK_VIRTUAL_HAT_DIRECTION_RIGHT,
+    JOYSTICK_VIRTUAL_HAT_DIRECTION_DOWN,
+    JOYSTICK_VIRTUAL_HAT_DIRECTION_LEFT,
+  } JOYSTICK_VIRTUAL_HAT_DIRECTION;
 
-  typedef struct JOYSTICK_MAP_BUTTON
-  {
-    unsigned int          index;  /*!< @brief the button index in the joystick configuration */
-    JOYSTICK_ID_BUTTON    id;     /*!< @brief the standardized button ID */
-    char*                 label;  /*!< @brief the label, e.g. "X" or "Square" for JOYSTICK_ID_BUTTON_3 */
-  } ATTRIBUTE_PACKED JOYSTICK_MAP_BUTTON;
+  typedef unsigned int JOYSTICK_VIRTUAL_AXIS_INDEX;
 
-  typedef enum JOYSTICK_AXIS_SIGN
+  typedef enum JOYSTICK_VIRTUAL_AXIS_DIRECTION
   {
-    JOYSTICK_AXIS_NEGATIVE,     /*!< @brief axis has a negative value in the interval [-1, 0) */
-    JOYSTICK_AXIS_POSITIVE,     /*!< @brief axis has a positive value in the interval (0, 1] */
-  } JOYSTICK_AXIS_SIGN;
+    JOYSTICK_VIRTUAL_AXIS_NEGATIVE,     /*!< @brief negative part of the axis in the interval [-1, 0) */
+    JOYSTICK_VIRTUAL_AXIS_POSITIVE,     /*!< @brief positive part of the axis in the interval (0, 1] */
+  } JOYSTICK_VIRTUAL_AXIS_DIRECTION;
 
-  typedef struct JOYSTICK_MAP_TRIGGER
+  typedef enum JOYSTICK_VIRTUAL_AXIS_POSITIVE_DIR
   {
-    unsigned int          axis_index;     /*!< @brief the axis index in the joystick configuration */
-    JOYSTICK_AXIS_SIGN    axis_sign;      /*!< @brief sign of the axis that corresponds to positive trigger state */
-    JOYSTICK_ID_TRIGGER   id;             /*!< @brief the standardized trigger ID */
-    char*                 label;          /*!< @brief the label, e.g. "Z" for JOYSTICK_ID_TRIGGER_Z */
-  } ATTRIBUTE_PACKED JOYSTICK_MAP_TRIGGER;
-
-  typedef enum JOYSTICK_POSITIVE_DIR
-  {
-    JOYSTICK_POSITIVE_DIR_UP_RIGHT,   /*!< @brief positive axis value is up for vertical or right for horizontal */
-    JOYSTICK_POSITIVE_DIR_DOWN_LEFT,  /*!< @brief positive axis value is down for vertical or left for horizontal */
+    JOYSTICK_VIRTUAL_AXIS_UP_RIGHT,   /*!< @brief positive axis value is up for vertical or right for horizontal */
+    JOYSTICK_VIRTUAL_AXIS_DOWN_LEFT,  /*!< @brief positive axis value is down for vertical or left for horizontal */
   } JOYSTICK_POSITIVE_DIR;
 
-  typedef struct JOYSTICK_MAP_ANALOG_STICK
+  typedef struct JOYSTICK_VIRTUAL_LAYOUT
   {
-    unsigned int             horiz_axis_index;   /*!< @brief axis associated with horizontal motion */
-    JOYSTICK_POSITIVE_DIR    horiz_positive_dir; /*!< @brief direction of positive motion for the horizontal axis */
-    unsigned int             vert_axis_index;    /*!< @brief axis associated with vertical motion */
-    JOYSTICK_POSITIVE_DIR    vert_positive_dir;  /*!< @brief direction of positive motion for the vertical axis */
-    JOYSTICK_ID_ANALOG_STICK id;                 /*!< @brief the standardized stick ID */
-    char*                    label;              /*!< @brief the label, e.g. "Left stick" for Left stick */
-  } ATTRIBUTE_PACKED JOYSTICK_MAP_ANALOG_STICK;
+    unsigned int    button_count;     /*!< @brief number of buttons reported by the driver */
+    unsigned int    hat_count;        /*!< @brief number of hats reported by the driver */
+    unsigned int    axis_count;       /*!< @brief number of axes reported by the driver */
+  } ATTRIBUTE_PACKED JOYSTICK_VIRTUAL_LAYOUT;
 
-  typedef struct JOYSTICK_LAYOUT
+  typedef enum JOYSTICK_BUTTON_ID
   {
-    unsigned int               button_count;       /*!< @brief the number of buttons in this joystick map */
-    unsigned int               trigger_count;      /*!< @brief the number of triggers in this joystick map */
-    unsigned int               analog_stick_count; /*!< @brief the number of analog sticks in this joystick map */
-    JOYSTICK_MAP_BUTTON*       buttons;            /*!< @brief the button mappings */
-    JOYSTICK_MAP_TRIGGER*      triggers;           /*!< @brief the trigger mappings */
-    JOYSTICK_MAP_ANALOG_STICK* analog_sticks;      /*!< @brief the analog stick mappings */
-  } ATTRIBUTE_PACKED JOYSTICK_LAYOUT;
+    JOYSTICK_BUTTON_ID_UNKNOWN = 0,      /*!< @brief no data exists to associate button with ID */
+    JOYSTICK_BUTTON_ID_1,                /*!< @brief corresponds to A (generic) or Cross (Sony) */
+    JOYSTICK_BUTTON_ID_2,                /*!< @brief corresponds to B (generic) or Circle (Sony) */
+    JOYSTICK_BUTTON_ID_3,                /*!< @brief corresponds to C or X (generic), Square (Sony), C-down (N64) or One (Wii)*/
+    JOYSTICK_BUTTON_ID_4,                /*!< @brief corresponds to Y (generic), Triangle (Sony), C-left (N64) or Two (Wii) */
+    JOYSTICK_BUTTON_ID_5,                /*!< @brief corresponds to Black (Xbox) or C-right (N64) */
+    JOYSTICK_BUTTON_ID_6,                /*!< @brief corresponds to White (Xbox) or C-up (N64) */
+    JOYSTICK_BUTTON_ID_START,            /*!< @brief corresponds to Start (generic) */
+    JOYSTICK_BUTTON_ID_SELECT,           /*!< @brief corresponds to Select (generic) or Back (Xbox) */
+    JOYSTICK_BUTTON_ID_UP,               /*!< @brief corresponds to Up on the directional pad */
+    JOYSTICK_BUTTON_ID_DOWN,             /*!< @brief corresponds to Down on the directional pad */
+    JOYSTICK_BUTTON_ID_LEFT,             /*!< @brief corresponds to Left on the directional pad */
+    JOYSTICK_BUTTON_ID_RIGHT,            /*!< @brief corresponds to Right on the directional pad */
+    JOYSTICK_BUTTON_ID_L,                /*!< @brief corresponds to Left shoulder button (generic) */
+    JOYSTICK_BUTTON_ID_R,                /*!< @brief corresponds to Right shoulder button (generic) */
+    JOYSTICK_BUTTON_ID_L2,               /*!< @brief corresponds to L2 (Sony) or ZL (Wii) */
+    JOYSTICK_BUTTON_ID_R2,               /*!< @brief corresponds to R2 (Sony) or ZR (Wii) */
+    JOYSTICK_BUTTON_ID_L_STICK,          /*!< @brief corresponds to Left stick (Xbox, Sony) */
+    JOYSTICK_BUTTON_ID_R_STICK,          /*!< @brief corresponds to Right stick (Xbox, Sony) */
+    JOYSTICK_TRIGGER_ID_L,           /*!< @brief corresponds to Left trigger (generic) or L2 (Sony) */
+    JOYSTICK_TRIGGER_ID_R,           /*!< @brief corresponds to Right trigger (generic) or R2 (Sony) */
+  } JOYSTICK_BUTTON_ID;
+
+  typedef enum JOYSTICK_ANALOG_STICK_ID
+  {
+    JOYSTICK_ANALOG_STICK_ID_UNKNOWN,      /*!< @brief analog stick isn't associated with an ID */
+    JOYSTICK_ANALOG_STICK_ID_LEFT,         /*!< @brief corresponds to Left analog stick */
+    JOYSTICK_ANALOG_STICK_ID_RIGHT,        /*!< @brief corresponds to Right analog stick */
+  } JOYSTICK_ANALOG_STICK_ID;
+
+  typedef enum JOYSTICK_PHYSICAL_TYPE
+  {
+    JOYSTICK_PHYSICAL_BUTTON,
+    JOYSTICK_PHYSICAL_ANALOG_STICK,
+  } JOYSTICK_PHYSICAL_TYPE;
+
+  typedef enum JOYSTICK_BUTTON_TYPE
+  {
+    JOYSTICK_BUTTON_TYPE_UNKNOWN,   /*!< @brief  */
+    JOYSTICK_BUTTON_TYPE_DIGITAL,   /*!< @brief Digital button */
+    JOYSTICK_BUTTON_TYPE_ANALOG,    /*!< @brief Pressure-sensitive button */
+  } JOYSTICK_BUTTON_TYPE;
+
+  typedef struct JOYSTICK_BUTTON
+  {
+    JOYSTICK_BUTTON_TYPE    type;         /*!< @brief button type */
+    JOYSTICK_BUTTON_ID      id;           /*!< @brief the physical button ID */
+    const char*             label;        /*!< @brief the label, e.g. "X" or "Square" for JOYSTICK_BUTTON_ID_3 */
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON;
+
+  typedef struct JOYSTICK_ANALOG_STICK
+  {
+    JOYSTICK_ANALOG_STICK_ID id;                 /*!< @brief the standardized stick ID */
+    const char*              label;              /*!< @brief the label, e.g. "Left stick" for Left stick */
+  } ATTRIBUTE_PACKED JOYSTICK_ANALOG_STICK;
+
+  typedef struct JOYSTICK_PHYSICAL_LAYOUT
+  {
+    unsigned int           button_count;       /*!< @brief the number of buttons in this joystick map */
+    unsigned int           analog_stick_count; /*!< @brief the number of analog sticks in this joystick map */
+    JOYSTICK_BUTTON*       buttons;            /*!< @brief the button mappings */
+    JOYSTICK_ANALOG_STICK* analog_sticks;      /*!< @brief the analog stick mappings */
+  } ATTRIBUTE_PACKED JOYSTICK_PHYSICAL_LAYOUT;
 
   typedef struct JOYSTICK_CONFIGURATION
   {
-    unsigned int    index;            /*!< @brief joystick index unique to the add-on */
-    unsigned int    requested_player; /*!< @brief 0 if unused, or joystick's requested player number (e.g. 1-4 for Xbox 360/PS3/Wii) */
-    char*           name;             /*!< @brief Joystick's display name */
-    char*           icon_path;        /*!< @brief unused; reserved for future use */
-    unsigned int    button_count;     /*!< @brief number of buttons in this joystick configuration */
-    unsigned int    hat_count;        /*!< @brief number of hats in this joystick configuration */
-    unsigned int    axis_count;       /*!< @brief number of axes in this joystick configuration */
-    unsigned int*   buttons;          /*!< @brief array of unique button indexes, usually the index reported by the driver */
-    unsigned int*   hats;             /*!< @brief array of unique hat indexes */
-    unsigned int*   axes;             /*!< @brief array of unique axis indexes, usually the index reported by the driver */
-    JOYSTICK_LAYOUT layout;           /*!< @brief the mapping of raw buttons, hats and axes to higher-level elements */
+    unsigned int             index;            /*!< @brief joystick index unique to the add-on */
+    unsigned int             requested_player; /*!< @brief joystick's requested player number (e.g. 1-4 for Xbox 360/PS3/Wii) or 0 for unknown */
+    char*                    name; /*!< @brief Joystick's display name */
+    char*                    icon_path;        /*!< @brief unused; reserved for future use */
+    JOYSTICK_VIRTUAL_LAYOUT  virtual_layout;
+    JOYSTICK_PHYSICAL_LAYOUT physical_layout;           /*!< @brief the mapping of raw buttons, hats and axes to higher-level elements */
   } ATTRIBUTE_PACKED JOYSTICK_CONFIGURATION;
+
+  typedef struct JOYSTICK_CONFIGURATIONS
+  {
+    unsigned int             joystick_count;
+    JOYSTICK*                joysticks;
+  } ATTRIBUTE_PACKED JOYSTICK_CONFIGURATIONS;
+
+  typedef struct JOYSTICK_BUTTON_MAP_KEY
+  {
+    JOYSTICK_PHYSICAL_TYPE type;
+    void*                  element;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_KEY;
+
+  typedef enum JOYSTICK_PHYSICAL_TYPE JOYSTICK_BUTTON_MAP_KEY_TYPE;
+
+  typedef enum JOYSTICK_BUTTON_MAP_VALUE_TYPE
+  {
+    JOYSTICK_BUTTON_MAP_VALUE_NONE = 0,
+    JOYSTICK_BUTTON_MAP_VALUE_BUTTON,
+    JOYSTICK_BUTTON_MAP_VALUE_HAT_DIRECTION,
+    JOYSTICK_BUTTON_MAP_VALUE_HALF_AXIS,
+    JOYSTICK_BUTTON_MAP_VALUE_TWO_AXES,
+    JOYSTICK_BUTTON_MAP_VALUE_THREE_AXES,
+  } JOYSTICK_BUTTON_MAP_VALUE_TYPE;
+
+  typedef struct JOYSTICK_BUTTON_MAP_BUTTON
+  {
+    JOYSTICK_VIRTUAL_BUTTON_INDEX index;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_BUTTON;
+
+  typedef struct JOYSTICK_BUTTON_MAP_HAT_DIRECTION
+  {
+    JOYSTICK_VIRTUAL_HAT_INDEX     index;
+    JOYSTICK_VIRTUAL_HAT_DIRECTION direction;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_HAT_DIRECTION;
+
+  typedef struct JOYSTICK_BUTTON_MAP_HALF_AXIS
+  {
+    JOYSTICK_VIRTUAL_AXIS_INDEX     index;
+    JOYSTICK_VIRTUAL_AXIS_DIRECTION direction;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_HALF_AXIS;
+
+  typedef struct JOYSTICK_BUTTON_MAP_TWO_AXES
+  {
+    JOYSTICK_VIRTUAL_AXIS_INDEX        horiz_index;   /*!< @brief axis associated with horizontal motion */
+    JOYSTICK_VIRTUAL_AXIS_POSITIVE_DIR horiz_positive_dir; /*!< @brief direction of positive motion for the horizontal axis */
+    JOYSTICK_VIRTUAL_AXIS_INDEX        vert_index;    /*!< @brief axis associated with vertical motion */
+    JOYSTICK_VIRTUAL_AXIS_POSITIVE_DIR vert_positive_dir;  /*!< @brief direction of positive motion for the vertical axis */
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_TWO_AXES;
+
+  typedef struct JOYSTICK_BUTTON_MAP_THREE_AXES
+  {
+    JOYSTICK_VIRTUAL_AXIS_INDEX        x_index;   /*!< @brief axis associated with horizontal motion */
+    JOYSTICK_VIRTUAL_AXIS_POSITIVE_DIR x_positive_dir; /*!< @brief direction of positive motion for the horizontal axis */
+    JOYSTICK_VIRTUAL_AXIS_INDEX        y_index;    /*!< @brief axis associated with vertical motion */
+    JOYSTICK_VIRTUAL_AXIS_POSITIVE_DIR y_positive_dir;  /*!< @brief direction of positive motion for the vertical axis */
+    JOYSTICK_VIRTUAL_AXIS_INDEX        z_index;    /*!< @brief axis associated with vertical motion */
+    JOYSTICK_VIRTUAL_AXIS_POSITIVE_DIR z_positive_dir;  /*!< @brief direction of positive motion for the vertical axis */
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_THREE_AXES;
+
+  typedef struct JOYSTICK_BUTTON_MAP_PAIR
+  {
+    JOYSTICK_BUTTON_MAP_KEY_TYPE   key_type;
+    void*                          key_element;
+    JOYSTICK_BUTTON_MAP_VALUE_TYPE value_type;
+    void*                          value_element;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_PAIR;
+
+  typedef struct JOYSTICK_BUTTON_MAP
+  {
+    unsigned int              size;
+    JOYSTICK_BUTTON_MAP_PAIR* pairs;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP;
+
+  typedef enum JOYSTICK_STATE_TYPE
+  {
+    JOYSTICK_STATE_TYPE_BUTTON,
+    JOYSTICK_STATE_TYPE_HAT,
+    JOYSTICK_STATE_TYPE_ANALOG,
+    JOYSTICK_STATE_TYPE_ANALOG_STICK,
+    JOYSTICK_STATE_TYPE_ACCELEROMETER,
+  } JOYSTICK_STATE_TYPE;
 
   typedef enum JOYSTICK_STATE_BUTTON
   {
@@ -211,69 +304,83 @@ extern "C"
     JOYSTICK_STATE_HAT_DOWN_RIGHT = JOYSTICK_STATE_HAT_DOWN | JOYSTICK_STATE_HAT_RIGHT,
   } JOYSTICK_STATE_HAT;
 
-  typedef float                 JOYSTICK_STATE_AXIS;     /*!< @brief value in the interval [-1, 1], inclusive */
+  typedef float JOYSTICK_STATE_ANALOG;     /*!< @brief value in the interval [-1, 1], inclusive */
 
-  typedef JOYSTICK_STATE_AXIS   JOYSTICK_STATE_TRIGGER;  /*!< @brief value in the interval [0, 1], inclusive */
+  typedef float JOYSTICK_STATE_ANALOG;     /*!< @brief value in the interval [-1, 1], inclusive */
 
   typedef struct JOYSTICK_STATE_ANALOG_STICK
   {
-    JOYSTICK_STATE_AXIS   state_horiz;                   /*!< @brief state of the horizontal axis */
-    JOYSTICK_STATE_AXIS   state_vert;                    /*!< @brief state of the vertical axis */
+    JOYSTICK_STATE_ANALOG   state_horiz;                   /*!< @brief state of the horizontal axis */
+    JOYSTICK_STATE_ANALOG   state_vert;                    /*!< @brief state of the vertical axis */
   } ATTRIBUTE_PACKED JOYSTICK_STATE_ANALOG_STICK;
+
+  typedef struct JOYSTICK_STATE_ACCELEROMETER
+  {
+    JOYSTICK_STATE_ANALOG   state_x;                   /*!< @brief state of the horizontal axis */
+    JOYSTICK_STATE_ANALOG   state_y;                   /*!< @brief state of the horizontal axis */
+    JOYSTICK_STATE_ANALOG   state_z;                   /*!< @brief state of the horizontal axis */
+  } ATTRIBUTE_PACKED JOYSTICK_STATE_ACCELEROMETER;
 
   typedef enum JOYSTICK_EVENT_TYPE
   {
-    JOYSTICK_EVENT_TYPE_NONE = 0,            /*!< @brief null event */
-    JOYSTICK_EVENT_TYPE_RAW_BUTTON,          /*!< @brief state changed for raw button, reported by its index */
-    JOYSTICK_EVENT_TYPE_RAW_HAT,             /*!< @brief state changed for raw hat, reported by its index */
-    JOYSTICK_EVENT_TYPE_RAW_AXIS,            /*!< @brief state changed for raw axis, reported by its index */
-    JOYSTICK_EVENT_TYPE_MAPPED_BUTTON,       /*!< @brief state changed for button ID mapped to a raw button */
-    JOYSTICK_EVENT_TYPE_MAPPED_TRIGGER,      /*!< @brief state changed for trigger ID mapped to a raw axis */
-    JOYSTICK_EVENT_TYPE_MAPPED_ANALOG_STICK, /*!< @brief state changed for analog stick mapped to raw axes */
+    JOYSTICK_EVENT_NONE = 0,                /*!< @brief null event */
+    JOYSTICK_EVENT_VIRTUAL_BUTTON,  /*!< @brief state changed for raw button, reported by its index */
+    JOYSTICK_EVENT_VIRTUAL_HAT,           /*!< @brief state changed for raw hat, reported by its index */
+    JOYSTICK_EVENT_VIRTUAL_AXIS,          /*!< @brief state changed for raw axis, reported by its index */
+    JOYSTICK_EVENT_BUTTON_DIGITAL,       /*!< @brief state changed for button ID mapped to a raw button */
+    JOYSTICK_EVENT_BUTTON_ANALOG,       /*!< @brief state changed for button ID mapped to a raw button */
+    JOYSTICK_EVENT_ANALOG_STICK, /*!< @brief state changed for analog stick mapped to raw axes */
+    JOYSTICK_EVENT_ACCELEROMETER, /*!< @brief state changed for analog stick mapped to raw axes */
   } JOYSTICK_EVENT_TYPE;
 
-  typedef struct JOYSTICK_EVENT_RAW_BUTTON
+  typedef struct JOYSTICK_EVENT_VIRTUAL_BUTTON
   {
-    unsigned int                index;       /*!< @brief the button index in the joystick configuration */
-    JOYSTICK_STATE_BUTTON       state;       /*!< @brief the new button state */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT_RAW_BUTTON;
+    JOYSTICK_VIRTUAL_BUTTON_INDEX  index;       /*!< @brief the button index in the joystick configuration */
+    JOYSTICK_STATE_BUTTON          state;       /*!< @brief the new button state */
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_VIRTUAL_BUTTON;
 
-  typedef struct JOYSTICK_EVENT_RAW_HAT
+  typedef struct JOYSTICK_EVENT_VIRTUAL_HAT
   {
-    unsigned int                index;       /*!< @brief the hat index in the joystick configuration */
+    JOYSTICK_VIRTUAL_HAT_INDEX  index;       /*!< @brief the hat index in the joystick configuration */
     JOYSTICK_STATE_HAT          state;       /*!< @brief the new hat state */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT_RAW_HAT;
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_VIRTUAL_HAT;
 
-  typedef struct JOYSTICK_EVENT_RAW_AXIS
+  typedef struct JOYSTICK_EVENT_VIRTUAL_AXIS
   {
-    unsigned int                index;       /*!< @brief the axis index in the joystick configuration */
-    JOYSTICK_STATE_AXIS         state;       /*!< @brief the new axis state */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT_RAW_AXIS;
+    JOYSTICK_VIRTUAL_AXIS_INDEX index;       /*!< @brief the axis index in the joystick configuration */
+    JOYSTICK_STATE_ANALOG       state;       /*!< @brief the new axis state */
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_VIRTUAL_AXIS;
 
-  typedef struct JOYSTICK_EVENT_MAPPED_BUTTON
+  typedef struct JOYSTICK_EVENT_BUTTON_DIGITAL
   {
-    JOYSTICK_ID_BUTTON          id;          /*!< @brief the standardized button ID  */
+    JOYSTICK_BUTTON_ID          id;          /*!< @brief the standardized button ID  */
     JOYSTICK_STATE_BUTTON       state;       /*!< @brief the new button state */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT_MAPPED_BUTTON;
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_PHYSICAL_BUTTON;
 
-  typedef struct JOYSTICK_EVENT_MAPPED_TRIGGER
+  typedef struct JOYSTICK_EVENT_BUTTON_ANALOG
   {
-    JOYSTICK_ID_TRIGGER         id;          /*!< @brief the standardized trigger ID  */
-    JOYSTICK_STATE_TRIGGER      state;       /*!< @brief the new trigger state */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT_MAPPED_TRIGGER;
+    JOYSTICK_BUTTON_ID          id;          /*!< @brief the standardized button ID  */
+    JOYSTICK_STATE_ANALOG       state;       /*!< @brief the new button state */
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_BUTTON_ANALOG;
 
-  typedef struct JOYSTICK_EVENT_MAPPED_ANALOG_STICK
+  typedef struct JOYSTICK_EVENT_ANALOG_STICK
   {
-    JOYSTICK_ID_ANALOG_STICK    id;          /*!< @brief the standardized analog stick ID  */
+    JOYSTICK_ANALOG_STICK_ID    id;          /*!< @brief the standardized analog stick ID  */
     JOYSTICK_STATE_ANALOG_STICK state;       /*!< @brief the new analog stick state */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT_MAPPED_ANALOG_STICK;
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_PHYSICAL_ANALOG_STICK;
 
-  typedef struct JOYSTICK_EVENT
+  typedef struct JOYSTICK_EVENT_ACCELEROMETER
   {
-    JOYSTICK_EVENT_TYPE   type;           /*!< @brief the event type */
-    unsigned int          joystick_index; /*!< @brief the joystick associated with this event */
-    void*                 event;          /*!< @brief a pointer to the event structure of the specified type */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT;
+    JOYSTICK_ANALOG_STICK_ID    id;          /*!< @brief the standardized analog stick ID  */
+    JOYSTICK_STATE_ANALOG_STICK state;       /*!< @brief the new analog stick state */
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_ACCELEROMETER;
+
+  typedef struct JOYSTICK_EVENT_VECTOR
+  {
+    unsigned int         event_count;     /*!< @brief the event type */
+    JOYSTICK_EVENT_TYPE* event_types;
+    JOYSTICK_EVENT*      events;     /*!< @brief a pointer to the event structure of the specified type */
+  } ATTRIBUTE_PACKED JOYSTICK_EVENT_VECTOR;
   ///}
 
   // TODO: Mouse, light gun, multitouch

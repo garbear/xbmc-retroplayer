@@ -39,14 +39,16 @@ CPeripheralBusAddon::~CPeripheralBusAddon(void)
 
 bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
 {
+  bool bReturn(true);
+
   VECADDONS addons;
   CAddonMgr::Get().GetAddons(ADDON_PERIPHERALDLL, addons, true);
 
   {
     CSingleLock lock(m_critSection);
 
-    PeripheralAddonVector createdAddons = m_addons;
-    m_addons.clear();
+    PeripheralAddonVector createdAddons;
+    createdAddons.swap(m_addons);
 
     for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
     {
@@ -65,30 +67,10 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
     }
 
     for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
-    {
-      std::vector<JoystickConfiguration> joysticks;
-      if (!(*itAddon)->PerformJoystickScan(joysticks))
-        continue;
-
-      for (std::vector<JoystickConfiguration>::const_iterator itJoystick = joysticks.begin(); itJoystick != joysticks.end(); ++itJoystick)
-      {
-        PeripheralScanResult result(m_type);
-        result.m_type          = PERIPHERAL_JOYSTICK;
-        result.m_strDeviceName = itJoystick->Name();
-        result.m_strLocation   = StringUtils::Format("%s/%d", (*itAddon)->ID().c_str(), itJoystick->Index());
-        result.m_iVendorId     = 0; // itJoystick->VendorID(); // TODO
-        result.m_iProductId    = 0; // itJoystick->ProductID(); // TODO
-        result.m_mappedType    = PERIPHERAL_JOYSTICK;
-        result.m_mappedBusType = PERIPHERAL_BUS_ADDON;
-        result.m_iSequence     = GetNumberOfPeripheralsWithId(result.m_iVendorId, result.m_iProductId);
-
-        if (!results.ContainsResult(result))
-          results.m_results.push_back(result);
-      }
-    }
+      bReturn &= (*itAddon)->PerformDeviceScan(results);
   }
 
-  return true;
+  return bReturn;
 }
 
 bool CPeripheralBusAddon::GetAddon(const std::string &strId, AddonPtr &addon) const
@@ -103,4 +85,38 @@ bool CPeripheralBusAddon::GetAddon(const std::string &strId, AddonPtr &addon) co
     }
   }
   return false;
+}
+
+void CPeripheralBusAddon::GetFeatures(std::vector<PeripheralFeature> &features) const
+{
+  CSingleLock lock(m_critSection);
+  for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
+    (*itAddon)->GetFeatures(features);
+}
+
+bool CPeripheralBusAddon::HasFeature(const PeripheralFeature feature) const
+{
+  bool bReturn(false);
+  CSingleLock lock(m_critSection);
+  for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
+    bReturn = bReturn || (*itAddon)->HasFeature(feature);
+  return bReturn;
+}
+
+CPeripheral *CPeripheralBusAddon::GetPeripheral(const CStdString &strLocation) const
+{
+  CPeripheral *peripheral(NULL);
+
+
+
+  CSingleLock lock(m_critSection);
+  for (unsigned int iPeripheralPtr = 0; iPeripheralPtr < m_peripherals.size(); iPeripheralPtr++)
+  {
+    if (m_peripherals.at(iPeripheralPtr)->Location() == strLocation)
+    {
+      peripheral = m_peripherals.at(iPeripheralPtr);
+      break;
+    }
+  }
+  return peripheral;
 }

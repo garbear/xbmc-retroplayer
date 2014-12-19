@@ -19,8 +19,8 @@
  *
  */
 
-#include "addons/PeripheralAddon.h"
 #include "peripherals/bus/PeripheralBus.h"
+#include "peripherals/PeripheralAddon.h"
 #include "threads/CriticalSection.h"
 
 namespace PERIPHERALS
@@ -38,8 +38,13 @@ namespace PERIPHERALS
 
     bool GetAddon(const std::string &strId, ADDON::AddonPtr &addon) const;
 
+    virtual void GetFeatures(std::vector<PeripheralFeature> &features) const;
+    virtual bool HasFeature(const PeripheralFeature feature) const;
+
+    virtual CPeripheral *GetPeripheral(const CStdString &strLocation) const;
+
   private:
-    ADDON::PeripheralAddonVector m_addons;
-    CCriticalSection             m_critSection;
+    PeripheralAddonVector m_addons;
+    CCriticalSection      m_critSection;
   };
 }

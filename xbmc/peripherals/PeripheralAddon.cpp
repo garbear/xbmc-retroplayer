@@ -19,13 +19,14 @@
 */
 
 #include "PeripheralAddon.h"
-#include "AddonManager.h"
+#include "addons/AddonManager.h"
 #include "filesystem/SpecialProtocol.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 
+#include <algorithm>
 #include <string.h>
 
 using namespace ADDON;
@@ -118,6 +119,20 @@ void CPeripheralAddon::Destroy(void)
   ResetProperties();
 }
 
+bool CPeripheralAddon::HasFeature(const PeripheralFeature feature) const
+{
+  if (feature == FEATURE_JOYSTICK)
+    return m_bProvidesJoysticks;
+
+  return false;
+}
+
+void CPeripheralAddon::GetFeatures(std::vector<PeripheralFeature> &features) const
+{
+  if (m_bProvidesJoysticks && std::find(features.begin(), features.end(), FEATURE_JOYSTICK) == features.end())
+    features.push_back(FEATURE_JOYSTICK);
+}
+
 bool CPeripheralAddon::GetAddonProperties(void)
 {
   PERIPHERAL_CAPABILITIES addonCapabilities = { };
@@ -139,12 +154,6 @@ bool CPeripheralAddon::GetAddonProperties(void)
   m_addonCapabilities   = addonCapabilities;
 
   return true;
-}
-
-PERIPHERAL_CAPABILITIES CPeripheralAddon::GetAddonCapabilities(void) const
-{
-  PERIPHERAL_CAPABILITIES addonCapabilities(m_addonCapabilities);
-  return addonCapabilities;
 }
 
 bool CPeripheralAddon::CheckAPIVersion(void)

@@ -21,11 +21,12 @@
 
 struct CB_PeripheralLib;
 
+namespace PERIPHERALS { class CPeripheralAddon; }
+
 namespace ADDON
 {
 
 class CAddon;
-class CPeripheralAddon;
 
 /*!
  * Callbacks for a peripheral add-on to XBMC
@@ -44,7 +45,7 @@ public:
   static void TriggerScan(void* addonData);
 
 private:
-  static CPeripheralAddon* GetPeripheralAddon(void* addonData, const char* strFunction);
+  static PERIPHERALS::CPeripheralAddon* GetPeripheralAddon(void* addonData, const char* strFunction);
 
   CB_PeripheralLib*  m_callbacks; /*!< callback addresses */
   CAddon*            m_addon;     /*!< the add-on */

@@ -27,6 +27,82 @@
 
 namespace ADDON
 {
+  /*
+  class JoystickButton
+  {
+  public:
+    JOYSTICK_BUTTON_TYPE type;
+    JOYSTICK_BUTTON_ID   id;
+    std::string          strLabel;
+  };
+
+  class JoystickTrigger
+  {
+  public:
+    JOYSTICK_TRIGGER_TYPE   type;
+    JOYSTICK_TRIGGER_ID     id;
+    std::string          strLabel;
+  };
+
+  class JoystickAnalogStick
+  {
+  public:
+    JOYSTICK_ANALOG_STICK_ID id;
+    std::string              strLabel;
+  };
+
+  class Joystick
+  {
+  public:
+    class JoystickElement { };
+
+    class Button : public JoystickElement
+    {
+    public:
+      JOYSTICK_BUTTON_TYPE type;
+      JOYSTICK_BUTTON_ID   id;
+      std::string          strLabel;
+    };
+
+    class Trigger : public JoystickElement
+    {
+    public:
+      JOYSTICK_TRIGGER_TYPE   type;
+      JOYSTICK_TRIGGER_ID     id;
+      std::string          strLabel;
+    };
+
+    class AnalogStick : public JoystickElement
+    {
+    public:
+      JOYSTICK_ANALOG_STICK_ID id;
+      std::string              strLabel;
+    };
+
+    unsigned int             index;
+    unsigned int             requested_player;
+    std::string              name;
+    std::string              icon_path;
+    unsigned int             virtual_button_count;
+    unsigned int             virtual_hat_count;
+    unsigned int             virtual_axis_count;
+    std::vector<JoystickButton>      m_buttons;
+    std::vector<JoystickTrigger>     m_triggers;
+    std::vector<JoystickAnalogStick> m_analogSticks;
+  };
+
+  class ButtonMapValue { };
+
+  class ButtonMapButton
+  {
+
+  };
+
+
+  typedef std::map<JoystickElement*, ButtonMapValue> ButtonMap;
+
+  typedef std::map<>
+
   class ButtonMap
   {
   public:
@@ -425,4 +501,5 @@ namespace ADDON
   private:
     JOYSTICK_STATE_ANALOG_STICK m_state;
   };
+  */
 }
