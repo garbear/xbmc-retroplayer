@@ -221,8 +221,6 @@ void CPeripheralBusAddon::FrameMove(bool processEvents, bool processGUI /* = tru
 
 bool CPeripheralBusAddon::SplitLocation(const std::string& strLocation, PeripheralAddonPtr& addon, unsigned int& peripheralIndex) const
 {
-  CPeripheral *peripheral(NULL);
-
   std::vector<std::string> parts = StringUtils::Split(strLocation, "/");
   if (parts.size() == 2)
   {

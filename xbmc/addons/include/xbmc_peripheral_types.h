@@ -378,11 +378,12 @@ extern "C"
     JOYSTICK_STATE_ANALOG_STICK state;       /*!< @brief the new analog stick state */
   } ATTRIBUTE_PACKED JOYSTICK_EVENT_ACCELEROMETER;
 
-  typedef struct JOYSTICK_EVENT
+  typedef struct PERIPHERAL_EVENT
   {
-    JOYSTICK_EVENT_TYPE* event_type;
-    JOYSTICK_EVENT*      event_data;     /*!< @brief a pointer to the event structure of the specified type */
-  } ATTRIBUTE_PACKED JOYSTICK_EVENT_VECTOR;
+    unsigned int        peripheral_index;  /*!< @brief ID corresponds to peripheral index */
+    JOYSTICK_EVENT_TYPE type;
+    void*               event_data;     /*!< @brief a pointer to the event structure of the specified type */
+  } ATTRIBUTE_PACKED PERIPHERAL_EVENT;
   ///}
 
   // TODO: Mouse, light gun, multitouch
@@ -405,8 +406,8 @@ extern "C"
     //PERIPHERAL_ERROR (__cdecl* PerformJoystickScan)(unsigned int*, JOYSTICK_CONFIGURATION**);
     //void             (__cdecl* FreeJoysticks)(unsigned int, JOYSTICK_CONFIGURATION*);
     //PERIPHERAL_ERROR (__cdecl* RegisterButton)(unsigned int, JOYSTICK_MAP_BUTTON*);
-    PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, JOYSTICK_EVENT**);
-    void             (__cdecl* FreeEvents)(unsigned int, JOYSTICK_EVENT*);
+    PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, PERIPHERAL_EVENT**);
+    void             (__cdecl* FreeEvents)(unsigned int, PERIPHERAL_EVENT*);
     ///}
   } PeripheralAddon;
 

@@ -120,7 +120,7 @@ extern "C"
   ///{
 #ifdef PERIPHERAL_ADDON_JOYSTICKS
   PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info);
-  void             FreeJoysticKInfo(JOYSTICK_INFO* info);
+  void             FreeJoystickInfo(JOYSTICK_INFO* info);
 
   /*!
    * @brief Assign a button index to a button ID and label
@@ -134,8 +134,8 @@ extern "C"
    * @return PERIPHERAL_NO_ERROR if successful; events must be freed using
    * FreeEvents() in this case
    */
-  PERIPHERAL_ERROR GetEvents(JOYSTICK_EVENT_VECTOR* events);
-  void FreeEvents(JOYSTICK_EVENT_VECTOR* events);
+  PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events);
+  void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events);
 #endif
   ///}
 

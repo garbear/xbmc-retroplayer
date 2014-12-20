@@ -394,9 +394,8 @@ bool CPeripheralAddon::ProcessEvents(void)
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
 
-  /* TODO
   unsigned int eventCount;
-  JOYSTICK_EVENT* pEvents;
+  PERIPHERAL_EVENT* pEvents;
 
   PERIPHERAL_ERROR retVal;
 
@@ -407,6 +406,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   {
     for (unsigned int i = 0; i < eventCount; i++)
     {
+      /* TODO
       if (pEvents[i].type == JOYSTICK_EVENT_TYPE_NONE || !pEvents[i].event)
         continue;
 
@@ -454,6 +454,7 @@ bool CPeripheralAddon::ProcessEvents(void)
         default:
           break;
       }
+      */
     }
 
     try { m_pStruct->FreeEvents(eventCount, pEvents); }
@@ -461,7 +462,6 @@ bool CPeripheralAddon::ProcessEvents(void)
 
     return true;
   }
-  */
 
   return false;
 }

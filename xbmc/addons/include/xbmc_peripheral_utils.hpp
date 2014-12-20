@@ -188,6 +188,203 @@ namespace ADDON
     std::vector<JoystickAnalogStick> m_analogSticks;
   };
 
+  class PeripheralEvent
+  {
+  public:
+    PeripheralEvent(void) : m_index(0), m_type(), m_data(NULL) { }
+
+    PeripheralEvent(const PERIPHERAL_EVENT& event)
+    : m_index(event.peripheral_index),
+      m_type(event.type),
+      m_data(NULL)
+    {
+      SetData(event.event_data);
+    }
+
+    ~PeripheralEvent(void)
+    {
+      ClearData();
+    }
+
+    unsigned int        PeripheralIndex(void) const { return m_index; }
+    JOYSTICK_EVENT_TYPE Type(void) const            { return m_type; }
+
+    template <typename EVENT_TYPE>
+    const EVENT_TYPE& EventAsType(void) const
+    {
+      static const EVENT_TYPE emptyEvent = { };
+      return m_data ? *static_cast<const EVENT_TYPE*>(m_data) : emptyEvent;
+    }
+
+    void ClearData(void)
+    {
+      PERIPHERAL_EVENT event = { m_index, m_type, m_data };
+      FreeStruct(event);
+    }
+
+    void SetData(void* event)
+    {
+      ClearData();
+
+      if (event)
+      {
+        switch (m_type)
+        {
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
+          {
+            JOYSTICK_EVENT_VIRTUAL_BUTTON* setEvent = static_cast<JOYSTICK_EVENT_VIRTUAL_BUTTON*>(event);
+            JOYSTICK_EVENT_VIRTUAL_BUTTON* newEvent = new JOYSTICK_EVENT_VIRTUAL_BUTTON;
+
+            newEvent->index = setEvent->index;
+            newEvent->state = setEvent->state;
+            m_data = newEvent;
+
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
+          {
+            JOYSTICK_EVENT_VIRTUAL_HAT* setEvent = static_cast<JOYSTICK_EVENT_VIRTUAL_HAT*>(event);
+            JOYSTICK_EVENT_VIRTUAL_HAT* newEvent = new JOYSTICK_EVENT_VIRTUAL_HAT;
+
+            newEvent->index = setEvent->index;
+            newEvent->state = setEvent->state;
+            m_data = newEvent;
+
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
+          {
+            JOYSTICK_EVENT_VIRTUAL_AXIS* setEvent = static_cast<JOYSTICK_EVENT_VIRTUAL_AXIS*>(event);
+            JOYSTICK_EVENT_VIRTUAL_AXIS* newEvent = new JOYSTICK_EVENT_VIRTUAL_AXIS;
+
+            newEvent->index = setEvent->index;
+            newEvent->state = setEvent->state;
+            m_data = newEvent;
+
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
+          {
+            JOYSTICK_EVENT_BUTTON_DIGITAL* setEvent = static_cast<JOYSTICK_EVENT_BUTTON_DIGITAL*>(event);
+            JOYSTICK_EVENT_BUTTON_DIGITAL* newEvent = new JOYSTICK_EVENT_BUTTON_DIGITAL;
+
+            newEvent->id = setEvent->id;
+            newEvent->state = setEvent->state;
+            m_data = newEvent;
+
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
+          {
+            JOYSTICK_EVENT_BUTTON_ANALOG* setEvent = static_cast<JOYSTICK_EVENT_BUTTON_ANALOG*>(event);
+            JOYSTICK_EVENT_BUTTON_ANALOG* newEvent = new JOYSTICK_EVENT_BUTTON_ANALOG;
+
+            newEvent->id = setEvent->id;
+            newEvent->state = setEvent->state;
+            m_data = newEvent;
+
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
+          {
+            JOYSTICK_EVENT_ANALOG_STICK* setEvent = static_cast<JOYSTICK_EVENT_ANALOG_STICK*>(event);
+            JOYSTICK_EVENT_ANALOG_STICK* newEvent = new JOYSTICK_EVENT_ANALOG_STICK;
+
+            newEvent->id = setEvent->id;
+            newEvent->state = setEvent->state;
+            m_data = newEvent;
+
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
+          {
+            JOYSTICK_EVENT_ACCELEROMETER* setEvent = static_cast<JOYSTICK_EVENT_ACCELEROMETER*>(event);
+            JOYSTICK_EVENT_ACCELEROMETER* newEvent = new JOYSTICK_EVENT_ACCELEROMETER;
+
+            newEvent->id = setEvent->id;
+            newEvent->state = setEvent->state;
+            m_data = newEvent;
+
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_NONE:
+          default:
+            break;
+        }
+      }
+    }
+
+    static void ToStructs(const std::vector<PeripheralEvent>& events, PERIPHERAL_EVENT** eventStructs)
+    {
+      if (!events.empty() && eventStructs)
+      {
+        *eventStructs = new PERIPHERAL_EVENT[events.size()];
+        for (unsigned int i = 0; i < events.size(); i++)
+        {
+          (*eventStructs)[i].peripheral_index = events.at(i).m_index;
+          (*eventStructs)[i].type             = events.at(i).m_type;
+          (*eventStructs)[i].event_data       = NULL;
+
+          switch (events.at(i).m_type)
+          {
+            case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
+              (*eventStructs)[i].event_data = new JOYSTICK_EVENT_VIRTUAL_BUTTON(events.at(i).EventAsType<JOYSTICK_EVENT_VIRTUAL_BUTTON>());
+              break;
+
+            case JOYSTICK_EVENT_TYPE_NONE:
+            default:
+              break;
+          }
+        }
+      }
+    }
+
+    static void FreeStruct(PERIPHERAL_EVENT& event)
+    {
+      switch (event.type)
+      {
+        case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
+          delete static_cast<JOYSTICK_EVENT_VIRTUAL_BUTTON*>(event.event_data);
+          break;
+        case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
+          delete static_cast<JOYSTICK_EVENT_VIRTUAL_HAT*>(event.event_data);
+          break;
+        case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
+          delete static_cast<JOYSTICK_EVENT_VIRTUAL_AXIS*>(event.event_data);
+          break;
+        case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
+          delete static_cast<JOYSTICK_EVENT_BUTTON_DIGITAL*>(event.event_data);
+          break;
+        case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
+          delete static_cast<JOYSTICK_EVENT_BUTTON_ANALOG*>(event.event_data);
+          break;
+        case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
+          delete static_cast<JOYSTICK_EVENT_ANALOG_STICK*>(event.event_data);
+          break;
+        case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
+          delete static_cast<JOYSTICK_EVENT_ACCELEROMETER*>(event.event_data);
+          break;
+        case JOYSTICK_EVENT_TYPE_NONE:
+        default:
+          break;
+      }
+      event.event_data = NULL;
+    }
+
+    static void FreeStructs(unsigned int eventCount, PERIPHERAL_EVENT* events)
+    {
+      for (unsigned int i = 0; i < eventCount; i++)
+        FreeStruct(events[i]);
+      delete[] events;
+    }
+
+  private:
+    unsigned int        m_index;
+    JOYSTICK_EVENT_TYPE m_type;
+    void*               m_data;
+  };
+
+
   /*
   class ButtonMapValue { };
 
@@ -499,105 +696,6 @@ namespace ADDON
     std::vector<unsigned int> m_hatIndexes;
     std::vector<unsigned int> m_axisIndexes;
     JoystickLayout            m_layout;
-  };
-
-  class JoystickEvent
-  {
-  public:
-    virtual ~JoystickEvent(void) { }
-    virtual JOYSTICK_EVENT_TYPE Type(void) const = 0;
-  };
-
-  class RawEvent : public JoystickEvent
-  {
-  public:
-    RawEvent(void) : m_index(0) { }
-    unsigned int Index(void) const { return m_index; }
-    void SetIndex(unsigned int index) { m_index = index; }
-
-  private:
-    unsigned int m_index;
-  };
-
-  class ButtonEvent : public RawEvent
-  {
-  public:
-    ButtonEvent(void) : RawEvent(), m_state() { }
-    virtual JOYSTICK_EVENT_TYPE Type(void) const { return JOYSTICK_EVENT_TYPE_RAW_BUTTON; }
-    JOYSTICK_STATE_BUTTON State(void) const { return m_state; }
-    void SetState(JOYSTICK_STATE_BUTTON state) { m_state = state; }
-
-  private:
-    JOYSTICK_STATE_BUTTON m_state;
-  };
-
-  class HatEvent : public RawEvent
-  {
-  public:
-    HatEvent(void) : RawEvent(), m_state() { }
-    virtual JOYSTICK_EVENT_TYPE Type(void) const { return JOYSTICK_EVENT_TYPE_RAW_HAT; }
-    JOYSTICK_STATE_HAT State(void) const { return m_state; }
-    void SetState(JOYSTICK_STATE_HAT state) { m_state = state; }
-
-  private:
-    JOYSTICK_STATE_HAT m_state;
-  };
-
-  class AxisEvent : public RawEvent
-  {
-  public:
-    AxisEvent(void) : RawEvent(), m_state() { }
-    virtual JOYSTICK_EVENT_TYPE Type(void) const { return JOYSTICK_EVENT_TYPE_RAW_AXIS; }
-    JOYSTICK_STATE_AXIS State(void) const { return m_state; }
-    void SetState(JOYSTICK_STATE_AXIS state) { m_state = state; }
-
-  private:
-    JOYSTICK_STATE_AXIS m_state;
-  };
-
-  template <typename ID_TYPE>
-  class MappedEvent : public JoystickEvent
-  {
-  public:
-    MappedEvent(void) : m_id() { }
-    ID_TYPE ID(void) const { return m_id; }
-    void SetIndex(ID_TYPE id) { m_id = id; }
-
-  private:
-    ID_TYPE m_id;
-  };
-
-  class MappedButtonEvent : public MappedEvent<JOYSTICK_ID_BUTTON>
-  {
-  public:
-    MappedButtonEvent(void) : MappedEvent<JOYSTICK_ID_BUTTON>(), m_state() { }
-    JOYSTICK_STATE_BUTTON State(void) const { return m_state; }
-    void SetState(JOYSTICK_STATE_BUTTON state) { m_state = state; }
-
-  private:
-    JOYSTICK_STATE_BUTTON m_state;
-  };
-
-  class MappedTriggerEvent : public MappedEvent<JOYSTICK_ID_TRIGGER>
-  {
-  public:
-    MappedTriggerEvent(void) : MappedEvent<JOYSTICK_ID_TRIGGER>(), m_state() { }
-    JOYSTICK_STATE_TRIGGER State(void) const { return m_state; }
-    void SetState(JOYSTICK_STATE_TRIGGER state) { m_state = state; }
-
-  private:
-    JOYSTICK_STATE_TRIGGER m_state;
-  };
-
-  class MappedAnalogStickEvent : public MappedEvent<JOYSTICK_ID_ANALOG_STICK>
-  {
-  public:
-    MappedAnalogStickEvent(void) : MappedEvent<JOYSTICK_ID_ANALOG_STICK>(), m_state() { }
-    JOYSTICK_STATE_ANALOG_STICK State(void) const { return m_state; }
-    void SetState(JOYSTICK_STATE_ANALOG_STICK state) { m_state = state; }
-
-  private:
-    JOYSTICK_STATE_ANALOG_STICK m_state;
   };
   */
 }
