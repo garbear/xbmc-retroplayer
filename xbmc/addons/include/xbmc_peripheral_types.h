@@ -210,75 +210,6 @@ extern "C"
     JOYSTICK_PHYSICAL_LAYOUT physical_layout;
   } ATTRIBUTE_PACKED JOYSTICK_INFO;
 
-  typedef struct JOYSTICK_BUTTON_MAP_KEY
-  {
-    JOYSTICK_PHYSICAL_TYPE type;
-    void*                  element;
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_KEY;
-
-  typedef enum JOYSTICK_BUTTON_MAP_VALUE_TYPE
-  {
-    JOYSTICK_BUTTON_MAP_VALUE_NONE = 0,
-    JOYSTICK_BUTTON_MAP_VALUE_BUTTON,
-    JOYSTICK_BUTTON_MAP_VALUE_HAT_DIRECTION,
-    JOYSTICK_BUTTON_MAP_VALUE_HALF_AXIS,
-    JOYSTICK_BUTTON_MAP_VALUE_TWO_AXES,
-    JOYSTICK_BUTTON_MAP_VALUE_THREE_AXES,
-  } JOYSTICK_BUTTON_MAP_VALUE_TYPE;
-
-  typedef struct JOYSTICK_BUTTON_MAP_BUTTON
-  {
-    JOYSTICK_VIRTUAL_BUTTON_INDEX index;
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_BUTTON;
-
-  typedef struct JOYSTICK_BUTTON_MAP_HAT_DIRECTION
-  {
-    JOYSTICK_VIRTUAL_HAT_INDEX     index;
-    JOYSTICK_VIRTUAL_HAT_DIRECTION direction;
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_HAT_DIRECTION;
-
-  typedef struct JOYSTICK_BUTTON_MAP_HALF_AXIS
-  {
-    JOYSTICK_VIRTUAL_AXIS_INDEX  index;
-    JOYSTICK_VIRTUAL_AXIS_SIGN   sign;
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_HALF_AXIS;
-
-  typedef struct JOYSTICK_BUTTON_MAP_TWO_AXES
-  {
-    JOYSTICK_VIRTUAL_AXIS_INDEX  horiz_index;     /*!< @brief axis associated with horizontal motion */
-    JOYSTICK_VIRTUAL_AXIS_SIGN   horiz_up_sign;   /*!< @brief direction of positive motion for the horizontal axis */
-    JOYSTICK_VIRTUAL_AXIS_INDEX  vert_index;      /*!< @brief axis associated with vertical motion */
-    JOYSTICK_VIRTUAL_AXIS_SIGN   vert_right_sign; /*!< @brief direction of positive motion for the vertical axis */
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_TWO_AXES;
-
-  typedef struct JOYSTICK_BUTTON_MAP_THREE_AXES
-  {
-    JOYSTICK_VIRTUAL_AXIS_INDEX  x_index;     /*!< @brief axis associated with motion in the x direction */
-    JOYSTICK_VIRTUAL_AXIS_SIGN   x_pos_sign;  /*!< @brief axis sign in the x positive direction */
-    JOYSTICK_VIRTUAL_AXIS_INDEX  y_index;     /*!< @brief axis associated with motion in the y direction */
-    JOYSTICK_VIRTUAL_AXIS_SIGN   y_pos_sign;  /*!< @brief axis sign in the y positive direction */
-    JOYSTICK_VIRTUAL_AXIS_INDEX  z_index;     /*!< @brief axis associated with motion in the z direction */
-    JOYSTICK_VIRTUAL_AXIS_SIGN   z_pos_sign;  /*!< @brief axis sign in the z positive direction */
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_THREE_AXES;
-
-  typedef struct JOYSTICK_BUTTON_MAP_VALUE
-  {
-    JOYSTICK_BUTTON_MAP_VALUE_TYPE type;
-    void*                          element;
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_VALUE;
-
-  typedef struct JOYSTICK_BUTTON_MAP_PAIR
-  {
-    JOYSTICK_BUTTON_MAP_KEY    key;
-    JOYSTICK_BUTTON_MAP_VALUE  value;
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_PAIR;
-
-  typedef struct JOYSTICK_BUTTON_MAP
-  {
-    unsigned int              size;
-    JOYSTICK_BUTTON_MAP_PAIR* pairs;
-  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP;
-
   typedef enum JOYSTICK_STATE_TYPE
   {
     JOYSTICK_STATE_TYPE_BUTTON,
@@ -384,6 +315,75 @@ extern "C"
     JOYSTICK_EVENT_TYPE type;
     void*               event_data;     /*!< @brief a pointer to the event structure of the specified type */
   } ATTRIBUTE_PACKED PERIPHERAL_EVENT;
+
+  typedef struct JOYSTICK_BUTTON_MAP_KEY
+  {
+    JOYSTICK_PHYSICAL_TYPE type;
+    void*                  element;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_KEY;
+
+  typedef enum JOYSTICK_BUTTON_MAP_VALUE_TYPE
+  {
+    JOYSTICK_BUTTON_MAP_VALUE_NONE = 0,
+    JOYSTICK_BUTTON_MAP_VALUE_BUTTON,
+    JOYSTICK_BUTTON_MAP_VALUE_HAT_DIRECTION,
+    JOYSTICK_BUTTON_MAP_VALUE_HALF_AXIS,
+    JOYSTICK_BUTTON_MAP_VALUE_TWO_AXES,
+    JOYSTICK_BUTTON_MAP_VALUE_THREE_AXES,
+  } JOYSTICK_BUTTON_MAP_VALUE_TYPE;
+
+  typedef struct JOYSTICK_BUTTON_MAP_BUTTON
+  {
+    JOYSTICK_VIRTUAL_BUTTON_INDEX index;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_BUTTON;
+
+  typedef struct JOYSTICK_BUTTON_MAP_HAT_DIRECTION
+  {
+    JOYSTICK_VIRTUAL_HAT_INDEX     index;
+    JOYSTICK_VIRTUAL_HAT_DIRECTION direction;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_HAT_DIRECTION;
+
+  typedef struct JOYSTICK_BUTTON_MAP_HALF_AXIS
+  {
+    JOYSTICK_VIRTUAL_AXIS_INDEX  index;
+    JOYSTICK_VIRTUAL_AXIS_SIGN   sign;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_HALF_AXIS;
+
+  typedef struct JOYSTICK_BUTTON_MAP_TWO_AXES
+  {
+    JOYSTICK_VIRTUAL_AXIS_INDEX  horiz_index;     /*!< @brief axis associated with horizontal motion */
+    JOYSTICK_VIRTUAL_AXIS_SIGN   horiz_up_sign;   /*!< @brief direction of positive motion for the horizontal axis */
+    JOYSTICK_VIRTUAL_AXIS_INDEX  vert_index;      /*!< @brief axis associated with vertical motion */
+    JOYSTICK_VIRTUAL_AXIS_SIGN   vert_right_sign; /*!< @brief direction of positive motion for the vertical axis */
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_TWO_AXES;
+
+  typedef struct JOYSTICK_BUTTON_MAP_THREE_AXES
+  {
+    JOYSTICK_VIRTUAL_AXIS_INDEX  x_index;     /*!< @brief axis associated with motion in the x direction */
+    JOYSTICK_VIRTUAL_AXIS_SIGN   x_pos_sign;  /*!< @brief axis sign in the x positive direction */
+    JOYSTICK_VIRTUAL_AXIS_INDEX  y_index;     /*!< @brief axis associated with motion in the y direction */
+    JOYSTICK_VIRTUAL_AXIS_SIGN   y_pos_sign;  /*!< @brief axis sign in the y positive direction */
+    JOYSTICK_VIRTUAL_AXIS_INDEX  z_index;     /*!< @brief axis associated with motion in the z direction */
+    JOYSTICK_VIRTUAL_AXIS_SIGN   z_pos_sign;  /*!< @brief axis sign in the z positive direction */
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_THREE_AXES;
+
+  typedef struct JOYSTICK_BUTTON_MAP_VALUE
+  {
+    JOYSTICK_BUTTON_MAP_VALUE_TYPE type;
+    void*                          element;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_VALUE;
+
+  typedef struct JOYSTICK_BUTTON_MAP_PAIR
+  {
+    JOYSTICK_BUTTON_MAP_KEY    key;
+    JOYSTICK_BUTTON_MAP_VALUE  value;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP_PAIR;
+
+  typedef struct JOYSTICK_BUTTON_MAP
+  {
+    unsigned int              size;
+    JOYSTICK_BUTTON_MAP_PAIR* pairs;
+  } ATTRIBUTE_PACKED JOYSTICK_BUTTON_MAP;
   ///}
 
   // TODO: Mouse, light gun, multitouch
@@ -403,11 +403,11 @@ extern "C"
     ///{
     PERIPHERAL_ERROR (__cdecl* GetJoystickInfo)(unsigned int, JOYSTICK_INFO*);
     void             (__cdecl* FreeJoystickInfo)(JOYSTICK_INFO*);
-    //PERIPHERAL_ERROR (__cdecl* PerformJoystickScan)(unsigned int*, JOYSTICK_CONFIGURATION**);
-    //void             (__cdecl* FreeJoysticks)(unsigned int, JOYSTICK_CONFIGURATION*);
-    //PERIPHERAL_ERROR (__cdecl* RegisterButton)(unsigned int, JOYSTICK_MAP_BUTTON*);
     PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, PERIPHERAL_EVENT**);
     void             (__cdecl* FreeEvents)(unsigned int, PERIPHERAL_EVENT*);
+    PERIPHERAL_ERROR (__cdecl* GetButtonMap)(unsigned int, JOYSTICK_BUTTON_MAP*);
+    PERIPHERAL_ERROR (__cdecl* FreeButtonMap)(JOYSTICK_BUTTON_MAP*);
+    PERIPHERAL_ERROR (__cdecl* UpdateButtonMap)(unsigned int, JOYSTICK_BUTTON_MAP_PAIR*);
     ///}
   } PeripheralAddon;
 

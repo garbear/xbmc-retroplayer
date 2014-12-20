@@ -123,19 +123,19 @@ extern "C"
   void             FreeJoystickInfo(JOYSTICK_INFO* info);
 
   /*!
-   * @brief Assign a button index to a button ID and label
-   */
-  PERIPHERAL_ERROR GetButtonMap(JOYSTICK_BUTTON_MAP* button_map);
-  PERIPHERAL_ERROR FreeButtonMap(JOYSTICK_BUTTON_MAP* button_map);
-  PERIPHERAL_ERROR UpdateButtonMap(JOYSTICK_BUTTON_MAP_PAIR* key_value_pair);
-
-  /*!
    * @brief Get all events that have occurred since the last call to GetEvents()
    * @return PERIPHERAL_NO_ERROR if successful; events must be freed using
    * FreeEvents() in this case
    */
   PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events);
   void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events);
+
+  /*!
+   * @brief Assign a button index to a button ID and label
+   */
+  PERIPHERAL_ERROR GetButtonMap(unsigned int index, JOYSTICK_BUTTON_MAP* button_map);
+  PERIPHERAL_ERROR FreeButtonMap(JOYSTICK_BUTTON_MAP* button_map);
+  PERIPHERAL_ERROR UpdateButtonMap(unsigned int index, JOYSTICK_BUTTON_MAP_PAIR* key_value_pair);
 #endif
   ///}
 
@@ -155,9 +155,11 @@ extern "C"
 #ifdef PERIPHERAL_ADDON_JOYSTICKS
     pClient->GetJoystickInfo                = GetJoystickInfo;
     pClient->FreeJoystickInfo               = FreeJoystickInfo;
-    //pClient->RegisterButton                 = RegisterButton;
     pClient->GetEvents                      = GetEvents;
     pClient->FreeEvents                     = FreeEvents;
+    pClient->GetButtonMap                   = GetButtonMap;
+    pClient->FreeButtonMap                  = FreeButtonMap;
+    pClient->UpdateButtonMap                = UpdateButtonMap;
 #endif
   };
 
