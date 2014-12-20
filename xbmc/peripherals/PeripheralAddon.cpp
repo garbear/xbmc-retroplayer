@@ -333,7 +333,16 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
     for (unsigned int i = 0; i < peripheralCount; i++)
     {
       PeripheralScanResult result(PERIPHERAL_BUS_ADDON);
-      result.m_type          = PERIPHERAL_JOYSTICK;
+
+      switch (pScanResults[i].type)
+      {
+      case PERIPHERAL_TYPE_JOYSTICK:
+        result.m_type = PERIPHERAL_JOYSTICK;
+        break;
+      default:
+        continue;
+      }
+
       result.m_strDeviceName = pScanResults[i].name ? pScanResults[i].name : "";
       result.m_strLocation   = StringUtils::Format("%s/%d", ID().c_str(), pScanResults[i].peripheral_index);
       result.m_iVendorId     = pScanResults[i].vendor_id;
