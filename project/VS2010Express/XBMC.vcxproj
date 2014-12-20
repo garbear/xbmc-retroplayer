@@ -184,7 +184,6 @@
     <ClCompile Include="..\..\xbmc\addons\GUIDialogAddonSettings.cpp" />
     <ClCompile Include="..\..\xbmc\addons\GUIViewStateAddonBrowser.cpp" />
     <ClCompile Include="..\..\xbmc\addons\GUIWindowAddonBrowser.cpp" />
-    <ClCompile Include="..\..\xbmc\addons\PeripheralAddon.cpp" />
     <ClCompile Include="..\..\xbmc\addons\PluginSource.cpp" />
     <ClCompile Include="..\..\xbmc\addons\Repository.cpp" />
     <ClCompile Include="..\..\xbmc\addons\Service.cpp" />
@@ -676,6 +675,7 @@
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralTuner.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\dialogs\GUIDialogPeripheralManager.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\dialogs\GUIDialogPeripheralSettings.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\PeripheralAddon.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\Peripherals.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIDialogPictureInfo.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIViewStatePictures.cpp" />
@@ -807,7 +807,6 @@
     <ClCompile Include="..\..\xbmc\DatabaseManager.cpp" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksCodec.h" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksPeripheral.h" />
-    <ClInclude Include="..\..\xbmc\addons\PeripheralAddon.h" />
     <ClInclude Include="..\..\xbmc\ApplicationPlayer.h" />
     <ClInclude Include="..\..\xbmc\AppParamParser.h" />
     <ClInclude Include="..\..\xbmc\CompileInfo.h" />
@@ -940,6 +939,7 @@
     <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.h" />
     <ClInclude Include="..\..\xbmc\network\upnp\UPnPSettings.h" />
     <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\PeripheralAddon.h" />
     <ClInclude Include="..\..\xbmc\playlists\SmartPlaylistFileItemListModifier.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogLockSettings.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogProfileSettings.h" />

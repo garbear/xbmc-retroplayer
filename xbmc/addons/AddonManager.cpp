@@ -43,7 +43,7 @@
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
 //#endif
-#include "PeripheralAddon.h"
+#include "peripherals/PeripheralAddon.h"
 #include "PluginSource.h"
 #include "Repository.h"
 #include "Skin.h"
@@ -165,7 +165,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
         else if (type == ADDON_AUDIOENCODER)
           return AddonPtr(new CAudioEncoder(props));
         else if (type == ADDON_PERIPHERALDLL)
-          return AddonPtr(new CPeripheralAddon(props));
+          return AddonPtr(new PERIPHERALS::CPeripheralAddon(props));
         else
           return AddonPtr(new CScreenSaver(props));
       }

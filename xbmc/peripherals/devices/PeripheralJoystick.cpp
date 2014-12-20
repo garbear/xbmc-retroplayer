@@ -21,6 +21,9 @@
 #include "PeripheralJoystick.h"
 #include "addons/AddonManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "peripherals/Peripherals.h"
+#include "peripherals/bus/PeripheralBusAddon.h"
+#include "utils/log.h"
 #include "utils/StringUtils.h"
 
 using namespace ADDON;
@@ -28,41 +31,35 @@ using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
   CPeripheral(scanResult),
-  m_joystickIndex(0)
+  m_index(0)
 {
   m_strDeviceName = scanResult.m_strDeviceName.empty() ? g_localizeStrings.Get(35011) : scanResult.m_strDeviceName;
   m_features.push_back(FEATURE_JOYSTICK);
-
-  std::vector<std::string> parts = StringUtils::Split(scanResult.m_strLocation, "/");
-  if (parts.size() == 2)
-  {
-    // Set m_addon
-    const std::string& strAddonId = parts[0];
-    AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(strAddonId, addon, ADDON_PERIPHERALDLL))
-      m_addon = boost::dynamic_pointer_cast<CPeripheralAddon>(addon);
-
-    if (!m_addon)
-      CLog::Log(LOG_ERROR, "CPeripheralJoystick: Couldn't get add-on %s", strAddonId.c_str());
-
-    // Set m_joystickIndex
-    const std::string& strJoystickIndex = parts[1];
-    char* p = NULL;
-    m_joystickIndex = strtol(strJoystickIndex.c_str(), &p, 10);
-  }
-  else
-  {
-    CLog::Log(LOG_ERROR, "CPeripheralJoystick: Invalid location (%s)", scanResult.m_strLocation.c_str());
-  }
 }
 
 bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 {
+  if (!CPeripheral::InitialiseFeature(feature))
+    return false;
+
+  CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
+  if (!addonBus)
+    return false;
+
+  bool bReturn(true);
+
   if (feature == FEATURE_JOYSTICK)
   {
-    // TODO
+    if (addonBus->SplitLocation(m_strLocation.c_str(), m_addon, m_index))
+    {
+      bReturn &= m_addon->GetJoystickInfo(m_index, m_info);
+    }
+    else
+    {
+      bReturn = false;
+      CLog::Log(LOG_ERROR, "CPeripheralJoystick: Invalid location (%s)", m_strLocation.c_str());
+    }
   }
 
-  return CPeripheral::InitialiseFeature(feature);
+  return bReturn;
 }
- 

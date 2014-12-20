@@ -156,6 +156,8 @@ namespace PERIPHERALS
         return "rpi";
       case PERIPHERAL_BUS_CEC:
         return "cec";
+      case PERIPHERAL_BUS_ADDON:
+        return "addon";
       default:
         return "unknown";
       }

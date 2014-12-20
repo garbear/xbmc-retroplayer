@@ -20,7 +20,8 @@
  */
 
 #include "Peripheral.h"
-#include "addons/PeripheralAddon.h"
+#include "peripherals/PeripheralAddon.h"
+#include "addons/include/xbmc_peripheral_utils.hpp"
 
 namespace PERIPHERALS
 {
@@ -32,8 +33,12 @@ namespace PERIPHERALS
 
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
+    const std::string& Name(void) const            { return m_info.Name(); }
+    unsigned int       RequestedPlayer(void) const { return m_info.RequestedPlayer(); }
+
   private:
-    ADDON::PeripheralAddonPtr m_addon;
-    unsigned int              m_joystickIndex;
+    PeripheralAddonPtr  m_addon;
+    unsigned int        m_index;
+    ADDON::JoystickInfo m_info;
   };
 }

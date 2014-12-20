@@ -3080,9 +3080,6 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPeripheral.cpp">
       <Filter>addons</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\addons\PeripheralAddon.cpp">
-      <Filter>addons</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.cpp">
       <Filter>peripherals\bus</Filter>
     </ClCompile>
@@ -3091,6 +3088,9 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\input\PlayerManager.cpp">
       <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\PeripheralAddon.cpp">
+      <Filter>peripherals</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6040,9 +6040,6 @@
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksPeripheral.h">
       <Filter>addons</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\addons\PeripheralAddon.h">
-      <Filter>addons</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.h">
       <Filter>peripherals\bus</Filter>
     </ClInclude>
@@ -6051,6 +6048,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\input\PlayerManager.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\PeripheralAddon.h">
+      <Filter>peripherals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

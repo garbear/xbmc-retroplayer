@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
+ *      Copyright (C) 2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -21,14 +21,18 @@
 
 #include "addons/AddonDll.h"
 #include "addons/DllPeripheral.h"
-#include "include/xbmc_peripheral_types.h"
-#include "include/xbmc_peripheral_utils.hpp"
+#include "addons/include/xbmc_peripheral_types.h"
+#include "addons/include/xbmc_peripheral_utils.hpp"
+#include "peripherals/PeripheralTypes.h"
+#include "threads/Thread.h"
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
 namespace PERIPHERALS
 {
+  class CPeripheral;
+
   class CPeripheralAddon;
   typedef boost::shared_ptr<CPeripheralAddon> PeripheralAddonPtr;
   typedef std::vector<PeripheralAddonPtr>     PeripheralAddonVector;
@@ -42,28 +46,35 @@ namespace PERIPHERALS
 
     virtual ADDON::AddonPtr GetRunningInstance(void) const;
 
-    /** @name Peripheral add-on methods */
-    //@{
-
     /*!
-     * @brief Initialise the instance of this add-on.
-     * @param iClientId The ID of this add-on.
+     * @brief Initialise the instance of this add-on
      */
     ADDON_STATUS Create(void);
 
     /*!
-     * @brief Destroy the instance of this add-on.
+     * @brief Destroy the instance of this add-on
      */
     void Destroy(void);
 
-    void GetFeatures(std::vector<PeripheralFeature> &features) const;
-    bool HasFeature(const PeripheralFeature feature) const;
+    bool         Register(unsigned int peripheralIndex, CPeripheral *peripheral);
+    void         UnregisterRemovedDevices(const PeripheralScanResults &results, std::vector<CPeripheral*>& removedPeripherals);
+    void         GetFeatures(std::vector<PeripheralFeature> &features) const;
+    bool         HasFeature(const PeripheralFeature feature) const;
+    CPeripheral* GetPeripheral(unsigned int index) const;
+    CPeripheral* GetByPath(const std::string &strPath) const;
+    int          GetPeripheralsWithFeature(std::vector<CPeripheral *> &results, const PeripheralFeature feature) const;
+    size_t       GetNumberOfPeripherals(void) const;
+    size_t       GetNumberOfPeripheralsWithId(const int iVendorId, const int iProductId) const;
+    void         GetDirectory(const CStdString &strPath, CFileItemList &items) const;
 
-    //@}
-    /** @name Joystick methods */
+    /** @name Peripheral add-on methods */
     //@{
     bool PerformDeviceScan(PeripheralScanResults &results);
+    //@}
 
+    /** @name Joystick methods */
+    //@{
+    bool GetJoystickInfo(unsigned int index, ADDON::JoystickInfo& info);
     bool ProcessEvents(void);
     //@}
 
@@ -78,7 +89,7 @@ namespace PERIPHERALS
 
   private:
     /*!
-     * @brief Resets all class members to their defaults. Called by the constructors.
+     * @brief Resets all class members to their defaults. Called by the constructors
      */
     void ResetProperties(void);
 
@@ -99,10 +110,11 @@ namespace PERIPHERALS
     std::string m_strUserPath;    /*!< @brief translated path to the user profile */
     std::string m_strClientPath;  /*!< @brief translated path to this add-on */
 
-    PERIPHERAL_CAPABILITIES m_addonCapabilities;     /*!< the cached add-on capabilities */
     ADDON::AddonVersion     m_apiVersion;
     bool                    m_bProvidesJoysticks;
 
+    std::map<unsigned int, CPeripheral*> m_peripherals;
 
+    CCriticalSection           m_critSection;
   };
 }

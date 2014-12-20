@@ -33,21 +33,30 @@ namespace PERIPHERALS
     CPeripheralBusAddon(CPeripherals *manager);
     virtual ~CPeripheralBusAddon(void);
 
-    /*!
-     * @see PeripheralBus::PerformDeviceScan()
-     */
-    bool PerformDeviceScan(PeripheralScanResults &results);
-
     bool GetAddon(const std::string &strId, ADDON::AddonPtr &addon) const;
 
-    virtual void GetFeatures(std::vector<PeripheralFeature> &features) const;
-    virtual bool HasFeature(const PeripheralFeature feature) const;
+    // Inherited from CPeripheralBus
+    virtual void         Register(CPeripheral *peripheral);
+    virtual void         GetFeatures(std::vector<PeripheralFeature> &features) const;
+    virtual bool         HasFeature(const PeripheralFeature feature) const;
+    virtual CPeripheral* GetPeripheral(const CStdString &strLocation) const;
+    virtual CPeripheral* GetByPath(const CStdString &strPath) const;
+    virtual int          GetPeripheralsWithFeature(std::vector<CPeripheral *> &results, const PeripheralFeature feature) const;
+    virtual size_t       GetNumberOfPeripherals(void) const;
+    virtual size_t       GetNumberOfPeripheralsWithId(const int iVendorId, const int iProductId) const;
+    virtual void         GetDirectory(const CStdString &strPath, CFileItemList &items) const;
 
-    virtual CPeripheral *GetPeripheral(const CStdString &strLocation) const;
-
+    // Inherited from IWindowManagerCallback
     virtual void FrameMove(bool processEvents, bool processGUI = true);
     virtual void Render() { }
     virtual void Process() { }
+
+    bool SplitLocation(const std::string& strLocation, PeripheralAddonPtr& addon, unsigned int& peripheralIndex) const;
+
+  protected:
+    // Inherited from CPeripheralBus
+    virtual bool PerformDeviceScan(PeripheralScanResults &results);
+    virtual void UnregisterRemovedDevices(const PeripheralScanResults &results);
 
   private:
     PeripheralAddonVector m_addons;

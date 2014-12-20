@@ -20,9 +20,9 @@
 
 #include "AddonCallbacksPeripheral.h"
 #include "AddonCallbacks.h"
-#include "PeripheralAddon.h"
 #include "include/xbmc_peripheral_callbacks.h"
 #include "peripherals/Peripherals.h"
+#include "peripherals/PeripheralAddon.h"
 #include "peripherals/devices/Peripheral.h"
 #include "utils/log.h"
 
