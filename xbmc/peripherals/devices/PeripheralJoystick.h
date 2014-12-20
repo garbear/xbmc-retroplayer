@@ -36,6 +36,8 @@ namespace PERIPHERALS
     const std::string& Name(void) const            { return m_info.Name(); }
     unsigned int       RequestedPlayer(void) const { return m_info.RequestedPlayer(); }
 
+    void OnEvent(const ADDON::PeripheralEvent& event);
+
   private:
     PeripheralAddonPtr  m_addon;
     unsigned int        m_index;

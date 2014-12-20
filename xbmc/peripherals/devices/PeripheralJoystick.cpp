@@ -63,3 +63,9 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
   return bReturn;
 }
+
+void CPeripheralJoystick::OnEvent(const PeripheralEvent& event)
+{
+  // TODO
+  CLog::Log(LOG_DEBUG, "PERIPHERAL - received event for %s", Name().c_str());
+}

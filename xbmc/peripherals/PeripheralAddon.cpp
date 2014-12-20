@@ -23,6 +23,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
+#include "peripherals/devices/PeripheralJoystick.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 
@@ -71,6 +72,7 @@ void CPeripheralAddon::ResetProperties(void)
   m_strClientPath      = CSpecialProtocol::TranslatePath(Path());
   m_pInfo->addon_path  = m_strClientPath.c_str();
   m_apiVersion = AddonVersion("0.0.0");
+  // TODO
 }
 
 AddonPtr CPeripheralAddon::GetRunningInstance(void) const
@@ -394,7 +396,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
 
-  unsigned int eventCount;
+  unsigned int eventCount = 0;
   PERIPHERAL_EVENT* pEvents;
 
   PERIPHERAL_ERROR retVal;
@@ -402,59 +404,29 @@ bool CPeripheralAddon::ProcessEvents(void)
   try { LogError(retVal = m_pStruct->GetEvents(&eventCount, &pEvents), "GetEvents()"); }
   catch (std::exception &e) { LogException(e, "GetEvents()"); return false;  }
 
-  if (retVal == PERIPHERAL_NO_ERROR)
+  if (retVal == PERIPHERAL_NO_ERROR && eventCount)
   {
+    std::vector<PeripheralEvent> events;
     for (unsigned int i = 0; i < eventCount; i++)
+      events.push_back(pEvents[i]);
+
+    for (std::vector<PeripheralEvent>::const_iterator itEvent = events.begin(); itEvent != events.end(); ++itEvent)
     {
-      /* TODO
-      if (pEvents[i].type == JOYSTICK_EVENT_TYPE_NONE || !pEvents[i].event)
-        continue;
-
-      const unsigned int joystickIndex = pEvents[i].joystick_index;
-
-      switch (pEvents[i].type)
+      std::map<unsigned int, CPeripheral*>::const_iterator itPer = m_peripherals.find(itEvent->PeripheralIndex());
+      if (itPer == m_peripherals.end())
       {
-        case JOYSTICK_EVENT_TYPE_RAW_BUTTON:
-        {
-          const JOYSTICK_EVENT_RAW_BUTTON& buttonEvent = *static_cast<JOYSTICK_EVENT_RAW_BUTTON*>(pEvents[i].event);
-          // TODO
-          break;
-        }
-        case JOYSTICK_EVENT_TYPE_RAW_HAT:
-        {
-          const JOYSTICK_EVENT_RAW_HAT& hatEvent = *static_cast<JOYSTICK_EVENT_RAW_HAT*>(pEvents[i].event);
-          // TODO
-          break;
-        }
-        case JOYSTICK_EVENT_TYPE_RAW_AXIS:
-        {
-          const JOYSTICK_EVENT_RAW_BUTTON& axisEvent = *static_cast<JOYSTICK_EVENT_RAW_BUTTON*>(pEvents[i].event);
-          // TODO
-          break;
-        }
-        case JOYSTICK_EVENT_TYPE_MAPPED_BUTTON:
-        {
-          const JOYSTICK_EVENT_MAPPED_BUTTON& buttonEvent = *static_cast<JOYSTICK_EVENT_MAPPED_BUTTON*>(pEvents[i].event);
-          // TODO
-          break;
-        }
-        case JOYSTICK_EVENT_TYPE_MAPPED_TRIGGER:
-        {
-          const JOYSTICK_EVENT_MAPPED_TRIGGER& triggerEvent = *static_cast<JOYSTICK_EVENT_MAPPED_TRIGGER*>(pEvents[i].event);
-          // TODO
-          break;
-        }
-        case JOYSTICK_EVENT_TYPE_MAPPED_ANALOG_STICK:
-        {
-          const JOYSTICK_EVENT_MAPPED_ANALOG_STICK& analogStickEvent = *static_cast<JOYSTICK_EVENT_MAPPED_ANALOG_STICK*>(pEvents[i].event);
-          // TODO
-          break;
-        }
-        case JOYSTICK_EVENT_TYPE_NONE:
-        default:
-          break;
+        CLog::Log(LOG_ERROR, "PERIPHERAL - %s - No peripheral %u", Name().c_str(), itEvent->PeripheralIndex());
+        continue;
       }
-      */
+
+      switch (itPer->second->Type())
+      {
+      case PERIPHERAL_JOYSTICK:
+        static_cast<CPeripheralJoystick*>(itPer->second)->OnEvent(*itEvent);
+        break;
+      default:
+        break;
+      }
     }
 
     try { m_pStruct->FreeEvents(eventCount, pEvents); }

@@ -234,77 +234,56 @@ namespace ADDON
           {
             JOYSTICK_EVENT_VIRTUAL_BUTTON* setEvent = static_cast<JOYSTICK_EVENT_VIRTUAL_BUTTON*>(event);
             JOYSTICK_EVENT_VIRTUAL_BUTTON* newEvent = new JOYSTICK_EVENT_VIRTUAL_BUTTON;
-
-            newEvent->index = setEvent->index;
-            newEvent->state = setEvent->state;
+            *newEvent = *setEvent;
             m_data = newEvent;
-
             break;
           }
           case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
           {
             JOYSTICK_EVENT_VIRTUAL_HAT* setEvent = static_cast<JOYSTICK_EVENT_VIRTUAL_HAT*>(event);
             JOYSTICK_EVENT_VIRTUAL_HAT* newEvent = new JOYSTICK_EVENT_VIRTUAL_HAT;
-
-            newEvent->index = setEvent->index;
-            newEvent->state = setEvent->state;
+            *newEvent = *setEvent;
             m_data = newEvent;
-
             break;
           }
           case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
           {
             JOYSTICK_EVENT_VIRTUAL_AXIS* setEvent = static_cast<JOYSTICK_EVENT_VIRTUAL_AXIS*>(event);
             JOYSTICK_EVENT_VIRTUAL_AXIS* newEvent = new JOYSTICK_EVENT_VIRTUAL_AXIS;
-
-            newEvent->index = setEvent->index;
-            newEvent->state = setEvent->state;
+            *newEvent = *setEvent;
             m_data = newEvent;
-
             break;
           }
           case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
           {
             JOYSTICK_EVENT_BUTTON_DIGITAL* setEvent = static_cast<JOYSTICK_EVENT_BUTTON_DIGITAL*>(event);
             JOYSTICK_EVENT_BUTTON_DIGITAL* newEvent = new JOYSTICK_EVENT_BUTTON_DIGITAL;
-
-            newEvent->id = setEvent->id;
-            newEvent->state = setEvent->state;
+            *newEvent = *setEvent;
             m_data = newEvent;
-
             break;
           }
           case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
           {
             JOYSTICK_EVENT_BUTTON_ANALOG* setEvent = static_cast<JOYSTICK_EVENT_BUTTON_ANALOG*>(event);
             JOYSTICK_EVENT_BUTTON_ANALOG* newEvent = new JOYSTICK_EVENT_BUTTON_ANALOG;
-
-            newEvent->id = setEvent->id;
-            newEvent->state = setEvent->state;
+            *newEvent = *setEvent;
             m_data = newEvent;
-
             break;
           }
           case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
           {
             JOYSTICK_EVENT_ANALOG_STICK* setEvent = static_cast<JOYSTICK_EVENT_ANALOG_STICK*>(event);
             JOYSTICK_EVENT_ANALOG_STICK* newEvent = new JOYSTICK_EVENT_ANALOG_STICK;
-
-            newEvent->id = setEvent->id;
-            newEvent->state = setEvent->state;
+            *newEvent = *setEvent;
             m_data = newEvent;
-
             break;
           }
           case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
           {
             JOYSTICK_EVENT_ACCELEROMETER* setEvent = static_cast<JOYSTICK_EVENT_ACCELEROMETER*>(event);
             JOYSTICK_EVENT_ACCELEROMETER* newEvent = new JOYSTICK_EVENT_ACCELEROMETER;
-
-            newEvent->id = setEvent->id;
-            newEvent->state = setEvent->state;
+            *newEvent = *setEvent;
             m_data = newEvent;
-
             break;
           }
           case JOYSTICK_EVENT_TYPE_NONE:
@@ -330,7 +309,24 @@ namespace ADDON
             case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
               (*eventStructs)[i].event_data = new JOYSTICK_EVENT_VIRTUAL_BUTTON(events.at(i).EventAsType<JOYSTICK_EVENT_VIRTUAL_BUTTON>());
               break;
-
+            case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
+              (*eventStructs)[i].event_data = new JOYSTICK_EVENT_VIRTUAL_HAT(events.at(i).EventAsType<JOYSTICK_EVENT_VIRTUAL_HAT>());
+              break;
+            case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
+              (*eventStructs)[i].event_data = new JOYSTICK_EVENT_VIRTUAL_AXIS(events.at(i).EventAsType<JOYSTICK_EVENT_VIRTUAL_AXIS>());
+              break;
+            case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
+              (*eventStructs)[i].event_data = new JOYSTICK_EVENT_BUTTON_DIGITAL(events.at(i).EventAsType<JOYSTICK_EVENT_BUTTON_DIGITAL>());
+              break;
+            case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
+              (*eventStructs)[i].event_data = new JOYSTICK_EVENT_BUTTON_ANALOG(events.at(i).EventAsType<JOYSTICK_EVENT_BUTTON_ANALOG>());
+              break;
+            case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
+              (*eventStructs)[i].event_data = new JOYSTICK_EVENT_ANALOG_STICK(events.at(i).EventAsType<JOYSTICK_EVENT_ANALOG_STICK>());
+              break;
+            case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
+              (*eventStructs)[i].event_data = new JOYSTICK_EVENT_ACCELEROMETER(events.at(i).EventAsType<JOYSTICK_EVENT_ACCELEROMETER>());
+              break;
             case JOYSTICK_EVENT_TYPE_NONE:
             default:
               break;
