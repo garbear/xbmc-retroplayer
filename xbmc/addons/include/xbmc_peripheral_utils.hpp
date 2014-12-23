@@ -42,6 +42,58 @@
 
 namespace ADDON
 {
+  /*!
+   * Utility class to manipulate arrays of peripheral types.
+   */
+  template <class THE_CLASS, typename THE_STRUCT>
+  class PeripheralVector
+  {
+  public:
+    static void ToStructs(const std::vector<THE_CLASS>& vecObjects, THE_STRUCT*& pStructs)
+    {
+      if (vecObjects.empty())
+      {
+        pStructs = NULL;
+      }
+      else
+      {
+        pStructs = new THE_STRUCT[vecObjects.size()];
+        for (unsigned int i = 0; i < vecObjects.size(); i++)
+          vecObjects.at(i).ToStruct(pStructs[i]);
+      }
+    }
+
+    static void ToStructs(const std::vector<THE_CLASS*>& vecObjects, THE_STRUCT*& pStructs)
+    {
+      if (vecObjects.empty())
+      {
+        pStructs = NULL;
+      }
+      else
+      {
+        pStructs = new THE_STRUCT[vecObjects.size()];
+        for (unsigned int i = 0; i < vecObjects.size(); i++)
+          vecObjects.at(i)->ToStruct(pStructs[i]);
+      }
+    }
+
+    static void FreeStructs(unsigned int structCount, THE_STRUCT*& structs)
+    {
+      if (structs)
+      {
+        for (unsigned int i = 0; i < structCount; i++)
+          THE_CLASS::FreeStruct(structs[i]);
+      }
+      SAFE_DELETE_ARRAY(structs);
+    }
+  };
+  
+  /*!
+   * ADDON::Peripheral
+   *
+   * Wrapper class providing peripheral information. Classes can extend
+   * Peripheral to inherit peripheral properties.
+   */
   class Peripheral
   {
   public:
@@ -119,7 +171,15 @@ namespace ADDON
     unsigned int                m_vendorId;
     unsigned int                m_productId;
   };
+  
+  typedef PeripheralVector<Peripheral, PERIPHERAL_INFO>  Peripherals;
 
+  /*!
+   * ADDON::JoystickButton
+   *
+   * Wrapper class providing button information. Classes can extend
+   * JoystickButton to inherit button properties.
+   */
   class JoystickButton
   {
   public:
@@ -166,7 +226,16 @@ namespace ADDON
     JOYSTICK_BUTTON_TYPE m_type;
     std::string          m_strLabel;
   };
+  
+  typedef PeripheralVector<JoystickButton, JOYSTICK_BUTTON>  JoystickButtons;
 
+  /*!
+   * ADDON::Joystick
+   *
+   * Wrapper class providing additional joystick information not provided by
+   * Peripheral. Classes can extend Joystick to inherit peripheral and joystick
+   * properties.
+   */
   class Joystick : public Peripheral
   {
   public:
@@ -213,31 +282,19 @@ namespace ADDON
     {
       Peripheral::ToStruct(info.peripheral_info);
 
-      info.requested_player_num               = m_requestedPlayer;
-      info.virtual_layout.button_count        = m_buttonCount;
-      info.virtual_layout.hat_count           = m_hatCount;
-      info.virtual_layout.axis_count          = m_axisCount;
-      info.physical_layout.button_count       = m_buttons.size();
-      info.physical_layout.buttons            = NULL;
+      info.requested_player_num         = m_requestedPlayer;
+      info.virtual_layout.button_count  = m_buttonCount;
+      info.virtual_layout.hat_count     = m_hatCount;
+      info.virtual_layout.axis_count    = m_axisCount;
+      info.physical_layout.button_count = m_buttons.size();
 
-      if (!m_buttons.empty())
-      {
-        info.physical_layout.buttons = new JOYSTICK_BUTTON[m_buttons.size()];
-        for (unsigned int i = 0; i < m_buttons.size(); i++)
-          m_buttons[i].ToStruct(info.physical_layout.buttons[i]);
-      }
+      JoystickButtons::ToStructs(m_buttons, info.physical_layout.buttons);
     }
 
     static void FreeStruct(JOYSTICK_INFO& info)
     {
       Peripheral::FreeStruct(info.peripheral_info);
-
-      if (info.physical_layout.buttons)
-      {
-        for (unsigned int i = 0; i < info.physical_layout.button_count; i++)
-          JoystickButton::FreeStruct(info.physical_layout.buttons[i]);
-      }
-      SAFE_DELETE_ARRAY(info.physical_layout.buttons);
+      JoystickButtons::FreeStructs(info.physical_layout.button_count, info.physical_layout.buttons);
     }
 
   private:
@@ -247,7 +304,15 @@ namespace ADDON
     unsigned int                m_axisCount;
     std::vector<JoystickButton> m_buttons;
   };
+  
+  typedef PeripheralVector<Joystick, JOYSTICK_INFO>    Joysticks;
 
+  /*!
+   * ADDON::PeripheralEvent
+   *
+   * Wrapper class for peripheral events. Classes can extend PeripheralEvent to
+   * inherit event properties.
+   */
   class PeripheralEvent
   {
   public:
@@ -417,50 +482,5 @@ namespace ADDON
     JOYSTICK_STATE_ANALOG  m_analogState3;
   };
   
-  template <class THE_CLASS, typename THE_STRUCT>
-  class PeripheralVector
-  {
-  public:
-    static void ToStructs(const std::vector<THE_CLASS>& vecObjects, THE_STRUCT*& pStructs)
-    {
-      if (vecObjects.empty())
-      {
-        pStructs = NULL;
-      }
-      else
-      {
-        pStructs = new THE_STRUCT[vecObjects.size()];
-        for (unsigned int i = 0; i < vecObjects.size(); i++)
-          vecObjects.at(i).ToStruct(pStructs[i]);
-      }
-    }
-
-    static void ToStructs(const std::vector<THE_CLASS*>& vecObjects, THE_STRUCT*& pStructs)
-    {
-      if (vecObjects.empty())
-      {
-        pStructs = NULL;
-      }
-      else
-      {
-        pStructs = new THE_STRUCT[vecObjects.size()];
-        for (unsigned int i = 0; i < vecObjects.size(); i++)
-          vecObjects.at(i)->ToStruct(pStructs[i]);
-      }
-    }
-
-    static void FreeStructs(unsigned int structCount, THE_STRUCT*& structs)
-    {
-      if (structs)
-      {
-        for (unsigned int i = 0; i < structCount; i++)
-          THE_CLASS::FreeStruct(structs[i]);
-      }
-      SAFE_DELETE_ARRAY(structs);
-    }
-  };
-
-  typedef PeripheralVector<Peripheral,      PERIPHERAL_INFO>  Peripherals;
-  typedef PeripheralVector<Joystick,        JOYSTICK_INFO>    Joysticks;
   typedef PeripheralVector<PeripheralEvent, PERIPHERAL_EVENT> PeripheralEvents;
 }
