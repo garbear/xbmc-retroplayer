@@ -70,8 +70,8 @@ extern "C"
    * detects a hardware change, it can trigger this function using the
    * TriggerScan() callback.
    */
-  PERIPHERAL_ERROR PerformDeviceScan(unsigned int* peripheral_count, PERIPHERAL_SCAN_RESULT** scan_results);
-  void FreeScanResults(unsigned int peripheral_count, PERIPHERAL_SCAN_RESULT* scan_results);
+  PERIPHERAL_ERROR PerformDeviceScan(unsigned int* peripheral_count, PERIPHERAL_INFO** scan_results);
+  void FreeScanResults(unsigned int peripheral_count, PERIPHERAL_INFO* scan_results);
   ///}
 
   /// @name Joystick operations

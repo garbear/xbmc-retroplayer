@@ -39,6 +39,9 @@
 #define PERIPHERAL_REGISTER_SYMBOL(dll, functionPtr) \
   CHelper_libXBMC_peripheral::RegisterSymbol(dll, functionPtr, #functionPtr)
 
+namespace ADDON
+{
+
 class CHelper_libXBMC_peripheral
 {
 public:
@@ -126,3 +129,5 @@ private:
     const char* libPath;
   };
 };
+
+}
