@@ -30,10 +30,22 @@ using namespace ADDON;
 using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
-  CPeripheral(scanResult),
-  m_index(0)
+  CPeripheral(scanResult)
 {
-  m_strDeviceName = scanResult.m_strDeviceName.empty() ? g_localizeStrings.Get(35011) : scanResult.m_strDeviceName;
+  SetName(!scanResult.m_strDeviceName.empty() ? scanResult.m_strDeviceName : g_localizeStrings.Get(35011));
+  SetVendorID(scanResult.m_iVendorId);
+  SetProductID(scanResult.m_iProductId);
+
+  CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
+  if (addonBus)
+  {
+    unsigned int index;
+    if (addonBus->SplitLocation(scanResult.m_strLocation, m_addon, index))
+      SetIndex(index);
+    else
+      CLog::Log(LOG_ERROR, "CPeripheralJoystick: Invalid location (%s)", scanResult.m_strLocation.c_str());
+  }
+
   m_features.push_back(FEATURE_JOYSTICK);
 }
 
@@ -42,23 +54,14 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
   if (!CPeripheral::InitialiseFeature(feature))
     return false;
 
-  CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
-  if (!addonBus)
-    return false;
-
-  bool bReturn(true);
+  bool bReturn(false);
 
   if (feature == FEATURE_JOYSTICK)
   {
-    if (addonBus->SplitLocation(m_strLocation.c_str(), m_addon, m_index))
-    {
-      bReturn &= m_addon->GetJoystickInfo(m_index, m_info);
-    }
+    if (m_addon)
+      bReturn &= m_addon->GetJoystickInfo(Index(), *this);
     else
-    {
       bReturn = false;
-      CLog::Log(LOG_ERROR, "CPeripheralJoystick: Invalid location (%s)", m_strLocation.c_str());
-    }
   }
 
   return bReturn;

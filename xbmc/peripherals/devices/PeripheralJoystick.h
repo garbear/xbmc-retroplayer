@@ -25,7 +25,8 @@
 
 namespace PERIPHERALS
 {
-  class CPeripheralJoystick : public CPeripheral // TODO: extend CPeripheralHID
+  class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
+                              public ADDON::Joystick
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
@@ -33,14 +34,9 @@ namespace PERIPHERALS
 
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
-    const std::string& Name(void) const            { return m_info.Name(); }
-    unsigned int       RequestedPlayer(void) const { return m_info.RequestedPlayer(); }
-
     void OnEvent(const ADDON::PeripheralEvent& event);
 
   private:
-    PeripheralAddonPtr  m_addon;
-    unsigned int        m_index;
-    ADDON::JoystickInfo m_info;
+    PeripheralAddonPtr m_addon;
   };
 }

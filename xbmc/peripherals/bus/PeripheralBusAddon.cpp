@@ -112,7 +112,7 @@ void CPeripheralBusAddon::UnregisterRemovedDevices(const PeripheralScanResults &
   }
 }
 
-void CPeripheralBusAddon::Register(CPeripheral *peripheral)
+void CPeripheralBusAddon::Register(CPeripheral* peripheral)
 {
   if (!peripheral)
     return;

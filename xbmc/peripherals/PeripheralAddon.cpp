@@ -30,14 +30,13 @@
 #include <algorithm>
 #include <string.h>
 
-using namespace ADDON;
 using namespace PERIPHERALS;
 
 #ifndef SAFE_DELETE
   #define SAFE_DELETE(p)  do { delete (p); (p) = NULL; } while (0)
 #endif
 
-CPeripheralAddon::CPeripheralAddon(const AddonProps& props)
+CPeripheralAddon::CPeripheralAddon(const ADDON::AddonProps& props)
  : CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>(props),
    m_apiVersion("0.0.0"),
    m_bProvidesJoysticks(false)
@@ -51,7 +50,7 @@ CPeripheralAddon::CPeripheralAddon(const cp_extension_t *ext)
 {
   ResetProperties();
 
-  std::string strProvidesJoysticks = CAddonMgr::Get().GetExtValue(ext->configuration, "@provides_joysticks");
+  std::string strProvidesJoysticks = ADDON::CAddonMgr::Get().GetExtValue(ext->configuration, "@provides_joysticks");
 
   m_bProvidesJoysticks = StringUtils::EqualsNoCase(strProvidesJoysticks, "true");
 }
@@ -71,16 +70,16 @@ void CPeripheralAddon::ResetProperties(void)
   m_pInfo->user_path   = m_strUserPath.c_str();
   m_strClientPath      = CSpecialProtocol::TranslatePath(Path());
   m_pInfo->addon_path  = m_strClientPath.c_str();
-  m_apiVersion = AddonVersion("0.0.0");
+  m_apiVersion = ADDON::AddonVersion("0.0.0");
   // TODO
 }
 
-AddonPtr CPeripheralAddon::GetRunningInstance(void) const
+ADDON::AddonPtr CPeripheralAddon::GetRunningInstance(void) const
 {
   CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
   if (addonBus)
   {
-    AddonPtr peripheralAddon;
+    ADDON::AddonPtr peripheralAddon;
     if (addonBus->GetAddon(ID(), peripheralAddon))
       return peripheralAddon;
   }
@@ -161,8 +160,8 @@ bool CPeripheralAddon::GetAddonProperties(void)
 bool CPeripheralAddon::CheckAPIVersion(void)
 {
   /* check the API version */
-  AddonVersion minVersion = AddonVersion(PERIPHERAL_MIN_API_VERSION);
-  try { m_apiVersion = AddonVersion(m_pStruct->GetPeripheralAPIVersion()); }
+  ADDON::AddonVersion minVersion = ADDON::AddonVersion(PERIPHERAL_MIN_API_VERSION);
+  try { m_apiVersion = ADDON::AddonVersion(m_pStruct->GetPeripheralAPIVersion()); }
   catch (std::exception &e) { LogException(e, "GetPeripheralAPIVersion()"); return false; }
 
   if (!IsCompatibleAPIVersion(minVersion, m_apiVersion))
@@ -174,10 +173,10 @@ bool CPeripheralAddon::CheckAPIVersion(void)
   return true;
 }
 
-bool CPeripheralAddon::IsCompatibleAPIVersion(const AddonVersion &minVersion, const AddonVersion &version)
+bool CPeripheralAddon::IsCompatibleAPIVersion(const ADDON::AddonVersion &minVersion, const ADDON::AddonVersion &version)
 {
-  AddonVersion myMinVersion = AddonVersion(PERIPHERAL_MIN_API_VERSION);
-  AddonVersion myVersion = AddonVersion(PERIPHERAL_API_VERSION);
+  ADDON::AddonVersion myMinVersion = ADDON::AddonVersion(PERIPHERAL_MIN_API_VERSION);
+  ADDON::AddonVersion myVersion = ADDON::AddonVersion(PERIPHERAL_API_VERSION);
   return (version >= myMinVersion && minVersion <= myVersion);
 }
 
@@ -242,9 +241,9 @@ void CPeripheralAddon::GetFeatures(std::vector<PeripheralFeature> &features) con
     features.push_back(FEATURE_JOYSTICK);
 }
 
-CPeripheral *CPeripheralAddon::GetPeripheral(unsigned int index) const
+CPeripheral* CPeripheralAddon::GetPeripheral(unsigned int index) const
 {
-  CPeripheral *peripheral(NULL);
+  CPeripheral* peripheral(NULL);
   CSingleLock lock(m_critSection);
   std::map<unsigned int, CPeripheral*>::const_iterator it = m_peripherals.find(index);
   if (it != m_peripherals.end())
@@ -264,7 +263,7 @@ CPeripheral *CPeripheralAddon::GetByPath(const std::string &strPath) const
   return NULL;
 }
 
-int CPeripheralAddon::GetPeripheralsWithFeature(std::vector<CPeripheral *> &results, const PeripheralFeature feature) const
+int CPeripheralAddon::GetPeripheralsWithFeature(std::vector<CPeripheral*> &results, const PeripheralFeature feature) const
 {
   int iReturn(0);
   CSingleLock lock(m_critSection);
@@ -324,7 +323,7 @@ void CPeripheralAddon::GetDirectory(const CStdString &strPath, CFileItemList &it
 bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
 {
   unsigned int            peripheralCount;
-  PERIPHERAL_SCAN_RESULT* pScanResults;
+  PERIPHERAL_INFO*        pScanResults;
   PERIPHERAL_ERROR        retVal;
 
   try { LogError(retVal = m_pStruct->PerformDeviceScan(&peripheralCount, &pScanResults), "PerformDeviceScan()"); }
@@ -334,9 +333,10 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
   {
     for (unsigned int i = 0; i < peripheralCount; i++)
     {
-      PeripheralScanResult result(PERIPHERAL_BUS_ADDON);
+      ADDON::Peripheral peripheral(pScanResults[i]);
 
-      switch (pScanResults[i].type)
+      PeripheralScanResult result(PERIPHERAL_BUS_ADDON);
+      switch (peripheral.Type())
       {
       case PERIPHERAL_TYPE_JOYSTICK:
         result.m_type = PERIPHERAL_JOYSTICK;
@@ -345,10 +345,10 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
         continue;
       }
 
-      result.m_strDeviceName = pScanResults[i].name ? pScanResults[i].name : "";
-      result.m_strLocation   = StringUtils::Format("%s/%d", ID().c_str(), pScanResults[i].peripheral_index);
-      result.m_iVendorId     = pScanResults[i].vendor_id;
-      result.m_iProductId    = pScanResults[i].product_id;
+      result.m_strDeviceName = peripheral.Name();
+      result.m_strLocation   = StringUtils::Format("%s/%d", ID().c_str(), peripheral.Index());
+      result.m_iVendorId     = peripheral.VendorID();
+      result.m_iProductId    = peripheral.ProductID();
       result.m_mappedType    = PERIPHERAL_JOYSTICK;
       result.m_mappedBusType = PERIPHERAL_BUS_ADDON;
       result.m_iSequence     = GetNumberOfPeripheralsWithId(result.m_iVendorId, result.m_iProductId);
@@ -366,7 +366,7 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
   return false;
 }
 
-bool CPeripheralAddon::GetJoystickInfo(unsigned int index, JoystickInfo& info)
+bool CPeripheralAddon::GetJoystickInfo(unsigned int index, ADDON::Joystick& info)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
@@ -380,7 +380,7 @@ bool CPeripheralAddon::GetJoystickInfo(unsigned int index, JoystickInfo& info)
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {
-    info = JoystickInfo(infoStruct);
+    info = ADDON::Joystick(infoStruct);
 
     try { m_pStruct->FreeJoystickInfo(&infoStruct); }
     catch (std::exception &e) { LogException(e, "FreeJoystickInfo()"); }
@@ -396,7 +396,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
 
-  unsigned int eventCount = 0;
+  unsigned int      eventCount = 0;
   PERIPHERAL_EVENT* pEvents;
 
   PERIPHERAL_ERROR retVal;
@@ -406,24 +406,23 @@ bool CPeripheralAddon::ProcessEvents(void)
 
   if (retVal == PERIPHERAL_NO_ERROR && eventCount)
   {
-    std::vector<PeripheralEvent> events;
     for (unsigned int i = 0; i < eventCount; i++)
-      events.push_back(pEvents[i]);
-
-    for (std::vector<PeripheralEvent>::const_iterator itEvent = events.begin(); itEvent != events.end(); ++itEvent)
     {
-      std::map<unsigned int, CPeripheral*>::const_iterator itPer = m_peripherals.find(itEvent->PeripheralIndex());
+      ADDON::PeripheralEvent event(pEvents[i]);
+
+      std::map<unsigned int, CPeripheral*>::const_iterator itPer = m_peripherals.find(event.PeripheralIndex());
       if (itPer == m_peripherals.end())
       {
-        CLog::Log(LOG_ERROR, "PERIPHERAL - %s - No peripheral %u", Name().c_str(), itEvent->PeripheralIndex());
+        CLog::Log(ADDON::LOG_ERROR, "PERIPHERAL - %s - No peripheral %u", Name().c_str(), event.PeripheralIndex());
         continue;
       }
 
       switch (itPer->second->Type())
       {
       case PERIPHERAL_JOYSTICK:
-        static_cast<CPeripheralJoystick*>(itPer->second)->OnEvent(*itEvent);
+        static_cast<CPeripheralJoystick*>(itPer->second)->OnEvent(event);
         break;
+      case PERIPHERAL_UNKNOWN:
       default:
         break;
       }

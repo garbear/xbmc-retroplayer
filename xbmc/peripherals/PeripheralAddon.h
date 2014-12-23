@@ -34,8 +34,8 @@ namespace PERIPHERALS
   class CPeripheral;
 
   class CPeripheralAddon;
-  typedef boost::shared_ptr<CPeripheralAddon> PeripheralAddonPtr;
-  typedef std::vector<PeripheralAddonPtr>     PeripheralAddonVector;
+  typedef boost::shared_ptr<CPeripheralAddon>       PeripheralAddonPtr;
+  typedef std::vector<PeripheralAddonPtr>           PeripheralAddonVector;
 
   class CPeripheralAddon : public ADDON::CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>
   {
@@ -56,13 +56,13 @@ namespace PERIPHERALS
      */
     void Destroy(void);
 
-    bool         Register(unsigned int peripheralIndex, CPeripheral *peripheral);
+    bool         Register(unsigned int peripheralIndex, CPeripheral* peripheral);
     void         UnregisterRemovedDevices(const PeripheralScanResults &results, std::vector<CPeripheral*>& removedPeripherals);
     void         GetFeatures(std::vector<PeripheralFeature> &features) const;
     bool         HasFeature(const PeripheralFeature feature) const;
     CPeripheral* GetPeripheral(unsigned int index) const;
     CPeripheral* GetByPath(const std::string &strPath) const;
-    int          GetPeripheralsWithFeature(std::vector<CPeripheral *> &results, const PeripheralFeature feature) const;
+    int          GetPeripheralsWithFeature(std::vector<CPeripheral*> &results, const PeripheralFeature feature) const;
     size_t       GetNumberOfPeripherals(void) const;
     size_t       GetNumberOfPeripheralsWithId(const int iVendorId, const int iProductId) const;
     void         GetDirectory(const CStdString &strPath, CFileItemList &items) const;
@@ -74,7 +74,7 @@ namespace PERIPHERALS
 
     /** @name Joystick methods */
     //@{
-    bool GetJoystickInfo(unsigned int index, ADDON::JoystickInfo& info);
+    bool GetJoystickInfo(unsigned int index, ADDON::Joystick& info);
     bool ProcessEvents(void);
     //@}
 
@@ -107,14 +107,17 @@ namespace PERIPHERALS
     void LogException(const std::exception &e, const char *strFunctionName) const;
 
     /* stored strings to make sure const char* members in PERIPHERAL_PROPERTIES stay valid */
-    std::string m_strUserPath;    /*!< @brief translated path to the user profile */
-    std::string m_strClientPath;  /*!< @brief translated path to this add-on */
+    std::string         m_strUserPath;    /*!< @brief translated path to the user profile */
+    std::string         m_strClientPath;  /*!< @brief translated path to this add-on */
 
-    ADDON::AddonVersion     m_apiVersion;
-    bool                    m_bProvidesJoysticks;
+    /* add-on properties */
+    ADDON::AddonVersion m_apiVersion;
+    bool                m_bProvidesJoysticks;
 
-    std::map<unsigned int, CPeripheral*> m_peripherals;
+    /* peripherals */
+    std::map<unsigned int, CPeripheral*>  m_peripherals;
 
-    CCriticalSection           m_critSection;
+    /* synchronization */
+    CCriticalSection    m_critSection;
   };
 }
