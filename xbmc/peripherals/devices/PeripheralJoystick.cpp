@@ -57,10 +57,12 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
   if (feature == FEATURE_JOYSTICK)
   {
-    if (m_addon)
-      bReturn |= m_addon->GetJoystickInfo(Index(), *this);
-    else
-      bReturn = false;
+    if (m_addon && m_addon->GetJoystickInfo(Index(), *this))
+    {
+      bReturn = true;
+      if (!Name().empty())
+        m_strDeviceName = Name();
+    }
   }
 
   return bReturn;
