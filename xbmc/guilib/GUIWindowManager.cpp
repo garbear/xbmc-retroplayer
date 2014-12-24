@@ -39,6 +39,7 @@ using namespace std;
 
 CGUIWindowManager::CGUIWindowManager(void)
 {
+  m_pCallback = NULL;
   m_bShowOverlay = true;
   m_iNested = 0;
   m_initialized = false;
@@ -662,24 +663,20 @@ CGUIWindow* CGUIWindowManager::GetWindow(int id) const
 
 void CGUIWindowManager::ProcessRenderLoop(bool renderOnly /*= false*/)
 {
-  if (g_application.IsCurrentThread())
+  if (g_application.IsCurrentThread() && m_pCallback)
   {
     m_iNested++;
-    for (std::vector<IWindowManagerCallback*>::iterator itCallback = m_pCallbacks.begin(); itCallback != m_pCallbacks.end(); ++itCallback)
-    {
-      if (!renderOnly)
-        (*itCallback)->Process();
-      (*itCallback)->FrameMove(!renderOnly);
-      (*itCallback)->Render();
-    }
+    if (!renderOnly)
+      m_pCallback->Process();
+    m_pCallback->FrameMove(!renderOnly);
+    m_pCallback->Render();
     m_iNested--;
   }
 }
 
-void CGUIWindowManager::RegisterCallback(IWindowManagerCallback& callback)
+void CGUIWindowManager::SetCallback(IWindowManagerCallback& callback)
 {
-  if (std::find(m_pCallbacks.begin(), m_pCallbacks.end(), &callback) == m_pCallbacks.end())
-    m_pCallbacks.push_back(&callback);
+  m_pCallback = &callback;
 }
 
 void CGUIWindowManager::DeInitialize()
