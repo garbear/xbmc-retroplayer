@@ -89,9 +89,7 @@ void CPeripherals::Initialise(void)
 #if defined(HAVE_LIBCEC)
     m_busses.push_back(new CPeripheralBusCEC(this));
 #endif
-    CPeripheralBusAddon* addonBus = new CPeripheralBusAddon(this);
-    g_windowManager.RegisterCallback(*addonBus);
-    m_busses.push_back(addonBus);
+    m_busses.push_back(new CPeripheralBusAddon(this));
 
     /* initialise all known busses */
     for (int iBusPtr = (int)m_busses.size() - 1; iBusPtr >= 0; iBusPtr--)
