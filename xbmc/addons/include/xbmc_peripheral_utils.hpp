@@ -103,8 +103,8 @@ namespace ADDON
   class Peripheral
   {
   public:
-    Peripheral(const std::string& strName = "")
-    : m_type(PERIPHERAL_TYPE_UNKNOWN),
+    Peripheral(PERIPHERAL_TYPE type = PERIPHERAL_TYPE_UNKNOWN, const std::string& strName = "")
+    : m_type(type),
       m_strName(strName),
       m_index(0),
       m_vendorId(0),
@@ -113,7 +113,7 @@ namespace ADDON
     }
     
     Peripheral(PERIPHERAL_INFO& info)
-    : m_type(PERIPHERAL_TYPE_UNKNOWN),
+    : m_type(info.type),
       m_strName(info.name ? info.name : ""),
       m_index(info.index),
       m_vendorId(info.vendor_id),
@@ -121,26 +121,6 @@ namespace ADDON
     {
     }
 
-  protected:
-    Peripheral(PERIPHERAL_TYPE type, const std::string& strName = "")
-    : m_type(type),
-      m_strName(strName),
-      m_index(0),
-      m_vendorId(0),
-      m_productId(0)
-    {
-    }
-    
-    Peripheral(PERIPHERAL_TYPE type, PERIPHERAL_INFO& info)
-    : m_type(type),
-      m_strName(info.name ? info.name : ""),
-      m_index(info.index),
-      m_vendorId(info.vendor_id),
-      m_productId(info.product_id)
-    {
-    }
-
-  public:
     virtual ~Peripheral(void) { }
 
     PERIPHERAL_TYPE    Type(void) const      { return m_type; }
@@ -149,6 +129,7 @@ namespace ADDON
     unsigned int       VendorID(void) const  { return m_vendorId; }
     unsigned int       ProductID(void) const { return m_productId; }
 
+    void SetType(PERIPHERAL_TYPE type)        { m_type      = type; }
     void SetName(const std::string& strName)  { m_strName   = strName; }
     void SetIndex(unsigned int index)         { m_index     = index; }
     void SetVendorID(unsigned int vendorId)   { m_vendorId  = vendorId; }
@@ -255,12 +236,14 @@ namespace ADDON
     }
 
     Joystick(JOYSTICK_INFO& info)
-    : Peripheral(PERIPHERAL_TYPE_JOYSTICK, info.peripheral_info),
+    : Peripheral(info.peripheral_info),
       m_requestedPlayer(info.requested_player_num),
       m_buttonCount(info.virtual_layout.button_count),
       m_hatCount(info.virtual_layout.hat_count),
       m_axisCount(info.virtual_layout.axis_count)
     {
+      SetType(PERIPHERAL_TYPE_JOYSTICK);
+
       if (info.physical_layout.buttons)
       {
         for (unsigned int i = 0; i < info.physical_layout.button_count; i++)
