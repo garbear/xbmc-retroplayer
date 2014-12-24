@@ -413,7 +413,7 @@ bool CPeripheralAddon::ProcessEvents(void)
       std::map<unsigned int, CPeripheral*>::const_iterator itPer = m_peripherals.find(event.PeripheralIndex());
       if (itPer == m_peripherals.end())
       {
-        CLog::Log(ADDON::LOG_ERROR, "PERIPHERAL - %s - No peripheral %u", Name().c_str(), event.PeripheralIndex());
+        CLog::Log(LOGERROR, "PERIPHERAL - %s - No peripheral %u", Name().c_str(), event.PeripheralIndex());
         continue;
       }
 
