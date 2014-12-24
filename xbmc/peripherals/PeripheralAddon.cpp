@@ -380,7 +380,7 @@ bool CPeripheralAddon::GetJoystickInfo(unsigned int index, ADDON::Joystick& info
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {
-    info = ADDON::Joystick(infoStruct);
+    info = infoStruct;
 
     try { m_pStruct->FreeJoystickInfo(&infoStruct); }
     catch (std::exception &e) { LogException(e, "FreeJoystickInfo()"); }
