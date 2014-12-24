@@ -153,7 +153,7 @@ CPeripheral *CPeripheralBusAddon::GetPeripheral(const CStdString &strLocation) c
 
   CSingleLock lock(m_critSection);
 
-  if (SplitLocation(peripheral->Location(), addon, peripheralIndex))
+  if (SplitLocation(strLocation, addon, peripheralIndex))
     peripheral = addon->GetPeripheral(peripheralIndex);
 
   return peripheral;
