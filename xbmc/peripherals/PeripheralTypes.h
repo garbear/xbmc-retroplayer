@@ -114,6 +114,8 @@ namespace PERIPHERALS
         return "tuner";
       case PERIPHERAL_IMON:
         return "imon";
+      case PERIPHERAL_JOYSTICK:
+        return "joystick";
       default:
         return "unknown";
       }
@@ -140,6 +142,8 @@ namespace PERIPHERALS
         return PERIPHERAL_TUNER;
       else if (strTypeLowerCase.Equals("imon"))
         return PERIPHERAL_IMON;
+      else if (strTypeLowerCase.Equals("joystick"))
+        return PERIPHERAL_JOYSTICK;
 
       return PERIPHERAL_UNKNOWN;
     };

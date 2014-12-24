@@ -32,7 +32,6 @@ using namespace PERIPHERALS;
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
   CPeripheral(scanResult)
 {
-  SetName(!scanResult.m_strDeviceName.empty() ? scanResult.m_strDeviceName : g_localizeStrings.Get(35011));
   SetVendorID(scanResult.m_iVendorId);
   SetProductID(scanResult.m_iProductId);
 
@@ -59,7 +58,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
   if (feature == FEATURE_JOYSTICK)
   {
     if (m_addon)
-      bReturn &= m_addon->GetJoystickInfo(Index(), *this);
+      bReturn |= m_addon->GetJoystickInfo(Index(), *this);
     else
       bReturn = false;
   }
