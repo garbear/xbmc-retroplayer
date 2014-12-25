@@ -20,29 +20,27 @@
 
 #include "PeripheralJoystick.h"
 #include "addons/AddonManager.h"
-#include "guilib/LocalizeStrings.h"
+#include "guilib/Key.h"s
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 
-using namespace ADDON;
 using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
-  CPeripheral(scanResult)
+  CPeripheral(scanResult),
+  m_index(0),
+  m_requestedPort(0),
+  m_buttonCount(0),
+  m_hatCount(0),
+  m_axisCount(0)
 {
-  SetVendorID(scanResult.m_iVendorId);
-  SetProductID(scanResult.m_iProductId);
-
   CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
   if (addonBus)
   {
-    unsigned int index;
-    if (addonBus->SplitLocation(scanResult.m_strLocation, m_addon, index))
-      SetIndex(index);
-    else
-      CLog::Log(LOG_ERROR, "CPeripheralJoystick: Invalid location (%s)", scanResult.m_strLocation.c_str());
+    if (!addonBus->SplitLocation(scanResult.m_strLocation, m_addon, m_index))
+      CLog::Log(LOGERROR, "CPeripheralJoystick: Invalid location (%s)", scanResult.m_strLocation.c_str());
   }
 
   m_features.push_back(FEATURE_JOYSTICK);
@@ -57,19 +55,79 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
   if (feature == FEATURE_JOYSTICK)
   {
-    if (m_addon && m_addon->GetJoystickInfo(Index(), *this))
+    ADDON::Joystick joystickInfo;
+    if (m_addon && m_addon->GetJoystickInfo(Index(), joystickInfo))
     {
       bReturn = true;
-      if (!Name().empty())
-        m_strDeviceName = Name();
+      m_strDeviceName = joystickInfo.Name();
+      m_requestedPort = joystickInfo.RequestedPlayer();
+      m_buttonCount = joystickInfo.ButtonCount();
+      m_hatCount = joystickInfo.HatCount();
+      m_axisCount = joystickInfo.AxisCount();
     }
   }
 
   return bReturn;
 }
 
+/*
 void CPeripheralJoystick::OnEvent(const PeripheralEvent& event)
 {
   // TODO
-  CLog::Log(LOG_DEBUG, "PERIPHERAL - received event for %s", Name().c_str());
+  CLog::Log(LOGDEBUG, "PERIPHERAL - received event for %s", m_strDeviceName.c_str());
+}
+*/
+
+void CPeripheralJoystick::GetKey(CKey& key)
+{
+  if (m_addon)
+  {
+    std::vector<ADDON::PeripheralEvent> events;
+    if (m_addon->GetEvents(Index(), events))
+    {
+      for (std::vector<ADDON::PeripheralEvent>::const_iterator it = events.begin(); it != events.end(); ++it)
+      {
+        const ADDON::PeripheralEvent& event = *it;
+        switch (event.Type())
+        {
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
+          {
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
+
+            break;
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
+
+            break;
+          case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
+          {
+            if (event.DigitalState() == JOYSTICK_STATE_BUTTON_PRESSED)
+            {
+              CKey newKey(cecDevice->GetButton(), cecDevice->GetHoldTime());
+              JOYSTICK_ID id = event.ButtonID();
+            }
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
+
+            break;
+          case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
+
+            break;
+          case JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD:
+
+            break;
+          case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
+
+            break;
+          case JOYSTICK_EVENT_TYPE_NONE:
+          default:
+            break;
+        }
+      }
+    }
+
+  }
+
 }

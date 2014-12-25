@@ -75,7 +75,8 @@ namespace PERIPHERALS
     /** @name Joystick methods */
     //@{
     bool GetJoystickInfo(unsigned int index, ADDON::Joystick& info);
-    bool ProcessEvents(void);
+    bool GetEvents(unsigned int index, std::vector<ADDON::PeripheralEvent>& events);
+    //bool ProcessEvents(void);
     //@}
 
     static const char *ToString(PERIPHERAL_ERROR error);

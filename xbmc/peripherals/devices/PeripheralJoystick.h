@@ -21,12 +21,12 @@
 
 #include "Peripheral.h"
 #include "peripherals/PeripheralAddon.h"
-#include "addons/include/xbmc_peripheral_utils.hpp"
+
+class CKey;
 
 namespace PERIPHERALS
 {
-  class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
-                              public ADDON::Joystick
+  class CPeripheralJoystick : public CPeripheral // TODO: extend CPeripheralHID
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
@@ -34,9 +34,23 @@ namespace PERIPHERALS
 
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
-    void OnEvent(const ADDON::PeripheralEvent& event);
+    unsigned int Index(void) const { return m_index; }
+
+    /*
+    unsigned int RequestedPort(void) const { return m_requestedPort; }
+    unsigned int ButtonCount(void) const { return m_buttonCount; }
+    unsigned int HatCount(void) const { return m_hatCount; }
+    unsigned int AxisCount(void) const { return m_axisCount; }
+    */
+
+    void GetKey(CKey& key);
 
   private:
+    unsigned int       m_index;
+    unsigned int       m_requestedPort;
+    unsigned int       m_buttonCount;
+    unsigned int       m_hatCount;
+    unsigned int       m_axisCount;
     PeripheralAddonPtr m_addon;
   };
 }

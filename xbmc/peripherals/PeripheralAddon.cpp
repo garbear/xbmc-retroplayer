@@ -190,9 +190,9 @@ bool CPeripheralAddon::Register(unsigned int peripheralIndex, CPeripheral *perip
   if (m_peripherals.find(peripheralIndex) == m_peripherals.end())
   {
     m_peripherals[peripheralIndex] = peripheral;
-    CLog::Log(LOGNOTICE, "%s - new %s device registered on %s->%s: %s", 
-        __FUNCTION__, PeripheralTypeTranslator::TypeToString(peripheral->Type()), 
-        PeripheralTypeTranslator::BusTypeToString(PERIPHERAL_BUS_ADDON), 
+    CLog::Log(LOGNOTICE, "%s - new %s device registered on %s->%s: %s",
+        __FUNCTION__, PeripheralTypeTranslator::TypeToString(peripheral->Type()),
+        PeripheralTypeTranslator::BusTypeToString(PERIPHERAL_BUS_ADDON),
         peripheral->Location().c_str(), peripheral->DeviceName().c_str());
     return true;
   }
@@ -391,15 +391,44 @@ bool CPeripheralAddon::GetJoystickInfo(unsigned int index, ADDON::Joystick& info
   return false;
 }
 
+bool CPeripheralAddon::GetEvents(unsigned int index, std::vector<ADDON::PeripheralEvent>& events)
+{
+  if (!HasFeature(FEATURE_JOYSTICK))
+    return false;
+
+  PERIPHERAL_ERROR retVal;
+
+  unsigned int      eventCount = 0;
+  PERIPHERAL_EVENT* pEvents = NULL;
+
+  try { LogError(retVal = m_pStruct->GetEvents(index, &eventCount, &pEvents), "GetEvents()"); }
+  catch (std::exception &e) { LogException(e, "GetEvents()"); return false;  }
+
+  if (retVal == PERIPHERAL_NO_ERROR && eventCount != 0 && pEvents != NULL)
+  {
+    events.reserve(eventCount);
+    for (unsigned int i = 0; i < eventCount; i++)
+      events.push_back(pEvents[i]);
+
+    try { m_pStruct->FreeEvents(eventCount, pEvents); }
+    catch (std::exception &e) { LogException(e, "FreeJoysticks()"); }
+
+    return true;
+  }
+
+  return false;
+}
+
+/*
 bool CPeripheralAddon::ProcessEvents(void)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
 
+  PERIPHERAL_ERROR retVal;
+
   unsigned int      eventCount = 0;
   PERIPHERAL_EVENT* pEvents;
-
-  PERIPHERAL_ERROR retVal;
 
   try { LogError(retVal = m_pStruct->GetEvents(&eventCount, &pEvents), "GetEvents()"); }
   catch (std::exception &e) { LogException(e, "GetEvents()"); return false;  }
@@ -436,6 +465,7 @@ bool CPeripheralAddon::ProcessEvents(void)
 
   return false;
 }
+*/
 
 const char *CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
 {

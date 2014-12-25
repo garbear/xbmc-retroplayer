@@ -127,7 +127,7 @@ extern "C"
    * @return PERIPHERAL_NO_ERROR if successful; events must be freed using
    * FreeEvents() in this case
    */
-  PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events);
+  PERIPHERAL_ERROR GetEvents(unsigned int peripheral_index, unsigned int* event_count, PERIPHERAL_EVENT** events);
   void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events);
 
   /*!
