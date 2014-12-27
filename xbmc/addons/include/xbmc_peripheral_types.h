@@ -150,7 +150,7 @@ extern "C"
     JOYSTICK_BUTTON_TYPE    type;         /*!< @brief button type */
     char*                   label;        /*!< @brief the label, e.g. "X" or "Square" for JOYSTICK_ID_BUTTON_3 */
   } ATTRIBUTE_PACKED JOYSTICK_BUTTON;
-  
+
   typedef struct JOYSTICK_VIRTUAL_LAYOUT
   {
     unsigned int    button_count;     /*!< @brief number of buttons reported by the driver */
@@ -218,7 +218,7 @@ extern "C"
     JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD,  /*!< @brief state changed for analog stick mapped to raw axes */
     JOYSTICK_EVENT_TYPE_ACCELEROMETER,           /*!< @brief state changed for analog stick mapped to raw axes */
   } JOYSTICK_EVENT_TYPE;
-  
+
   typedef struct PERIPHERAL_EVENT
   {
     JOYSTICK_EVENT_TYPE type;
@@ -237,7 +237,7 @@ extern "C"
       JOYSTICK_STATE_ACCELEROMETER accelerometer;
     };
   } ATTRIBUTE_PACKED PERIPHERAL_EVENT;
-  
+
   typedef enum JOYSTICK_VIRTUAL_HAT_DIRECTION
   {
     JOYSTICK_VIRTUAL_HAT_DIRECTION_UP,

@@ -111,7 +111,7 @@ namespace ADDON
       m_productId(0)
     {
     }
-    
+
     Peripheral(PERIPHERAL_INFO& info)
     : m_type(info.type),
       m_strName(info.name ? info.name : ""),
@@ -158,7 +158,7 @@ namespace ADDON
     unsigned int                m_vendorId;
     unsigned int                m_productId;
   };
-  
+
   typedef PeripheralVector<Peripheral, PERIPHERAL_INFO>  Peripherals;
 
   /*!
@@ -170,18 +170,18 @@ namespace ADDON
   class JoystickButton
   {
   public:
-    JoystickButton(JOYSTICK_ID          id       = JOYSTICK_ID(), 
+    JoystickButton(JOYSTICK_ID          id       = JOYSTICK_ID(),
                    JOYSTICK_BUTTON_TYPE type     = JOYSTICK_BUTTON_TYPE(),
                    const std::string&   strLabel = "")
-    : m_id(id), 
-      m_type(type), 
-      m_strLabel(strLabel) 
+    : m_id(id),
+      m_type(type),
+      m_strLabel(strLabel)
     {
     }
 
     JoystickButton(const JOYSTICK_BUTTON& button)
     : m_id(button.id),
-      m_type(button.type), 
+      m_type(button.type),
       m_strLabel(button.label ? button.label : "")
     {
     }
@@ -213,7 +213,7 @@ namespace ADDON
     JOYSTICK_BUTTON_TYPE m_type;
     std::string          m_strLabel;
   };
-  
+
   typedef PeripheralVector<JoystickButton, JOYSTICK_BUTTON>  JoystickButtons;
 
   /*!
@@ -259,7 +259,7 @@ namespace ADDON
     unsigned int       AxisCount(void) const       { return m_axisCount; }
 
     const std::vector<JoystickButton>& Buttons(void) const { return m_buttons; }
-    
+
     void SetRequestedPlayer(unsigned int requestedPlayer) { m_requestedPlayer = requestedPlayer; }
     void SetButtonCount(unsigned int buttonCount)         { m_buttonCount     = buttonCount; }
     void SetHatCount(unsigned int hatCount)               { m_hatCount        = hatCount; }
@@ -293,7 +293,7 @@ namespace ADDON
     unsigned int                m_axisCount;
     std::vector<JoystickButton> m_buttons;
   };
-  
+
   typedef PeripheralVector<Joystick, JOYSTICK_INFO>    Joysticks;
 
   /*!
@@ -309,8 +309,8 @@ namespace ADDON
     : m_type(type),
       m_peripheralIndex(peripheralIndex),
       m_virtualIndex(0),
-      m_buttonId(), 
-      m_digitalState(), 
+      m_buttonId(),
+      m_digitalState(),
       m_analogState1(),
       m_analogState2(),
       m_analogState3()
@@ -321,8 +321,8 @@ namespace ADDON
     : m_type(event.type),
       m_peripheralIndex(event.peripheral_index),
       m_virtualIndex(0),
-      m_buttonId(), 
-      m_digitalState(), 
+      m_buttonId(),
+      m_digitalState(),
       m_hatState(),
       m_analogState1(),
       m_analogState2(),
@@ -366,7 +366,7 @@ namespace ADDON
     }
 
     virtual ~PeripheralEvent(void) { }
-    
+
     JOYSTICK_EVENT_TYPE   Type(void) const            { return m_type; }
     unsigned int          PeripheralIndex(void) const { return m_peripheralIndex; }
     unsigned int          VirtualIndex(void) const    { return m_virtualIndex; }
@@ -479,6 +479,6 @@ namespace ADDON
     JOYSTICK_STATE_ANALOG  m_analogState2;
     JOYSTICK_STATE_ANALOG  m_analogState3;
   };
-  
+
   typedef PeripheralVector<PeripheralEvent, PERIPHERAL_EVENT> PeripheralEvents;
 }
