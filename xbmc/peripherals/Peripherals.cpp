@@ -682,23 +682,11 @@ bool CPeripherals::ToggleDeviceState(CecStateChange mode /*= STATE_SWITCH_TOGGLE
 
 bool CPeripherals::GetNextKeypress(float frameTime, CKey &key)
 {
+  CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
+  if (addonBus)
+    addonBus->ProcessEvents();
+
   vector<CPeripheral *> peripherals;
-  if (GetPeripheralsWithFeature(peripherals, FEATURE_JOYSTICK))
-  {
-    CKey newKey;
-
-    for (unsigned int iPeripheralPtr = 0; iPeripheralPtr < peripherals.size(); iPeripheralPtr++)
-    {
-      CPeripheralJoystick *joystickDevice = (CPeripheralJoystick *) peripherals.at(iPeripheralPtr);
-      if (joystickDevice && joystickDevice->GetKey(newKey))
-      {
-        key = newKey;
-        return true;
-      }
-    }
-  }
-
-  peripherals.clear();
   if (SupportsCEC() && GetPeripheralsWithFeature(peripherals, FEATURE_CEC))
   {
     for (unsigned int iPeripheralPtr = 0; iPeripheralPtr < peripherals.size(); iPeripheralPtr++)

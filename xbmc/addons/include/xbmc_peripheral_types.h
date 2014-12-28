@@ -333,7 +333,7 @@ extern "C"
     ///{
     PERIPHERAL_ERROR (__cdecl* GetJoystickInfo)(unsigned int, JOYSTICK_INFO*);
     void             (__cdecl* FreeJoystickInfo)(JOYSTICK_INFO*);
-    PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int, unsigned int*, PERIPHERAL_EVENT**);
+    PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, PERIPHERAL_EVENT**);
     void             (__cdecl* FreeEvents)(unsigned int, PERIPHERAL_EVENT*);
     PERIPHERAL_ERROR (__cdecl* GetButtonMap)(unsigned int, JOYSTICK_BUTTON_MAP*);
     PERIPHERAL_ERROR (__cdecl* FreeButtonMap)(JOYSTICK_BUTTON_MAP*);

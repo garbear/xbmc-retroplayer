@@ -71,63 +71,128 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 }
 
 /*
-void CPeripheralJoystick::OnEvent(const PeripheralEvent& event)
+void CPeripheralJoystick::OnEvent(const ADDON::PeripheralEvent& event)
 {
   // TODO
   CLog::Log(LOGDEBUG, "PERIPHERAL - received event for %s", m_strDeviceName.c_str());
+  
+  switch (event.Type())
+  {
+    case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
+      m_lastVirtualIndex = event.VirtualIndex();
+      SetChanged();
+      NotifyObservers(ObservableMessageButtonChanged);
+      break;
+
+    case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
+      m_lastVirtualIndex = event.VirtualIndex();
+      SetChanged();
+      NotifyObservers(ObservableMessageHatChanged);
+      break;
+
+    case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
+      m_lastVirtualIndex = event.VirtualIndex();
+      SetChanged();
+      NotifyObservers(ObservableMessageAxisChanged);
+      break;
+
+    case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
+    case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
+    case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
+    case JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD:
+    case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
+    {
+      int actionID = ACTION_NONE;
+      switch (event.ButtonID())
+      {
+      case JOYSTICK_ID_BUTTON_1:
+        actionID = KEY_BUTTON_A;
+        break;
+      case JOYSTICK_ID_BUTTON_2:
+        actionID = KEY_BUTTON_B;
+        break;
+      case JOYSTICK_ID_BUTTON_3:
+        actionID = KEY_BUTTON_X;
+        break;
+      case JOYSTICK_ID_BUTTON_4:
+        actionID = KEY_BUTTON_Y;
+        break;
+      case JOYSTICK_ID_BUTTON_5:
+        actionID = KEY_BUTTON_BLACK;
+        break;
+      case JOYSTICK_ID_BUTTON_6:
+        actionID = KEY_BUTTON_WHITE;
+        break;
+      case JOYSTICK_ID_BUTTON_START:
+        actionID = KEY_BUTTON_START;
+        break;
+      case JOYSTICK_ID_BUTTON_SELECT:
+        actionID = KEY_BUTTON_BACK;
+        break;
+      case JOYSTICK_ID_BUTTON_HOME:
+        //actionID = KEY_BUTTON_A; // TODO
+        break;
+      case JOYSTICK_ID_BUTTON_UP:
+        actionID = KEY_BUTTON_DPAD_UP;
+        break;
+      case JOYSTICK_ID_BUTTON_DOWN:
+        actionID = KEY_BUTTON_DPAD_DOWN;
+        break;
+      case JOYSTICK_ID_BUTTON_LEFT:
+        actionID = KEY_BUTTON_DPAD_LEFT;
+        break;
+      case JOYSTICK_ID_BUTTON_RIGHT:
+        actionID = KEY_BUTTON_DPAD_RIGHT;
+        break;
+      case JOYSTICK_ID_BUTTON_L:
+        actionID = KEY_BUTTON_LEFT_SHOULDER;
+        break;
+      case JOYSTICK_ID_BUTTON_R:
+        actionID = KEY_BUTTON_RIGHT_SHOULDER;
+        break;
+      case JOYSTICK_ID_BUTTON_L_STICK:
+        actionID = KEY_BUTTON_LEFT_THUMB_BUTTON; // TODO
+        break;
+      case JOYSTICK_ID_BUTTON_R_STICK:
+        actionID = KEY_BUTTON_RIGHT_THUMB_BUTTON; // TODO
+        break;
+      case JOYSTICK_ID_TRIGGER_L:
+        actionID = KEY_BUTTON_LEFT_TRIGGER;
+        break;
+      case JOYSTICK_ID_TRIGGER_R:
+        actionID = KEY_BUTTON_RIGHT_TRIGGER;
+        break;
+      case JOYSTICK_ID_ANALOG_STICK_LEFT:
+        actionID = KEY_BUTTON_LEFT_THUMB_STICK_UP; // TODO
+        break;
+      case JOYSTICK_ID_ANALOG_STICK_RIGHT:
+        actionID = KEY_BUTTON_RIGHT_THUMB_STICK_UP; // TODO
+        break;
+      case JOYSTICK_ID_ACCELEROMETER:
+      case JOYSTICK_ID_GYRO:
+        // TODO
+        break;
+      case JOYSTICK_ID_BUTTON_UNKNOWN:
+      default:
+        break;
+      }
+      if (event.DigitalState() == JOYSTICK_STATE_BUTTON_PRESSED)
+      {
+        m_keys.push_back(new CKey())
+        CKey newKey(cecDevice->GetButton(), cecDevice->GetHoldTime());
+        JOYSTICK_ID id = event.ButtonID();
+      }
+      break;
+    }
+    case JOYSTICK_EVENT_TYPE_NONE:
+    default:
+      break;
+  }
 }
 */
 
-void CPeripheralJoystick::GetKey(CKey& key)
+void CPeripheralJoystick::SetLastVirtualIndex(unsigned int index)
 {
-  if (m_addon)
-  {
-    std::vector<ADDON::PeripheralEvent> events;
-    if (m_addon->GetEvents(Index(), events))
-    {
-      for (std::vector<ADDON::PeripheralEvent>::const_iterator it = events.begin(); it != events.end(); ++it)
-      {
-        const ADDON::PeripheralEvent& event = *it;
-        switch (event.Type())
-        {
-          case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
-          {
-            break;
-          }
-          case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
-
-            break;
-          case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
-
-            break;
-          case JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL:
-          {
-            if (event.DigitalState() == JOYSTICK_STATE_BUTTON_PRESSED)
-            {
-              CKey newKey(cecDevice->GetButton(), cecDevice->GetHoldTime());
-              JOYSTICK_ID id = event.ButtonID();
-            }
-            break;
-          }
-          case JOYSTICK_EVENT_TYPE_BUTTON_ANALOG:
-
-            break;
-          case JOYSTICK_EVENT_TYPE_ANALOG_STICK:
-
-            break;
-          case JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD:
-
-            break;
-          case JOYSTICK_EVENT_TYPE_ACCELEROMETER:
-
-            break;
-          case JOYSTICK_EVENT_TYPE_NONE:
-          default:
-            break;
-        }
-      }
-    }
-
-  }
-
+  m_lastVirtualIndex = index;
+  SetChanged();
 }

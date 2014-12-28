@@ -35,6 +35,8 @@ namespace PERIPHERALS
 
     bool GetAddon(const std::string &strId, ADDON::AddonPtr &addon) const;
 
+    void ProcessEvents(void);
+
     // Inherited from CPeripheralBus
     virtual void         Register(CPeripheral *peripheral);
     virtual void         GetFeatures(std::vector<PeripheralFeature> &features) const;

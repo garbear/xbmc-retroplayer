@@ -26,7 +26,8 @@ class CKey;
 
 namespace PERIPHERALS
 {
-  class CPeripheralJoystick : public CPeripheral // TODO: extend CPeripheralHID
+  class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
+                              public Observable
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
@@ -43,7 +44,9 @@ namespace PERIPHERALS
     unsigned int AxisCount(void) const { return m_axisCount; }
     */
 
-    void GetKey(CKey& key);
+    void OnEvent(const ADDON::PeripheralEvent& event);
+    unsigned int GetLastVirtualIndex(void) const { return m_lastVirtualIndex; }
+    void SetLastVirtualIndex(unsigned int index);
 
   private:
     unsigned int       m_index;
@@ -51,6 +54,8 @@ namespace PERIPHERALS
     unsigned int       m_buttonCount;
     unsigned int       m_hatCount;
     unsigned int       m_axisCount;
+    unsigned int       m_lastVirtualIndex;
+    std::vector<CKey*> m_keys;
     PeripheralAddonPtr m_addon;
   };
 }

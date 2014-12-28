@@ -95,6 +95,14 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
   return bReturn;
 }
 
+void CPeripheralBusAddon::ProcessEvents(void)
+{
+  CSingleLock lock(m_critSection);
+  
+  for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
+    (*itAddon)->ProcessEvents();
+}
+
 void CPeripheralBusAddon::UnregisterRemovedDevices(const PeripheralScanResults &results)
 {
   CSingleLock lock(m_critSection);
@@ -206,17 +214,6 @@ void CPeripheralBusAddon::GetDirectory(const CStdString &strPath, CFileItemList 
   CSingleLock lock(m_critSection);
   for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
     (*itAddon)->GetDirectory(strPath, items);
-}
-
-void CPeripheralBusAddon::FrameMove(bool processEvents, bool processGUI /* = true */)
-{
-  if (processEvents)
-  {
-    CSingleLock lock(m_critSection);
-
-    for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
-      (*itAddon)->ProcessEvents();
-  }
 }
 
 bool CPeripheralBusAddon::SplitLocation(const std::string& strLocation, PeripheralAddonPtr& addon, unsigned int& peripheralIndex) const

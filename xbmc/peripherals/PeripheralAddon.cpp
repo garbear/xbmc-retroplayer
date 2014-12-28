@@ -391,7 +391,7 @@ bool CPeripheralAddon::GetJoystickInfo(unsigned int index, ADDON::Joystick& info
   return false;
 }
 
-bool CPeripheralAddon::GetEvents(unsigned int index, std::vector<ADDON::PeripheralEvent>& events)
+bool CPeripheralAddon::ProcessEvents(void)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
@@ -401,14 +401,46 @@ bool CPeripheralAddon::GetEvents(unsigned int index, std::vector<ADDON::Peripher
   unsigned int      eventCount = 0;
   PERIPHERAL_EVENT* pEvents = NULL;
 
-  try { LogError(retVal = m_pStruct->GetEvents(index, &eventCount, &pEvents), "GetEvents()"); }
+  try { LogError(retVal = m_pStruct->GetEvents(&eventCount, &pEvents), "GetEvents()"); }
   catch (std::exception &e) { LogException(e, "GetEvents()"); return false;  }
 
-  if (retVal == PERIPHERAL_NO_ERROR && eventCount != 0 && pEvents != NULL)
+  if (retVal == PERIPHERAL_NO_ERROR && pEvents != NULL)
   {
-    events.reserve(eventCount);
     for (unsigned int i = 0; i < eventCount; i++)
-      events.push_back(pEvents[i]);
+    {
+      ADDON::PeripheralEvent event(pEvents[i]);
+      CPeripheral* peripheralDevice = GetPeripheral(event.PeripheralIndex());
+      if (peripheralDevice)
+      {
+        switch (peripheralDevice->Type())
+        {
+        case PERIPHERAL_JOYSTICK:
+        {
+          CPeripheralJoystick* joystickDevice = static_cast<CPeripheralJoystick*>(peripheralDevice);
+          switch (event.Type())
+          {
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
+            joystickDevice->SetLastVirtualIndex(event.VirtualIndex());
+            joystickDevice->NotifyObservers(ObservableMessageButtonChanged);
+            break;
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
+            joystickDevice->SetLastVirtualIndex(event.VirtualIndex());
+            joystickDevice->NotifyObservers(ObservableMessageHatChanged);
+            break;
+          case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
+            joystickDevice->SetLastVirtualIndex(event.VirtualIndex());
+            joystickDevice->NotifyObservers(ObservableMessageAxisChanged);
+            break;
+          default:
+            break;
+          }
+          break;
+        }
+        default:
+          break;
+        }
+      }
+    }
 
     try { m_pStruct->FreeEvents(eventCount, pEvents); }
     catch (std::exception &e) { LogException(e, "FreeJoysticks()"); }
