@@ -36,6 +36,7 @@ namespace PERIPHERALS
       m_virtualIndex(0),
       m_buttonId(),
       m_digitalState(),
+      m_hatState(),
       m_analogState1(),
       m_analogState2(),
       m_analogState3()
@@ -210,7 +211,7 @@ namespace PERIPHERALS
   public:
     virtual ~IJoystickCallback(void) { }
 
-    virtual void ButtonEvent(JOYSTICK_ID button, const CJoystick* joystick);
+    virtual void ButtonEvent(const JoystickEvent& event, const CJoystick* joystick);
   };
 
   class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
