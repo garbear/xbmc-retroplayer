@@ -149,52 +149,27 @@ bool CWinEventsAndroid::MessagePump()
         (pumpEvent.type == XBMC_JOYAXISMOTION) ||
         (pumpEvent.type == XBMC_JOYHATMOTION))
     {
-      int             item;
       int             type;
-      uint32_t        holdTime;
       APP_InputDevice input_device;
-      float           amount = 1.0f;
-      short           input_type;
 
       type = pumpEvent.type;
       switch (type)
       {
         case XBMC_JOYAXISMOTION:
-          // The typical joystick keymap xml has the following where 'id' is the axis
-          //  and 'limit' is which action to choose (ie. Up or Down).
-          //  <axis id="5" limit="-1">Up</axis>
-          //  <axis id="5" limit="+1">Down</axis>
-          // One would think that limits is in reference to fvalue but
-          // it is really in reference to id :) The sign of item passed
-          // into ProcessJoystickEvent indicates the action mapping.
-          item = pumpEvent.jaxis.axis;
-          if (fabs(pumpEvent.jaxis.fvalue) < ALMOST_ZERO)
-            amount = 0.0f;
-          else if (pumpEvent.jaxis.fvalue  < 0.0f)
-            item = -item;
-          holdTime = 0;
           input_device.id = pumpEvent.jaxis.which;
-          input_type = JACTIVE_AXIS;
           break;
 
         case XBMC_JOYHATMOTION:
-          item = pumpEvent.jhat.hat | 0xFFF00000 | (pumpEvent.jhat.value<<16);
-          holdTime = 0;
           input_device.id = pumpEvent.jhat.which;
-          input_type = JACTIVE_HAT;
           break;
 
         case XBMC_JOYBUTTONUP:
         case XBMC_JOYBUTTONDOWN:
-          item = pumpEvent.jbutton.button;
-          holdTime = pumpEvent.jbutton.holdTime;
           input_device.id = pumpEvent.jbutton.which;
-          input_type = JACTIVE_BUTTON;
           break;
       }
 
       // look for device name in our inputdevice cache
-      // so we can lookup and match the right joystick.xxx.xml
       for (size_t i = 0; i < m_input_devices.size(); i++)
       {
         if (m_input_devices[i].id == input_device.id)
@@ -215,12 +190,6 @@ bool CWinEventsAndroid::MessagePump()
         // Joystick autorepeat -> only handle axis
         CSingleLock lock(m_lasteventCond);
         m_lastevent.push(pumpEvent);
-      }
-
-      if (fabs(amount) >= ALMOST_ZERO)
-      {
-        ret |= g_application.ProcessJoystickEvent(input_device.name,
-          item, input_type, amount, holdTime);
       }
     }
     else
