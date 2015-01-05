@@ -48,8 +48,11 @@ public:
 
   static const CJNIViewInputDevice getDevice(int id);
 
+  int          getControllerNumber() const;
   std::string  getName() const;
+  int          getProductId() const;
   int          getSources() const;
+  int          getVendorId() const;
   const CJNIList<CJNIViewInputDeviceMotionRange> getMotionRanges() const;
   const CJNIViewInputDeviceMotionRange getMotionRange(int axis) const;
   const CJNIViewInputDeviceMotionRange getMotionRange(int axis, int source) const;

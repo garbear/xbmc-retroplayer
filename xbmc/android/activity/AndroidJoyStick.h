@@ -23,6 +23,7 @@
 #include <vector>
 
 struct AInputEvent;
+class IGenericJoystickInputHandler;
 
 typedef struct {
   float     flat;
@@ -39,18 +40,22 @@ typedef struct {
 
 typedef struct {
   int32_t id;
+  char    name[256];
+  int     vid;
+  int     pid;
   APP_InputDeviceAxis x_hat;
   APP_InputDeviceAxis y_hat;
   APP_InputDeviceAxis x_axis;
   APP_InputDeviceAxis y_axis;
   APP_InputDeviceAxis z_axis;
   APP_InputDeviceAxis rz_axis;
-} APP_InputDeviceAxes;
+  IGenericJoystickInputHandler *input_handler;
+} APP_InputDevice;
 
 class CAndroidJoyStick
 {
 public:
-  CAndroidJoyStick();
+  CAndroidJoyStick() { }
  ~CAndroidJoyStick();
 
   bool onJoyStickKeyEvent(AInputEvent* event);
@@ -58,18 +63,9 @@ public:
 
 private:
   void  ProcessMotionEvents(AInputEvent *event, size_t pointer_index,
-          int32_t device, APP_InputDeviceAxes *axes);
-  bool  ProcessHat( AInputEvent *event, size_t pointer_index,
-          APP_InputDeviceAxis &hat, int device, int android_axis);
-  bool  ProcessAxis(AInputEvent *event, size_t pointer_index,
+          int32_t device, APP_InputDevice *devices);
+  void  ProcessAxis(AInputEvent *event, size_t pointer_index,
           APP_InputDeviceAxis &axis, int device, int keymap_axis, int android_axis);
 
-  void  XBMC_JoyAxis(uint8_t device, uint8_t axis, float value);
-  void  XBMC_JoyHat(uint8_t device, uint8_t value);
-  void  XBMC_JoyButton(uint8_t device, uint8_t button, uint32_t holdtime, bool up);
-
-  uint8_t               m_prev_device;
-  uint8_t               m_prev_button;
-  uint32_t              m_prev_holdtime;
-  std::vector<APP_InputDeviceAxes*> m_input_devices;
+  std::vector<APP_InputDevice*> m_input_devices;
 };

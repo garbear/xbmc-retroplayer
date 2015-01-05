@@ -80,16 +80,34 @@ const CJNIViewInputDevice CJNIViewInputDevice::getDevice(int id)
     id);
 }
 
+int CJNIViewInputDevice::getControllerNumber() const
+{
+  return call_method<int>(m_object,
+    "getControllerNumber", "()I");
+}
+
 std::string CJNIViewInputDevice::getName() const
 {
   return jcast<std::string>(call_method<jhstring>(m_object,
     "getName", "()Ljava/lang/String;"));
 }
 
+int CJNIViewInputDevice::getProductId() const
+{
+  return call_method<int>(m_object,
+    "getProductId", "()I");
+}
+
 int CJNIViewInputDevice::getSources() const
 {
   return call_method<int>(m_object,
     "getSources", "()I");
+}
+
+int CJNIViewInputDevice::getVendorId() const
+{
+  return call_method<int>(m_object,
+    "getVendorId", "()I");
 }
 
 const CJNIList<CJNIViewInputDeviceMotionRange> CJNIViewInputDevice::getMotionRanges() const

@@ -302,6 +302,7 @@ namespace ADDON
    * Wrapper class for peripheral events. Classes can extend PeripheralEvent to
    * inherit event properties.
    */
+  /*
   class PeripheralEvent
   {
   public:
@@ -481,4 +482,6 @@ namespace ADDON
   };
 
   typedef PeripheralVector<PeripheralEvent, PERIPHERAL_EVENT> PeripheralEvents;
+
+  /**/
 }
