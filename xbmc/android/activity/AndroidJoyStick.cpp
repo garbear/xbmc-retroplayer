@@ -225,6 +225,8 @@ bool CAndroidJoyStick::onJoyStickKeyEvent(AInputEvent *event)
   if (event == NULL)
     return false;
 
+  int32_t keycode = AKeyEvent_getKeyCode(event);
+  int32_t device  = AInputEvent_getDeviceId(event);
   // watch this check, others might be different.
   // AML IR Controller is       AINPUT_SOURCE_GAMEPAD | AINPUT_SOURCE_KEYBOARD | AINPUT_SOURCE_DPAD
   // Gamestick Controller    == AINPUT_SOURCE_GAMEPAD | AINPUT_SOURCE_KEYBOARD
@@ -236,9 +238,7 @@ bool CAndroidJoyStick::onJoyStickKeyEvent(AInputEvent *event)
   // GamePad events are AINPUT_EVENT_TYPE_KEY events,
   // trap them here and revector valid ones as JoyButtons
   // so we get keymap handling.
-  uint8_t button  = 0;
-  int32_t keycode = AKeyEvent_getKeyCode(event);
-
+  uint8_t button = 0;
   for (size_t i = 0; i < sizeof(ButtonMap) / sizeof(KeyMap); i++)
   {
     if (keycode == ButtonMap[i].nativeKey)
@@ -247,13 +247,10 @@ bool CAndroidJoyStick::onJoyStickKeyEvent(AInputEvent *event)
       break;
     }
   }
-
   if (button == 0)
     return false;
 
   IJoystickInputHandler *input_handler = NULL;
-  int32_t                device        = AInputEvent_getDeviceId(event);
-
   for (size_t i = 0; i < m_input_devices.size(); i++)
   {
     if (m_input_devices[i]->id == device)
