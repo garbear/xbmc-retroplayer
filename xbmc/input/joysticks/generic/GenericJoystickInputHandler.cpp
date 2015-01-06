@@ -44,17 +44,6 @@ CGenericJoystickInputHandler::~CGenericJoystickInputHandler()
   m_detectors.clear();
 }
 
-IGenericJoystickInputHandler *CGenericJoystickInputHandler::Get(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid)
-{
-  // TODO: cache by id, strName, vid, pid
-  return new CGenericJoystickInputHandler(id, strName, vid, pid);
-}
-
-void CGenericJoystickInputHandler::Release(IGenericJoystickInputHandler *inputHandler)
-{
-  delete inputHandler; // TODO
-}
-
 bool CGenericJoystickInputHandler::HandleJoystickEvent(JoystickEvent event,
                                                        unsigned int  index,
                                                        int64_t       timeNs,

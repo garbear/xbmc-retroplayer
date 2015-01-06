@@ -20,7 +20,6 @@
 #pragma once
 
 #include "input/joysticks/IJoystickInputHandler.h"
-//#include "input/joysticks/JoystickTypes.h"
 #include "threads/CriticalSection.h"
 #include "threads/Timer.h"
 
@@ -44,11 +43,7 @@ class IGenericJoystickButtonMapper;
 class CGenericJoystickInputHandler : public IJoystickInputHandler, private ITimerCallback
 {
 public:
-  /*!
-   \brief Get an instance of the touch input manager
-   */
-  static IGenericJoystickInputHandler *Get(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid);
-  static void Release(IGenericJoystickInputHandler *inputHandler);
+  virtual ~CGenericJoystickInputHandler();
 
   // implementation of IJoystickInputHandler
   virtual bool HandleJoystickEvent(JoystickEvent event,
@@ -58,14 +53,15 @@ public:
                                    HatDirection  direction = HatDirectionNone,
                                    float         axisPos   = 0.0f);
 
-private:
-  // private construction, and no assignments; use the provided singleton methods
+protected:
   CGenericJoystickInputHandler(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid);
-  CGenericJoystickInputHandler(const CGenericJoystickInputHandler&);
-  CGenericJoystickInputHandler const& operator=(CGenericJoystickInputHandler const&);
-  virtual ~CGenericJoystickInputHandler();
 
   IGenericJoystickButtonMapper *ButtonMapper() { return m_buttonMapper; }
+
+private:
+  // private construction, and no assignments; use the provided singleton methods
+  CGenericJoystickInputHandler(const CGenericJoystickInputHandler&);
+  CGenericJoystickInputHandler const& operator=(CGenericJoystickInputHandler const&);
 
   // implementation of ITimerCallbacks
   virtual void OnTimeout();

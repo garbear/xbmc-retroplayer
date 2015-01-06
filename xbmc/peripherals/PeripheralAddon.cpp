@@ -408,6 +408,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   {
     for (unsigned int i = 0; i < eventCount; i++)
     {
+      /* TODO
       ADDON::PeripheralEvent event(pEvents[i]);
       CPeripheral* peripheralDevice = GetPeripheral(event.PeripheralIndex());
       if (peripheralDevice)
@@ -440,6 +441,7 @@ bool CPeripheralAddon::ProcessEvents(void)
           break;
         }
       }
+      */
     }
 
     try { m_pStruct->FreeEvents(eventCount, pEvents); }
