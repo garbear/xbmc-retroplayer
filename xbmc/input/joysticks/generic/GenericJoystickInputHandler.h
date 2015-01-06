@@ -23,6 +23,7 @@
 #include "threads/CriticalSection.h"
 #include "threads/Timer.h"
 
+#include <map>
 #include <set>
 
 class IGenericJoystickGestureDetector;

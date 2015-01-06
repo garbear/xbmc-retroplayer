@@ -60,7 +60,5 @@ private:
   CGenericJoystickActionHandler const& operator=(CGenericJoystickActionHandler const&);
   virtual ~CGenericJoystickActionHandler() { }
 
-  void touch(uint8_t type, uint8_t button, uint16_t x, uint16_t y);
-  void sendEvent(int actionId, float x, float y, float x2 = 0.0f, float y2 = 0.0f, int pointers = 1);
   void focusControl(float x, float y);
 };

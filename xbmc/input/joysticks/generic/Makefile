@@ -1,7 +1,7 @@
-SRCS=GenericTouchActionHandler.cpp \
-     GenericTouchButtonMapper.cpp \
-     GenericTouchInputHandler.cpp \
-     GenericTouchRotateDetector.cpp \
+SRCS=GenericJoystickActionHandler.cpp \
+     GenericJoystickButtonMapper.cpp \
+     GenericJoystickInputHandler.cpp \
+     GenericJoystickRotateDetector.cpp \
 
 LIB=input_joysticks_generic.a
 

@@ -61,7 +61,7 @@ bool IJoystickInputHandling::OnAnalogStickMotion(unsigned int id, float x, float
   return true;
 }
 
-bool IJoystickInputHandling::OnAnalogStickThreshold(unsigned int id, bool bPressed, HatDirection direction = HatDirectionNone)
+bool IJoystickInputHandling::OnAnalogStickThreshold(unsigned int id, bool bPressed, HatDirection direction /* = HatDirectionNone */)
 {
   if (m_handler)
     return m_handler->OnAnalogStickThreshold(id, bPressed, direction);

@@ -26,16 +26,16 @@
  * \ingroup joysticks_generic
  * \brief Interface defining methods to perform gesture detection
  */
-class IGenericJoystickGestureDectector : public IJoystickInputHandling
+class IGenericJoystickGestureDetector : public IJoystickInputHandling
 {
 public:
-  IGenericJoystickGestureDectector(IJoystickActionHandler *handler)
+  IGenericJoystickGestureDetector(IJoystickActionHandler *handler)
     : m_done(false)
   {
     RegisterHandler(handler);
   }
 
-  virtual ~IGenericJoystickGestureDectector() { }
+  virtual ~IGenericJoystickGestureDetector() { }
 
   /*!
    * \brief Check whether the gesture recognition is finished or not

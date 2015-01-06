@@ -26,8 +26,7 @@
 
 namespace PERIPHERALS
 {
-  class CPeripheralBusAddon : public CPeripheralBus,
-                              public IWindowManagerCallback
+  class CPeripheralBusAddon : public CPeripheralBus
   {
   public:
     CPeripheralBusAddon(CPeripherals *manager);
@@ -47,11 +46,6 @@ namespace PERIPHERALS
     virtual size_t       GetNumberOfPeripherals(void) const;
     virtual size_t       GetNumberOfPeripheralsWithId(const int iVendorId, const int iProductId) const;
     virtual void         GetDirectory(const CStdString &strPath, CFileItemList &items) const;
-
-    // Inherited from IWindowManagerCallback
-    virtual void FrameMove(bool processEvents, bool processGUI = true);
-    virtual void Render() { }
-    virtual void Process() { }
 
     bool SplitLocation(const std::string& strLocation, PeripheralAddonPtr& addon, unsigned int& peripheralIndex) const;
 

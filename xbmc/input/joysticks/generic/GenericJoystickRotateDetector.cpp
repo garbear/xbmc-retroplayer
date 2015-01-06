@@ -32,3 +32,27 @@ CGenericJoystickRotateDetector::CGenericJoystickRotateDetector(IJoystickActionHa
 {
 }
 
+bool CGenericJoystickRotateDetector::OnButtonPress(unsigned int id, bool bPressed)
+{
+  return false; // TODO
+}
+
+bool CGenericJoystickRotateDetector::OnButtonMotion(unsigned int id, float magnitude)
+{
+  return false; // TODO
+}
+
+bool CGenericJoystickRotateDetector::OnAnalogStickMotion(unsigned int id, float x, float y)
+{
+  return false; // TODO
+}
+
+bool CGenericJoystickRotateDetector::OnAnalogStickThreshold(unsigned int id, bool bPressed, HatDirection direction /* = HatDirectionNone */)
+{
+  return false; // TODO
+}
+
+bool CGenericJoystickRotateDetector::OnAccelerometerMotion(unsigned int id, float x, float y, float z)
+{
+  return false; // TODO
+}

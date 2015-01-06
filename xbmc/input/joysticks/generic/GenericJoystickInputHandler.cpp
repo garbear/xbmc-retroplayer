@@ -29,7 +29,7 @@
 CGenericJoystickInputHandler::CGenericJoystickInputHandler(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid)
 {
   m_holdTimer    = new CTimer(this);
-  m_buttonMapper = new CGenericJoystickButtonMapper(this);
+  m_buttonMapper = new CGenericJoystickButtonMapper(this, strName);
 
   m_detectors.insert(new CGenericJoystickRotateDetector(this));
 }
@@ -101,6 +101,7 @@ void CGenericJoystickInputHandler::OnTimeout()
 
 void CGenericJoystickInputHandler::triggerDetectors(JoystickEvent event, int32_t pointer)
 {
+  /* TODO
   switch (event)
   {
     case TouchInputAbort:
@@ -148,4 +149,5 @@ void CGenericJoystickInputHandler::triggerDetectors(JoystickEvent event, int32_t
     m_detectors.erase(*detector);
     delete *detector;
   }
+  */
 }

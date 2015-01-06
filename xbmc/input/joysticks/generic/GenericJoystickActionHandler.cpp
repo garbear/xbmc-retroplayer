@@ -44,7 +44,7 @@ bool CGenericJoystickActionHandler::OnAnalogStickMotion(unsigned int id, float x
   return true; // TODO
 }
 
-bool CGenericJoystickActionHandler::OnAnalogStickThreshold(unsigned int id, bool bPressed, HatDirection direction = HatDirectionNone)
+bool CGenericJoystickActionHandler::OnAnalogStickThreshold(unsigned int id, bool bPressed, HatDirection direction /* = HatDirectionNone */)
 {
   return true; // TODO
 }
@@ -61,34 +61,6 @@ int CGenericJoystickActionHandler::QuerySupportedGestures(float x, float y)
     return 0;
 
   return msg.GetParam1();
-}
-
-void CGenericJoystickActionHandler::touch(uint8_t type, uint8_t button, uint16_t x, uint16_t y)
-{
-  XBMC_Event newEvent;
-  memset(&newEvent, 0, sizeof(newEvent));
-
-  newEvent.type = type;
-  newEvent.button.type = type;
-  newEvent.button.button = button;
-  newEvent.button.x = x;
-  newEvent.button.y = y;
-
-  CWinEvents::MessagePush(&newEvent);
-}
-
-void CGenericJoystickActionHandler::sendEvent(int actionId, float x, float y, float x2 /* = 0.0f */, float y2 /* = 0.0f */, int pointers /* = 1 */)
-{
-  XBMC_Event newEvent;
-  memset(&newEvent, 0, sizeof(newEvent));
-
-  newEvent.type = XBMC_JOYBUTTONDOWN;
-  newEvent.jbutton.type = XBMC_JOYBUTTONDOWN;
-  newEvent.jbutton.which = 0; // TODO
-  newEvent.jbutton.button = actionId; // TODO
-  newEvent.jbutton.state = true ? XBMC_PRESSED : XBMC_RELEASED;
-
-  CWinEvents::MessagePush(&newEvent);
 }
 
 void CGenericJoystickActionHandler::focusControl(float x, float y)
