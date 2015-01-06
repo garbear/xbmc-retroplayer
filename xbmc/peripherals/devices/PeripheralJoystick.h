@@ -20,39 +20,31 @@
  */
 
 #include "Peripheral.h"
-#include "addons/include/xbmc_peripheral_utils.hpp"
-#include "input/joysticks/generic/GenericJoystickInputHandler.h"
+#include "input/joysticks/IJoystickInputHandler.h"
 #include "peripherals/PeripheralAddon.h"
-
-class CKey;
 
 namespace PERIPHERALS
 {
-  class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
-                              public CGenericJoystickInputHandler
+  class CPeripheralJoystick : public CPeripheral // TODO: extend CPeripheralHID
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
-    virtual ~CPeripheralJoystick(void) { }
+    virtual ~CPeripheralJoystick(void);
 
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
     unsigned int Index(void) const { return m_index; }
 
-    /*
-    unsigned int RequestedPort(void) const { return m_requestedPort; }
-    unsigned int ButtonCount(void) const { return m_buttonCount; }
-    unsigned int HatCount(void) const { return m_hatCount; }
-    unsigned int AxisCount(void) const { return m_axisCount; }
-    */
+    bool HandleJoystickEvent(JoystickEvent event,
+                             unsigned int  index,
+                             int64_t       timeNs,
+                             bool          bPressed  = false,
+                             HatDirection  direction = HatDirectionNone,
+                             float         axisPos   = 0.0f);
 
   private:
     unsigned int       m_index;
-    unsigned int       m_requestedPort;
-    unsigned int       m_buttonCount;
-    unsigned int       m_hatCount;
-    unsigned int       m_axisCount;
-    //std::vector<CKey*> m_keys;
     PeripheralAddonPtr m_addon;
+    IJoystickInputHandler* m_inputHandler;
   };
 }

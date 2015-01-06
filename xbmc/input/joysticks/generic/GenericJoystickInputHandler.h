@@ -44,6 +44,8 @@ class IGenericJoystickButtonMapper;
 class CGenericJoystickInputHandler : public IJoystickInputHandler, private ITimerCallback
 {
 public:
+  CGenericJoystickInputHandler(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid);
+
   virtual ~CGenericJoystickInputHandler();
 
   // implementation of IJoystickInputHandler
@@ -54,16 +56,9 @@ public:
                                    HatDirection  direction = HatDirectionNone,
                                    float         axisPos   = 0.0f);
 
-protected:
-  CGenericJoystickInputHandler(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid);
-
   IGenericJoystickButtonMapper *ButtonMapper() { return m_buttonMapper; }
 
 private:
-  // private construction, and no assignments; use the provided singleton methods
-  CGenericJoystickInputHandler(const CGenericJoystickInputHandler&);
-  CGenericJoystickInputHandler const& operator=(CGenericJoystickInputHandler const&);
-
   // implementation of ITimerCallbacks
   virtual void OnTimeout();
 

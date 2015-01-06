@@ -69,6 +69,12 @@ public:
 
   virtual ~IJoystickInputHandler() { }
 
+  /*
+  unsigned int ButtonCount(void) const { return m_buttonCount; }
+  unsigned int HatCount(void) const    { return m_hatCount; }
+  unsigned int AxisCount(void) const   { return m_axisCount; }
+  */
+
   void SetButtonCount(unsigned int buttonCount) { m_buttonCount = buttonCount; }
   void SetHatCount(unsigned int hatCount)       { m_hatCount    = hatCount; }
   void SetAxisCount(unsigned int axisCount)     { m_axisCount   = axisCount; }

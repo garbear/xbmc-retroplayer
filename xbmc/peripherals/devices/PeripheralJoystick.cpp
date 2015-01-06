@@ -19,23 +19,17 @@
  */
 
 #include "PeripheralJoystick.h"
-#include "addons/AddonManager.h"
-#include "guilib/Key.h"
+#include "input/joysticks/generic/GenericJoystickInputHandler.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
 #include "utils/log.h"
-#include "utils/StringUtils.h"
 
 using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
   CPeripheral(scanResult),
-  CGenericJoystickInputHandler(0, "", scanResult.m_iVendorId, scanResult.m_iProductId),
   m_index(0),
-  m_requestedPort(0),
-  m_buttonCount(0),
-  m_hatCount(0),
-  m_axisCount(0)
+  m_inputHandler(NULL)
 {
   CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
   if (addonBus)
@@ -45,6 +39,11 @@ CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult)
   }
 
   m_features.push_back(FEATURE_JOYSTICK);
+}
+
+CPeripheralJoystick::~CPeripheralJoystick(void)
+{
+  delete m_inputHandler; // TODO
 }
 
 bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
@@ -61,12 +60,27 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
     {
       bReturn = true;
       m_strDeviceName = joystickInfo.Name();
-      m_requestedPort = joystickInfo.RequestedPlayer();
-      m_buttonCount = joystickInfo.ButtonCount();
-      m_hatCount = joystickInfo.HatCount();
-      m_axisCount = joystickInfo.AxisCount();
+
+      // TODO: Need a manager
+      m_inputHandler = new CGenericJoystickInputHandler(Index(), m_strDeviceName, m_iVendorId, m_iProductId);
+      m_inputHandler->SetButtonCount(joystickInfo.ButtonCount());
+      m_inputHandler->SetHatCount(joystickInfo.HatCount());
+      m_inputHandler->SetAxisCount(joystickInfo.AxisCount());
+      //m_inputHandler->SetRequestedPort(joystickInfo.RequestedPlayer()); // TODO
     }
   }
 
   return bReturn;
+}
+
+bool CPeripheralJoystick::HandleJoystickEvent(JoystickEvent event,
+                                              unsigned int  index,
+                                              int64_t       timeNs,
+                                              bool          bPressed  /* = false */,
+                                              HatDirection  direction /* = HatDirectionNone */,
+                                              float         axisPos   /* = 0.0f */)
+{
+  if (m_inputHandler)
+    return m_inputHandler->HandleJoystickEvent(event, index, timeNs, bPressed, direction, axisPos);
+  return true;
 }
