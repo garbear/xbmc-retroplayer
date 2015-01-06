@@ -114,7 +114,7 @@ static void SetupAxis(const CJNIViewInputDevice &input_device, APP_InputDeviceAx
   axis.enabled = true;
 }
 
-static void SetupJoySticks(APP_InputDevice *device_ptr, int device)
+static void SetupJoySticks(APP_JoystickDevice *device_ptr, int device)
 {
   device_ptr->id = device;
   memset(&device_ptr->x_hat,  0x00, sizeof(APP_InputDeviceAxis));
@@ -133,7 +133,8 @@ static void SetupJoySticks(APP_InputDevice *device_ptr, int device)
   device_ptr->vid = input_device.getVendorId();
   device_ptr->pid = input_device.getProductId();
 
-  device_ptr->input_handler = CGenericJoystickInputHandler::Get(device_ptr->id, device_ptr->name, device_ptr->vid, device_ptr->pid);
+  // TODO
+  device_ptr->input_handler = new CGenericJoystickInputHandler(device_ptr->id, device_ptr->name, device_ptr->vid, device_ptr->pid);
 
   CLog::Log(LOGDEBUG, "SetupJoySticks:caching  id(%d), sources(%d), device(%s)",
     device_ptr->id, device_sources, device_name.c_str());
@@ -201,9 +202,9 @@ static void SetupJoySticks(APP_InputDevice *device_ptr, int device)
 #endif
 }
 
-static void ReleaseJoySticks(APP_InputDevice *device_ptr)
+static void ReleaseJoySticks(APP_JoystickDevice *device_ptr)
 {
-  CGenericJoystickInputHandler::Release(device_ptr->input_handler);
+  delete device_ptr->input_handler; // TODO
 }
 
 /************************************************************************/
@@ -212,7 +213,7 @@ CAndroidJoyStick::~CAndroidJoyStick()
 {
   while (!m_input_devices.empty())
   {
-    APP_InputDevice *device = m_input_devices.back();
+    APP_JoystickDevice *device = m_input_devices.back();
     ReleaseJoySticks(device);
     delete device;
     m_input_devices.pop_back();
@@ -224,36 +225,51 @@ bool CAndroidJoyStick::onJoyStickKeyEvent(AInputEvent *event)
   if (event == NULL)
     return false;
 
-  int32_t keycode = AKeyEvent_getKeyCode(event);
   // watch this check, others might be different.
   // AML IR Controller is       AINPUT_SOURCE_GAMEPAD | AINPUT_SOURCE_KEYBOARD | AINPUT_SOURCE_DPAD
   // Gamestick Controller    == AINPUT_SOURCE_GAMEPAD | AINPUT_SOURCE_KEYBOARD
   // NVidiaShield Controller == AINPUT_SOURCE_GAMEPAD | AINPUT_SOURCE_KEYBOARD
   // we want to reject AML IR Controller.
-  if (AInputEvent_getSource(event) == (AINPUT_SOURCE_GAMEPAD | AINPUT_SOURCE_KEYBOARD))
-  {
-    // GamePad events are AINPUT_EVENT_TYPE_KEY events,
-    // trap them here and revector valid ones as JoyButtons
-    // so we get keymap handling.
-    for (size_t i = 0; i < sizeof(ButtonMap) / sizeof(KeyMap); i++)
-    {
-      if (keycode == ButtonMap[i].nativeKey)
-      {
-        uint8_t  button = ButtonMap[i].xbmcID;
-        int32_t  action = AKeyEvent_getAction(event);
-        bool     bPressed = (action != AKEY_EVENT_ACTION_UP);
-        int32_t  device = AInputEvent_getDeviceId(event);
+  if (AInputEvent_getSource(event) != (AINPUT_SOURCE_GAMEPAD | AINPUT_SOURCE_KEYBOARD))
+    return false;
 
-        for (size_t i = 0; i < m_input_devices.size(); i++)
-        {
-          if (m_input_devices[i]->id == device)
-            return m_input_devices[i]->input_handler->HandleJoystickEvent(JoystickEventRawButton, button, 0, bPressed);
-        }
-      }
+  // GamePad events are AINPUT_EVENT_TYPE_KEY events,
+  // trap them here and revector valid ones as JoyButtons
+  // so we get keymap handling.
+  uint8_t button  = 0;
+  int32_t keycode = AKeyEvent_getKeyCode(event);
+
+  for (size_t i = 0; i < sizeof(ButtonMap) / sizeof(KeyMap); i++)
+  {
+    if (keycode == ButtonMap[i].nativeKey)
+    {
+      button = ButtonMap[i].xbmcID;
+      break;
     }
   }
 
-  return false;
+  if (button == 0)
+    return false;
+
+  IJoystickInputHandler *input_handler = NULL;
+  int32_t                device        = AInputEvent_getDeviceId(event);
+
+  for (size_t i = 0; i < m_input_devices.size(); i++)
+  {
+    if (m_input_devices[i]->id == device)
+    {
+      input_handler = m_input_devices[i]->input_handler;
+      break;
+    }
+  }
+
+  if (!input_handler)
+    return false;
+
+  int32_t  action   = AKeyEvent_getAction(event);
+  bool     bPressed = (action != AKEY_EVENT_ACTION_UP);
+
+  return input_handler->HandleJoystickEvent(JoystickEventRawButton, button, 0, bPressed);
 }
 
 bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
@@ -263,8 +279,9 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
 
   // match this device to a created device struct,
   // create it if we do not find it.
-  APP_InputDevice *device_ptr = NULL;
+  APP_JoystickDevice *device_ptr = NULL;
   int32_t device = AInputEvent_getDeviceId(event);
+
   // look for device name in our inputdevice cache.
   for (size_t i = 0; i < m_input_devices.size(); i++)
   {
@@ -274,7 +291,7 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
   if (!device_ptr)
   {
     // as we see each device, create a device and cache it.
-    device_ptr = new APP_InputDevice;
+    device_ptr = new APP_JoystickDevice;
     SetupJoySticks(device_ptr, device);
     m_input_devices.push_back(device_ptr);
   }
@@ -288,7 +305,7 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
 }
 
 void CAndroidJoyStick::ProcessMotionEvents(AInputEvent *event,
-  size_t pointer_index, int32_t device, APP_InputDevice *device_ptr)
+  size_t pointer_index, int32_t device, APP_JoystickDevice *device_ptr)
 {
   // Left joystick
   if (device_ptr->y_axis.enabled)

@@ -23,7 +23,7 @@
 #include <vector>
 
 struct AInputEvent;
-class IGenericJoystickInputHandler;
+class IJoystickInputHandler;
 
 typedef struct {
   float     flat;
@@ -49,8 +49,8 @@ typedef struct {
   APP_InputDeviceAxis y_axis;
   APP_InputDeviceAxis z_axis;
   APP_InputDeviceAxis rz_axis;
-  IGenericJoystickInputHandler *input_handler;
-} APP_InputDevice;
+  IJoystickInputHandler *input_handler;
+} APP_JoystickDevice;
 
 class CAndroidJoyStick
 {
@@ -63,9 +63,9 @@ public:
 
 private:
   void  ProcessMotionEvents(AInputEvent *event, size_t pointer_index,
-          int32_t device, APP_InputDevice *devices);
+          int32_t device, APP_JoystickDevice *devices);
   void  ProcessAxis(AInputEvent *event, size_t pointer_index,
           APP_InputDeviceAxis &axis, int device, int keymap_axis, int android_axis);
 
-  std::vector<APP_InputDevice*> m_input_devices;
+  std::vector<APP_JoystickDevice*> m_input_devices;
 };
