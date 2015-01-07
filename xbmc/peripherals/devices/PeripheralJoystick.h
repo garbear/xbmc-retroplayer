@@ -21,7 +21,6 @@
 
 #include "Peripheral.h"
 #include "input/joysticks/IJoystickInputHandler.h"
-#include "peripherals/PeripheralAddon.h"
 
 namespace PERIPHERALS
 {
@@ -33,8 +32,6 @@ namespace PERIPHERALS
 
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
-    unsigned int Index(void) const { return m_index; }
-
     bool HandleJoystickEvent(JoystickEvent event,
                              unsigned int  index,
                              int64_t       timeNs,
@@ -43,8 +40,6 @@ namespace PERIPHERALS
                              float         axisPos   = 0.0f);
 
   private:
-    unsigned int       m_index;
-    PeripheralAddonPtr m_addon;
     IJoystickInputHandler* m_inputHandler;
   };
 }

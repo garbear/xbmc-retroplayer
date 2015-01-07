@@ -206,7 +206,7 @@ namespace PERIPHERALS
       return false;
 #endif
     }
-    
+
     virtual void OnSettingChanged(const CSetting *setting);
     virtual void OnSettingAction(const CSetting *setting);
 

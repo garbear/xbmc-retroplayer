@@ -28,16 +28,8 @@ using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
   CPeripheral(scanResult),
-  m_index(0),
   m_inputHandler(NULL)
 {
-  CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
-  if (addonBus)
-  {
-    if (!addonBus->SplitLocation(scanResult.m_strLocation, m_addon, m_index))
-      CLog::Log(LOGERROR, "CPeripheralJoystick: Invalid location (%s)", scanResult.m_strLocation.c_str());
-  }
-
   m_features.push_back(FEATURE_JOYSTICK);
 }
 
@@ -55,27 +47,36 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
   if (feature == FEATURE_JOYSTICK)
   {
-    if (m_addon)
+    if (m_busType == PERIPHERAL_BUS_ADDON)
     {
-      //m_strDeviceName = m_addon->GetName(Index()); // TODO
-      //m_inputHandler = m_addon->GetInputHandler(Index()); // TODO
+      CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
+      if (addonBus)
+      {
+        PeripheralAddonPtr addon;
+        unsigned int index;
+        if (addonBus->SplitLocation(m_strLocation, addon, index))
+        {
+          //m_strDeviceName = m_addon->GetName(index); // TODO
+
+          // TODO: Need a manager
+          //m_inputHandler = m_addon->GetInputHandler(index); // TODO
+          //m_inputHandler = new CGenericJoystickInputHandler(Index(), m_strDeviceName, m_iVendorId, m_iProductId);
+          //m_inputHandler->SetButtonCount(joystickInfo.ButtonCount());
+          //m_inputHandler->SetHatCount(joystickInfo.HatCount());
+          //m_inputHandler->SetAxisCount(joystickInfo.AxisCount());
+          //m_inputHandler->SetRequestedPort(joystickInfo.RequestedPlayer()); // TODO
+
+          bReturn = true;
+        }
+        else
+          CLog::Log(LOGERROR, "CPeripheralJoystick: Invalid location (%s)", m_strLocation.c_str());
+      }
+    }
+    else
+    {
+      m_inputHandler = NULL; // TODO
       bReturn = true;
     }
-
-    /*
-    ADDON::Joystick joystickInfo;
-    if (m_addon && m_addon->GetJoystickInfo(Index(), joystickInfo))
-    {
-      bReturn = true;
-
-      // TODO: Need a manager
-      m_inputHandler = new CGenericJoystickInputHandler(Index(), m_strDeviceName, m_iVendorId, m_iProductId);
-      m_inputHandler->SetButtonCount(joystickInfo.ButtonCount());
-      m_inputHandler->SetHatCount(joystickInfo.HatCount());
-      m_inputHandler->SetAxisCount(joystickInfo.AxisCount());
-      //m_inputHandler->SetRequestedPort(joystickInfo.RequestedPlayer()); // TODO
-    }
-    */
   }
 
   return bReturn;

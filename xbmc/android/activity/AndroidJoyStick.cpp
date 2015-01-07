@@ -25,6 +25,7 @@
 #include "android/activity/AndroidFeatures.h"
 #include "guilib/Key.h"
 //#include "input/joysticks/generic/GenericJoystickInputHandler.h"
+#include "peripherals/Peripherals.h"
 #include "peripherals/devices/PeripheralJoystick.h"
 #include "utils/log.h"
 #include "utils/TimeUtils.h"
@@ -107,102 +108,6 @@ static void SetAxisFromValues(const float min, const float max,
   axis.buttonclamp = axis.range / 4.0f;
 }
 
-static void SetupAxis(const CJNIViewInputDevice &input_device, APP_InputDeviceAxis &axis, int axis_id, int source)
-{
-  CJNIViewInputDeviceMotionRange range = input_device.getMotionRange(axis_id, source);
-
-  SetAxisFromValues(range.getMin(), range.getMax(), range.getFlat(), range.getFuzz(), range.getRange(), axis);
-  axis.enabled = true;
-}
-
-static void SetupJoySticks(APP_JoystickDevice *device_ptr, int device)
-{
-  device_ptr->id = device;
-  memset(&device_ptr->x_hat,  0x00, sizeof(APP_InputDeviceAxis));
-  memset(&device_ptr->y_hat,  0x00, sizeof(APP_InputDeviceAxis));
-  memset(&device_ptr->x_axis, 0x00, sizeof(APP_InputDeviceAxis));
-  memset(&device_ptr->y_axis, 0x00, sizeof(APP_InputDeviceAxis));
-  memset(&device_ptr->z_axis, 0x00, sizeof(APP_InputDeviceAxis));
-  memset(&device_ptr->rz_axis,0x00, sizeof(APP_InputDeviceAxis));
-
-  CJNIViewInputDevice  input_device = CJNIViewInputDevice::getDevice(device_ptr->id);
-  int device_sources = input_device.getSources();
-  std::string device_name = input_device.getName();
-
-  strcpy(device_ptr->name, device_name.c_str());
-
-  device_ptr->vid = input_device.getVendorId();
-  device_ptr->pid = input_device.getProductId();
-
-  // TODO
-  device_ptr->input_handler = new CGenericJoystickInputHandler(device_ptr->id, device_ptr->name, device_ptr->vid, device_ptr->pid);
-
-  CLog::Log(LOGDEBUG, "SetupJoySticks:caching  id(%d), sources(%d), device(%s)",
-    device_ptr->id, device_sources, device_name.c_str());
-
-  CJNIList<CJNIViewInputDeviceMotionRange> device_ranges = input_device.getMotionRanges();
-  for (int i = 0; i < device_ranges.size(); i++)
-  {
-    int axis = device_ranges.get(i).getAxis();
-    int source = device_ranges.get(i).getSource();
-#ifdef DEBUG_VERBOSE
-    CLog::Log(LOGDEBUG, "SetupJoySticks:range(%d), axis(%d), source(%d)", i, axis, source);
-#endif
-
-    // ignore anything we do not understand
-    if (source != AINPUT_SOURCE_JOYSTICK)
-      continue;
-
-    // match axis/source to our handlers
-    // anything that is not present, will be disabled
-    switch(axis)
-    {
-      // Left joystick
-      case AMOTION_EVENT_AXIS_X:
-        SetupAxis(input_device, device_ptr->x_axis,  axis, source);
-        break;
-      break;
-      case AMOTION_EVENT_AXIS_Y:
-        SetupAxis(input_device, device_ptr->y_axis,  axis, source);
-        break;
-
-      // Right joystick
-      case AMOTION_EVENT_AXIS_Z:
-        SetupAxis(input_device, device_ptr->z_axis,  axis, source);
-        break;
-      case AMOTION_EVENT_AXIS_RZ:
-        SetupAxis(input_device, device_ptr->rz_axis, axis, source);
-        break;
-
-      // D-Pad
-      case AMOTION_EVENT_AXIS_HAT_X:
-        SetupAxis(input_device, device_ptr->x_hat,   axis, source);
-        break;
-      case AMOTION_EVENT_AXIS_HAT_Y:
-        SetupAxis(input_device, device_ptr->y_hat,   axis, source);
-      break;
-    }
-  }
-
-  if (device_name.find("GameStick Controller") != std::string::npos)
-  {
-    // Right joystick seems to have a range of -0.5 to 0.5, fix the range
-    // Production GameStick Controllers should not have this problem
-    // and this quirk can vanish once verified.
-    SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, device_ptr->z_axis);
-    SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, device_ptr->rz_axis);
-  }
-
-#ifdef DEBUG_VERBOSE
-  LogAxisValues(AMOTION_EVENT_AXIS_X,     device_ptr->x_axis);
-  LogAxisValues(AMOTION_EVENT_AXIS_Y,     device_ptr->y_axis);
-  LogAxisValues(AMOTION_EVENT_AXIS_Z,     device_ptr->z_axis);
-  LogAxisValues(AMOTION_EVENT_AXIS_RZ,    device_ptr->rz_axis);
-  LogAxisValues(AMOTION_EVENT_AXIS_HAT_X, device_ptr->x_hat);
-  LogAxisValues(AMOTION_EVENT_AXIS_HAT_Y, device_ptr->y_hat);
-#endif
-}
-
 static void ReleaseJoySticks(APP_JoystickDevice *device_ptr)
 {
   delete device_ptr->input_handler; // TODO
@@ -270,6 +175,16 @@ bool CAndroidJoyStick::onJoyStickKeyEvent(AInputEvent *event)
   return input_handler->HandleJoystickEvent(JoystickEventRawButton, button, 0, bPressed);
 }
 
+// TODO
+class CPeripheralBusTest : public PERIPHERALS::CPeripheralBus
+{
+public:
+  CPeripheralBusTest(void) : PERIPHERALS::CPeripheralBus("", &PERIPHERALS::g_peripherals, PERIPHERALS::PERIPHERAL_BUS_UNKNOWN) { }
+
+protected:
+  virtual bool PerformDeviceScan(PERIPHERALS::PeripheralScanResults &results) { return false; }
+};
+
 bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
 {
   if (event == NULL)
@@ -277,21 +192,110 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
 
   // match this device to a created device struct,
   // create it if we do not find it.
-  APP_JoystickDevice *device_ptr = NULL;
+  PERIPHERALS::CPeripheralJoystick *device_ptr = NULL;
   int32_t device = AInputEvent_getDeviceId(event);
 
   // look for device name in our inputdevice cache.
   for (size_t i = 0; i < m_input_devices.size(); i++)
   {
-    if (m_input_devices[i]->id == device)
+    if (m_input_devices[i]->Index() == device) // TODO
       device_ptr = m_input_devices[i];
   }
   if (!device_ptr)
   {
-    // as we see each device, create a device and cache it.
-    device_ptr = new APP_JoystickDevice;
-    SetupJoySticks(device_ptr, device);
-    m_input_devices.push_back(device_ptr);
+    // as we see each device, create a peripheral and cache it.
+    CJNIViewInputDevice input_device = CJNIViewInputDevice::getDevice(device);
+    //device_ptr = new APP_JoystickDevice;
+    //SetupJoySticks(device_ptr, device);
+
+    PERIPHERALS::PeripheralScanResult result(PERIPHERALS::PERIPHERAL_BUS_UNKNOWN);
+    result.m_type = PERIPHERALS::PERIPHERAL_JOYSTICK;
+    result.m_iVendorId = input_device.getVendorId();
+    result.m_iProductId = input_device.getProductId();
+    result.m_mappedType = PERIPHERALS::PERIPHERAL_JOYSTICK;
+    result.m_strDeviceName = input_device.getName();
+    result.m_iSequence = 0; // TODO
+    result.m_strLocation = StringUtils::Format("peripheral.android/%d", device); // TODO
+
+    CLog::Log(LOGDEBUG, "CAndroidJoyStick:caching id(%d), sources(%d), device(%s)", device, input_device.getSources(), result.m_strDeviceName.c_str());
+
+    CPeripheralBusTest testBus;
+    PERIPHERALS::CPeripheral* peripheral = PERIPHERALS::g_peripherals.CreatePeripheral(testBus, result);
+    if (!peripheral)
+      return false;
+
+    CJNIList<CJNIViewInputDeviceMotionRange> device_ranges = input_device.getMotionRanges();
+    for (int i = 0; i < device_ranges.size(); i++)
+    {
+      int axis = device_ranges.get(i).getAxis();
+      int source = device_ranges.get(i).getSource();
+
+  #ifdef DEBUG_VERBOSE
+      CLog::Log(LOGDEBUG, "SetupJoySticks:range(%d), axis(%d), source(%d)", i, axis, source);
+  #endif
+
+      // ignore anything we do not understand
+      if (source != AINPUT_SOURCE_JOYSTICK)
+        continue;
+
+      APP_InputDeviceAxis axisStruct;
+      CJNIViewInputDeviceMotionRange range = input_device.getMotionRange(axis, source);
+      SetAxisFromValues(range.getMin(), range.getMax(), range.getFlat(), range.getFuzz(), range.getRange(), axisStruct);
+
+      // match axis/source to our handlers
+      // anything that is not present, will be disabled
+      switch(axis)
+      {
+        // Left joystick
+        case AMOTION_EVENT_AXIS_X:
+          axisStruct.enabled = true;
+          break;
+        break;
+        case AMOTION_EVENT_AXIS_Y:
+          axisStruct.enabled = true;
+          break;
+
+        // Right joystick
+        case AMOTION_EVENT_AXIS_Z:
+          axisStruct.enabled = true;
+          break;
+        case AMOTION_EVENT_AXIS_RZ:
+          axisStruct.enabled = true;
+          break;
+
+        // D-Pad
+        case AMOTION_EVENT_AXIS_HAT_X:
+          axisStruct.enabled = true;
+          break;
+        case AMOTION_EVENT_AXIS_HAT_Y:
+          axisStruct.enabled = true;
+        break;
+      }
+
+      // TODO: Something with axisStruct
+    }
+
+    if (result.m_strDeviceName.find("GameStick Controller") != std::string::npos)
+    {
+      // Right joystick seems to have a range of -0.5 to 0.5, fix the range
+      // Production GameStick Controllers should not have this problem
+      // and this quirk can vanish once verified.
+      APP_InputDeviceAxis axisStruct;
+      SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, axisStruct); // device_ptr->z_axis);
+      SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, axisStruct); // device_ptr->rz_axis);
+    }
+
+  #ifdef DEBUG_VERBOSE
+    LogAxisValues(AMOTION_EVENT_AXIS_X,     device_ptr->x_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_Y,     device_ptr->y_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_Z,     device_ptr->z_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_RZ,    device_ptr->rz_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_HAT_X, device_ptr->x_hat);
+    LogAxisValues(AMOTION_EVENT_AXIS_HAT_Y, device_ptr->y_hat);
+  #endif
+
+
+    m_input_devices.push_back(static_cast<PERIPHERALS::CPeripheralJoystick*>(device));
   }
 
   // handle queued motion events, we

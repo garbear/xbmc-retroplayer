@@ -25,6 +25,8 @@
 struct AInputEvent;
 class IJoystickInputHandler;
 
+namespace PERIPHERALS { class CPeripheralJoystick; }
+
 typedef struct {
   float     flat;
   float     fuzz;
@@ -39,18 +41,13 @@ typedef struct {
 } APP_InputDeviceAxis;
 
 typedef struct {
-  int32_t id;
-  char    name[256];
-  int     vid;
-  int     pid;
   APP_InputDeviceAxis x_hat;
   APP_InputDeviceAxis y_hat;
   APP_InputDeviceAxis x_axis;
   APP_InputDeviceAxis y_axis;
   APP_InputDeviceAxis z_axis;
   APP_InputDeviceAxis rz_axis;
-  IJoystickInputHandler *input_handler;
-} APP_JoystickDevice;
+} APP_InputDeviceAxes;
 
 class CAndroidJoyStick
 {
@@ -62,10 +59,7 @@ public:
   bool onJoyStickMotionEvent(AInputEvent* event);
 
 private:
-  void  ProcessMotionEvents(AInputEvent *event, size_t pointer_index,
-          int32_t device, APP_JoystickDevice *devices);
-  void  ProcessAxis(AInputEvent *event, size_t pointer_index,
-          APP_InputDeviceAxis &axis, int device, int keymap_axis, int android_axis);
-
-  std::vector<APP_JoystickDevice*> m_input_devices;
+  //std::vector<APP_JoystickDevice*> m_input_devices;
+  std::vector<PERIPHERALS::CPeripheralJoystick*> m_input_devices;
+  std::map<unsigned int, APP_InputDeviceAxes> m_input_device_axes
 };
