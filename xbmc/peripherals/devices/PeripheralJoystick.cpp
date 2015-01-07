@@ -55,11 +55,18 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
   if (feature == FEATURE_JOYSTICK)
   {
+    if (m_addon)
+    {
+      //m_strDeviceName = m_addon->GetName(Index()); // TODO
+      //m_inputHandler = m_addon->GetInputHandler(Index()); // TODO
+      bReturn = true;
+    }
+
+    /*
     ADDON::Joystick joystickInfo;
     if (m_addon && m_addon->GetJoystickInfo(Index(), joystickInfo))
     {
       bReturn = true;
-      m_strDeviceName = joystickInfo.Name();
 
       // TODO: Need a manager
       m_inputHandler = new CGenericJoystickInputHandler(Index(), m_strDeviceName, m_iVendorId, m_iProductId);
@@ -68,6 +75,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
       m_inputHandler->SetAxisCount(joystickInfo.AxisCount());
       //m_inputHandler->SetRequestedPort(joystickInfo.RequestedPlayer()); // TODO
     }
+    */
   }
 
   return bReturn;

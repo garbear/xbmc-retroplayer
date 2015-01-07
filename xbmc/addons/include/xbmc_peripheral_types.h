@@ -172,6 +172,14 @@ extern "C"
     JOYSTICK_PHYSICAL_LAYOUT physical_layout;
   } ATTRIBUTE_PACKED JOYSTICK_INFO;
 
+  typedef enum JOYSTICK_EVENT_TYPE
+  {
+    JOYSTICK_EVENT_TYPE_NONE = 0,                /*!< @brief null event */
+    JOYSTICK_EVENT_TYPE_RAW_BUTTON,          /*!< @brief state changed for raw button, reported by its index */
+    JOYSTICK_EVENT_TYPE_RAW_HAT,             /*!< @brief state changed for raw hat, reported by its index */
+    JOYSTICK_EVENT_TYPE_RAW_AXIS,            /*!< @brief state changed for raw axis, reported by its index */
+  } JOYSTICK_EVENT_TYPE;
+
   typedef enum JOYSTICK_STATE_BUTTON
   {
     JOYSTICK_STATE_BUTTON_UNPRESSED = 0x0,    /*!< @brief button is unpressed */
@@ -181,60 +189,28 @@ extern "C"
   typedef enum JOYSTICK_STATE_HAT
   {
     JOYSTICK_STATE_HAT_UNPRESSED  = 0x0,    /*!< @brief no directions are pressed */
-    JOYSTICK_STATE_HAT_UP         = 0x1,    /*!< @brief only up is pressed */
-    JOYSTICK_STATE_HAT_DOWN       = 0x2,    /*!< @brief only down is pressed */
     JOYSTICK_STATE_HAT_LEFT       = 0x4,    /*!< @brief only left is pressed */
     JOYSTICK_STATE_HAT_RIGHT      = 0x8,    /*!< @brief only right is pressed */
-    JOYSTICK_STATE_HAT_UP_LEFT    = JOYSTICK_STATE_HAT_UP   | JOYSTICK_STATE_HAT_LEFT,
-    JOYSTICK_STATE_HAT_UP_RIGHT   = JOYSTICK_STATE_HAT_UP   | JOYSTICK_STATE_HAT_RIGHT,
-    JOYSTICK_STATE_HAT_DOWN_LEFT  = JOYSTICK_STATE_HAT_DOWN | JOYSTICK_STATE_HAT_LEFT,
-    JOYSTICK_STATE_HAT_DOWN_RIGHT = JOYSTICK_STATE_HAT_DOWN | JOYSTICK_STATE_HAT_RIGHT,
+    JOYSTICK_STATE_HAT_UP         = 0x1,    /*!< @brief only up is pressed */
+    JOYSTICK_STATE_HAT_DOWN       = 0x2,    /*!< @brief only down is pressed */
+    JOYSTICK_STATE_HAT_LEFT_UP    = JOYSTICK_STATE_HAT_LEFT  | JOYSTICK_STATE_HAT_UP,
+    JOYSTICK_STATE_HAT_LEFT_DOWN  = JOYSTICK_STATE_HAT_LEFT  | JOYSTICK_STATE_HAT_DOWN,
+    JOYSTICK_STATE_HAT_RIGHT_UP   = JOYSTICK_STATE_HAT_RIGHT | JOYSTICK_STATE_HAT_UP,
+    JOYSTICK_STATE_HAT_RIGHT_DOWN = JOYSTICK_STATE_HAT_RIGHT | JOYSTICK_STATE_HAT_DOWN,
   } JOYSTICK_STATE_HAT;
 
-  typedef float JOYSTICK_STATE_ANALOG;     /*!< @brief value in the interval [-1, 1], inclusive */
-
-  typedef struct JOYSTICK_STATE_ANALOG_STICK
-  {
-    JOYSTICK_STATE_ANALOG   horiz;                   /*!< @brief state of the horizontal axis */
-    JOYSTICK_STATE_ANALOG   vert;                    /*!< @brief state of the vertical axis */
-  } ATTRIBUTE_PACKED JOYSTICK_STATE_ANALOG_STICK;
-
-  typedef struct JOYSTICK_STATE_ACCELEROMETER
-  {
-    JOYSTICK_STATE_ANALOG   x;                   /*!< @brief state of the horizontal axis */
-    JOYSTICK_STATE_ANALOG   y;                   /*!< @brief state of the horizontal axis */
-    JOYSTICK_STATE_ANALOG   z;                   /*!< @brief state of the horizontal axis */
-  } ATTRIBUTE_PACKED JOYSTICK_STATE_ACCELEROMETER;
-
-  typedef enum JOYSTICK_EVENT_TYPE
-  {
-    JOYSTICK_EVENT_TYPE_NONE = 0,                /*!< @brief null event */
-    JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON,          /*!< @brief state changed for raw button, reported by its index */
-    JOYSTICK_EVENT_TYPE_VIRTUAL_HAT,             /*!< @brief state changed for raw hat, reported by its index */
-    JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS,            /*!< @brief state changed for raw axis, reported by its index */
-    JOYSTICK_EVENT_TYPE_BUTTON_DIGITAL,          /*!< @brief state changed for button ID mapped to a virtual button or hat */
-    JOYSTICK_EVENT_TYPE_BUTTON_ANALOG,           /*!< @brief state changed for button ID mapped to a virtual axis */
-    JOYSTICK_EVENT_TYPE_ANALOG_STICK,            /*!< @brief state changed for analog stick mapped to raw axes */
-    JOYSTICK_EVENT_TYPE_ANALOG_STICK_THRESHOLD,  /*!< @brief state changed for analog stick mapped to raw axes */
-    JOYSTICK_EVENT_TYPE_ACCELEROMETER,           /*!< @brief state changed for analog stick mapped to raw axes */
-  } JOYSTICK_EVENT_TYPE;
+  typedef float JOYSTICK_STATE_AXIS;     /*!< @brief value in the interval [-1, 1], inclusive */
 
   typedef struct PERIPHERAL_EVENT
   {
-    JOYSTICK_EVENT_TYPE type;
-    unsigned int        peripheral_index;
+    JOYSTICK_EVENT_TYPE      type;
+    unsigned int             peripheral_index;
+    unsigned int             raw_index;
     union
     {
-      unsigned int    virtual_index;
-      JOYSTICK_ID     button_id;
-    };
-    union
-    {
-      JOYSTICK_STATE_BUTTON        digital_state;
-      JOYSTICK_STATE_HAT           hat_state;
-      JOYSTICK_STATE_ANALOG        analog_state;
-      JOYSTICK_STATE_ANALOG_STICK  analog_stick;
-      JOYSTICK_STATE_ACCELEROMETER accelerometer;
+      JOYSTICK_STATE_BUTTON  button_state;
+      JOYSTICK_STATE_HAT     hat_state;
+      JOYSTICK_STATE_AXIS    axis_state;
     };
   } ATTRIBUTE_PACKED PERIPHERAL_EVENT;
 

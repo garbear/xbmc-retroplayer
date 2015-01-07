@@ -31,21 +31,19 @@ enum JoystickEvent
   JoystickEventRawButton,
   JoystickEventRawHat,
   JoystickEventRawAxis,
-  /*
-  JoystickEventButtonDigital,
-  JoystickEventButtonAnalog,
-  JoystickEventAnalogStick,
-  JoystickEventAnalogStickThreshold,
-  JoystickEventAccelerometer,
-  */
 };
 
 /*!
  * \ingroup joysticks
- * \brief Events for physical joystick features
- *
-enum JoystickEvent
+ * \brief Events for physical joystick features (TODO)
+ */
+enum JoystickActionEvent
 {
+  JoystickActionEventButtonDigital,
+  JoystickActionEventButtonAnalog,
+  JoystickActionEventAnalogStick,
+  JoystickActionEventAnalogStickThreshold,
+  JoystickActionEventAccelerometer,
 };
 
 /*!

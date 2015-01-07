@@ -408,84 +408,56 @@ bool CPeripheralAddon::ProcessEvents(void)
   {
     for (unsigned int i = 0; i < eventCount; i++)
     {
-      /* TODO
-      ADDON::PeripheralEvent event(pEvents[i]);
-      CPeripheral* peripheralDevice = GetPeripheral(event.PeripheralIndex());
-      if (peripheralDevice)
-      {
-        switch (peripheralDevice->Type())
-        {
-        case PERIPHERAL_JOYSTICK:
-        {
-          CPeripheralJoystick* joystickDevice = static_cast<CPeripheralJoystick*>(peripheralDevice);
-          switch (event.Type())
-          {
-          case JOYSTICK_EVENT_TYPE_VIRTUAL_BUTTON:
-            joystickDevice->SetLastVirtualIndex(event.VirtualIndex());
-            joystickDevice->NotifyObservers(ObservableMessageButtonChanged);
-            break;
-          case JOYSTICK_EVENT_TYPE_VIRTUAL_HAT:
-            joystickDevice->SetLastVirtualIndex(event.VirtualIndex());
-            joystickDevice->NotifyObservers(ObservableMessageHatChanged);
-            break;
-          case JOYSTICK_EVENT_TYPE_VIRTUAL_AXIS:
-            joystickDevice->SetLastVirtualIndex(event.VirtualIndex());
-            joystickDevice->NotifyObservers(ObservableMessageAxisChanged);
-            break;
-          default:
-            break;
-          }
-          break;
-        }
-        default:
-          break;
-        }
-      }
-      */
-    }
-
-    try { m_pStruct->FreeEvents(eventCount, pEvents); }
-    catch (std::exception &e) { LogException(e, "FreeJoysticks()"); }
-
-    return true;
-  }
-
-  return false;
-}
-
-/*
-bool CPeripheralAddon::ProcessEvents(void)
-{
-  if (!HasFeature(FEATURE_JOYSTICK))
-    return false;
-
-  PERIPHERAL_ERROR retVal;
-
-  unsigned int      eventCount = 0;
-  PERIPHERAL_EVENT* pEvents;
-
-  try { LogError(retVal = m_pStruct->GetEvents(&eventCount, &pEvents), "GetEvents()"); }
-  catch (std::exception &e) { LogException(e, "GetEvents()"); return false;  }
-
-  if (retVal == PERIPHERAL_NO_ERROR && eventCount)
-  {
-    for (unsigned int i = 0; i < eventCount; i++)
-    {
-      ADDON::PeripheralEvent event(pEvents[i]);
-
-      std::map<unsigned int, CPeripheral*>::const_iterator itPer = m_peripherals.find(event.PeripheralIndex());
-      if (itPer == m_peripherals.end())
-      {
-        CLog::Log(LOGERROR, "PERIPHERAL - %s - No peripheral %u", Name().c_str(), event.PeripheralIndex());
+      CPeripheral* device = GetPeripheral(pEvents[i].peripheral_index);
+      if (!device)
         continue;
-      }
 
-      switch (itPer->second->Type())
+      const int64_t timeNs = 0; // TODO
+
+      switch (device->Type())
       {
       case PERIPHERAL_JOYSTICK:
-        static_cast<CPeripheralJoystick*>(itPer->second)->OnEvent(event);
+      {
+        CPeripheralJoystick* joystickDevice = static_cast<CPeripheralJoystick*>(device);
+
+        switch (pEvents[i].type)
+        {
+          case JOYSTICK_EVENT_TYPE_RAW_BUTTON:
+          {
+            bool bPressed = (pEvents[i].button_state == JOYSTICK_STATE_BUTTON_PRESSED);
+            joystickDevice->HandleJoystickEvent(JoystickEventRawButton, pEvents[i].raw_index,timeNs, bPressed);
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_RAW_HAT:
+          {
+            HatDirection dir(HatDirectionNone);
+            switch (pEvents[i].hat_state)
+            {
+              case JOYSTICK_STATE_HAT_LEFT:       dir = HatDirectionLeft;      break;
+              case JOYSTICK_STATE_HAT_RIGHT:      dir = HatDirectionRight;     break;
+              case JOYSTICK_STATE_HAT_UP:         dir = HatDirectionUp;        break;
+              case JOYSTICK_STATE_HAT_DOWN:       dir = HatDirectionDown;      break;
+              case JOYSTICK_STATE_HAT_LEFT_UP:    dir = HatDirectionLeftUp;    break;
+              case JOYSTICK_STATE_HAT_LEFT_DOWN:  dir = HatDirectionLeftDown;  break;
+              case JOYSTICK_STATE_HAT_RIGHT_UP:   dir = HatDirectionRightUp;   break;
+              case JOYSTICK_STATE_HAT_RIGHT_DOWN: dir = HatDirectionRightDown; break;
+              case JOYSTICK_STATE_HAT_UNPRESSED:
+              default:
+                break;
+            }
+            joystickDevice->HandleJoystickEvent(JoystickEventRawHat, pEvents[i].raw_index,timeNs, false, dir);
+            break;
+          }
+          case JOYSTICK_EVENT_TYPE_RAW_AXIS:
+          {
+            joystickDevice->HandleJoystickEvent(JoystickEventRawAxis, pEvents[i].raw_index,timeNs, false, HatDirectionNone, pEvents[i].axis_state);
+            break;
+          }
+          default:
+            break;
+        }
         break;
-      case PERIPHERAL_UNKNOWN:
+      }
       default:
         break;
       }
@@ -499,7 +471,6 @@ bool CPeripheralAddon::ProcessEvents(void)
 
   return false;
 }
-*/
 
 const char *CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
 {
