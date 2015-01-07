@@ -108,22 +108,12 @@ static void SetAxisFromValues(const float min, const float max,
   axis.buttonclamp = axis.range / 4.0f;
 }
 
-static void ReleaseJoySticks(APP_JoystickDevice *device_ptr)
-{
-  delete device_ptr->input_handler; // TODO
-}
-
 /************************************************************************/
 /************************************************************************/
 CAndroidJoyStick::~CAndroidJoyStick()
 {
-  while (!m_input_devices.empty())
-  {
-    APP_JoystickDevice *device = m_input_devices.back();
-    ReleaseJoySticks(device);
-    delete device;
-    m_input_devices.pop_back();
-  }
+  for (std::map<unsigned int, PERIPHERALS::CPeripheralJoystick*>::iterator it = m_input_devices.begin(); it != m_input_devices.end(); ++it)
+    delete *it;
 }
 
 bool CAndroidJoyStick::onJoyStickKeyEvent(AInputEvent *event)
@@ -196,12 +186,7 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
   int32_t device = AInputEvent_getDeviceId(event);
 
   // look for device name in our inputdevice cache.
-  for (size_t i = 0; i < m_input_devices.size(); i++)
-  {
-    if (m_input_devices[i]->Index() == device) // TODO
-      device_ptr = m_input_devices[i];
-  }
-  if (!device_ptr)
+  if (m_input_devices.find(device) == m_input_devices.end())
   {
     // as we see each device, create a peripheral and cache it.
     CJNIViewInputDevice input_device = CJNIViewInputDevice::getDevice(device);
@@ -224,6 +209,8 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
     if (!peripheral)
       return false;
 
+    APP_InputDeviceAxes axes;
+
     CJNIList<CJNIViewInputDeviceMotionRange> device_ranges = input_device.getMotionRanges();
     for (int i = 0; i < device_ranges.size(); i++)
     {
@@ -238,9 +225,11 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
       if (source != AINPUT_SOURCE_JOYSTICK)
         continue;
 
-      APP_InputDeviceAxis axisStruct;
       CJNIViewInputDeviceMotionRange range = input_device.getMotionRange(axis, source);
+
+      APP_InputDeviceAxis axisStruct;
       SetAxisFromValues(range.getMin(), range.getMax(), range.getFlat(), range.getFuzz(), range.getRange(), axisStruct);
+      axisStruct.enabled = true;
 
       // match axis/source to our handlers
       // anything that is not present, will be disabled
@@ -248,31 +237,29 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
       {
         // Left joystick
         case AMOTION_EVENT_AXIS_X:
-          axisStruct.enabled = true;
+          axes.x_axis = axisStruct;
           break;
         break;
         case AMOTION_EVENT_AXIS_Y:
-          axisStruct.enabled = true;
+          axes.y_axis = axisStruct;
           break;
 
         // Right joystick
         case AMOTION_EVENT_AXIS_Z:
-          axisStruct.enabled = true;
+          axes.z_axis = axisStruct;
           break;
         case AMOTION_EVENT_AXIS_RZ:
-          axisStruct.enabled = true;
+          axes.rz_axis = axisStruct;
           break;
 
         // D-Pad
         case AMOTION_EVENT_AXIS_HAT_X:
-          axisStruct.enabled = true;
+          axes.x_hat = axisStruct;
           break;
         case AMOTION_EVENT_AXIS_HAT_Y:
-          axisStruct.enabled = true;
+          axes.y_hat = axisStruct;
         break;
       }
-
-      // TODO: Something with axisStruct
     }
 
     if (result.m_strDeviceName.find("GameStick Controller") != std::string::npos)
@@ -281,56 +268,56 @@ bool CAndroidJoyStick::onJoyStickMotionEvent(AInputEvent *event)
       // Production GameStick Controllers should not have this problem
       // and this quirk can vanish once verified.
       APP_InputDeviceAxis axisStruct;
-      SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, axisStruct); // device_ptr->z_axis);
-      SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, axisStruct); // device_ptr->rz_axis);
+      SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, axes.z_axis);
+      SetAxisFromValues(-0.5f, 0.5f, 0.1f, 0.0f, 1.0f, axes.rz_axis);
     }
 
   #ifdef DEBUG_VERBOSE
-    LogAxisValues(AMOTION_EVENT_AXIS_X,     device_ptr->x_axis);
-    LogAxisValues(AMOTION_EVENT_AXIS_Y,     device_ptr->y_axis);
-    LogAxisValues(AMOTION_EVENT_AXIS_Z,     device_ptr->z_axis);
-    LogAxisValues(AMOTION_EVENT_AXIS_RZ,    device_ptr->rz_axis);
-    LogAxisValues(AMOTION_EVENT_AXIS_HAT_X, device_ptr->x_hat);
-    LogAxisValues(AMOTION_EVENT_AXIS_HAT_Y, device_ptr->y_hat);
+    LogAxisValues(AMOTION_EVENT_AXIS_X,     axes.x_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_Y,     axes.y_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_Z,     axes.z_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_RZ,    axes.rz_axis);
+    LogAxisValues(AMOTION_EVENT_AXIS_HAT_X, axes.x_hat);
+    LogAxisValues(AMOTION_EVENT_AXIS_HAT_Y, axes.y_hat);
   #endif
 
-
-    m_input_devices.push_back(static_cast<PERIPHERALS::CPeripheralJoystick*>(device));
+    m_input_devices[device] = static_cast<PERIPHERALS::CPeripheralJoystick*>(peripheral);
+    m_input_device_axes[device] = axes;
   }
 
   // handle queued motion events, we
   // ingnore history as it only relates to touch.
   for (size_t p = 0; p < AMotionEvent_getPointerCount(event); p++)
-    ProcessMotionEvents(event, p, device, device_ptr);
+    ProcessMotionEvents(event, p, device, &m_input_device_axes[device]);
 
   return true;
 }
 
 void CAndroidJoyStick::ProcessMotionEvents(AInputEvent *event,
-  size_t pointer_index, int32_t device, APP_JoystickDevice *device_ptr)
+  size_t pointer_index, int32_t device, APP_InputDeviceAxes *device_axes)
 {
   // Left joystick
-  if (device_ptr->y_axis.enabled)
-    ProcessAxis(event, pointer_index, device_ptr->y_axis, device, AXIS_LEFT_STICK_L_R, AMOTION_EVENT_AXIS_Y);
-  if (device_ptr->x_axis.enabled)
-    ProcessAxis(event, pointer_index, device_ptr->x_axis, device, AXIS_LEFT_STICK_U_D, AMOTION_EVENT_AXIS_X);
+  if (device_axes->y_axis.enabled)
+    ProcessAxis(event, pointer_index, device_axes->y_axis, device, AXIS_LEFT_STICK_L_R, AMOTION_EVENT_AXIS_Y);
+  if (device_axes->x_axis.enabled)
+    ProcessAxis(event, pointer_index, device_axes->x_axis, device, AXIS_LEFT_STICK_U_D, AMOTION_EVENT_AXIS_X);
 
   // Right joystick
-  if (device_ptr->z_axis.enabled)
-    ProcessAxis(event, pointer_index, device_ptr->z_axis, device, AXIS_RIGHT_STICK_L_R, AMOTION_EVENT_AXIS_Z);
-  if (device_ptr->rz_axis.enabled)
-    ProcessAxis(event, pointer_index, device_ptr->rz_axis,device, AXIS_RIGHT_STICK_U_D, AMOTION_EVENT_AXIS_RZ);
+  if (device_axes->z_axis.enabled)
+    ProcessAxis(event, pointer_index, device_axes->z_axis, device, AXIS_RIGHT_STICK_L_R, AMOTION_EVENT_AXIS_Z);
+  if (device_axes->rz_axis.enabled)
+    ProcessAxis(event, pointer_index, device_axes->rz_axis,device, AXIS_RIGHT_STICK_U_D, AMOTION_EVENT_AXIS_RZ);
 
   // Dpad
-  if (device_ptr->y_hat.enabled)
-    ProcessAxis(event, pointer_index,  device_ptr->y_hat,  device, AXIS_DPAD_L_R, AMOTION_EVENT_AXIS_HAT_Y);
-  if (device_ptr->x_hat.enabled)
-    ProcessAxis(event, pointer_index,  device_ptr->x_hat,  device, AXIS_DPAD_U_D, AMOTION_EVENT_AXIS_HAT_X);
+  if (device_axes->y_hat.enabled)
+    ProcessAxis(event, pointer_index,  device_axes->y_hat,  device, AXIS_DPAD_L_R, AMOTION_EVENT_AXIS_HAT_Y);
+  if (device_axes->x_hat.enabled)
+    ProcessAxis(event, pointer_index,  device_axes->x_hat,  device, AXIS_DPAD_U_D, AMOTION_EVENT_AXIS_HAT_X);
 
 #ifdef DEBUG_VERBOSE
-  CLog::Log(LOGDEBUG, "joystick event. x(%f),  y(%f)", device_ptr->x_axis.value, device_ptr->y_axis.value);
-  CLog::Log(LOGDEBUG, "joystick event. z(%f), rz(%f)", device_ptr->z_axis.value, device_ptr->rz_axis.value);
-  CLog::Log(LOGDEBUG, "joystick event. xhat(%f), yhat(%f)", device_ptr->x_hat.value, device_ptr->y_hat.value);
+  CLog::Log(LOGDEBUG, "joystick event. x(%f),  y(%f)", device_axes->x_axis.value, device_axes->y_axis.value);
+  CLog::Log(LOGDEBUG, "joystick event. z(%f), rz(%f)", device_axes->z_axis.value, device_axes->rz_axis.value);
+  CLog::Log(LOGDEBUG, "joystick event. xhat(%f), yhat(%f)", device_axes->x_hat.value, device_axes->y_hat.value);
 #endif
 }
 
@@ -343,11 +330,8 @@ void CAndroidJoyStick::ProcessAxis(AInputEvent *event, size_t pointer_index,
   value = AxisClampAsButton(axis, value);
   if (value != axis.value)
   {
-    for (size_t i = 0; i < m_input_devices.size(); i++)
-    {
-      if (m_input_devices[i]->id == device)
-        m_input_devices[i]->input_handler->HandleJoystickEvent(JoystickEventRawAxis, keymap_axis, 0, false, HatDirectionNone, value);
-    }
+    if (m_input_devices.find(device) != m_input_devices.end())
+      m_input_devices[i]->HandleJoystickEvent(JoystickEventRawAxis, keymap_axis, 0, false, HatDirectionNone, value);
   }
   axis.value = value;
 }

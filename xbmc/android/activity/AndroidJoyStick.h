@@ -59,7 +59,12 @@ public:
   bool onJoyStickMotionEvent(AInputEvent* event);
 
 private:
+  void  ProcessMotionEvents(AInputEvent *event, size_t pointer_index,
+          int32_t device, APP_InputDeviceAxes *devices);
+  void  ProcessAxis(AInputEvent *event, size_t pointer_index,
+          APP_InputDeviceAxis &axis, int device, int keymap_axis, int android_axis);
+
   //std::vector<APP_JoystickDevice*> m_input_devices;
-  std::vector<PERIPHERALS::CPeripheralJoystick*> m_input_devices;
-  std::map<unsigned int, APP_InputDeviceAxes> m_input_device_axes
+  std::map<unsigned int, PERIPHERALS::CPeripheralJoystick*> m_input_devices;
+  std::map<unsigned int, APP_InputDeviceAxes> m_input_device_axes;
 };
