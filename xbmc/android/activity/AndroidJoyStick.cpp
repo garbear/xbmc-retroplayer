@@ -24,7 +24,6 @@
 #include "android/jni/View.h"
 #include "android/activity/AndroidFeatures.h"
 #include "guilib/Key.h"
-//#include "input/joysticks/generic/GenericJoystickInputHandler.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/devices/PeripheralJoystick.h"
 #include "utils/log.h"

@@ -23,7 +23,6 @@
 #include <vector>
 
 struct AInputEvent;
-class IJoystickInputHandler;
 
 namespace PERIPHERALS { class CPeripheralJoystick; }
 
