@@ -29,6 +29,8 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
+class IJoystickInputHandler;
+
 namespace PERIPHERALS
 {
   class CPeripheral;
@@ -74,7 +76,8 @@ namespace PERIPHERALS
 
     /** @name Joystick methods */
     //@{
-    bool GetJoystickInfo(unsigned int index, ADDON::Joystick& info);
+    //bool GetJoystickInfo(unsigned int index, ADDON::Joystick& info);
+
     bool ProcessEvents(void);
     //@}
 

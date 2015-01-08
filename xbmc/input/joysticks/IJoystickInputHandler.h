@@ -58,10 +58,10 @@ enum JoystickActionEvent
 class IJoystickInputHandler : public IJoystickInputHandling
 {
 public:
-  IJoystickInputHandler()
+  IJoystickInputHandler()/*
     : m_buttonCount(0),
       m_hatCount(0),
-      m_axisCount(0)
+      m_axisCount(0)*/
   {
   }
 
@@ -73,9 +73,11 @@ public:
   unsigned int AxisCount(void) const   { return m_axisCount; }
   */
 
+  /*
   void SetButtonCount(unsigned int buttonCount) { m_buttonCount = buttonCount; }
   void SetHatCount(unsigned int hatCount)       { m_hatCount    = hatCount; }
   void SetAxisCount(unsigned int axisCount)     { m_axisCount   = axisCount; }
+  */
 
   /*!
    * \brief Handle a joystick event
@@ -107,7 +109,9 @@ protected:
   /*!
    * \brief Counts of driver features
    */
+  /*
   unsigned int m_buttonCount;
   unsigned int m_hatCount;
   unsigned int m_axisCount;
+  */
 };

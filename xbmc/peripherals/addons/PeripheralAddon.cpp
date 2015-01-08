@@ -365,7 +365,7 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
 
   return false;
 }
-
+/*
 bool CPeripheralAddon::GetJoystickInfo(unsigned int index, ADDON::Joystick& info)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
@@ -390,7 +390,7 @@ bool CPeripheralAddon::GetJoystickInfo(unsigned int index, ADDON::Joystick& info
 
   return false;
 }
-
+*/
 bool CPeripheralAddon::ProcessEvents(void)
 {
   if (!HasFeature(FEATURE_JOYSTICK))

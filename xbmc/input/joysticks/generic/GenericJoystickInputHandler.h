@@ -21,13 +21,14 @@
 
 #include "input/joysticks/IJoystickInputHandler.h"
 #include "threads/CriticalSection.h"
-#include "threads/Timer.h"
 
-#include <map>
-#include <set>
+#include <vector>
 
-class IGenericJoystickGestureDetector;
-class IGenericJoystickButtonMapper;
+class CGenericJoystickMultiPressDetector;
+class CGenericRawButtonInputHandler;
+class CGenericRawHatInputHandler;
+class CGenericRawAxisInputHandler;
+class IButtonMapper;
 
 /*!
  * \ingroup joysticks_generic
@@ -41,10 +42,10 @@ class IGenericJoystickButtonMapper;
  *
  * \sa IJoystickInputHandler
  */
-class CGenericJoystickInputHandler : public IJoystickInputHandler, private ITimerCallback
+class CGenericJoystickInputHandler : public IJoystickInputHandler
 {
 public:
-  CGenericJoystickInputHandler(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid);
+  CGenericJoystickInputHandler(IButtonMapper* buttonMapper, unsigned int buttonCount, unsigned int hatCount, unsigned int axisCount);
 
   virtual ~CGenericJoystickInputHandler();
 
@@ -56,17 +57,10 @@ public:
                                    HatDirection  direction = HatDirectionNone,
                                    float         axisPos   = 0.0f);
 
-  IGenericJoystickButtonMapper *ButtonMapper() { return m_buttonMapper; }
-
 private:
-  // implementation of ITimerCallbacks
-  virtual void OnTimeout();
-
-  void triggerDetectors(JoystickEvent event, int32_t pointer);
-
-  CCriticalSection                           m_critical;
-  CTimer                                    *m_holdTimer;
-  std::map<unsigned int, bool>               m_buttonStates; // action ID -> state
-  std::set<IGenericJoystickGestureDetector*> m_detectors;
-  IGenericJoystickButtonMapper              *m_buttonMapper;
+  CCriticalSection                            m_critical;
+  std::vector<CGenericRawButtonInputHandler*> m_buttonHandlers;
+  std::vector<CGenericRawHatInputHandler*>    m_hatHandlers;
+  std::vector<CGenericRawAxisInputHandler*>   m_axisHandlers;
+  CGenericJoystickMultiPressDetector          *m_inputHandler;
 };

@@ -1,5 +1,4 @@
-SRCS=Peripherals.cpp \
-     PeripheralAddon.cpp
+SRCS=Peripherals.cpp
 
 LIB=peripherals.a
 

@@ -28,7 +28,7 @@
  *
  * \sa IJoystickActionHandler
  */
-class CGenericJoystickActionHandler : public IJoystickActionHandler
+class CGenericJoystickActionHandler : public IJoystickRawInputHandler // TODO: Extend IJoystickActionHandler
 {
 public:
   /*!

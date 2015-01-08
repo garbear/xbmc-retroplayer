@@ -20,46 +20,42 @@
 #pragma once
 
 #include "input/joysticks/IJoystickInputHandling.h"
-#include "input/joysticks/JoystickTypes.h"
 
 /*!
  * \ingroup joysticks_generic
- * \brief Interface defining methods to perform button mapping
+ * \brief Implementation of IJoystickInputHandling to detect multi-presses
+ *
+ * \sa IJoystickInputHandling
  */
-class CGenericJoystickButtonMapper : public IJoystickInputHandling
+class CGenericJoystickMultiPressDetector : public IJoystickInputHandling
 {
 public:
-  CGenericJoystickButtonMapper(IButtonMapper *buttonMapper);
+  CGenericJoystickMultiPressDetector(IButtonMapper* buttonMapper);
 
-  virtual ~CGenericJoystickButtonMapper();
+  virtual ~CGenericJoystickMultiPressDetector();
 
   // Implementation of IJoystickRawInputHandler
   virtual bool OnRawButtonPress(unsigned int index);
-  virtual bool OnRawButtonHold(unsigned int index);
   virtual bool OnRawButtonDoublePress(unsigned int index);
-  virtual bool OnRawButtonDoublePressHold(unsigned int index);
   virtual bool OnRawButtonRelease(unsigned int index);
 
   virtual bool OnRawHatPress(unsigned int index, HatDirection direction);
   virtual bool OnRawHatMotion(unsigned int index, HatDirection direction);
-  virtual bool OnRawHatHold(unsigned int index, HatDirection direction);
   virtual bool OnRawHatDoublePress(unsigned int index, HatDirection direction);
-  virtual bool OnRawHatDoublePressHold(unsigned int index, HatDirection direction);
   virtual bool OnRawHatRelease(unsigned int index);
 
   virtual bool OnRawAxisPress(unsigned int index, SemiAxisDirection direction);
-  virtual bool OnRawAxisMotion(unsigned int index, float position);
-  virtual bool OnRawAxisHold(unsigned int index, SemiAxisDirection direction);
   virtual bool OnRawAxisDoublePress(unsigned int index, SemiAxisDirection direction);
-  virtual bool OnRawAxisDoublePressHold(unsigned int index, SemiAxisDirection direction);
   virtual bool OnRawAxisRelease(unsigned int index);
 
-  virtual bool OnRawMultiPress(const std::vector<ButtonPrimitive>& buttons);
+private:
+  bool OnPress(const ButtonPrimitive& button);
 
-protected:
-  // TODO: Move to IButtonMapper
-  //virtual bool LoadButtonMap(const JoystickIdentifier& joystick, ButtonMap& loadedButtonMap) = 0;
+  void ClearButton(unsigned int index);
+  void ClearHat(unsigned int index);
+  void ClearAxis(unsigned int index);
 
-  IButtonMapper* const          m_buttonMapper;
-  CGenericJoystickActionHandler *m_handler;
+  std::vector<ButtonPrimitive> m_currentCombo; // sorted in order of activation
+  unsigned int                 m_lastPressMs;
+  CGenericJoystickButtonMapper *m_buttonMapper;
 };

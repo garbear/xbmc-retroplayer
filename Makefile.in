@@ -70,6 +70,7 @@ DIRECTORY_ARCHIVES=$(DVDPLAYER_ARCHIVES) \
                    xbmc/music/windows/musicwindows.a \
                    xbmc/network/websocket/websocket.a \
                    xbmc/network/network.a \
+                   xbmc/peripherals/addons/peripheral-addons.a \
                    xbmc/peripherals/bus/peripheral-bus.a \
                    xbmc/peripherals/devices/peripheral-devices.a \
                    xbmc/peripherals/dialogs/peripheral-dialogs.a \

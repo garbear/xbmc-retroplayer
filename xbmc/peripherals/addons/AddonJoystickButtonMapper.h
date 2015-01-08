@@ -17,17 +17,23 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#include "GenericJoystickButtonMapper.h"
+#include "../../input/joysticks/generic/GenericJoystickButtonMapper.h"
+#include "peripherals/addons/PeripheralAddon.h"
 
-CGenericJoystickButtonMapper::CGenericJoystickButtonMapper(IButtonMapper *buttonMapper)
-  : m_buttonMapper(buttonMapper)
+class CAddonJoystickButtonMapper : public IGenericJoystickButtonMapper
 {
-  m_handler = new CGenericJoystickActionHandler();
-  RegisterHandler(m_handler);
-}
+public:
+  CAddonJoystickButtonMapper(IJoystickActionHandler *handler, const JoystickIdentifier& identifier, const PERIPHERALS::PeripheralAddonPtr& addon);
 
-CGenericJoystickButtonMapper::~CGenericJoystickButtonMapper()
-{
-  delete m_handler;
-}
+  virtual ~CAddonJoystickButtonMapper() { }
+
+  // Implementation of IGenericJoystickButtonMapper
+  virtual bool OnRawButtonPress(unsigned int id, bool bPressed);
+  virtual bool OnRawHatMotion(unsigned int id, HatDirection direction);
+  virtual bool OnRawAxisMotion(unsigned int id, float position);
+
+private:
+  PERIPHERALS::PeripheralAddonPtr m_addon;
+};

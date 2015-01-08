@@ -20,28 +20,43 @@
 
 #include <math.h>
 
-#include "GenericJoystickInputHandler.h"
-#include "input/joysticks/generic/GenericJoystickButtonMapper.h"
-#include "input/joysticks/generic/GenericJoystickRotateDetector.h"
+#include "input/joysticks/generic/GenericJoystickInputHandler.h"
+#include "input/joysticks/generic/GenericRawButtonInputHandler.h"
+#include "input/joysticks/generic/GenericRawHatInputHandler.h"
+#include "input/joysticks/generic/GenericRawAxisInputHandler.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 
-CGenericJoystickInputHandler::CGenericJoystickInputHandler(unsigned int id, const std::string& strName, unsigned int vid, unsigned int pid)
+CGenericJoystickInputHandler::CGenericJoystickInputHandler(IButtonMapper* buttonMapper, unsigned int buttonCount, unsigned int hatCount, unsigned int axisCount)
 {
-  m_holdTimer    = new CTimer(this);
-  m_buttonMapper = new CGenericJoystickButtonMapper(this, strName);
+  m_buttonHandlers.reserve(buttonCount);
+  for (unsigned int i = 0; i < buttonCount; i++)
+    m_buttonHandlers.push_back(new CGenericRawButtonInputHandler(i, this));
 
-  m_detectors.insert(new CGenericJoystickRotateDetector(this));
+  m_hatHandlers.reserve(hatCount);
+  for (unsigned int i = 0; i < hatCount; i++)
+    m_hatHandlers.push_back(new CGenericRawHatInputHandler(i, this));
+
+  m_axisHandlers.reserve(axisCount);
+  for (unsigned int i = 0; i < axisCount; i++)
+    m_axisHandlers.push_back(new CGenericRawAxisInputHandler(i, this));
+
+  m_inputHandler = new CGenericJoystickMultiPressDetector(buttonMapper);
+  RegisterHandler(m_inputHandler);
 }
 
 CGenericJoystickInputHandler::~CGenericJoystickInputHandler()
 {
-  delete m_holdTimer;
-  delete m_buttonMapper;
+  for (unsigned int i = 0; i < m_buttonHandlers.size(); i++)
+    delete m_buttonHandlers[i];
 
-  for (std::set<IGenericJoystickGestureDetector*>::const_iterator detector = m_detectors.begin(); detector != m_detectors.end(); detector++)
-    delete *detector;
-  m_detectors.clear();
+  for (unsigned int i = 0; i < m_hatHandlers.size(); i++)
+    delete m_hatHandlers[i];
+
+  for (unsigned int i = 0; i < m_axisHandlers.size(); i++)
+    delete m_axisHandlers[i];
+
+  delete m_inputHandler;
 }
 
 bool CGenericJoystickInputHandler::HandleJoystickEvent(JoystickEvent event,
@@ -61,15 +76,18 @@ bool CGenericJoystickInputHandler::HandleJoystickEvent(JoystickEvent event,
   switch (event)
   {
     case JoystickEventRawButton:
-      result = ButtonMapper()->OnRawButtonPress(index, bPressed);
+      if (index < m_buttonHandlers.size())
+        result = m_buttonHandlers[index]->OnMotion(bPressed);
       break;
 
     case JoystickEventRawHat:
-      result = ButtonMapper()->OnRawHatMotion(index, direction);
+      if (index < m_hatHandlers.size())
+        result = m_hatHandlers[index]->OnMotion(direction);
       break;
 
     case JoystickEventRawAxis:
-      result = ButtonMapper()->OnRawAxisMotion(index, axisPos);
+      if (index < m_axisHandlers.size())
+        result = m_axisHandlers[index]->OnMotion(axisPos);
       break;
 
     default:
@@ -78,76 +96,4 @@ bool CGenericJoystickInputHandler::HandleJoystickEvent(JoystickEvent event,
   }
 
   return result;
-}
-
-void CGenericJoystickInputHandler::OnTimeout()
-{
-  /* TODO
-  CSingleLock lock(m_critical);
-
-  switch (m_gestureState)
-  {
-    case TouchGestureSingleTouch:
-      break;
-
-    case TouchGestureMultiTouchStart:
-      break;
-
-    default:
-      break;
-  }
-  */
-}
-
-void CGenericJoystickInputHandler::triggerDetectors(JoystickEvent event, int32_t pointer)
-{
-  /* TODO
-  switch (event)
-  {
-    case TouchInputAbort:
-    {
-      for (std::set<IGenericJoystickGestureDetector*>::const_iterator detector = m_detectors.begin(); detector != m_detectors.end(); detector++)
-        delete (*detector);
-      m_detectors.clear();
-      break;
-    }
-
-    case TouchInputDown:
-    {
-      for (std::set<IGenericJoystickGestureDetector*>::const_iterator detector = m_detectors.begin(); detector != m_detectors.end(); detector++)
-        (*detector)->OnTouchDown(pointer, m_pointers[pointer]);
-      break;
-    }
-
-    case TouchInputUp:
-    {
-      for (std::set<IGenericJoystickGestureDetector*>::const_iterator detector = m_detectors.begin(); detector != m_detectors.end(); detector++)
-        (*detector)->OnTouchUp(pointer, m_pointers[pointer]);
-      break;
-    }
-
-    case TouchInputMove:
-    {
-      for (std::set<IGenericJoystickGestureDetector*>::const_iterator detector = m_detectors.begin(); detector != m_detectors.end(); detector++)
-        (*detector)->OnTouchMove(pointer, m_pointers[pointer]);
-      break;
-    }
-
-    default:
-      return;
-  }
-
-  std::set<IGenericJoystickGestureDetector*> finishedDetectors;
-  for (std::set<IGenericJoystickGestureDetector*>::const_iterator detector = m_detectors.begin(); detector != m_detectors.end(); detector++)
-  {
-    if ((*detector)->IsDone())
-      finishedDetectors.insert(*detector);
-  }
-
-  for (std::set<IGenericJoystickGestureDetector*>::const_iterator detector = finishedDetectors.begin(); detector != finishedDetectors.end(); detector++)
-  {
-    m_detectors.erase(*detector);
-    delete *detector;
-  }
-  */
 }

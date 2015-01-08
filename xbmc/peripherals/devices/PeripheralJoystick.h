@@ -39,7 +39,7 @@ namespace PERIPHERALS
                              HatDirection  direction = HatDirectionNone,
                              float         axisPos   = 0.0f);
 
-  private:
+  protected:
     IJoystickInputHandler* m_inputHandler;
   };
 }
