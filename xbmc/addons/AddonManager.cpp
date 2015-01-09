@@ -43,7 +43,7 @@
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
 //#endif
-#include "peripherals/PeripheralAddon.h"
+#include "peripherals/addons/PeripheralAddon.h"
 #include "PluginSource.h"
 #include "Repository.h"
 #include "Skin.h"
@@ -349,21 +349,21 @@ void CAddonMgr::RemoveFromUpdateableAddons(AddonPtr &pAddon)
 {
   CSingleLock lock(m_critSection);
   VECADDONS::iterator it = std::find(m_updateableAddons.begin(), m_updateableAddons.end(), pAddon);
-  
+
   if(it != m_updateableAddons.end())
   {
     m_updateableAddons.erase(it);
   }
 }
 
-struct AddonIdFinder 
-{ 
+struct AddonIdFinder
+{
     AddonIdFinder(const std::string& id)
       : m_id(id)
     {}
-    
-    bool operator()(const AddonPtr& addon) 
-    { 
+
+    bool operator()(const AddonPtr& addon)
+    {
       return m_id == addon->ID();
     }
     private:
@@ -374,7 +374,7 @@ bool CAddonMgr::ReloadSettings(const std::string &id)
 {
   CSingleLock lock(m_critSection);
   VECADDONS::iterator it = std::find_if(m_updateableAddons.begin(), m_updateableAddons.end(), AddonIdFinder(id));
-  
+
   if( it != m_updateableAddons.end())
   {
     return (*it)->ReloadSettings();

@@ -27,7 +27,8 @@
 using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
-  CPeripheral(scanResult)
+  CPeripheral(scanResult),
+  m_inputHandler(NULL)
 {
   m_features.push_back(FEATURE_JOYSTICK);
 }
@@ -54,11 +55,11 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
         if (addonBus->SplitLocation(m_strLocation, addon, index))
         {
           //m_strDeviceName = m_addon->GetName(index); // TODO
-          addon->RegisterInputHandler(index, this);
+          //addon->RegisterInputHandler(index, this); // TODO
 
           // TODO: Need a manager
           //m_inputHandler = m_addon->GetInputHandler(index); // TODO
-          m_inputHandler = new CGenericJoystickInputHandler(Index(), m_strDeviceName, m_iVendorId, m_iProductId);
+          //m_inputHandler = new CGenericJoystickInputHandler(Index(), m_strDeviceName, m_iVendorId, m_iProductId);
           //m_inputHandler->SetButtonCount(joystickInfo.ButtonCount());
           //m_inputHandler->SetHatCount(joystickInfo.HatCount());
           //m_inputHandler->SetAxisCount(joystickInfo.AxisCount());

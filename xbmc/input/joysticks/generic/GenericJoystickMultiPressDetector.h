@@ -21,6 +21,9 @@
 
 #include "input/joysticks/IJoystickInputHandling.h"
 
+class CGenericJoystickButtonMapper;
+class IButtonMapper;
+
 /*!
  * \ingroup joysticks_generic
  * \brief Implementation of IJoystickInputHandling to detect multi-presses

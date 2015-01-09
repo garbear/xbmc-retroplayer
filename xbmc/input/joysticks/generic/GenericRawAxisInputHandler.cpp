@@ -19,7 +19,7 @@
  */
 
 #include "GenericRawAxisInputHandler.h"
-#include "input/joysticks/JoystickTypes.h"
+#include "input/joysticks/IJoystickRawInputHandler.h"
 #include "threads/SystemClock.h"
 
 using namespace XbmcThreads;
@@ -53,7 +53,7 @@ bool CGenericRawAxisInputHandler::OnMotion(float newValue)
 
   const unsigned int motionTimeMs = SystemClockMillis();
 
-  SemiAxisDirection newDirection();
+  SemiAxisDirection newDirection = SemiAxisDirectionUnknown;
   if (ABS(newValue) >= ANALOG_DIGITAL_THRESHOLD)
     newDirection = (newValue > 0 ? SemiAxisDirectionPositive : SemiAxisDirectionNegative);
 

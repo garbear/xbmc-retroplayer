@@ -19,6 +19,7 @@
  */
 
 #include "GenericRawHatInputHandler.h"
+#include "input/joysticks/IJoystickRawInputHandler.h"
 #include "threads/SystemClock.h"
 
 using namespace XbmcThreads;

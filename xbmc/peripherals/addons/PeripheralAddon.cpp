@@ -420,6 +420,7 @@ bool CPeripheralAddon::ProcessEvents(void)
       {
         CPeripheralJoystick* joystickDevice = static_cast<CPeripheralJoystick*>(device);
 
+        /* TODO
         switch (pEvents[i].type)
         {
           case JOYSTICK_EVENT_TYPE_RAW_BUTTON:
@@ -456,6 +457,7 @@ bool CPeripheralAddon::ProcessEvents(void)
           default:
             break;
         }
+        */
         break;
       }
       default:

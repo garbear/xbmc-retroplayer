@@ -236,10 +236,10 @@ public:
     return false;
   }
 
-  ButtonPrimitiveType Type() const              { return m_type; }
-  unsigned int        Index() const             { return m_index; }
-  HatDirection        HatDirection() const      { return m_hatDirection; }
-  SemiAxisDirection   SemiAxisDirection() const { return m_axisDirection; }
+  ButtonPrimitiveType Type() const        { return m_type; }
+  unsigned int        Index() const       { return m_index; }
+  HatDirection        HatDir() const      { return m_hatDirection; }
+  SemiAxisDirection   SemiAxisDir() const { return m_axisDirection; }
 
 private:
   ButtonPrimitiveType m_type;

@@ -22,6 +22,8 @@
 #include "input/joysticks/IJoystickInputHandling.h"
 #include "input/joysticks/JoystickTypes.h"
 
+#include <map>
+
 // TODO
 class IButtonMapper
 {
@@ -30,6 +32,8 @@ public:
 
   virtual bool LoadButtonMap(const JoystickIdentifier& joystick, ButtonMap& loadedButtonMap) = 0;
 };
+
+class CGenericJoystickActionHandler;
 
 /*!
  * \ingroup joysticks_generic

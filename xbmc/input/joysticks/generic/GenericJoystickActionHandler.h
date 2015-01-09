@@ -19,46 +19,28 @@
  */
 #pragma once
 
-#include "input/joysticks/IJoystickActionHandler.h"
+#include "input/joysticks/IJoystickRawInputHandler.h"
 
 /*!
  * \ingroup joysticks_generic
  * \brief Generic implementation of IJoystickActionHandler to translate
  *        joystick actions into XBMC specific and mappable actions.
  *
- * \sa IJoystickActionHandler
+ * \sa IJoystickRawInputHandler
  */
 class CGenericJoystickActionHandler : public IJoystickRawInputHandler // TODO: Extend IJoystickActionHandler
 {
 public:
-  /*!
-   \brief Get an instance of the joystick input manager
-   */
-  static CGenericJoystickActionHandler &Get();
+  CGenericJoystickActionHandler() { }
+
+  virtual ~CGenericJoystickActionHandler() { }
 
   // implementation of IJoystickActionHandler
+  /*
   virtual bool OnButtonPress(unsigned int id, bool bPressed);
   virtual bool OnButtonMotion(unsigned int id, float magnitude);
   virtual bool OnAnalogStickMotion(unsigned int id, float x, float y);
   virtual bool OnAnalogStickThreshold(unsigned int id, bool bPressed, HatDirection direction = HatDirectionNone);
   virtual bool OnAccelerometerMotion(unsigned int id, float x, float y, float z);
-
-  /*!
-   \brief Asks the control at the given coordinates for a list of the supported gestures.
-
-   \param x     The x coordinate (with sub-pixel) of the joystick
-   \param y     The y coordinate (with sub-pixel) of the joystick
-
-   \return EVENT_RESULT value of bitwise ORed gestures.
-   */
-  int QuerySupportedGestures(float x, float y);
-
-private:
-  // private construction, and no assignments; use the provided singleton methods
-  CGenericJoystickActionHandler() { }
-  CGenericJoystickActionHandler(const CGenericJoystickActionHandler&);
-  CGenericJoystickActionHandler const& operator=(CGenericJoystickActionHandler const&);
-  virtual ~CGenericJoystickActionHandler() { }
-
-  void focusControl(float x, float y);
+  */
 };

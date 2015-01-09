@@ -29,7 +29,7 @@
  *
  * \sa IJoystickRawInputHandler
  */
-class IJoystickInputHandling : protected IJoystickRawInputHandler
+class IJoystickInputHandling : public IJoystickRawInputHandler
 {
 public:
   IJoystickInputHandling(void);

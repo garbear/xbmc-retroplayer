@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "JoystickTypes.h"
+#include "IJoystickActionHandler.h"
 
 /*!
  * \ingroup joysticks

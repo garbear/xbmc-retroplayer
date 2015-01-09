@@ -20,8 +20,8 @@
  */
 
 #include "guilib/IWindowManagerCallback.h"
+#include "peripherals/addons/PeripheralAddon.h"
 #include "peripherals/bus/PeripheralBus.h"
-#include "peripherals/PeripheralAddon.h"
 #include "threads/CriticalSection.h"
 
 namespace PERIPHERALS

@@ -1,7 +1,10 @@
 SRCS=GenericJoystickActionHandler.cpp \
      GenericJoystickButtonMapper.cpp \
      GenericJoystickInputHandler.cpp \
-     GenericJoystickRotateDetector.cpp \
+     GenericJoystickMultiPressDetector.cpp \
+     GenericRawAxisInputHandler.cpp \
+     GenericRawButtonInputHandler.cpp \
+     GenericRawHatInputHandler.cpp \
 
 LIB=input_joysticks_generic.a
 

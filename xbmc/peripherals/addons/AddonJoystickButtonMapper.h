@@ -19,20 +19,18 @@
  */
 #pragma once
 
-#include "../../input/joysticks/generic/GenericJoystickButtonMapper.h"
+#include "input/joysticks/generic/GenericJoystickButtonMapper.h"
 #include "peripherals/addons/PeripheralAddon.h"
 
-class CAddonJoystickButtonMapper : public IGenericJoystickButtonMapper
+class CAddonJoystickButtonMapper : public IButtonMapper
 {
 public:
-  CAddonJoystickButtonMapper(IJoystickActionHandler *handler, const JoystickIdentifier& identifier, const PERIPHERALS::PeripheralAddonPtr& addon);
+  CAddonJoystickButtonMapper(void) { }
 
   virtual ~CAddonJoystickButtonMapper() { }
 
-  // Implementation of IGenericJoystickButtonMapper
-  virtual bool OnRawButtonPress(unsigned int id, bool bPressed);
-  virtual bool OnRawHatMotion(unsigned int id, HatDirection direction);
-  virtual bool OnRawAxisMotion(unsigned int id, float position);
+  // Implementation of IButtonMapper
+  virtual bool LoadButtonMap(const JoystickIdentifier& joystick, ButtonMap& loadedButtonMap) { return false; }
 
 private:
   PERIPHERALS::PeripheralAddonPtr m_addon;

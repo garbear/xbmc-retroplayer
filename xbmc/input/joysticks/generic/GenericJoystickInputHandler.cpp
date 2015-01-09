@@ -21,6 +21,7 @@
 #include <math.h>
 
 #include "input/joysticks/generic/GenericJoystickInputHandler.h"
+#include "input/joysticks/generic/GenericJoystickMultiPressDetector.h"
 #include "input/joysticks/generic/GenericRawButtonInputHandler.h"
 #include "input/joysticks/generic/GenericRawHatInputHandler.h"
 #include "input/joysticks/generic/GenericRawAxisInputHandler.h"

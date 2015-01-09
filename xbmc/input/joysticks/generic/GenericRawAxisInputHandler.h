@@ -19,7 +19,10 @@
  */
 #pragma once
 
+#include "input/joysticks/JoystickTypes.h"
 #include "threads/Timer.h"
+
+class IJoystickRawInputHandler;
 
 class CGenericRawAxisInputHandler : private ITimerCallback
 {

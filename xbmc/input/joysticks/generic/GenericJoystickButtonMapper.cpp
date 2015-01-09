@@ -18,6 +18,7 @@
  *
  */
 
+#include "GenericJoystickActionHandler.h"
 #include "GenericJoystickButtonMapper.h"
 
 #include <algorithm>
@@ -81,6 +82,7 @@ CGenericJoystickButtonMapper::~CGenericJoystickButtonMapper()
 
 bool CGenericJoystickButtonMapper::OnRawButtonPress(unsigned int index)
 {
+  /* TODO
   bool bMapped = false;
   bool bOverloaded = false;
 
@@ -90,6 +92,7 @@ bool CGenericJoystickButtonMapper::OnRawButtonPress(unsigned int index)
     bMapped = true;
     bOverloaded = (it->buttons.size() >= 2);
   }
+  */
 
   return true;
 }

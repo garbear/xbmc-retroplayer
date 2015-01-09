@@ -112,6 +112,7 @@ extern "C"
   typedef enum JOYSTICK_ID
   {
     JOYSTICK_ID_BUTTON_UNKNOWN = 0,      /*!< @brief no data exists to associate button with ID */
+#if 0 // TODO
     JOYSTICK_ID_BUTTON_1,                /*!< @brief corresponds to A (generic) or Cross (Sony) */
     JOYSTICK_ID_BUTTON_2,                /*!< @brief corresponds to B (generic) or Circle (Sony) */
     JOYSTICK_ID_BUTTON_3,                /*!< @brief corresponds to C or X (generic), Square (Sony), C-down (N64) or One (Wii)*/
@@ -135,6 +136,7 @@ extern "C"
     JOYSTICK_ID_ANALOG_STICK_RIGHT,      /*!< @brief corresponds to Right analog stick */
     JOYSTICK_ID_ACCELEROMETER,           /*!< @brief corresponds to Accelerometer (Wii/Sixaxis) */
     JOYSTICK_ID_GYRO,                    /*!< @brief corresponds to gyroscope (Wii Motion Plus/Sixaxis) */
+#endif
   } JOYSTICK_ID;
 
   typedef enum JOYSTICK_BUTTON_TYPE

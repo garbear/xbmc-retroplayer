@@ -19,24 +19,3 @@
  */
 
 #include "AddonJoystickButtonMapper.h"
-
-CAddonJoystickButtonMapper::CAddonJoystickButtonMapper(IJoystickActionHandler *handler, const JoystickIdentifier& identifier, const PERIPHERALS::PeripheralAddonPtr& addon)
-  : IGenericJoystickButtonMapper(handler, identifier),
-    m_addon(addon)
-{
-
-}
-bool CAddonJoystickButtonMapper::OnRawButtonPress(unsigned int id, bool bPressed)
-{
-  return false; // TODO
-}
-
-bool CAddonJoystickButtonMapper::OnRawHatMotion(unsigned int id, HatDirection direction)
-{
-  return false; // TODO
-}
-
-bool CAddonJoystickButtonMapper::OnRawAxisMotion(unsigned int id, float position)
-{
-  return false; // TODO
-}
