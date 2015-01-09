@@ -196,16 +196,43 @@ public:
     {
       switch (m_type)
       {
-      case ButtonPrimitiveTypeUnknown:
-        return true;
       case ButtonPrimitiveTypeButton:
         return m_index == rhs.m_index;
       case ButtonPrimitiveTypeHatDirection:
         return m_index == rhs.m_index && m_hatDirection == rhs.m_hatDirection;
       case ButtonPrimitiveTypeSemiAxis:
         return m_index == rhs.m_index && m_axisDirection == rhs.m_axisDirection;
+      case ButtonPrimitiveTypeUnknown:
+      default:
+        return true;
       }
     }
+    return false;
+  }
+
+  bool operator<(const ButtonPrimitive& rhs) const
+  {
+    if (m_type < rhs.m_type) return true;
+    if (m_type > rhs.m_type) return false;
+
+    if (m_type)
+    {
+      if (m_index < rhs.m_index) return true;
+      if (m_index > rhs.m_index) return false;
+    }
+
+    if (m_type == ButtonPrimitiveTypeHatDirection)
+    {
+      if (m_hatDirection < rhs.m_hatDirection) return true;
+      if (m_hatDirection > rhs.m_hatDirection) return false;
+    }
+
+    if (m_type == ButtonPrimitiveTypeSemiAxis)
+    {
+      if (m_axisDirection < rhs.m_axisDirection) return true;
+      if (m_axisDirection > rhs.m_axisDirection) return false;
+    }
+
     return false;
   }
 
@@ -221,5 +248,20 @@ private:
   SemiAxisDirection   m_axisDirection;
 };
 
-typedef std::vector<ButtonPrimitive>             ButtonRecipe;
-typedef std::map<JoystickActionID, ButtonRecipe> ButtonMap;
+enum ButtonModifier
+{
+  ButtonModifierNone = 0,
+  ButtonModifierHold,
+  ButtonModifierDoublePress,
+  ButtonModifierDoublePressHold,
+  ButtonModifierMultiPress,
+};
+
+struct ButtonRecipe
+{
+  ButtonModifier               modifier;
+  std::vector<ButtonPrimitive> buttons;
+  JoystickActionID             action;
+};
+
+typedef std::vector<ButtonRecipe> ButtonMap;

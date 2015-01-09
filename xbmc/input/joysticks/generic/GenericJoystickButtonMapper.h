@@ -22,6 +22,15 @@
 #include "input/joysticks/IJoystickInputHandling.h"
 #include "input/joysticks/JoystickTypes.h"
 
+// TODO
+class IButtonMapper
+{
+public:
+  virtual ~IButtonMapper() { }
+
+  virtual bool LoadButtonMap(const JoystickIdentifier& joystick, ButtonMap& loadedButtonMap) = 0;
+};
+
 /*!
  * \ingroup joysticks_generic
  * \brief Interface defining methods to perform button mapping
@@ -57,9 +66,7 @@ public:
   virtual bool OnRawMultiPress(const std::vector<ButtonPrimitive>& buttons);
 
 protected:
-  // TODO: Move to IButtonMapper
-  //virtual bool LoadButtonMap(const JoystickIdentifier& joystick, ButtonMap& loadedButtonMap) = 0;
-
   IButtonMapper* const          m_buttonMapper;
+  std::map<ButtonPrimitive, std::vector<ButtonRecipe> > m_buttonMap;
   CGenericJoystickActionHandler *m_handler;
 };
