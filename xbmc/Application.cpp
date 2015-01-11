@@ -540,6 +540,19 @@ bool CApplication::OnEvent(XBMC_Event& newEvent)
       }
       break;
     }
+    case XBMC_JOYDIGITAL:
+    {
+      CAction action = CButtonTranslator::GetInstance().GetAction(g_application.GetActiveWindowID(), CKey(newEvent.joystick.button, newEvent.joystick.holdtime));
+      g_application.ExecuteInputAction(action);
+      break;
+    }
+    case XBMC_JOYANALOG:
+    {
+      CAction action = CButtonTranslator::GetInstance().GetAction(g_application.GetActiveWindowID(), CKey(newEvent.joystick.button, 0));
+      CAction actionWithAmount(action.GetID(), newEvent.joystick.amount, 0.0f, action.GetName());
+      g_application.OnAction(actionWithAmount);
+      break;
+    }
     case XBMC_SETFOCUS:
       // Reset the screensaver
       g_application.ResetScreenSaver();

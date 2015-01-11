@@ -380,6 +380,8 @@ public:
 
   void SetLoggingIn(bool loggingIn) { m_loggingIn = loggingIn; }
 
+  int GetActiveWindowID(void);
+
 protected:
   virtual bool OnSettingsSaving() const;
 
@@ -472,7 +474,6 @@ protected:
   bool ProcessEventServer(float frameTime);
   bool ProcessPeripherals(float frameTime);
   bool ExecuteInputAction(const CAction &action);
-  int  GetActiveWindowID(void);
 
   float NavigationIdleTime();
   static bool AlwaysProcess(const CAction& action);
