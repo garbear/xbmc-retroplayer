@@ -2511,12 +2511,14 @@ OUTPUT_FILES="Makefile \
     lib/addons/library.xbmc.codec/Makefile \
     lib/addons/library.kodi.guilib/Makefile \
     lib/addons/library.xbmc.pvr/Makefile \
+    lib/addons/library.kodi.peripheral/Makefile \
     xbmc/visualizations/EGLHelpers/Makefile \
     tools/Linux/${APP_NAME_LC}.sh \
     tools/Linux/${APP_NAME_LC}-standalone.sh \
     tools/Linux/${APP_NAME_LC}-xsession.desktop \
     tools/EventClients/Makefile \
     tools/EventClients/Clients/OSXRemote/Makefile \
+    xbmc/peripherals/addons/Makefile \
     xbmc/peripherals/bus/Makefile \
     xbmc/peripherals/devices/Makefile \
     xbmc/android/activity/Makefile \

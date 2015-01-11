@@ -19,13 +19,15 @@
  *
  */
 
+#include <map>
 #include <set>
 #include <string>
 #include "peripherals/PeripheralTypes.h"
 
 class TiXmlDocument;
-
 class CSetting;
+class IJoystickDriverHandler;
+class IJoystickInputHandler;
 
 namespace PERIPHERALS
 {
@@ -163,6 +165,12 @@ namespace PERIPHERALS
 
     virtual bool ErrorOccured(void) const { return m_bError; }
 
+    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler) { }
+    virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler) { }
+
+    virtual void RegisterJoystickInputHandler(IJoystickInputHandler* handler);
+    virtual void UnregisterJoystickInputHandler(IJoystickInputHandler* handler);
+
   protected:
     virtual void ClearSettings(void);
 
@@ -185,5 +193,6 @@ namespace PERIPHERALS
     std::vector<CPeripheral *>       m_subDevices;
     std::map<std::string, PeripheralDeviceSetting> m_settings;
     std::set<std::string>             m_changedSettings;
+    std::map<IJoystickInputHandler*, IJoystickDriverHandler*> m_inputHandlers;
   };
 }

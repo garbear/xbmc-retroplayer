@@ -319,6 +319,9 @@
     <Filter Include="video\videosync">
       <UniqueIdentifier>{9775d5c0-c640-4606-a625-e6cdcf9f959e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="peripherals\addons">
+      <UniqueIdentifier>{79accf60-e1c8-4541-9447-06b188cfa488}</UniqueIdentifier>
+    </Filter>
     <Filter Include="cores\dvdplayer\DVDCodecs\Overlay\contrib">
       <UniqueIdentifier>{43526341-7b96-462d-9f71-685e426251ec}</UniqueIdentifier>
     </Filter>
@@ -339,6 +342,9 @@
     </Filter>
     <Filter Include="input\joysticks\generic">
       <UniqueIdentifier>{4a62df5e-b96a-42c2-9303-795d9605b333}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="peripherals\bus\virtual">
+      <UniqueIdentifier>{00dc7d3e-6802-4478-a254-3042e4dbc35e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2969,6 +2975,21 @@
     <ClCompile Include="..\..\xbmc\cores\DataCacheCore.cpp">
       <Filter>cores</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPeripheral.cpp">
+      <Filter>addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.cpp">
+      <Filter>peripherals\bus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.cpp">
+      <Filter>peripherals\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMap.cpp">
+      <Filter>peripherals\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\addons\PeripheralAddon.cpp">
+      <Filter>peripherals\addons</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\filesystem\OverrideDirectory.cpp">
       <Filter>filesystem</Filter>
     </ClCompile>
@@ -3112,6 +3133,21 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\input\joysticks\generic\GenericJoystickKeyboardHandler.cpp">
       <Filter>input\joysticks\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\PortManager.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickDriverHandler.cpp">
+      <Filter>peripherals\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusApplication.cpp">
+      <Filter>peripherals\bus\virtual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralKeyboard.cpp">
+      <Filter>peripherals\devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\PortMapper.cpp">
+      <Filter>peripherals</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5886,6 +5922,21 @@
     <ClInclude Include="..\..\xbmc\win32\crts_caller.h">
       <Filter>win32</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\addons\AddonCallbacksPeripheral.h">
+      <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.h">
+      <Filter>peripherals\bus</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.h">
+      <Filter>peripherals\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMap.h">
+      <Filter>peripherals\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\addons\PeripheralAddon.h">
+      <Filter>peripherals\addons</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\xbmc\filesystem\OverrideDirectory.h">
       <Filter>filesystem</Filter>
     </ClInclude>
@@ -6032,6 +6083,21 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\input\joysticks\generic\GenericJoystickKeyboardHandler.h">
       <Filter>input\joysticks\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\PortManager.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickDriverHandler.h">
+      <Filter>peripherals\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusApplication.h">
+      <Filter>peripherals\bus\virtual</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralKeyboard.h">
+      <Filter>peripherals\devices</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\PortMapper.h">
+      <Filter>peripherals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
