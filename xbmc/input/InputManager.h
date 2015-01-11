@@ -36,6 +36,7 @@
 #include "settings/lib/ISettingCallback.h"
 
 class CKey;
+class IKeyboardHandler;
 
 class CInputManager : public ISettingCallback
 {
@@ -201,6 +202,9 @@ public:
 
   virtual void OnSettingChanged(const CSetting *setting);
 
+  void RegisterKeyboardHandler(IKeyboardHandler* handler);
+  void UnregisterKeyboardHandler(IKeyboardHandler* handler);
+
 private:
 
   /*! \brief Process keyboard event and translate into an action
@@ -210,6 +214,13 @@ private:
   * \sa CKey
   */
   bool OnKey(const CKey& key);
+
+  /*! \brief Process key up event
+   *
+   * \param CKey details of released key
+   * \sa CKey
+   */
+  void OnKeyUp(const CKey& key);
 
   /*! \brief Determine if an action should be processed or just
   *   cancel the screensaver
@@ -239,4 +250,6 @@ private:
 #if defined(HAS_EVENT_SERVER)
   std::map<std::string, std::map<int, float> > m_lastAxisMap;
 #endif
+
+  std::vector<IKeyboardHandler*> m_keyboardHandlers;
 };

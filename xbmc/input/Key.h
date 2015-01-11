@@ -31,25 +31,19 @@
 //  XBIRRemote.h
 //  XINPUT_IR_REMOTE-*
 
-// Analogue - don't change order
 #define KEY_BUTTON_A                        256
 #define KEY_BUTTON_B                        257
 #define KEY_BUTTON_X                        258
 #define KEY_BUTTON_Y                        259
-#define KEY_BUTTON_BLACK                    260
-#define KEY_BUTTON_WHITE                    261
+
 #define KEY_BUTTON_LEFT_TRIGGER             262
 #define KEY_BUTTON_RIGHT_TRIGGER            263
-
-#define KEY_BUTTON_LEFT_THUMB_STICK         264
-#define KEY_BUTTON_RIGHT_THUMB_STICK        265
 
 #define KEY_BUTTON_RIGHT_THUMB_STICK_UP     266 // right thumb stick directions
 #define KEY_BUTTON_RIGHT_THUMB_STICK_DOWN   267 // for defining different actions per direction
 #define KEY_BUTTON_RIGHT_THUMB_STICK_LEFT   268
 #define KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT  269
 
-// Digital - don't change order
 #define KEY_BUTTON_DPAD_UP                  270
 #define KEY_BUTTON_DPAD_DOWN                271
 #define KEY_BUTTON_DPAD_LEFT                272
@@ -68,6 +62,13 @@
 #define KEY_BUTTON_LEFT_THUMB_STICK_DOWN    281 // for defining different actions per direction
 #define KEY_BUTTON_LEFT_THUMB_STICK_LEFT    282
 #define KEY_BUTTON_LEFT_THUMB_STICK_RIGHT   283
+
+#define KEY_BUTTON_GUIDE                    284
+
+#define KEY_BUTTON_LEFT_SHOULDER            285
+#define KEY_BUTTON_RIGHT_SHOULDER           286
+
+#define KEY_BUTTON_ACCELEROMETER            287
 
 // 0xF000 -> 0xF200 is reserved for the keyboard; a keyboard press is either
 #define KEY_VKEY            0xF000 // a virtual key/functional key e.g. cursor left

@@ -334,6 +334,12 @@
     <Filter Include="interfaces\legacy\wsgi">
       <UniqueIdentifier>{4750236a-887e-40c1-af3e-1e095f5960e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="input\joysticks">
+      <UniqueIdentifier>{4a199561-6390-4e3a-9697-369119738092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input\joysticks\generic">
+      <UniqueIdentifier>{4a62df5e-b96a-42c2-9303-795d9605b333}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3088,6 +3094,24 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\music\CueInfoLoader.cpp">
       <Filter>music</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joysticks\JoystickDriverPrimitive.cpp">
+      <Filter>input\joysticks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joysticks\JoystickTranslator.cpp">
+      <Filter>input\joysticks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joysticks\generic\DefaultJoystickInputHandler.cpp">
+      <Filter>input\joysticks\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joysticks\generic\DigitalAnalogButtonConverter.cpp">
+      <Filter>input\joysticks\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joysticks\generic\GenericJoystickDriverHandler.cpp">
+      <Filter>input\joysticks\generic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\input\joysticks\generic\GenericJoystickKeyboardHandler.cpp">
+      <Filter>input\joysticks\generic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5975,6 +5999,39 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\input\KeyboardLayoutManager.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\IKeyboardHandler.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\IJoystickButtonMap.h">
+      <Filter>input\joysticks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\IJoystickDriverHandler.h">
+      <Filter>input\joysticks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\IJoystickInputHandler.h">
+      <Filter>input\joysticks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\JoystickDriverPrimitive.h">
+      <Filter>input\joysticks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\JoystickTranslator.h">
+      <Filter>input\joysticks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\JoystickTypes.h">
+      <Filter>input\joysticks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\generic\DefaultJoystickInputHandler.h">
+      <Filter>input\joysticks\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\generic\DigitalAnalogButtonConverter.h">
+      <Filter>input\joysticks\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\generic\GenericJoystickDriverHandler.h">
+      <Filter>input\joysticks\generic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\joysticks\generic\GenericJoystickKeyboardHandler.h">
+      <Filter>input\joysticks\generic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
