@@ -38,7 +38,9 @@ namespace PERIPHERALS
     PERIPHERAL_BUS_USB,
     PERIPHERAL_BUS_PCI,
     PERIPHERAL_BUS_RPI,
-    PERIPHERAL_BUS_CEC
+    PERIPHERAL_BUS_CEC,
+    PERIPHERAL_BUS_ADDON,
+    PERIPHERAL_BUS_APPLICATION,
   };
 
   enum PeripheralFeature
@@ -51,7 +53,9 @@ namespace PERIPHERALS
     FEATURE_CEC,
     FEATURE_BLUETOOTH,
     FEATURE_TUNER,
-    FEATURE_IMON
+    FEATURE_IMON,
+    FEATURE_JOYSTICK,
+    FEATURE_KEYBOARD,
   };
 
   enum PeripheralType
@@ -64,7 +68,9 @@ namespace PERIPHERALS
     PERIPHERAL_CEC,
     PERIPHERAL_BLUETOOTH,
     PERIPHERAL_TUNER,
-    PERIPHERAL_IMON 
+    PERIPHERAL_IMON,
+    PERIPHERAL_JOYSTICK,
+    PERIPHERAL_KEYBOARD,
   };
 
   struct PeripheralID
@@ -112,6 +118,10 @@ namespace PERIPHERALS
         return "tuner";
       case PERIPHERAL_IMON:
         return "imon";
+      case PERIPHERAL_JOYSTICK:
+        return "joystick";
+      case PERIPHERAL_KEYBOARD:
+        return "keyboard";
       default:
         return "unknown";
       }
@@ -138,6 +148,10 @@ namespace PERIPHERALS
         return PERIPHERAL_TUNER;
       else if (strTypeLowerCase == "imon")
         return PERIPHERAL_IMON;
+      else if (strTypeLowerCase == "joystick")
+        return PERIPHERAL_JOYSTICK;
+      else if (strTypeLowerCase == "keyboard")
+        return PERIPHERAL_KEYBOARD;
 
       return PERIPHERAL_UNKNOWN;
     };
@@ -154,6 +168,10 @@ namespace PERIPHERALS
         return "rpi";
       case PERIPHERAL_BUS_CEC:
         return "cec";
+      case PERIPHERAL_BUS_ADDON:
+        return "addon";
+      case PERIPHERAL_BUS_APPLICATION:
+        return "application";
       default:
         return "unknown";
       }
@@ -172,6 +190,10 @@ namespace PERIPHERALS
         return PERIPHERAL_BUS_RPI;
       else if (strTypeLowerCase == "cec")
         return PERIPHERAL_BUS_CEC;
+      else if (strTypeLowerCase == "addon")
+        return PERIPHERAL_BUS_ADDON;
+      else if (strTypeLowerCase == "application")
+        return PERIPHERAL_BUS_APPLICATION;
 
       return PERIPHERAL_BUS_UNKNOWN;
     };
