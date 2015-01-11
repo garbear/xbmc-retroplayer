@@ -1,0 +1,11 @@
+SRCS  = AddonJoystickButtonMap.cpp
+SRCS += AddonJoystickButtonMapping.cpp
+SRCS += AddonJoystickButtonMapRO.cpp
+SRCS += AddonJoystickButtonMapWO.cpp
+SRCS += AddonJoystickInputHandling.cpp
+SRCS += PeripheralAddon.cpp
+
+LIB = peripheral-addons.a
+
+include @abs_top_srcdir@/Makefile.include
+-include $(patsubst %.cpp,%.P,$(patsubst %.c,%.P,$(SRCS)))

@@ -1,4 +1,6 @@
 SRCS  = PeripheralBus.cpp
+SRCS += virtual/PeripheralBusAddon.cpp
+SRCS += virtual/PeripheralBusApplication.cpp
 
 ifeq (@USE_LIBUDEV@,1)
 SRCS += linux/PeripheralBusUSBLibUdev.cpp

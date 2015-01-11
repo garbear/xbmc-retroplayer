@@ -1,4 +1,5 @@
-SRCS=Peripherals.cpp
+SRCS=Peripherals.cpp \
+     PortMapper.cpp \
 
 LIB=peripherals.a
 

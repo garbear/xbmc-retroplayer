@@ -4,6 +4,7 @@ SRCS=ButtonTranslator.cpp \
      KeyboardLayoutManager.cpp \
      KeyboardStat.cpp \
      MouseStat.cpp \
+     PortManager.cpp \
      XBMC_keytable.cpp \
      InputManager.cpp \
      Key.cpp
