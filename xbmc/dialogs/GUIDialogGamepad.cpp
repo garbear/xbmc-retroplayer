@@ -58,8 +58,6 @@ bool CGUIDialogGamepad::OnAction(const CAction &action)
     case KEY_BUTTON_B : m_strUserInput += "B"; break;
     case KEY_BUTTON_X : m_strUserInput += "X"; break;
     case KEY_BUTTON_Y : m_strUserInput += "Y"; break;
-    case KEY_BUTTON_BLACK : m_strUserInput += "K"; break;
-    case KEY_BUTTON_WHITE : m_strUserInput += "W"; break;
     case KEY_BUTTON_LEFT_TRIGGER : m_strUserInput += "("; break;
     case KEY_BUTTON_RIGHT_TRIGGER : m_strUserInput += ")"; break;
     case KEY_BUTTON_DPAD_UP : m_strUserInput += "U"; break;
