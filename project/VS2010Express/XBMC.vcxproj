@@ -174,6 +174,7 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksAddon.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksCodec.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGUI.cpp" />
+    <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPeripheral.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPVR.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonInstaller.cpp" />
@@ -499,6 +500,7 @@
     <ClCompile Include="..\..\xbmc\input\KeyboardLayoutManager.cpp" />
     <ClCompile Include="..\..\xbmc\input\KeyboardStat.cpp" />
     <ClCompile Include="..\..\xbmc\input\MouseStat.cpp" />
+    <ClCompile Include="..\..\xbmc\input\PortManager.cpp" />
     <ClCompile Include="..\..\xbmc\input\touch\generic\GenericTouchActionHandler.cpp" />
     <ClCompile Include="..\..\xbmc\input\touch\generic\GenericTouchSwipeDetector.cpp" />
     <ClCompile Include="..\..\xbmc\input\touch\ITouchInputHandling.cpp" />
@@ -679,7 +681,12 @@
     <ClCompile Include="..\..\xbmc\NfoFile.cpp" />
     <ClCompile Include="..\..\xbmc\PartyModeManager.cpp" />
     <ClCompile Include="..\..\xbmc\PasswordManager.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMap.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickDriverHandler.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\addons\PeripheralAddon.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBus.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusApplication.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\win32\PeripheralBusUSB.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\Peripheral.cpp" />
@@ -687,6 +694,8 @@
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralCecAdapter.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralDisk.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralHID.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralKeyboard.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralNIC.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralNyxboard.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralImon.cpp" />
@@ -694,6 +703,7 @@
     <ClCompile Include="..\..\xbmc\peripherals\dialogs\GUIDialogPeripheralManager.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\dialogs\GUIDialogPeripheralSettings.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\Peripherals.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\PortMapper.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIDialogPictureInfo.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIViewStatePictures.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIWindowPictures.cpp" />
@@ -821,6 +831,7 @@
     <ClCompile Include="..\..\xbmc\TextureDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\DatabaseManager.cpp" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksCodec.h" />
+    <ClInclude Include="..\..\xbmc\addons\AddonCallbacksPeripheral.h" />
     <ClInclude Include="..\..\xbmc\addons\AudioDecoder.h" />
     <ClInclude Include="..\..\xbmc\addons\ContextItemAddon.h" />
     <ClInclude Include="..\..\xbmc\addons\Webinterface.h" />
@@ -907,6 +918,7 @@
     <ClInclude Include="..\..\xbmc\input\joysticks\JoystickTypes.h" />
     <ClInclude Include="..\..\xbmc\input\Key.h" />
     <ClInclude Include="..\..\xbmc\input\KeyboardLayoutManager.h" />
+    <ClInclude Include="..\..\xbmc\input\PortManager.h" />
     <ClInclude Include="..\..\xbmc\input\touch\generic\GenericTouchActionHandler.h" />
     <ClInclude Include="..\..\xbmc\input\touch\generic\GenericTouchSwipeDetector.h" />
     <ClInclude Include="..\..\xbmc\input\touch\generic\IGenericTouchGestureDetector.h" />
@@ -981,8 +993,16 @@
     <ClInclude Include="..\..\xbmc\network\httprequesthandler\python\HTTPPythonRequest.h" />
     <ClInclude Include="..\..\xbmc\network\httprequesthandler\python\HTTPPythonWsgiInvoker.h" />
     <ClInclude Include="..\..\xbmc\network\NetworkServices.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMap.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickDriverHandler.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\addons\PeripheralAddon.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusApplication.h" />
     <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.h" />
     <ClInclude Include="..\..\xbmc\network\upnp\UPnPSettings.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralKeyboard.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\PortMapper.h" />
     <ClInclude Include="..\..\xbmc\playlists\SmartPlaylistFileItemListModifier.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogLockSettings.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogProfileSettings.h" />

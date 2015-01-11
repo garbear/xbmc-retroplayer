@@ -45,6 +45,7 @@
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
 //#endif
+#include "peripherals/addons/PeripheralAddon.h"
 #include "PluginSource.h"
 #include "Repository.h"
 #include "Skin.h"
@@ -120,6 +121,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_PVRDLL:
     case ADDON_AUDIOENCODER:
     case ADDON_AUDIODECODER:
+    case ADDON_PERIPHERALDLL:
       { // begin temporary platform handling for Dlls
         // ideally platforms issues will be handled by C-Pluff
         // this is not an attempt at a solution
@@ -168,6 +170,8 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
           return AddonPtr(new CAudioEncoder(props));
         else if (type == ADDON_AUDIODECODER)
           return AddonPtr(new CAudioDecoder(props));
+        else if (type == ADDON_PERIPHERALDLL)
+          return AddonPtr(new PERIPHERALS::CPeripheralAddon(props));
         else
           return AddonPtr(new CScreenSaver(props));
       }
@@ -807,6 +811,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new CAudioDecoder(addonProps));
     case ADDON_RESOURCE_LANGUAGE:
       return AddonPtr(new CLanguageResource(addonProps));
+    case ADDON_PERIPHERALDLL:
+      return AddonPtr(new PERIPHERALS::CPeripheralAddon(addonProps));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(addonProps));
     case ADDON_CONTEXT_ITEM:

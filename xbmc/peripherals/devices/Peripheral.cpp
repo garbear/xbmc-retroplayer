@@ -20,6 +20,7 @@
 
 #include "Peripheral.h"
 #include "peripherals/Peripherals.h"
+#include "peripherals/addons/AddonJoystickDriverHandler.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "settings/lib/Setting.h"
@@ -524,6 +525,27 @@ void CPeripheral::ClearSettings(void)
     ++it;
   }
   m_settings.clear();
+}
+
+void CPeripheral::RegisterJoystickInputHandler(IJoystickInputHandler* handler)
+{
+  std::map<IJoystickInputHandler*, IJoystickDriverHandler*>::iterator it = m_inputHandlers.find(handler);
+  if (it == m_inputHandlers.end())
+  {
+    m_inputHandlers[handler] = new CAddonJoystickDriverHandler(this, handler);
+    RegisterJoystickDriverHandler(m_inputHandlers[handler]);
+  }
+}
+
+void CPeripheral::UnregisterJoystickInputHandler(IJoystickInputHandler* handler)
+{
+  std::map<IJoystickInputHandler*, IJoystickDriverHandler*>::iterator it = m_inputHandlers.find(handler);
+  if (it != m_inputHandlers.end())
+  {
+    UnregisterJoystickDriverHandler(it->second);
+    delete it->second;
+    m_inputHandlers.erase(it);
+  }
 }
 
 bool CPeripheral::operator ==(const PeripheralScanResult& right) const
