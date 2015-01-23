@@ -35,7 +35,7 @@ typedef struct CB_PeripheralLib
    */
   void (*TriggerScan)(void* addonData);
 
-} CB_GameLib;
+} CB_PeripheralLib;
 
 #ifdef __cplusplus
 }
