@@ -19,87 +19,23 @@
  */
 #pragma once
 
-#include "RetroPlayerAudio.h"
-#include "RetroPlayerVideo.h"
 #include "addons/include/xbmc_game_types.h"
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "games/GameClient.h"
 #include "threads/Thread.h"
-#include "threads/Event.h"
 
 #include <stdint.h>
 #include <string>
+
+CRetroPlayerAudio;
+CRetroPlayerVideo;
 
 class CRetroPlayer : public IPlayer, public CThread
 {
 public:
   CRetroPlayer(IPlayerCallback& callback);
-  virtual ~CRetroPlayer() { CloseFile(); }
-
-  // Inherited from IPlayer
-  virtual bool OpenFile(const CFileItem& file, const CPlayerOptions& options);
-  virtual bool CloseFile(bool reopen = false);
-
-  virtual bool IsPlaying() const { return !m_bStop && m_file && m_gameClient; }
-  virtual void Pause();
-  virtual bool IsPaused() const { return m_playSpeed == 0; }
-
-  virtual bool HasVideo() const { return true; }
-  virtual bool HasAudio() const { return true; }
-
-  virtual void GetAudioInfo(CStdString& strAudioInfo) { strAudioInfo = "CRetroPlayer:GetAudioInfo"; }
-  virtual void GetVideoInfo(CStdString& strVideoInfo) { strVideoInfo = "CRetroPlayer:GetVideoInfo"; }
-  virtual void GetGeneralInfo(CStdString& strGeneralInfo) { strGeneralInfo = "CRetroPlayer:GetGeneralInfo"; }
-
-  //virtual float GetActualFPS() { return 0.0f; }
-  //virtual int GetSourceBitrate() { return 0; }
-  virtual int  GetBitsPerSample() { return 8 * 2 * sizeof(int16_t); }
-  virtual int  GetSampleRate() { return m_samplerate; }
-
-  //virtual int  GetPictureWidth() { return 0; }
-  //virtual int  GetPictureHeight() { return 0; }
-  //virtual bool GetStreamDetails(CStreamDetails &details) { return false; }
-  //virtual void GetVideoStreamInfo(SPlayerVideoStreamInfo &info) { }
-
-  //virtual int  GetAudioStreamCount() { return 0; }
-  //virtual int  GetAudioStream() { return -1; }
-  //virtual void SetAudioStream(int iStream) { }
-  //virtual void GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &info) { }
-
-  //virtual void  SetAVDelay(float fValue = 0.0f) { return; }
-  //virtual float GetAVDelay() { return 0.0f;};
-
-  //virtual bool CanRecord() { return false; }
-  //virtual bool IsRecording() { return false; }
-  //virtual bool Record(bool bOnOff) { return false; }
-
-  virtual void ToFFRW(int iSpeed = 0);
-
-  // A "back buffer" is used to store game history to enable rewinding Braid-style.
-  // The time is computed from the number of frames avaiable in the buffer, and
-  // allows seeking and rewinding over this time range. Fast-forwarding will
-  // simply play the game at a faster speed, and will cause this buffer to fill
-  // faster. When the buffer is full, the progress bar will reach 100% (60s by
-  // default), which will look like a track being finished, but instead of
-  // exiting the game will continue to play.
-  virtual bool CanSeek() { return true; }
-  virtual void Seek(bool bPlus = true, bool bLargeStep = false, bool bChapterOverride = false);
-  virtual void SeekPercentage(float fPercent = 0);
-  virtual float GetPercentage();
-  virtual void SeekTime(int64_t iTime = 0);
-  virtual int64_t GetTime();
-  virtual int64_t GetTotalTime();
-
-  // TODO: Skip to next disk in multi-disc games (e.g. PSX)
-  virtual bool SkipNext() { return false; }
-
-  virtual void VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat);
-  virtual void AudioSample(int16_t left, int16_t right);
-  virtual size_t AudioSampleBatch(const int16_t *data, size_t frames);
-  virtual int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
-  virtual bool RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength);
-  virtual void SetRotation(GAME_ROTATION rotation);
+  virtual ~CRetroPlayer();
 
 protected:
   virtual void Process();
@@ -108,30 +44,13 @@ private:
   /**
    * Dump game information (if any) to the debug log.
    */
-  void PrintGameInfo(const CFileItem &file) const;
+  static void PrintGameInfo(const CFileItem &file) const;
 
-  /**
-   * Create the audio component. Chooses a compatible samplerate and returns
-   * a multiplier representing the framerate adjustment factor, allowing us to
-   * sync the video clock to the audio.
-   * @param  samplerate - the game client's reported audio sample rate
-   * @return the framerate multiplier (chosen samplerate / specified samplerate)
-   *         or 1.0 if no audio.
-   */
-  void CreateAudio(double samplerate);
-  void CreateVideo(double framerate);
-
-  CRetroPlayerVideo    m_video;
-  CRetroPlayerAudio    m_audio;
-
+  CRetroPlayerAudio*   m_audio; // Audio subsystem
+  CRetroPlayerVideo*   m_video; // Video subsystem
   CFileItemPtr         m_file;
   GAME::GameClientPtr  m_gameClient;
-
-  CPlayerOptions       m_PlayerOptions;
-  int                  m_playSpeed; // Normal play speed is PLAYSPEED_NORMAL (1000)
-  double               m_audioSpeedFactor; // Factor by which the audio is sped up
+  float                m_playSpeed; // Normal play speed is 1.0f
   CEvent               m_pauseEvent;
-  CCriticalSection     m_critSection; // For synchronization of Open() and Close() calls
-
-  unsigned int m_samplerate;
+  CCriticalSection     m_critSection;
 };

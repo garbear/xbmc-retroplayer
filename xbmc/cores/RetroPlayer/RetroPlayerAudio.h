@@ -80,11 +80,6 @@ public:
   void SendAudioFrame(int16_t left, int16_t right);
 
   /**
-   * Send the buffered audio to the audio engine if using single-frame audio.
-   */
-  void Flush();
-
-  /**
    * Accumulative audio delay. Does not include delay due to current packet, so
    * at 60fps this could be up to 17ms (~1/60) behind. Accuracy is also subject
    * to accuracy found in AE GetDelay() functions.

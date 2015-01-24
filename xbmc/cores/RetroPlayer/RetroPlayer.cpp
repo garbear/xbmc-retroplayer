@@ -58,6 +58,11 @@ CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
 {
 }
 
+CRetroPlayer::~CRetroPlayer()
+{
+  CloseFile();
+}
+
 bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options)
 {
   CLog::Log(LOGINFO, "RetroPlayer: Opening: %s", file.GetPath().c_str());
@@ -117,7 +122,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   return true;
 }
 
-void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
+void CRetroPlayer::PrintGameInfo(const CFileItem &file)
 {
   // Get game info tag (from a mutable file item, if necessary)
   const CGameInfoTag *tag = file.GetGameInfoTag();

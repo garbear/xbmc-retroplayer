@@ -207,26 +207,6 @@ void CRetroPlayerAudio::SendAudioFrames(const int16_t *data, size_t frames)
   m_packetReady.Set();
 }
 
-void CRetroPlayerAudio::SendAudioFrame(int16_t left, int16_t right)
-{
-  if (m_frameType == FRAME_TYPE_UNKNOWN)
-  {
-    CLog::Log(LOGNOTICE, "RetroPlayerAudio: Using single-frame audio");
-    m_frameType = FRAME_TYPE_SINGLE;
-  }
-
-  m_singleFrameBuffer.push_back(left);
-  m_singleFrameBuffer.push_back(right);
-}
-
-void CRetroPlayerAudio::Flush()
-{
-  if (!m_singleFrameBuffer.empty())
-    SendAudioFrames(m_singleFrameBuffer.data(), m_singleFrameBuffer.size() / CHANNELS);
-
-  m_singleFrameBuffer.clear();
-}
-
 #ifdef TARGET_WINDOWS
 #pragma warning(pop)
 #endif
