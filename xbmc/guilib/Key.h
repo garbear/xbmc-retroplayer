@@ -455,6 +455,8 @@ public:
    */
   unsigned int GetButtonCode() const { return m_buttonCode; };
 
+  bool IsAnalog() const;
+
 private:
   int          m_id;
   CStdString   m_name;
