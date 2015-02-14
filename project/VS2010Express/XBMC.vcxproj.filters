@@ -1111,9 +1111,6 @@
     <ClCompile Include="..\..\xbmc\guilib\IWindowManagerCallback.cpp">
       <Filter>guilib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\guilib\Key.cpp">
-      <Filter>guilib</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\guilib\LocalizeStrings.cpp">
       <Filter>guilib</Filter>
     </ClCompile>
@@ -3133,6 +3130,9 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\video\jobs\VideoLibraryProgressJob.cpp">
       <Filter>video\jobs</Filter>
+	</ClCompile>
+    <ClCompile Include="..\..\xbmc\input\Key.cpp">
+      <Filter>input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4039,9 +4039,6 @@
       <Filter>guilib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\guilib\IWindowManagerCallback.h">
-      <Filter>guilib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\guilib\Key.h">
       <Filter>guilib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\guilib\LocalizeStrings.h">
@@ -6095,6 +6092,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\video\jobs\VideoLibraryProgressJob.h">
       <Filter>video\jobs</Filter>
+	</ClInclude>
+    <ClInclude Include="..\..\xbmc\input\Key.h">
+      <Filter>input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
