@@ -1,0 +1,1 @@
+game.libretro.vba-next https://github.com/kodi-game/game.libretro.vba-next 3df2d71
