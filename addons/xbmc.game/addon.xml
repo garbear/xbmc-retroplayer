@@ -4,5 +4,5 @@
 	<requires>
 		<import addon="xbmc.core" version="0.1.0"/>
 	</requires>
-  <extension-point id="library" schema="library.xsd"/>
+  <extension-point id="libretro" schema="libretro.xsd"/>
 </addon>
