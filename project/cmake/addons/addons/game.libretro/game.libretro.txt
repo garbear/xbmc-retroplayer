@@ -1,0 +1,1 @@
+game.libretro https://github.com/garbear/game.libretro master
