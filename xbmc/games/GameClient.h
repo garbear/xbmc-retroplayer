@@ -73,7 +73,7 @@
 #include <string>
 #include <vector>
 
-#define LIBRETRO_WRAPPER_LIBRARY   "library.xbmc.libretro"
+#define LIBRETRO_WRAPPER_LIBRARY   "game.libretro"
 #define GAMECLIENT_MAX_PLAYERS     8
 
 class CFileItem;

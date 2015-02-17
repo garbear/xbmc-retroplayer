@@ -205,12 +205,13 @@ void CGameClient::LogAddonProperties(void)
 const std::string CGameClient::LibPath() const
 {
   // Use helper library add-on to load libretro cores
+  // TODO: Compare helper version with required dependency
   const ADDONDEPS& dependencies = GetDeps();
   ADDONDEPS::const_iterator it = dependencies.find(LIBRETRO_WRAPPER_LIBRARY);
   if (it != dependencies.end())
   {
     AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(LIBRETRO_WRAPPER_LIBRARY, addon, ADDON_SHARED_LIBRARY) && addon)
+    if (CAddonMgr::Get().GetAddon(LIBRETRO_WRAPPER_LIBRARY, addon, ADDON_GAMEDLL) && addon)
       return addon->LibPath();
   }
 
