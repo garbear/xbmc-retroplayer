@@ -123,6 +123,7 @@ config.log
 /addons/script.module.pil/
 /addons/audioencoder.*
 /addons/pvr.*
+/addons/game.*
 /addons/peripheral.*
 /addons/xbmc.addon/addon.xml
 /addons/xbmc.json/addon.xml
