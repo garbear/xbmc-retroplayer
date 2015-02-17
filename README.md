@@ -21,3 +21,27 @@ RetroPlayer is a new player core for Kodi Entertainment Center. It is similar to
 **Game library:** Games offer new ways of interacting with media libraries. Box art, game trailers, gameplay videos, system intros, save states, and more. Games don't have to be loaded on your computer; plugins provide games that can be scanned into the library. Retro ROMs are TINY. Free clones of virtually every popular game can be streamed and cached directly from [public domain ROM sites](http://forum.xbmc.org/showthread.php?tid=173355).
 
 Many of these features are still works-in-progress, so fork the code and help out!
+
+# Building Kodi and games
+
+`./bootstrap`, `./configure` and `make -j8` as per usual
+
+`make install DESTDIR=$HOME/kodi` whenever one of these headers changes: [xbmc/addons/addon-bindings.mk](https://github.com/garbear/xbmc/blob/retroplayer-15alpha1/xbmc/addons/addon-bindings.mk)
+
+`make -C tools/depends/target/xbmc-game-addons PREFIX=$HOME/kodi` to build game add-ons
+
+`make -C tools/depends/target/xbmc-peripheral-addons PREFIX=$HOME/kodi` to build peripheral add-ons
+
+You'll also need to copy the add-on packages by hand. This might have been automated, check out https://github.com/xbmc/xbmc/pull/6429 for clues.
+
+```shell
+ADDON_ID=peripheral.joystick
+mkdir -p addons/$ADDON_ID
+cp $HOME/kodi/lib/kodi/addons/$ADDON_ID/$ADDON_ID.so addons/$ADDON_ID/
+cp $HOME/kodi/share/kodi/addons/$ADDON_ID/addon.xml  addons/$ADDON_ID/
+
+ADDON_ID=game.library.libretro
+mkdir -p addons/$ADDON_ID
+cp $HOME/kodi/lib/kodi/addons/$ADDON_ID/$ADDON_ID.so addons/$ADDON_ID/
+cp $HOME/kodi/share/kodi/addons/$ADDON_ID/addon.xml  addons/$ADDON_ID/
+```
