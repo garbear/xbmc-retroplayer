@@ -127,6 +127,10 @@ void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
 
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)
 {
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return;
+  retroPlayer->SetRotation(rotation);
 }
 
 bool CAddonCallbacksGame::EnvironmentGetOverscan(void* addonData)
@@ -154,10 +158,20 @@ bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game
 
 void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat)
 {
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return;
+
+  return retroPlayer->VideoFrame(data, width, height, pitch, pixelFormat);
 }
 
 void CAddonCallbacksGame::AudioSample(void* addonData, int16_t left, int16_t right)
 {
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return;
+
+  return retroPlayer->AudioSample(left, right);
 }
 
 size_t CAddonCallbacksGame::AudioSampleBatch(void* addonData, const int16_t *data, size_t frames)
