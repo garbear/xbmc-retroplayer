@@ -83,6 +83,43 @@ CAddonCallbacksGame::~CAddonCallbacksGame()
   delete m_callbacks;
 }
 
+CGameClient* CAddonCallbacksGame::GetGameClient(void* addonData, const char* strFunction)
+{
+  CAddonCallbacks* addon = static_cast<CAddonCallbacks*>(addonData);
+  if (!addon || !addon->GetHelperGame())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - called with a null pointer", strFunction);
+    return NULL;
+  }
+
+  return dynamic_cast<CGameClient*>(addon->GetHelperGame()->m_addon);
+}
+
+CRetroPlayer* CAddonCallbacksGame::GetRetroPlayer(void* addonData, const char* strFunction)
+{
+  CGameClient* gameClient = GetGameClient(addonData, strFunction);
+  if (!gameClient)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - invalid handler data", strFunction);
+    return NULL;
+  }
+
+  if (!gameClient->GetPlayer())
+  {
+    CLog::Log(LOGERROR, "GAME - %s - game client is not playing a game", strFunction);
+    return NULL;
+  }
+
+  CRetroPlayer* retroPlayer = dynamic_cast<CRetroPlayer*>(gameClient->GetPlayer());
+  if (!retroPlayer)
+  {
+    CLog::Log(LOGERROR, "GAME - %s - active player is not RetroPlayer!", strFunction);
+    return NULL;
+  }
+
+  return retroPlayer;
+}
+
 void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
 {
   // TODO: Call "ActivateWindow(shutdownmenu)"
