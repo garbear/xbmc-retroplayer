@@ -405,6 +405,7 @@
     <ClCompile Include="..\..\xbmc\filesystem\ZipDirectory.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\ZipFile.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\ZipManager.cpp" />
+    <ClCompile Include="..\..\xbmc\games\addons\GamePeripheral.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameClient.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameClientProperties.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp" />
@@ -419,7 +420,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\windows\GUIDialogControllerInput.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.cpp" />
+    <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp" />
     <ClCompile Include="..\..\xbmc\GUIInfoManager.cpp" />
     <ClCompile Include="..\..\xbmc\GUILargeTextureManager.cpp" />
@@ -447,11 +450,13 @@
     <ClCompile Include="..\..\xbmc\guilib\GUIEditControl.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIFadeLabelControl.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIFixedListContainer.cpp" />
+    <ClCompile Include="..\..\xbmc\guilib\GUIFocusPlane.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIFont.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIFontCache.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIFontManager.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIFontTTF.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIFontTTFDX.cpp" />
+    <ClCompile Include="..\..\xbmc\guilib\GUIGamePeripheral.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIImage.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIIncludes.cpp" />
     <ClCompile Include="..\..\xbmc\guilib\GUIInfoTypes.cpp" />
@@ -924,6 +929,7 @@
     <ClInclude Include="..\..\xbmc\filesystem\win32\Win32SMBDirectory.h" />
     <ClInclude Include="..\..\xbmc\filesystem\win32\Win32File.h" />
     <ClInclude Include="..\..\xbmc\filesystem\win32\Win32SMBFile.h" />
+    <ClInclude Include="..\..\xbmc\games\addons\GamePeripheral.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameClient.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameClientProperties.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h" />
@@ -933,9 +939,13 @@
     <ClInclude Include="..\..\xbmc\games\SerialState.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h" />
+    <ClInclude Include="..\..\xbmc\games\windows\GUIDialogControllerInput.h" />
     <ClInclude Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.h" />
+    <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.h" />
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h" />
     <ClInclude Include="..\..\xbmc\guilib\cximage.h" />
+    <ClInclude Include="..\..\xbmc\guilib\GUIFocusPlane.h" />
+    <ClInclude Include="..\..\xbmc\guilib\GUIGamePeripheral.h" />
     <ClInclude Include="..\..\xbmc\guilib\GUIKeyboard.h" />
     <ClInclude Include="..\..\xbmc\guilib\GUIKeyboardFactory.h" />
     <ClInclude Include="..\..\xbmc\guilib\iimage.h" />
