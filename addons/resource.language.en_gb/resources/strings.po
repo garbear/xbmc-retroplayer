@@ -13828,7 +13828,49 @@ msgctxt "#35010"
 msgid "Peripheral libraries"
 msgstr ""
 
-#empty strings from id 35011 to 35099
+#: xbmc/addons/Addon.cpp
+msgctxt "#35011"
+msgid "Joystick support not found"
+msgstr ""
+
+#: xbmc/addons/Addon.cpp
+msgctxt "#35012"
+msgid "Controller configuration is disabled. Install the proper joystick support add-on."
+msgstr ""
+
+#empty strings from id 35013 to 35049
+
+#: xbmc/addons/Addon.cpp
+msgctxt "#35050"
+msgid "Game accessories"
+msgstr ""
+
+#: xbmc/games/windows/GUIDialogControllerInput.cpp
+msgctxt "#35051"
+msgid "Press %s..."
+msgstr ""
+
+#: xbmc/games/windows/GUIDialogControllerInput.cpp
+msgctxt "#35052"
+msgid "Move %s up..."
+msgstr ""
+
+#: xbmc/games/windows/GUIDialogControllerInput.cpp
+msgctxt "#35053"
+msgid "Move %s down..."
+msgstr ""
+
+#: xbmc/games/windows/GUIDialogControllerInput.cpp
+msgctxt "#35054"
+msgid "Move %s right..."
+msgstr ""
+
+#: xbmc/games/windows/GUIDialogControllerInput.cpp
+msgctxt "#35055"
+msgid "Move %s left..."
+msgstr ""
+
+#empty strings from id 35052 to 35099
 
 #: system/settings/settings.xml
 msgctxt "#35100"
