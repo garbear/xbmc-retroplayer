@@ -91,6 +91,7 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_SCRIPT_MODULE:
     case ADDON_SUBTITLE_MODULE:
     case ADDON_WEB_INTERFACE:
+    case ADDON_GAME_PERIPHERAL:
       return AddonPtr(new CAddon(props));
     case ADDON_SCRIPT_WEATHER:
       {

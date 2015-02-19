@@ -65,6 +65,8 @@
 #include "utils/RssManager.h"
 #include "utils/StringUtils.h"
 #include "GUIAction.h"
+#include "GUIFocusPlane.h"
+#include "GUIControllerLayout.h"
 #include "utils/RssReader.h"
 #include "Util.h"
 
@@ -109,6 +111,8 @@ static const ControlMapping controls[] =
     {"grouplist",         CGUIControl::GUICONTROL_GROUPLIST},
     {"scrollbar",         CGUIControl::GUICONTROL_SCROLLBAR},
     {"multiselect",       CGUIControl::GUICONTROL_MULTISELECT},
+    {"focusplane",        CGUIControl::GUICONTROL_FOCUSPLANE},
+    {"controllerlayout",  CGUIControl::GUICONTROL_CONTROLLERLAYOUT},
     {"list",              CGUIControl::GUICONTAINER_LIST},
     {"wraplist",          CGUIControl::GUICONTAINER_WRAPLIST},
     {"fixedlist",         CGUIControl::GUICONTAINER_FIXEDLIST},
@@ -1433,6 +1437,14 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   else if (type == CGUIControl::GUICONTROL_RENDERADDON)
   {
     control = new CGUIRenderingControl(parentID, id, posX, posY, width, height);
+  }
+  else if (type == CGUIControl::GUICONTROL_FOCUSPLANE)
+  {
+    control = new CGUIFocusPlane(parentID, id, posX, posY, width, height);
+  }
+  else if (type == CGUIControl::GUICONTROL_CONTROLLERLAYOUT)
+  {
+    control = new CGUIControllerLayout(parentID, id, posX, posY, width, height);
   }
 
   // things that apply to all controls

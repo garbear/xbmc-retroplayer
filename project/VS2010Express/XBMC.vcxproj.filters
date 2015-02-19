@@ -3230,6 +3230,21 @@
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp">
       <Filter>games\windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\guilib\GUIFocusPlane.cpp">
+      <Filter>guilib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.cpp">
+      <Filter>games\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\ControllerLayout.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\windows\GUIDialogControllerFeatures.cpp">
+      <Filter>games\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\guilib\GUIControllerLayout.cpp">
+      <Filter>guilib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6234,15 +6249,6 @@
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
       <Filter>games\tags</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\addons\include\xbmc_game_callbacks.h">
-      <Filter>addons\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\addons\include\xbmc_game_dll.h">
-      <Filter>addons\include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\addons\include\xbmc_game_types.h">
-      <Filter>addons\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksGame.h">
       <Filter>addons</Filter>
     </ClInclude>
@@ -6291,6 +6297,24 @@
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h">
       <Filter>games\windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\guilib\GUIFocusPlane.h">
+      <Filter>guilib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.h">
+      <Filter>games\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\ControllerLayout.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameTypes.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\windows\GUIDialogControllerFeatures.h">
+      <Filter>games\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\guilib\GUIControllerLayout.h">
+      <Filter>guilib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">
@@ -6332,10 +6356,5 @@
     <CustomBuild Include="..\..\xbmc\win32\git_revision.t">
       <Filter>win32</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\xbmc\interfaces\swig\ControlListAddItemMethods.i">
-      <Filter>interfaces\swig</Filter>
-    </None>
   </ItemGroup>
 </Project>

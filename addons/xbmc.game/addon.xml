@@ -4,4 +4,5 @@
 	<requires>
 		<import addon="xbmc.core" version="0.1.0"/>
 	</requires>
+  <extension-point id="peripheral" schema="peripheral.xsd"/>
 </addon>
