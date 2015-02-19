@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2015 Team XBMC
+ *      Copyright (C) 2014 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,18 +19,23 @@
  */
 #pragma once
 
-#include <memory>
-#include <vector>
+#include "GUIImage.h"
+#include "games/GameTypes.h"
+#include "threads/CriticalSection.h"
 
-namespace GAME
+class CGUIGamePeripheral : public CGUIImage
 {
+public:
+  CGUIGamePeripheral(int parentID, int controlID, float posX, float posY, float width, float height);
+  CGUIGamePeripheral(const CGUIGamePeripheral &from);
+  virtual ~CGUIGamePeripheral(void) { }
+  virtual CGUIGamePeripheral *Clone() const { return new CGUIGamePeripheral(*this); }
 
-class CGamePeripheral;
-typedef std::shared_ptr<CGamePeripheral> GamePeripheralPtr;
-typedef std::vector<GamePeripheralPtr>   GamePeripheralVector;
+  virtual void Render();
 
-class CGameClient;
-typedef std::shared_ptr<CGameClient> GameClientPtr;
-typedef std::vector<GameClientPtr>   GameClientVector;
+  void ActivatePeripheral(const GAME::GamePeripheralPtr& peripheral);
 
-}
+private:
+  GAME::GamePeripheralPtr m_currentPeripheral;
+  CCriticalSection        m_mutex;
+};
