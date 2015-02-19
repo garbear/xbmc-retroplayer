@@ -352,6 +352,18 @@
     <Filter Include="peripherals\bus\virtual">
       <UniqueIdentifier>{00dc7d3e-6802-4478-a254-3042e4dbc35e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games">
+      <UniqueIdentifier>{13851ead-a100-4ebf-b366-bfddc6908068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\addons">
+      <UniqueIdentifier>{fc8fe518-f67f-4db5-bf5a-e36169bd2287}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\windows">
+      <UniqueIdentifier>{c8349d48-8f55-476d-80d6-47e98135f37a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="games\windows\wizards">
+      <UniqueIdentifier>{f984f4e3-8778-4967-b819-ff171950a0b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3171,6 +3183,36 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusAddon.cpp">
       <Filter>peripherals\bus\virtual</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\ControllerManager.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameTranslator.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GameController.cpp">
+      <Filter>games\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GameControllerFeature.cpp">
+      <Filter>games\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GameControllerLayout.cpp">
+      <Filter>games\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\windows\GUIDialogControllerInput.cpp">
+      <Filter>games\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGameControllers.cpp">
+      <Filter>games\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\windows\wizards\GUIControllerWizard.cpp">
+      <Filter>games\windows\wizards</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\guilib\GUIFocusPlane.cpp">
+      <Filter>guilib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\guilib\GUIGameController.cpp">
+      <Filter>guilib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6148,6 +6190,45 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusAddon.h">
       <Filter>peripherals\bus\virtual</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\ControllerManager.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameDefinitions.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameTranslator.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameTypes.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GameController.h">
+      <Filter>games\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GameControllerFeature.h">
+      <Filter>games\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GameControllerLayout.h">
+      <Filter>games\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\windows\GUIDialogControllerInput.h">
+      <Filter>games\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGameControllers.h">
+      <Filter>games\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\windows\wizards\GUIControllerWizard.h">
+      <Filter>games\windows\wizards</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\windows\wizards\IGUIControllerWizard.h">
+      <Filter>games\windows\wizards</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\guilib\GUIFocusPlane.h">
+      <Filter>guilib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\guilib\GUIGameController.h">
+      <Filter>guilib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

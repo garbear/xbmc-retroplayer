@@ -64,6 +64,8 @@
 #include "utils/RssManager.h"
 #include "utils/StringUtils.h"
 #include "GUIAction.h"
+#include "GUIFocusPlane.h"
+#include "GUIGameController.h"
 #include "Util.h"
 
 using namespace std;
@@ -107,6 +109,8 @@ static const ControlMapping controls[] =
     {"grouplist",         CGUIControl::GUICONTROL_GROUPLIST},
     {"scrollbar",         CGUIControl::GUICONTROL_SCROLLBAR},
     {"multiselect",       CGUIControl::GUICONTROL_MULTISELECT},
+    {"focusplane",        CGUIControl::GUICONTROL_FOCUSPLANE},
+    {"gamecontroller",    CGUIControl::GUICONTROL_GAMECONTROLLER},
     {"list",              CGUIControl::GUICONTAINER_LIST},
     {"wraplist",          CGUIControl::GUICONTAINER_WRAPLIST},
     {"fixedlist",         CGUIControl::GUICONTAINER_FIXEDLIST},
@@ -1460,6 +1464,12 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
     break;
   case CGUIControl::GUICONTROL_RENDERADDON:
     control = new CGUIRenderingControl(parentID, id, posX, posY, width, height);
+    break;
+  case CGUIControl::GUICONTROL_FOCUSPLANE:
+    control = new CGUIFocusPlane(parentID, id, posX, posY, width, height);
+    break;
+  case CGUIControl::GUICONTROL_GAMECONTROLLER:
+    control = new CGUIGameController(parentID, id, posX, posY, width, height);
     break;
   default:
     break;

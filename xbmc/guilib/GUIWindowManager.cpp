@@ -146,6 +146,10 @@
 #include "peripherals/dialogs/GUIDialogPeripheralManager.h"
 #include "peripherals/dialogs/GUIDialogPeripheralSettings.h"
 
+/* Game related include files */
+#include "games/windows/GUIDialogControllerInput.h"
+#include "games/windows/GUIWindowGameControllers.h"
+
 using namespace std;
 using namespace PVR;
 using namespace PERIPHERALS;
@@ -294,6 +298,8 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowWeather);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);
+  Add(new CGUIWindowGameControllers);
+  Add(new CGUIDialogControllerInput);
 }
 
 bool CGUIWindowManager::DestroyWindows()
@@ -396,6 +402,8 @@ bool CGUIWindowManager::DestroyWindows()
     Delete(WINDOW_PROGRAMS);
     Delete(WINDOW_PICTURES);
     Delete(WINDOW_WEATHER);
+    Delete(WINDOW_GAME_CONTROLLERS);
+    Delete(WINDOW_DIALOG_CONTROLLER_INPUT);
 
     Delete(WINDOW_SETTINGS_MYPICTURES);
     Remove(WINDOW_SETTINGS_MYPROGRAMS);

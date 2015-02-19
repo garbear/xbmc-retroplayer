@@ -158,6 +158,9 @@
 
 #include "epg/EpgContainer.h"
 
+// Game-related include files
+#include "games/ControllerManager.h"
+
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "guilib/GUIControlFactory.h"
 #include "dialogs/GUIDialogCache.h"
@@ -1237,6 +1240,8 @@ bool CApplication::Initialize()
     CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UI_READY);
     g_windowManager.SendThreadMessage(msg);
   }
+
+  GAME::CControllerManager::Get().Start();
 
   return true;
 }
@@ -2624,6 +2629,7 @@ void CApplication::Stop(int exitCode)
     CAnnouncementManager::Get().Deinitialize();
 
     StopPVRManager();
+    GAME::CControllerManager::Get().Stop();
     StopServices();
     //Sleep(5000);
 
