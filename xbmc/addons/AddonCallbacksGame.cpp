@@ -19,6 +19,8 @@
  */
 
 #include "AddonCallbacksGame.h"
+#include "cores/RetroPlayer/RetroPlayer.h"
+#include "games/GameClient.h"
 #include "threads/SystemClock.h"
 #include "utils/log.h"
 
@@ -176,12 +178,23 @@ void CAddonCallbacksGame::AudioSample(void* addonData, int16_t left, int16_t rig
 
 size_t CAddonCallbacksGame::AudioSampleBatch(void* addonData, const int16_t *data, size_t frames)
 {
-  return 0;
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return 0;
+
+  if (!data || !frames)
+    return 0;
+
+  return retroPlayer->AudioSampleBatch(data, frames);
 }
 
 int16_t CAddonCallbacksGame::InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id)
 {
-  return 0;
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return 0;
+
+  return retroPlayer->GetInputState(port, device, index, id);
 }
 
 uint64_t CAddonCallbacksGame::InputGetDeviceCapabilities(void* addonData)
