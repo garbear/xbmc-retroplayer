@@ -38,6 +38,8 @@
 <keymap>
   <global>
     <keyboard>
+      <t>ActivateWindow(GamePeripherals)</t>
+      <F5>XBMC.ReloadSkin()</F5>
       <p>Play</p>
       <q>Queue</q>
       <f>FastForward</f>
