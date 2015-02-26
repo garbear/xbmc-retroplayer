@@ -29,6 +29,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 template <typename T> class CPointGen
 {
@@ -83,6 +84,66 @@ public:
   };
 
   T x, y;
+};
+
+template <typename T> class CCircleGen
+{
+public:
+  typedef CCircleGen<T> this_type;
+
+  CCircleGen<T>(void) : x(0), y(0), r(0) { }
+  CCircleGen<T>(T x, T y, T r) : x(x), y(y), r(r) { }
+  CCircleGen<T>(const CPointGen<T> &center, float radius)
+  {
+    x = center.x;
+    y = center.y;
+    r = radius;
+  }
+
+  template <class U> CCircleGen<T>(const CCircleGen<U>& rhs)
+  {
+    x = rhs.x;
+    y = rhs.y;
+    r = rhs.r;
+  }
+
+  void SetCircle(T x, T y, T r) { this->x = x; this->y = y; this->r = r; }
+
+  bool operator ==(const this_type &circle) const
+  {
+    return x == circle.x &&
+           y == circle.y &&
+           r == circle.r;
+  }
+
+  bool operator !=(const this_type &circle) const { return !operator==(circle); }
+
+  bool PtInCircle(const CPointGen<T> &point) const
+  {
+    return std::sqrt((x - point.x) * (x - point.x) + (y - point.y) * (y - point.y)) <= r;
+  }
+
+  inline bool IsEmpty() const XBMC_FORCE_INLINE
+  {
+    return r == 0;
+  }
+
+  inline CPointGen<T> Center() const XBMC_FORCE_INLINE
+  {
+    return CPointGen<T>(x, y);
+  }
+
+  inline T Radius() const XBMC_FORCE_INLINE
+  {
+    return r;
+  }
+
+  inline T Area() const XBMC_FORCE_INLINE
+  {
+    return M_PI * r * r;
+  }
+
+  T x, y, r;
 };
 
 template <typename T> class CRectGen
@@ -190,6 +251,21 @@ public:
     return Width() * Height();
   };
 
+  inline CPointGen<T> Center() const XBMC_FORCE_INLINE
+  {
+    return CPointGen<T>((x1 + x2) / 2, (y1 + y2) / 2);
+  }
+
+  inline CCircleGen<T> InscribedCircle() const XBMC_FORCE_INLINE
+  {
+    return CCircleGen<T>(Center(), std::min(Width(), Height()) / 2);
+  }
+
+  inline CCircleGen<T> Circumcircle() const XBMC_FORCE_INLINE
+  {
+    return CCircleGen<T>(Center(), std::sqrt(Width() * Width() + Height() * Height()) / 2);
+  }
+
   std::vector<this_type> SubtractRect(this_type splitterRect)
   {
     std::vector<this_type> newRectaglesList;
@@ -268,6 +344,9 @@ private:
 
 typedef CPointGen<float> CPoint;
 typedef CPointGen<int>   CPointInt;
+
+typedef CCircleGen<float> CCircle;
+typedef CCircleGen<int>   CCircleInt;
 
 typedef CRectGen<float>  CRect;
 typedef CRectGen<int>    CRectInt;
