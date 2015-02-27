@@ -44,8 +44,8 @@ protected:
   CGUIButtonControl* GetButtonTemplate(void);
   CGUIButtonControl* MakeButton(const std::string& strLabel, unsigned int id, CGUIButtonControl* pButtonTemplate);
 
-  bool OnMove(unsigned int iSelected);
-  bool OnClick(unsigned int iSelected);
+  bool OnMove(void);
+  bool OnClick(int iSelected);
 
   virtual void OnInitWindow(void);
   virtual void OnDeinitWindow(int nextWindowID);

@@ -125,12 +125,14 @@ CGUIButtonControl* CGUIDialogControllerFeatures::MakeButton(const std::string& s
   return pButton;
 }
 
-bool CGUIDialogControllerFeatures::OnMove(unsigned int iSelected)
+bool CGUIDialogControllerFeatures::OnMove(void)
 {
   if (m_layout && m_focusControl)
   {
     const std::vector<GAME::Button>& buttons = m_layout->Buttons();
-    if (iSelected < buttons.size())
+
+    int iSelected = GetSelectedItem(GROUP_LIST);
+    if (0 <= iSelected && iSelected < (int)buttons.size())
     {
       m_focusControl->SetFocus(buttons[iSelected].focusArea);
       return true;
@@ -140,11 +142,16 @@ bool CGUIDialogControllerFeatures::OnMove(unsigned int iSelected)
   return false;
 }
 
-bool CGUIDialogControllerFeatures::OnClick(unsigned int iSelected)
+bool CGUIDialogControllerFeatures::OnClick(int iSelected)
 {
   if (m_layout && m_focusControl)
   {
-    // TODO: prompt user to press button
+    const std::vector<GAME::Button>& buttons = m_layout->Buttons();
+    if (0 <= iSelected && iSelected < (int)buttons.size())
+    {
+      // TODO: prompt user to press button
+      return true;
+    }
   }
 
   return false;
@@ -156,11 +163,8 @@ bool CGUIDialogControllerFeatures::OnMessage(CGUIMessage& message)
   {
     case GUI_MSG_CLICKED:
     {
-      if (message.GetSenderId() >= BUTTON_START) // TODO: && message.GetSenderId() <= BUTTON_END
-      {
-        if (OnClick(message.GetSenderId() - BUTTON_START))
-          return true;
-      }
+      if (OnClick(message.GetSenderId()))
+        return true;
       break;
     }
   }
@@ -171,9 +175,7 @@ bool CGUIDialogControllerFeatures::OnMessage(CGUIMessage& message)
     {
       case GUI_MSG_MOVE:
       {
-        int iSelected = GetSelectedItem(GROUP_LIST);
-        if (iSelected >= BUTTON_START)
-          OnMove(iSelected - BUTTON_START);
+        OnMove();
         break;
       }
     }
@@ -202,6 +204,8 @@ void CGUIDialogControllerFeatures::OnInitWindow(void)
   CGUIButtonControl* pButtonTemplate = GetButtonTemplate();
   if (pButtonTemplate)
     pButtonTemplate->SetVisible(false);
+
+  OnMove();
 }
 
 void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
@@ -214,6 +218,6 @@ int CGUIDialogControllerFeatures::GetSelectedItem(int iControl)
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
   if (CGUIWindow::OnMessage(msg))
-    return (int)msg.GetParam1();
+    return (int)msg.GetParam1() >= BUTTON_START ? (int)msg.GetParam1() - BUTTON_START : -1;
   return -1;
 }
