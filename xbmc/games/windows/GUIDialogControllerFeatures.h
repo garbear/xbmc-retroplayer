@@ -60,5 +60,5 @@ private:
 
   GAME::ControllerLayoutPtr m_layout;
   CGUIFocusPlane*           m_focusControl;
-  std::map<std::string, unsigned int> m_lastControlIds; // layout add-on ID -> last selected control ID
+  std::map<GAME::ControllerLayoutPtr, unsigned int> m_lastControlIds; // layout add-on ID -> last selected control ID
 };

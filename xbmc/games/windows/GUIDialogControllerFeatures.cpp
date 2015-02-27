@@ -91,7 +91,7 @@ bool CGUIDialogControllerFeatures::SetupButtons(const ControllerLayoutPtr& layou
   m_focusControl = focusControl;
 
   // restore last selected control
-  std::map<std::string, unsigned int>::const_iterator it = m_lastControlIds.find(m_layout->Addon()->ID());
+  std::map<GAME::ControllerLayoutPtr, unsigned int>::const_iterator it = m_lastControlIds.find(m_layout);
   if (it != m_lastControlIds.end())
     m_lastControlID = it->second;
 
@@ -228,7 +228,7 @@ void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
   {
     int iSelectedControl = GetSelectedControl(GROUP_LIST);
     if (iSelectedControl >= BUTTON_START)
-      m_lastControlIds[m_layout->Addon()->ID()] = iSelectedControl;
+      m_lastControlIds[m_layout] = iSelectedControl;
   }
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
