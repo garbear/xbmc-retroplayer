@@ -204,6 +204,12 @@ void CGUIDialogControllerFeatures::OnInitWindow(void)
     pButtonTemplate->SetVisible(false);
 }
 
+void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
+{
+  if (m_focusControl)
+    m_focusControl->Unfocus();
+}
+
 int CGUIDialogControllerFeatures::GetSelectedItem(int iControl)
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);

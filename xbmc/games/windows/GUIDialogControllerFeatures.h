@@ -48,6 +48,7 @@ protected:
   bool OnClick(unsigned int iSelected);
 
   virtual void OnInitWindow(void);
+  virtual void OnDeinitWindow(int nextWindowID);
 
 private:
   bool SetupButtons(const GAME::ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl);
