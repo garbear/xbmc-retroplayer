@@ -24,6 +24,8 @@
 
 #include <cmath>
 
+#define CIRCLE_THICKNESS  3.0f
+
 #define DEG2RAD  (3.14159f / 180.0f)
 
 CGUIFocusPlane::CGUIFocusPlane(void)
@@ -85,9 +87,11 @@ void CGUIFocusPlane::Render(void)
 
 #ifdef HAS_GL
 
+    glEnable(GL_LINE_SMOOTH);
+
     glBegin(GL_LINE_LOOP);
 
-    const unsigned int EDGES = 32;
+    const unsigned int EDGES = 64;
 
     for (unsigned int i = 0; i < EDGES; i++)
     {
@@ -99,6 +103,23 @@ void CGUIFocusPlane::Render(void)
 
       const float r = m_focusArea.r * 1.25f; // Enlarge circle a bit
 
+      glLineWidth(CIRCLE_THICKNESS);
+      glColor3f(1.0f, 1.0f, 1.0f);
+      glVertex3f(ROUND_TO_PIXEL(x + std::cos(theta) * r), ROUND_TO_PIXEL(y + std::sin(theta) * r), ROUND_TO_PIXEL(z));
+    }
+
+    for (unsigned int i = 0; i < EDGES; i++)
+    {
+      const float theta = i * 2 * (float)M_PI / EDGES;
+
+      const float x = g_graphicsContext.ScaleFinalXCoord(m_focusArea.x, m_focusArea.y);
+      const float y = g_graphicsContext.ScaleFinalYCoord(m_focusArea.x, m_focusArea.y);
+      const float z = g_graphicsContext.ScaleFinalZCoord(m_focusArea.x, m_focusArea.y);
+
+      const float r = m_focusArea.r * 1.25f + 1.5f; // Enlarge circle a bit
+
+      glLineWidth(CIRCLE_THICKNESS);
+      glColor3f(0.0f, 0.0f, 0.0f);
       glVertex3f(ROUND_TO_PIXEL(x + std::cos(theta) * r), ROUND_TO_PIXEL(y + std::sin(theta) * r), ROUND_TO_PIXEL(z));
     }
 
