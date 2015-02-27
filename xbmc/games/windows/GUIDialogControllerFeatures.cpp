@@ -90,17 +90,10 @@ bool CGUIDialogControllerFeatures::SetupButtons(const ControllerLayoutPtr& layou
   m_layout = layout;
   m_focusControl = focusControl;
 
-  CLog::Log(LOGDEBUG, "CGUIDialogControllerFeatures: Calculating last selected control for %s",
-            m_layout->Addon()->ID().c_str());
-
+  // restore last selected control
   std::map<std::string, unsigned int>::const_iterator it = m_lastControlIds.find(m_layout->Addon()->ID());
   if (it != m_lastControlIds.end())
-  {
-    CLog::Log(LOGDEBUG, "CGUIDialogControllerFeatures: Restoring last selected control %d",
-              it->second);
-
     m_lastControlID = it->second;
-  }
 
   return true;
 }
@@ -155,12 +148,14 @@ bool CGUIDialogControllerFeatures::OnMove(void)
   return false;
 }
 
-bool CGUIDialogControllerFeatures::OnClick(int iSelected)
+bool CGUIDialogControllerFeatures::OnClick(int iSelectedControl)
 {
-  if (m_layout && m_focusControl)
+  if (m_layout && m_focusControl && iSelectedControl >= BUTTON_START)
   {
     const std::vector<GAME::Button>& buttons = m_layout->Buttons();
-    if (0 <= iSelected && iSelected < (int)buttons.size())
+
+    unsigned int iSelectedIndex = iSelectedControl - BUTTON_START;
+    if (iSelectedIndex < buttons.size())
     {
       // TODO: prompt user to press button
       return true;
@@ -232,14 +227,8 @@ void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
   if (m_layout)
   {
     int iSelectedControl = GetSelectedControl(GROUP_LIST);
-    int iSelectedIndex = iSelectedControl - BUTTON_START;
-    if (0 <= iSelectedIndex && iSelectedIndex < (int)m_layout->Buttons().size())
-    {
-      CLog::Log(LOGDEBUG, "CGUIDialogControllerFeatures: Saving selected index %d for %s",
-                iSelectedIndex, m_layout->Addon()->ID().c_str());
-
+    if (iSelectedControl >= BUTTON_START)
       m_lastControlIds[m_layout->Addon()->ID()] = iSelectedControl;
-    }
   }
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
