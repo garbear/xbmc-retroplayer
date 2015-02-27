@@ -23,6 +23,7 @@
 #include "games/GameTypes.h"
 #include "guilib/GUIDialog.h"
 
+#include <map>
 #include <string>
 
 class CGUIButtonControl;
@@ -54,8 +55,9 @@ private:
   bool SetupButtons(const GAME::ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl);
   void CleanupButtons(void);
 
-  int GetSelectedItem(int iControl);
+  int GetSelectedControl(int iControl);
 
   GAME::ControllerLayoutPtr m_layout;
   CGUIFocusPlane*           m_focusControl;
+  std::map<std::string, unsigned int> m_lastControlIds; // layout add-on ID -> last selected control ID
 };

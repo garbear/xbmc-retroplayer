@@ -28,6 +28,7 @@
 #include "guilib/WindowIDs.h"
 #include "GUIDialogControllerFeatures.h"
 #include "input/Key.h"
+#include "utils/log.h"
 
 #define GROUP_LIST             996
 #define BUTTON_TEMPLATE       1000
@@ -89,6 +90,10 @@ bool CGUIDialogControllerFeatures::SetupButtons(const ControllerLayoutPtr& layou
   m_layout = layout;
   m_focusControl = focusControl;
 
+  std::map<std::string, unsigned int>::const_iterator it = m_lastControlIds.find(m_layout->Addon()->ID());
+  if (it != m_lastControlIds.end() && it->second < m_layout->Buttons().size())
+    m_lastControlID = it->second;
+
   return true;
 }
 
@@ -131,10 +136,10 @@ bool CGUIDialogControllerFeatures::OnMove(void)
   {
     const std::vector<GAME::Button>& buttons = m_layout->Buttons();
 
-    int iSelected = GetSelectedItem(GROUP_LIST);
-    if (0 <= iSelected && iSelected < (int)buttons.size())
+    int iSelectedIndex = GetSelectedControl(GROUP_LIST) - BUTTON_START;
+    if (0 <= iSelectedIndex && iSelectedIndex < (int)buttons.size())
     {
-      m_focusControl->SetFocus(buttons[iSelected].focusArea);
+      m_focusControl->SetFocus(buttons[iSelectedIndex].focusArea);
       return true;
     }
   }
@@ -213,13 +218,27 @@ void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
   if (m_focusControl)
     m_focusControl->Unfocus();
 
+  // save selected item for next time
+  if (m_layout)
+  {
+    int iSelectedIndex = GetSelectedControl(GROUP_LIST) - BUTTON_START;
+    if (0 <= iSelectedIndex && iSelectedIndex < (int)m_layout->Buttons().size())
+    {
+      CLog::Log(LOGDEBUG, "CGUIDialogControllerFeatures: Saving selected index %d for %s",
+                iSelectedIndex, m_layout->Addon()->ID().c_str());
+      m_lastControlIds[m_layout->Addon()->ID()] = iSelectedIndex;
+    }
+  }
+
   CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
-int CGUIDialogControllerFeatures::GetSelectedItem(int iControl)
+int CGUIDialogControllerFeatures::GetSelectedControl(int iControl)
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
+
   if (CGUIWindow::OnMessage(msg))
-    return (int)msg.GetParam1() >= BUTTON_START ? (int)msg.GetParam1() - BUTTON_START : -1;
+    return msg.GetParam1() >= 0 ? msg.GetParam1() : -1;
+
   return -1;
 }
