@@ -80,10 +80,8 @@ bool CGUIWindowGamePeripherals::OnClick(int iItem)
   {
     CGUIDialogControllerFeatures* pMenu = dynamic_cast<CGUIDialogControllerFeatures*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTROLLER_FEATURES));
     if (pMenu)
-    {
       pMenu->DoModal(m_layouts[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
-      return true;
-    }
+    return true;
   }
   return false;
 }
@@ -163,11 +161,12 @@ bool CGUIWindowGamePeripherals::OnMessage(CGUIMessage& message)
 
 bool CGUIWindowGamePeripherals::OnAction(const CAction& action)
 {
-  const bool bHandled = CGUIWindow::OnAction(action);
-
-  OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
-
-  return bHandled;
+  if (CGUIWindow::OnAction(action))
+  {
+    OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
+    return true;
+  }
+  return false;
 }
 
 int CGUIWindowGamePeripherals::GetSelectedItem(int iControl)
