@@ -53,6 +53,8 @@ private:
   bool SetupButtons(const GAME::ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl);
   void CleanupButtons(void);
 
+  int GetSelectedItem(int iControl);
+
   GAME::ControllerLayoutPtr m_layout;
   CGUIFocusPlane*           m_focusControl;
 };

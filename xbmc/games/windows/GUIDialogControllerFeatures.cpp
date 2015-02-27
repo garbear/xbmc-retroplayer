@@ -165,27 +165,22 @@ bool CGUIDialogControllerFeatures::OnMessage(CGUIMessage& message)
     }
   }
 
-  const bool bHandled = CGUIDialog::OnMessage(message);
-
-  if (bHandled)
+  if (CGUIDialog::OnMessage(message))
   {
     switch (message.GetMessage())
     {
       case GUI_MSG_MOVE:
       {
-        CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), GROUP_LIST);
-        if (OnMessage(msg))
-        {
-          int iSelected = msg.GetParam1();
-          if (iSelected >= BUTTON_START)
-            OnMove(iSelected - BUTTON_START);
-        }
+        int iSelected = GetSelectedItem(GROUP_LIST);
+        if (iSelected >= BUTTON_START)
+          OnMove(iSelected - BUTTON_START);
         break;
       }
     }
+    return true;
   }
 
-  return bHandled;
+  return false;
 }
 
 bool CGUIDialogControllerFeatures::OnAction(const CAction& action)
@@ -207,4 +202,12 @@ void CGUIDialogControllerFeatures::OnInitWindow(void)
   CGUIButtonControl* pButtonTemplate = GetButtonTemplate();
   if (pButtonTemplate)
     pButtonTemplate->SetVisible(false);
+}
+
+int CGUIDialogControllerFeatures::GetSelectedItem(int iControl)
+{
+  CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
+  if (CGUIWindow::OnMessage(msg))
+    return (int)msg.GetParam1();
+  return -1;
 }
