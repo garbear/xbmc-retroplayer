@@ -56,6 +56,7 @@ private:
   void CleanupButtons(void);
 
   int GetSelectedControl(int iControl);
+  void SetSelectedControl(int iControl, int iSelectedControl);
 
   GAME::ControllerLayoutPtr m_layout;
   CGUIFocusPlane*           m_focusControl;

@@ -90,9 +90,17 @@ bool CGUIDialogControllerFeatures::SetupButtons(const ControllerLayoutPtr& layou
   m_layout = layout;
   m_focusControl = focusControl;
 
+  CLog::Log(LOGDEBUG, "CGUIDialogControllerFeatures: Calculating last selected control for %s",
+            m_layout->Addon()->ID().c_str());
+
   std::map<std::string, unsigned int>::const_iterator it = m_lastControlIds.find(m_layout->Addon()->ID());
-  if (it != m_lastControlIds.end() && it->second < m_layout->Buttons().size())
+  if (it != m_lastControlIds.end())
+  {
+    CLog::Log(LOGDEBUG, "CGUIDialogControllerFeatures: Restoring last selected control %d",
+              it->second);
+
     m_lastControlID = it->second;
+  }
 
   return true;
 }
@@ -210,6 +218,8 @@ void CGUIDialogControllerFeatures::OnInitWindow(void)
   if (pButtonTemplate)
     pButtonTemplate->SetVisible(false);
 
+  SetSelectedControl(GROUP_LIST, m_lastControlID);
+
   OnMove();
 }
 
@@ -221,12 +231,14 @@ void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
   // save selected item for next time
   if (m_layout)
   {
-    int iSelectedIndex = GetSelectedControl(GROUP_LIST) - BUTTON_START;
+    int iSelectedControl = GetSelectedControl(GROUP_LIST);
+    int iSelectedIndex = iSelectedControl - BUTTON_START;
     if (0 <= iSelectedIndex && iSelectedIndex < (int)m_layout->Buttons().size())
     {
       CLog::Log(LOGDEBUG, "CGUIDialogControllerFeatures: Saving selected index %d for %s",
                 iSelectedIndex, m_layout->Addon()->ID().c_str());
-      m_lastControlIds[m_layout->Addon()->ID()] = iSelectedIndex;
+
+      m_lastControlIds[m_layout->Addon()->ID()] = iSelectedControl;
     }
   }
 
@@ -241,4 +253,10 @@ int CGUIDialogControllerFeatures::GetSelectedControl(int iControl)
     return msg.GetParam1() >= 0 ? msg.GetParam1() : -1;
 
   return -1;
+}
+
+void CGUIDialogControllerFeatures::SetSelectedControl(int iControl, int iSelectedControl)
+{
+  CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), iControl, iSelectedControl);
+  OnMessage(msg);
 }
