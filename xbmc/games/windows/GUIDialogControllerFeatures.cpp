@@ -212,6 +212,8 @@ void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
 {
   if (m_focusControl)
     m_focusControl->Unfocus();
+
+  CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
 int CGUIDialogControllerFeatures::GetSelectedItem(int iControl)
