@@ -20,6 +20,7 @@
 
 #include "GUIControllerLayout.h"
 #include "games/ControllerLayout.h"
+#include "threads/SingleLock.h"
 #include "utils/log.h"
 
 using namespace GAME;
@@ -39,16 +40,26 @@ CGUIControllerLayout::CGUIControllerLayout(const CGUIControllerLayout &from)
 void CGUIControllerLayout::Render(void)
 {
   CGUIImage::Render();
-  // TODO: Render pressed buttons
+
+  CSingleLock lock(m_mutex);
+
+  if (m_currentLayout)
+  {
+    // TODO: Render pressed buttons
+  }
 }
 
 void CGUIControllerLayout::ActivateLayout(const ControllerLayoutPtr& layout)
 {
-  if (layout)
+  CSingleLock lock(m_mutex);
+
+  if (layout && layout != m_currentLayout)
   {
     m_currentLayout = layout;
 
-    // TODO: Sometimes this fails no window init
+    lock.Leave();
+
+    // TODO: Sometimes this fails on window init
     SetFileName(m_currentLayout->ImagePath());
   }
 }

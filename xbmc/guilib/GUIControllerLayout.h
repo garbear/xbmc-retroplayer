@@ -21,6 +21,7 @@
 
 #include "GUIImage.h"
 #include "games/GameTypes.h"
+#include "threads/CriticalSection.h"
 
 class CGUIControllerLayout : public CGUIImage
 {
@@ -36,4 +37,5 @@ public:
 
 private:
   GAME::ControllerLayoutPtr m_currentLayout;
+  CCriticalSection          m_mutex;
 };
