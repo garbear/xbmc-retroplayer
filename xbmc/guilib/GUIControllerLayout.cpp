@@ -47,6 +47,8 @@ void CGUIControllerLayout::ActivateLayout(const ControllerLayoutPtr& layout)
   if (layout)
   {
     m_currentLayout = layout;
+
+    // TODO: Sometimes this fails no window init
     SetFileName(m_currentLayout->ImagePath());
   }
 }
