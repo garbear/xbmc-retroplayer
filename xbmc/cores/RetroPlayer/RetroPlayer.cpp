@@ -54,6 +54,7 @@ CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
   : IPlayer(callback),
     CThread("RetroPlayer"),
     m_playSpeed(PLAYSPEED_NORMAL),
+    m_audioSpeedFactor(0.0),
     m_samplerate(0)
 {
 }
