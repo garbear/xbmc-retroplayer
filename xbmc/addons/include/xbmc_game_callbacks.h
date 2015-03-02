@@ -29,11 +29,9 @@ extern "C" {
 typedef struct CB_GameLib
 {
   /*!
-    * Requests the frontend to shutdown. Should only be used if game has a
-    * specific way to shutdown the game from a menu item or similar.
-    * Replaces RETRO_ENVIRONMENT_SHUTDOWN.
+    * Requests the frontend to stop the current game.
     */
-  void (*ShutdownFrontend)(void* addonData);
+  void (*CloseGame)(void* addonData);
 
   /*!
     * Sets screen rotation of graphics. Is only implemented if rotation can be

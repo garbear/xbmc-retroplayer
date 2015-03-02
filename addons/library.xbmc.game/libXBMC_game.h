@@ -97,7 +97,7 @@ public:
     {
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_register_me)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_unregister_me)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_shutdown_frontend)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_close_game)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_rotation)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_overscan)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_can_dupe)) throw false;
@@ -142,9 +142,9 @@ public:
     return m_callbacks != NULL;
   }
 
-  void ShutdownFrontend(void)
+  void CloseGame(void)
   {
-    return GAME_shutdown_frontend(m_handle, m_callbacks);
+    return GAME_close_game(m_handle, m_callbacks);
   }
 
   void EnvironmentSetRotation(enum GAME_ROTATION rotation)
@@ -315,7 +315,7 @@ public:
 protected:
     CB_GameLib* (*GAME_register_me)(void* handle);
     void (*GAME_unregister_me)(void* handle, CB_GameLib* cb);
-    void (*GAME_shutdown_frontend)(void* handle, CB_GameLib* cb);
+    void (*GAME_close_game)(void* handle, CB_GameLib* cb);
     void (*GAME_environment_set_rotation)(void* handle, CB_GameLib* cb, enum GAME_ROTATION rotation);
     bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);

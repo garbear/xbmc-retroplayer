@@ -55,11 +55,11 @@ DLLEXPORT void GAME_unregister_me(AddonCB* frontend, CB_GameLib* cb)
   return frontend->GameLib_UnRegisterMe(frontend->addonData, cb);
 }
 
-DLLEXPORT void GAME_shutdown_frontend(AddonCB* frontend, CB_GameLib* cb)
+DLLEXPORT void GAME_close_game(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->ShutdownFrontend(frontend->addonData);
+  return cb->CloseGame(frontend->addonData);
 }
 
 DLLEXPORT void GAME_environment_set_rotation(AddonCB* frontend, CB_GameLib* cb, GAME_ROTATION rotation)

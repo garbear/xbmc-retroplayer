@@ -43,7 +43,7 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks = new CB_GameLib;
 
   /* write XBMC game specific add-on function addresses to callback table */
-  m_callbacks->ShutdownFrontend               = ShutdownFrontend;
+  m_callbacks->CloseGame                      = CloseGame;
   m_callbacks->EnvironmentSetRotation         = EnvironmentSetRotation;
   m_callbacks->EnvironmentGetOverscan         = EnvironmentGetOverscan;
   m_callbacks->EnvironmentCanDupe             = EnvironmentCanDupe;
@@ -122,9 +122,12 @@ CRetroPlayer* CAddonCallbacksGame::GetRetroPlayer(void* addonData, const char* s
   return retroPlayer;
 }
 
-void CAddonCallbacksGame::ShutdownFrontend(void* addonData)
+void CAddonCallbacksGame::CloseGame(void* addonData)
 {
-  // TODO: Call "ActivateWindow(shutdownmenu)"
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return;
+  retroPlayer->CloseFile();
 }
 
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)

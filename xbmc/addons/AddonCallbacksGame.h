@@ -44,7 +44,7 @@ public:
    */
   CB_GameLib* GetCallbacks() const { return m_callbacks; }
 
-  static void ShutdownFrontend(void* addonData);
+  static void CloseGame(void* addonData);
   static void EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation);
   static bool EnvironmentGetOverscan(void* addonData);
   static bool EnvironmentCanDupe(void* addonData);
