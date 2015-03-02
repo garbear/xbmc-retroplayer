@@ -116,7 +116,7 @@ bool CRetroPlayerVideo::ProcessFrame(const VideoFrame &frame)
     }
 
     const double sleepTime = 0; // TODO: How is this calculated in DVDPlayer?
-    int buffer = g_renderManager.WaitForBuffer(m_bStop, std::max(DVD_TIME_TO_MSEC(sleepTime) + 500, 0));
+    int buffer = g_renderManager.WaitForBuffer(m_bStop, std::max(DVD_TIME_TO_MSEC(sleepTime) + 500, 50));
     // If buffer < 0, there was a timeout waiting for buffer, drop the frame
     if (buffer >= 0)
     {
