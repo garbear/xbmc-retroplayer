@@ -1,1 +1,1 @@
-game.mupen64plus https://github.com/kodi-game/game.mupen64plus master
+game.mupen64plus https://github.com/kodi-game/game.mupen64plus 22b7178
