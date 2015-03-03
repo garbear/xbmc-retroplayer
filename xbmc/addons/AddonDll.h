@@ -146,12 +146,12 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
   std::string strFileName;
   if (!m_bIsChild)
   {
-    strFileName = this->LibPath();
+    strFileName = LibPath();
   }
   else
   { //FIXME hack to load same Dll twice
-    std::string extension = URIUtils::GetExtension(m_strLibName);
-    strFileName = "special://temp/" + m_strLibName;
+    std::string extension = URIUtils::GetExtension(LibPath());
+    strFileName = "special://temp/" + LibPath();
     URIUtils::RemoveExtension(strFileName);
     strFileName += "-" + ID() + extension;
 
@@ -168,7 +168,7 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
   if (!XFILE::CFile::Exists(strFileName))
   {
     std::string tempbin = getenv("XBMC_ANDROID_LIBS");
-    strFileName = tempbin + "/" + m_strLibName;
+    strFileName = tempbin + "/" + LibPath();
   }
 #endif
   if (!XFILE::CFile::Exists(strFileName))
@@ -179,7 +179,7 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
     strFileName = tempbin + strFileName;
     if (!XFILE::CFile::Exists(strFileName))
     {
-      CLog::Log(LOGERROR, "ADDON: Could not locate %s", m_strLibName.c_str());
+      CLog::Log(LOGERROR, "ADDON: Could not locate %s", LibPath().c_str());
       return false;
     }
   }

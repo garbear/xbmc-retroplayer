@@ -232,7 +232,6 @@ protected:
   void SettingsToXML(CXBMCTinyXML &doc) const;
 
   CXBMCTinyXML      m_addonXmlDoc;
-  std::string       m_strLibName;
   bool              m_settingsLoaded;
   bool              m_userSettingsLoaded;
 
@@ -257,6 +256,7 @@ private:
   bool        m_enabled;
   CLocalizeStrings  m_strings;
   std::map<std::string, std::string> m_settings;
+  std::string       m_strLibName;
 };
 
 class CAddonLibrary : public CAddon
