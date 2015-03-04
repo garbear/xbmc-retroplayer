@@ -19,8 +19,6 @@
  */
 
 #include "GUIFocusPlane.h"
-#include "utils/MathUtils.h"
-#include "system_gl.h"
 
 #include <cmath>
 
@@ -28,64 +26,104 @@
 
 #define DEG2RAD  (3.14159f / 180.0f)
 
-CGUIFocusPlane::CGUIFocusPlane(void)
-{
-  Initialize();
-  ControlType = GUICONTROL_FOCUSPLANE;
-}
+// --- CFocusRendererGL --------------------------------------------------------
 
-CGUIFocusPlane::CGUIFocusPlane(int parentID, int controlID, float posX, float posY, float width, float height)
-  : CGUIControlGroup(parentID, controlID, posX, posY, width, height)
-{
-  Initialize();
-  ControlType = GUICONTROL_FOCUSPLANE;
-}
+#if defined(HAS_GL) || HAS_GLES == 2
 
-CGUIFocusPlane::CGUIFocusPlane(const CGUIFocusPlane &from)
-  : CGUIControlGroup(from)
-{
-  Initialize();
-  ControlType = GUICONTROL_FOCUSPLANE;
-}
+#include "cores/VideoRenderers/VideoShaders/VideoFilterShader.h"
+#include "guilib/FrameBufferObject.h"
+#include "utils/MathUtils.h"
+#include "utils/StringUtils.h"
+#include "windowing/WindowingFactory.h"
 
-void CGUIFocusPlane::Initialize(void)
-{
-  m_bFocused = false;
-}
-
-void CGUIFocusPlane::SetFocus(const CCircle& focusArea)
-{
-  m_bFocused = true;
-  m_focusArea = focusArea;
-}
-
-void CGUIFocusPlane::SetFocus(const CRect& focusArea)
-{
-  m_bFocused = true;
-  m_focusArea = focusArea.Circumcircle();
-}
-
-void CGUIFocusPlane::Unfocus(void)
-{
-  m_bFocused = false;
-}
+#include "system_gl.h"
 
 #define ROUND_TO_PIXEL(x) (float)(MathUtils::round_int(x))
 
-void CGUIFocusPlane::Render(void)
+class CFocusRendererGL : public IFocusRenderer
 {
-  if (!m_bFocused)
+public:
+  CFocusRendererGL(void);
+  virtual ~CFocusRendererGL(void) { Unload(); }
+
+  virtual bool Load(void);
+  virtual void Unload(void);
+  virtual void RenderStart(const CPoint& origin, const CCircle& focusArea);
+  virtual void RenderEnd(void);
+
+private:
+  bool                            m_bLoaded;
+  CPoint                          m_origin;
+  CCircle                         m_focusArea;
+  CFrameBufferObject              m_fbo;
+  Shaders::BaseVideoFilterShader* m_pVideoFilterShader;
+};
+
+CFocusRendererGL::CFocusRendererGL(void) :
+    m_bLoaded(false),
+    m_pVideoFilterShader(NULL)
+{
+}
+
+bool CFocusRendererGL::Load(void)
+{
+  if (!m_bLoaded)
   {
-    CGUIControlGroup::Render();
+    bool bTryGlsl = true;
+
+#if defined(TARGET_POSIX) && !defined(TARGET_DARWIN)
+    // with render method set to auto, don't try glsl on ati if we're on linux
+    // it seems to be broken in a random way with every new driver release
+    bTryGlsl = !StringUtils::StartsWithNoCase(g_Windowing.GetRenderVendor(), "ati");
+#endif
+
+    if (/* glCreateProgram && */ bTryGlsl)
+    {
+      m_bLoaded = true;
+
+      /* TODO
+      unsigned int sourceWidth = 1280;
+      unsigned int sourceHeight = 720;
+      if (m_fbo.Initialize() && m_fbo.CreateAndBindToTexture(GL_TEXTURE_2D, sourceWidth, sourceHeight, GL_RGBA))
+      {
+        m_pVideoFilterShader = new ConvolutionFilterShader(m_scalingMethod, m_nonLinStretch);
+        if (m_pVideoFilterShader->CompileAndLink())
+        {
+          SetTextureFilter(GL_LINEAR);
+          //m_renderQuality = RQ_MULTIPASS;
+          m_bLoaded = true;
+        }
+      }
+      */
+    }
   }
-  else
+
+  return m_bLoaded;
+}
+
+void CFocusRendererGL::Unload(void)
+{
+  if (m_bLoaded)
   {
-    CGUIControlGroup::Render();
+    m_fbo.Cleanup();
+    m_bLoaded = false;
+  }
+}
 
-    CPoint pos(GetPosition());
-    g_graphicsContext.SetOrigin(pos.x, pos.y);
+void CFocusRendererGL::RenderStart(const CPoint& origin, const CCircle& focusArea)
+{
+  if (m_bLoaded)
+  {
+    m_origin = origin;
+    m_focusArea = focusArea;
+  }
+}
 
-#ifdef HAS_GL
+void CFocusRendererGL::RenderEnd(void)
+{
+  if (m_bLoaded)
+  {
+    g_graphicsContext.SetOrigin(m_origin.x, m_origin.y);
 
     glEnable(GL_LINE_SMOOTH);
 
@@ -125,8 +163,80 @@ void CGUIFocusPlane::Render(void)
 
     glEnd();
 
-#endif
-
     g_graphicsContext.RestoreOrigin();
   }
+}
+
+#endif
+
+// --- CGUIFocusPlane ----------------------------------------------------------
+
+CGUIFocusPlane::CGUIFocusPlane(void)
+{
+  Initialize();
+  ControlType = GUICONTROL_FOCUSPLANE;
+}
+
+CGUIFocusPlane::CGUIFocusPlane(int parentID, int controlID, float posX, float posY, float width, float height)
+  : CGUIControlGroup(parentID, controlID, posX, posY, width, height)
+{
+  Initialize();
+  ControlType = GUICONTROL_FOCUSPLANE;
+}
+
+CGUIFocusPlane::CGUIFocusPlane(const CGUIFocusPlane &from)
+  : CGUIControlGroup(from)
+{
+  Initialize();
+  ControlType = GUICONTROL_FOCUSPLANE;
+}
+
+void CGUIFocusPlane::Initialize(void)
+{
+  m_bFocused = false;
+
+#if defined(HAS_GL) || HAS_GLES == 2
+  m_renderer = new CFocusRendererGL;
+#else
+  m_renderer = NULL;
+#endif
+
+  if (m_renderer && !m_renderer->Load())
+  {
+    delete m_renderer;
+    m_renderer = NULL;
+  }
+}
+
+CGUIFocusPlane::~CGUIFocusPlane(void)
+{
+  delete m_renderer;
+}
+
+void CGUIFocusPlane::SetFocus(const CCircle& focusArea)
+{
+  m_bFocused = true;
+  m_focusArea = focusArea;
+}
+
+void CGUIFocusPlane::SetFocus(const CRect& focusArea)
+{
+  m_bFocused = true;
+  m_focusArea = focusArea.Circumcircle();
+}
+
+void CGUIFocusPlane::Unfocus(void)
+{
+  m_bFocused = false;
+}
+
+void CGUIFocusPlane::Render(void)
+{
+  if (m_bFocused && m_renderer)
+    m_renderer->RenderStart(GetPosition(), m_focusArea);
+
+  CGUIControlGroup::Render();
+
+  if (m_bFocused && m_renderer)
+    m_renderer->RenderEnd();
 }

@@ -22,25 +22,42 @@
 #include "Geometry.h"
 #include "GUIControlGroup.h"
 
+class IFocusRenderer
+{
+public:
+  virtual ~IFocusRenderer(void) { }
+
+  virtual bool Load(void) = 0;
+  virtual void Unload(void) = 0;
+  virtual void RenderStart(const CPoint& origin, const CCircle& focusArea) = 0;
+  virtual void RenderEnd(void) = 0;
+};
+
 class CGUIFocusPlane : public CGUIControlGroup
 {
 public:
   CGUIFocusPlane(void);
   CGUIFocusPlane(int parentID, int controlID, float posX, float posY, float width, float height);
   CGUIFocusPlane(const CGUIFocusPlane &from);
-  virtual ~CGUIFocusPlane(void) { }
+  virtual ~CGUIFocusPlane(void);
   void Initialize(void);
   virtual CGUIFocusPlane *Clone() const { return new CGUIFocusPlane(*this); }
-
-  virtual void Render();
 
   void SetFocus(const CCircle& focusArea);
   void SetFocus(const CRect& focusArea);
   void Unfocus(void);
 
+  // implementation of CGUIControl
+  virtual void Render();
+
+protected:
+  void LoadShaders(void);
+
 private:
   bool    m_bFocused;
   CCircle m_focusArea;
+
+  IFocusRenderer* m_renderer;
 
   /*
   void* m_costmap;
