@@ -89,6 +89,7 @@ constellations of Xcode and osx versions (to be updated once we know more):
  $ make -C target/xbmc-pvr-addons
  $ make -C target/xbmc-audioencoder-addons
  $ make -C target/xbmc-peripheral-addons
+ $ make -C target/xbmc-game-addons
 
  NOTE: You can speedup compilation on multicore systems by doing
  "make -j<number of cores>" instead of "make". For a dualcore this would read:
