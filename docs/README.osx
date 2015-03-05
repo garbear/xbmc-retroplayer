@@ -17,7 +17,7 @@ TOC
 1. Introduction
 -----------------------------------------------------------------------------
 
-This is a platform port of Kodi for the Apple OSX operating system. 10.9 and 10.10 Intel development 
+This is a platform port of Kodi for the Apple OSX operating system. 10.9 and 10.10 Intel development
 platforms are supported. Xcode 6 newer are the recommended versions.
 There are 3 ways to build Kodi for Mac, from command-line with make, from command-line
 using xcodebuild or from Xcode.
@@ -37,7 +37,7 @@ NOTE TO NEW OS X USERS: All lines that are prefixed with the '$' character are
 commands that need to be typed into a Terminal window. Note that the '$'
 character itself should NOT be typed as part of the command.
 
-ATTENTION: You need to download and install XQuartz from https://xquartz.macosforge.org/landing/ since 
+ATTENTION: You need to download and install XQuartz from https://xquartz.macosforge.org/landing/ since
 its not part of OSX anymore since 10.8.
 
 -----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ its not part of OSX anymore since 10.8.
 -----------------------------------------------------------------------------
 See point 3.1.1 below for an updated list of supported/tested Xcode/osx constellations!!!
 
-Install latest Xcode (6.1.0 ). You can download it from the MacOSX AppStore (Xcode). 
+Install latest Xcode (6.1.0 ). You can download it from the MacOSX AppStore (Xcode).
 
 Xcode 6.1 runs on 10.9.5 and later (at least Mavericks).
 
@@ -61,7 +61,7 @@ Xcode 6.1 runs on 10.9.5 and later (at least Mavericks).
 -----------------------------------------------------------------------------
 As far as we know the compilation for mac osx should work with the following
 constellations of Xcode and osx versions (to be updated once we know more):
- 
+
 1. XCode 6.0.1 against OSX SDK 10.9 (M)
 2. XCode 6.1.0 against OSX SDK 10.10 (Y)
 
@@ -88,6 +88,7 @@ constellations of Xcode and osx versions (to be updated once we know more):
 3.2.3 Compile binary addons
  $ make -C target/xbmc-pvr-addons
  $ make -C target/xbmc-audioencoder-addons
+ $ make -C target/xbmc-peripheral-addons
 
  NOTE: You can speedup compilation on multicore systems by doing
  "make -j<number of cores>" instead of "make". For a dualcore this would read:
@@ -137,24 +138,24 @@ To set KODI_HOME environment variable:
 Xcode 6 and later
  Menu -> Product -> Edit Sheme -> "Run Kodi"/"Debug" -> Add KODI_HOME into
  the List of "Environment Variables". Set the value to the path to the Kodi
- root folder. For example, "/Users/bigdog/Documents/Kodi"	
+ root folder. For example, "/Users/bigdog/Documents/Kodi"
 
-There are two build targets "Kodi" and "Kodi.app" (each in 32Bit and 64Bit flavour) 
-with debug and release settings. The "Kodi" target is used for rapid build and 
-debug cycles while the "Kodi.app" target is used to build a self contained 
+There are two build targets "Kodi" and "Kodi.app" (each in 32Bit and 64Bit flavour)
+with debug and release settings. The "Kodi" target is used for rapid build and
+debug cycles while the "Kodi.app" target is used to build a self contained
 OSX application bundle.
 
-Set the build target to "Kodi" or "Kodi.app" and be sure to select the same 
-architecture as selected in step 3.2 (either i386 for 32Bit or x86_64 for 64Bit), 
-then build. 
+Set the build target to "Kodi" or "Kodi.app" and be sure to select the same
+architecture as selected in step 3.2 (either i386 for 32Bit or x86_64 for 64Bit),
+then build.
 
-If you have selected a specific OSX SDK Version in step 3.2 then you might need 
-to adapt the active target to use the same OSX SDK version. Else build will fail 
+If you have selected a specific OSX SDK Version in step 3.2 then you might need
+to adapt the active target to use the same OSX SDK version. Else build will fail
 (you will see alot of errors with at least non-found boost/shared_ptr.hpp).
 
-The build process will take a long time when building the first time. 
-You can see the progress in "Build Results". There are a large number of static 
-and dynamic libaries that will need to be built. Once these are built, 
+The build process will take a long time when building the first time.
+You can see the progress in "Build Results". There are a large number of static
+and dynamic libaries that will need to be built. Once these are built,
 subsequent builds will be faster.
 
 After the build, you can ether run Kodi for Mac from Xcode or run it from
@@ -174,7 +175,7 @@ $ xcodebuild -configuration Release ONLY_ACTIVE_ARCH=YES ARCHS=i386 VALID_ARCHS=
   -target "Kodi.app" -project Kodi.xcodeproj
 
 You can specify "Release" instead of "Debug" as a configuration. Be sure to set *_ARCHS
-variables to the same architecture as selected in step 3.2 (either i386 for 32Bit or x86_64 
+variables to the same architecture as selected in step 3.2 (either i386 for 32Bit or x86_64
 for 64Bit).
 
 -----------------------------------------------------------------------------
