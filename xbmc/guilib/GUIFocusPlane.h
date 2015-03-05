@@ -29,7 +29,7 @@ public:
 
   virtual bool Load(void) = 0;
   virtual void Unload(void) = 0;
-  virtual void RenderStart(const CPoint& origin, const CCircle& focusArea) = 0;
+  virtual void RenderStart(void) = 0;
   virtual void RenderEnd(void) = 0;
 };
 
@@ -42,6 +42,9 @@ public:
   virtual ~CGUIFocusPlane(void);
   void Initialize(void);
   virtual CGUIFocusPlane *Clone() const { return new CGUIFocusPlane(*this); }
+
+  bool           IsFocused(void) const      { return m_bFocused; }
+  const CCircle& GetFocusedArea(void) const { return m_focusArea; }
 
   void SetFocus(const CCircle& focusArea);
   void SetFocus(const CRect& focusArea);
