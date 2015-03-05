@@ -51,7 +51,7 @@ public:
 
   void Initialize();
 
-  static CKey TranslateKey(XBMC_keysym& keysym);
+  CKey TranslateKey(XBMC_keysym& keysym);
 
   const CKey ProcessKeyDown(XBMC_keysym& keysym);
   void       ProcessKeyUp(void);

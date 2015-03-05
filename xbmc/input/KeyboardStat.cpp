@@ -50,7 +50,6 @@ void CKeyboardStat::Initialize()
 {
 }
 
-/* static */
 bool CKeyboardStat::LookupSymAndUnicodePeripherals(XBMC_keysym &keysym, uint8_t *key, char *unicode)
 {
   vector<CPeripheral *> hidDevices;
@@ -66,7 +65,6 @@ bool CKeyboardStat::LookupSymAndUnicodePeripherals(XBMC_keysym &keysym, uint8_t 
   return false;
 }
 
-/* static */
 CKey CKeyboardStat::TranslateKey(XBMC_keysym& keysym)
 {
   uint8_t vkey;
@@ -161,15 +159,13 @@ CKey CKeyboardStat::TranslateKey(XBMC_keysym& keysym)
     if ((unicode < 'A' || unicode > 'Z') && (unicode < 'a' || unicode > 'z') && (vkey < XBMCVK_F1 || vkey > XBMCVK_F24))
       modifiers = 0;
 
-  /* TODO
-  if (keysym.mod      == g_Keyboard.m_lastKeysym.mod &&
-      keysym.scancode == g_Keyboard.m_lastKeysym.scancode &&
-      keysym.sym      == g_Keyboard.m_lastKeysym.sym &&
-      keysym.unicode  == g_Keyboard.m_lastKeysym.unicode)
+  if (keysym.mod      == m_lastKeysym.mod &&
+      keysym.scancode == m_lastKeysym.scancode &&
+      keysym.sym      == m_lastKeysym.sym &&
+      keysym.unicode  == m_lastKeysym.unicode)
   {
-    held = CTimeUtils::GetFrameTime() - g_Keyboard.m_lastKeyTime;
+    held = CTimeUtils::GetFrameTime() - m_lastKeyTime;
   }
-  */
 
   // Create and return a CKey
 
