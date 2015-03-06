@@ -104,8 +104,7 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_system_av_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_video_refresh)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_audio_sample)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_audio_sample_batch)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_audio_frames)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_input_state)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_input_get_device_capabilities)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_rumble_set_state)) throw false;
@@ -177,14 +176,9 @@ public:
     return GAME_video_refresh(m_handle, m_callbacks, data, width, height, pitch, (unsigned int)pixelFormat);
   }
 
-  void AudioSample(int16_t left, int16_t right)
+  size_t AudioFrames(const int16_t *data, size_t frames)
   {
-    return GAME_audio_sample(m_handle, m_callbacks, left, right);
-  }
-
-  size_t AudioSampleBatch(const int16_t *data, size_t frames)
-  {
-    return GAME_audio_sample_batch(m_handle, m_callbacks, data, frames);
+    return GAME_audio_frames(m_handle, m_callbacks, data, frames);
   }
 
   int16_t InputState(unsigned port, unsigned device, unsigned index, unsigned id)
@@ -322,8 +316,7 @@ protected:
     void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
     bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);
     void (*GAME_video_refresh)(void* handle, CB_GameLib* cb, const void *data, unsigned width, unsigned height, size_t pitch, unsigned int pixelFormat);
-    void (*GAME_audio_sample)(void* handle, CB_GameLib* cb, int16_t left, int16_t right);
-    size_t (*GAME_audio_sample_batch)(void* handle, CB_GameLib* cb, const int16_t *data, size_t frames);
+    size_t (*GAME_audio_frames)(void* handle, CB_GameLib* cb, const int16_t *data, size_t frames);
     int16_t (*GAME_input_state)(void* handle, CB_GameLib* cb, unsigned port, unsigned device, unsigned index, unsigned id);
     uint64_t (*GAME_input_get_device_capabilities)(void* handle, CB_GameLib* cb);
     bool (*GAME_rumble_set_state)(void* handle, CB_GameLib* cb, unsigned port, enum GAME_RUMBLE_EFFECT effect, uint16_t strength);

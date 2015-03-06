@@ -100,18 +100,11 @@ typedef struct CB_GameLib
   void (*VideoRefresh)(void* addonData, const void* data, unsigned width, unsigned height, size_t pitch, enum GAME_PIXEL_FORMAT pixelFormat);
 
   /*!
-    * Renders a single audio frame. Should only be used if implementation
-    * generates a single sample at a time. Format is signed 16-bit native endian.
+    * Renders multiple audio frames in one go. One frame is defined as a sample
+    * of left and right channels, interleaved, i.e.
+    * int16_t buf[4] = { l, r, l, r }; would be 2 frames.
     */
-  void (*AudioSample)(void* addonData, int16_t left, int16_t right);
-
-  /*!
-    * Renders multiple audio frames in one go. One frame is defined as a
-    * sample of left and right channels, interleaved. I.e.
-    * int16_t buf[4] = { l, r, l, r }; would be 2 frames. Only one of the
-    * audio callbacks must ever be used.
-    */
-  size_t (*AudioSampleBatch)(void* addonData, const int16_t* data, size_t frames);
+  size_t (*AudioFrames)(void* addonData, const int16_t* data, size_t frames);
 
   /*!
     * Queries for input for player 'port'. device will be masked with

@@ -80,11 +80,6 @@ public:
   void SendAudioFrame(int16_t left, int16_t right);
 
   /**
-   * Send the buffered audio to the audio engine if using single-frame audio.
-   */
-  void Flush();
-
-  /**
    * Accumulative audio delay. Does not include delay due to current packet, so
    * at 60fps this could be up to 17ms (~1/60) behind. Accuracy is also subject
    * to accuracy found in AE GetDelay() functions.
@@ -97,14 +92,6 @@ protected:
   virtual void Process();
 
 private:
-  // libretro cores can send audio samples in a batch, or frame-by-frame
-  enum AUDIO_FRAME_TYPE
-  {
-    FRAME_TYPE_UNKNOWN, // Initial state
-    FRAME_TYPE_SINGLE,  // Audio arrives via SendAudioFrame()
-    FRAME_TYPE_SAMPLES  // Audio arrives via SendAudioFrames()
-  };
-
   void ProcessPacket(const AudioPacket &packet);
 
   /**
@@ -117,7 +104,5 @@ private:
 
   IAEStream               *m_pAudioStream;
   CRetroPlayerAudioBuffer m_buffer;
-  AUDIO_FRAME_TYPE        m_frameType; // Set when SendAudioFrame[s]() is first called
   CEvent                  m_packetReady;
-  std::vector<int16_t>    m_singleFrameBuffer; // used if m_frameType == FRAME_TYPE_SINGLE
 };

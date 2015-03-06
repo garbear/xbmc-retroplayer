@@ -50,8 +50,7 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
   m_callbacks->EnvironmentSetSystemAvInfo     = EnvironmentSetSystemAvInfo;
   m_callbacks->VideoRefresh                   = VideoRefresh;
-  m_callbacks->AudioSample                    = AudioSample;
-  m_callbacks->AudioSampleBatch               = AudioSampleBatch;
+  m_callbacks->AudioFrames                    = AudioFrames;
   m_callbacks->InputState                     = InputState;
   m_callbacks->InputGetDeviceCapabilities     = InputGetDeviceCapabilities;
   m_callbacks->RumbleSetState                 = RumbleSetState;
@@ -170,16 +169,7 @@ void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsign
   return retroPlayer->VideoFrame(data, width, height, pitch, pixelFormat);
 }
 
-void CAddonCallbacksGame::AudioSample(void* addonData, int16_t left, int16_t right)
-{
-  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
-  if (!retroPlayer)
-    return;
-
-  return retroPlayer->AudioSample(left, right);
-}
-
-size_t CAddonCallbacksGame::AudioSampleBatch(void* addonData, const int16_t *data, size_t frames)
+size_t CAddonCallbacksGame::AudioFrames(void* addonData, const int16_t *data, size_t frames)
 {
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
@@ -188,7 +178,7 @@ size_t CAddonCallbacksGame::AudioSampleBatch(void* addonData, const int16_t *dat
   if (!data || !frames)
     return 0;
 
-  return retroPlayer->AudioSampleBatch(data, frames);
+  return retroPlayer->AudioFrames(data, frames);
 }
 
 int16_t CAddonCallbacksGame::InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id)

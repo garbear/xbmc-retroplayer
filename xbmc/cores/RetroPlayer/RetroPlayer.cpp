@@ -226,9 +226,6 @@ void CRetroPlayer::Process()
       break;
     }
 
-    // If the game client uses single frame audio, render those now
-    m_audio.Flush();
-
     // Slow down (increase nextpts) if we're playing catchup after stalling
     if (nextpts < CDVDClock::GetAbsoluteClock())
       nextpts = CDVDClock::GetAbsoluteClock();
@@ -292,12 +289,7 @@ void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height,
   m_video.SendVideoFrame(reinterpret_cast<const uint8_t*>(data), width, height, pitch, pixelFormat);
 }
 
-void CRetroPlayer::AudioSample(int16_t left, int16_t right)
-{
-  m_audio.SendAudioFrame(left, right);
-}
-
-size_t CRetroPlayer::AudioSampleBatch(const int16_t *data, size_t frames)
+size_t CRetroPlayer::AudioFrames(const int16_t *data, size_t frames)
 {
   if (m_playSpeed == PLAYSPEED_NORMAL)
     m_audio.SendAudioFrames(data, frames);

@@ -129,8 +129,7 @@ public:
 
   // TODO: game api
   virtual void VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat);
-  virtual void AudioSample(int16_t left, int16_t right);
-  virtual size_t AudioSampleBatch(const int16_t *data, size_t frames);
+  virtual size_t AudioFrames(const int16_t *data, size_t frames);
   virtual int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
   virtual bool RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength);
   virtual void SetRotation(GAME_ROTATION rotation);

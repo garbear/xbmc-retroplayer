@@ -104,18 +104,11 @@ DLLEXPORT void GAME_video_refresh(AddonCB* frontend, CB_GameLib* cb, const void 
   return cb->VideoRefresh(frontend->addonData, data, width, height, pitch, (GAME_PIXEL_FORMAT)pixelFormat);
 }
 
-DLLEXPORT void GAME_audio_sample(AddonCB* frontend, CB_GameLib* cb, int16_t left, int16_t right)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->AudioSample(frontend->addonData, left, right);
-}
-
-DLLEXPORT size_t GAME_audio_sample_batch(AddonCB* frontend, CB_GameLib* cb, const int16_t *data, size_t frames)
+DLLEXPORT size_t GAME_audio_frames(AddonCB* frontend, CB_GameLib* cb, const int16_t *data, size_t frames)
 {
   if (frontend == NULL || cb == NULL)
     return 0;
-  return cb->AudioSampleBatch(frontend->addonData, data, frames);
+  return cb->AudioFrames(frontend->addonData, data, frames);
 }
 
 DLLEXPORT int16_t GAME_input_state(AddonCB* frontend, CB_GameLib* cb, unsigned port, unsigned device, unsigned index, unsigned id)
