@@ -1468,6 +1468,7 @@ uint32_t CButtonTranslator::TranslateJoystickString(const char *szButton)
   else if (strButton == "rightthumbstickright") buttonCode = KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT;
   else if (strButton == "lefttrigger") buttonCode = KEY_BUTTON_LEFT_TRIGGER;
   else if (strButton == "righttrigger") buttonCode = KEY_BUTTON_RIGHT_TRIGGER;
+  else if (strButton == "guide") buttonCode = KEY_BUTTON_GUIDE;
   else CLog::Log(LOGERROR, "Joystick Translator: Can't find button %s", strButton.c_str());
   return buttonCode;
 }
