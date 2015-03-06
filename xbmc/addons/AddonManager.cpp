@@ -671,6 +671,7 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
     case ADDON_SCRIPT_MODULE:
     case ADDON_SUBTITLE_MODULE:
     case ADDON_WEB_INTERFACE:
+    case ADDON_GAME_PERIPHERAL:
       return AddonPtr(new CAddon(addonProps));
     case ADDON_SERVICE:
       return AddonPtr(new CService(addonProps));
