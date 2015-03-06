@@ -375,21 +375,21 @@ void CAddonMgr::RemoveFromUpdateableAddons(AddonPtr &pAddon)
 {
   CSingleLock lock(m_critSection);
   VECADDONS::iterator it = std::find(m_updateableAddons.begin(), m_updateableAddons.end(), pAddon);
-  
+
   if(it != m_updateableAddons.end())
   {
     m_updateableAddons.erase(it);
   }
 }
 
-struct AddonIdFinder 
-{ 
+struct AddonIdFinder
+{
     AddonIdFinder(const std::string& id)
       : m_id(id)
     {}
-    
-    bool operator()(const AddonPtr& addon) 
-    { 
+
+    bool operator()(const AddonPtr& addon)
+    {
       return m_id == addon->ID();
     }
     private:
@@ -400,7 +400,7 @@ bool CAddonMgr::ReloadSettings(const std::string &id)
 {
   CSingleLock lock(m_critSection);
   VECADDONS::iterator it = std::find_if(m_updateableAddons.begin(), m_updateableAddons.end(), AddonIdFinder(id));
-  
+
   if( it != m_updateableAddons.end())
   {
     return (*it)->ReloadSettings();
@@ -695,6 +695,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new PVR::CPVRClient(addonProps));
     case ADDON_AUDIOENCODER:
       return AddonPtr(new CAudioEncoder(addonProps));
+    case ADDON_PERIPHERALDLL:
+      return AddonPtr(new PERIPHERALS::CPeripheralAddon(addonProps));
     case ADDON_GAMEDLL:
       return AddonPtr(new CGameClient(addonProps));
     case ADDON_REPOSITORY:
