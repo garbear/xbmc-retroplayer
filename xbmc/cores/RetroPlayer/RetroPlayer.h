@@ -37,94 +37,94 @@ public:
   virtual ~CRetroPlayer() { CloseFile(); }
 
   // implementation of IPlayer
-  virtual bool  Initialize(TiXmlElement* pConfig) { return true; };
+  virtual bool  Initialize(TiXmlElement* pConfig) { return true; }
   virtual bool  OpenFile(const CFileItem& file, const CPlayerOptions& options);
   virtual bool  QueueNextFile(const CFileItem &file) { return false; }
-  virtual void  OnNothingToQueueNotify() {}
+  virtual void  OnNothingToQueueNotify() { }
   virtual bool  CloseFile(bool reopen = false);
   virtual bool  IsPlaying() const { return !m_bStop && m_file && m_gameClient; }
-  virtual bool  CanPause() { return true; };
+  virtual bool  CanPause() { return true; }
   virtual void  Pause();
   virtual bool  IsPaused() const { return m_playSpeed == 0; }
   virtual bool  HasVideo() const { return true; }
   virtual bool  HasAudio() const { return true; }
-  virtual bool  IsPassthrough() const { return false;}
-  virtual bool  CanSeek() {return true;}
+  virtual bool  IsPassthrough() const { return false; }
+  virtual bool  CanSeek() { return true; }
   virtual void  Seek(bool bPlus = true, bool bLargeStep = false, bool bChapterOverride = false);
-  virtual bool  SeekScene(bool bPlus = true) {return false;}
+  virtual bool  SeekScene(bool bPlus = true) { return false; }
   virtual void  SeekPercentage(float fPercent = 0);
   virtual float GetPercentage();
-  virtual float GetCachePercentage(){ return 0;}
-  virtual void  SetMute(bool bOnOff){}
-  virtual void  SetVolume(float volume){}
-  virtual bool  ControlsVolume(){ return false;}
-  virtual void  SetDynamicRangeCompression(long drc){}
+  virtual float GetCachePercentage() { return 0; }
+  virtual void  SetMute(bool bOnOff) { }
+  virtual void  SetVolume(float volume) { }
+  virtual bool  ControlsVolume() { return false; }
+  virtual void  SetDynamicRangeCompression(long drc) { }
   virtual void  GetAudioInfo(std::string& strAudioInfo)     { strAudioInfo   = "CRetroPlayer:GetAudioInfo"; }
   virtual void  GetVideoInfo(std::string& strVideoInfo)     { strVideoInfo   = "CRetroPlayer:GetVideoInfo"; }
   virtual void  GetGeneralInfo(std::string& strGeneralInfo) { strGeneralInfo = "CRetroPlayer:GetGeneralInfo"; }
-  virtual bool  CanRecord() { return false;};
-  virtual bool  IsRecording() { return false;};
-  virtual bool  Record(bool bOnOff) { return false;};
+  virtual bool  CanRecord() { return false; }
+  virtual bool  IsRecording() { return false; }
+  virtual bool  Record(bool bOnOff) { return false; }
 
-  virtual void  SetAVDelay(float fValue = 0.0f) { return; }
-  virtual float GetAVDelay()                    { return 0.0f;};
+  virtual void  SetAVDelay(float fValue = 0.0f) { }
+  virtual float GetAVDelay()                    { return 0.0f; }
 
-  virtual void  SetSubTitleDelay(float fValue = 0.0f){};
-  virtual float GetSubTitleDelay()    { return 0.0f; }
+  virtual void  SetSubTitleDelay(float fValue = 0.0f) { }
+  virtual float GetSubTitleDelay()     { return 0.0f; }
   virtual int   GetSubtitleCount()     { return 0; }
   virtual int   GetSubtitle()          { return -1; }
-  virtual void  GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo &info){};
-  virtual void  SetSubtitle(int iStream){};
-  virtual bool  GetSubtitleVisible(){ return false;};
-  virtual void  SetSubtitleVisible(bool bVisible){};
-  virtual int   AddSubtitle(const std::string& strSubPath) {return -1;};
+  virtual void  GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo &info) { }
+  virtual void  SetSubtitle(int iStream) { }
+  virtual bool  GetSubtitleVisible() { return false; }
+  virtual void  SetSubtitleVisible(bool bVisible) { }
+  virtual int   AddSubtitle(const std::string& strSubPath) { return -1; }
 
   virtual int   GetAudioStreamCount()  { return 0; }
   virtual int   GetAudioStream()       { return -1; }
-  virtual void  SetAudioStream(int iStream){};
-  virtual void  GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &info){};
+  virtual void  SetAudioStream(int iStream) { }
+  virtual void  GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &info) { }
 
-  virtual TextCacheStruct_t* GetTeletextCache() { return NULL; };
-  virtual void               LoadPage(int p, int sp, unsigned char* buffer) {};
+  virtual TextCacheStruct_t* GetTeletextCache() { return NULL; }
+  virtual void               LoadPage(int p, int sp, unsigned char* buffer) { }
 
   virtual int   GetChapterCount()                           { return 0; }
   virtual int   GetChapter()                                { return -1; }
-  virtual void  GetChapterName(std::string& strChapterName) { return; }
+  virtual void  GetChapterName(std::string& strChapterName) { }
   virtual int   SeekChapter(int iChapter)                   { return -1; }
 
-  virtual float   GetActualFPS() { return 0.0f; };
+  virtual float   GetActualFPS() { return 0.0f; }
   virtual void    SeekTime(int64_t iTime = 0);
   virtual int64_t GetTime();
   virtual int64_t GetTotalTime();
-  virtual void    GetVideoStreamInfo(SPlayerVideoStreamInfo &info){};
-  virtual int     GetSourceBitrate(){ return 0;}
-  virtual bool    GetStreamDetails(CStreamDetails &details){ return false;}
+  virtual void    GetVideoStreamInfo(SPlayerVideoStreamInfo &info) { }
+  virtual int     GetSourceBitrate() { return 0; }
+  virtual bool    GetStreamDetails(CStreamDetails &details) { return false; }
   virtual void    ToFFRW(int iSpeed = 0);
-  virtual bool    SkipNext() {return false;}
+  virtual bool    SkipNext() {return false; }
 
-  virtual bool  IsCaching() const {return false;};
-  virtual int   GetCacheLevel() const {return -1;};
+  virtual bool  IsCaching() const { return false; }
+  virtual int   GetCacheLevel() const { return -1; }
 
-  virtual bool  IsInMenu() const {return false;};
-  virtual bool  HasMenu() { return false; };
+  virtual bool  IsInMenu() const { return false; }
+  virtual bool  HasMenu() { return false; }
 
-  virtual void  DoAudioWork(){};
-  virtual bool  OnAction(const CAction &action) { return false; };
+  virtual void  DoAudioWork() { }
+  virtual bool  OnAction(const CAction &action) { return false; }
 
-  virtual std::string GetPlayerState() { return ""; };
-  virtual bool        SetPlayerState(const std::string& state) { return false;};
+  virtual std::string GetPlayerState() { return ""; }
+  virtual bool        SetPlayerState(const std::string& state) { return false; }
 
-  virtual std::string GetPlayingTitle() { return ""; };
+  virtual std::string GetPlayingTitle() { return ""; }
 
   virtual bool SwitchChannel(PVR::CPVRChannel &channel) { return false; }
 
-  virtual void OMXGetRenderFeatures(std::vector<int> &renderFeatures) {};
-  virtual void OMXGetDeinterlaceMethods(std::vector<int> &deinterlaceMethods) {};
-  virtual void OMXGetDeinterlaceModes(std::vector<int> &deinterlaceModes) {};
-  virtual void OMXGetScalingMethods(std::vector<int> &scalingMethods) {};
+  virtual void OMXGetRenderFeatures(std::vector<int> &renderFeatures)         { }
+  virtual void OMXGetDeinterlaceMethods(std::vector<int> &deinterlaceMethods) { }
+  virtual void OMXGetDeinterlaceModes(std::vector<int> &deinterlaceModes)     { }
+  virtual void OMXGetScalingMethods(std::vector<int> &scalingMethods)         { }
 
-  virtual void GetAudioCapabilities(std::vector<int> &audioCaps) { audioCaps.assign(1,IPC_AUD_ALL); };
-  virtual void GetSubtitleCapabilities(std::vector<int> &subCaps) { subCaps.assign(1,IPC_SUBS_ALL); };
+  virtual void GetAudioCapabilities(std::vector<int> &audioCaps)  { audioCaps.assign(1, IPC_AUD_ALL); }
+  virtual void GetSubtitleCapabilities(std::vector<int> &subCaps) { subCaps.assign(1, IPC_SUBS_ALL); }
 
   // Game API
   bool         VideoFrame(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data) { return m_video.VideoFrame(format, width, height, data); }
