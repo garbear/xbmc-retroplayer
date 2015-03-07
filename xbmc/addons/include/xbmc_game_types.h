@@ -74,6 +74,21 @@ typedef enum GAME_ERROR
   GAME_ERROR_FAILED                  = -5, // the command failed
 } GAME_ERROR;
 
+typedef enum GAME_RENDER_FORMAT
+{
+  GAME_RENDER_FMT_NONE = 0,
+  GAME_RENDER_FMT_YUV420P,
+  GAME_RENDER_FMT_0RGB8888,
+  GAME_RENDER_FMT_RGB565,
+  GAME_RENDER_FMT_0RGB1555,
+} GAME_RENDER_FORMAT;
+
+typedef enum GAME_AUDIO_FORMAT
+{
+  GAME_AUDIO_FMT_NONE = 0,
+  GAME_AUDIO_FMT_S16NE,
+} GAME_AUDIO_FORMAT;
+
 /*! Fundamental device abstractions */
 typedef enum GAME_DEVICE
 {

@@ -19,65 +19,22 @@
  */
 #pragma once
 
-#include "RetroPlayerBuffer.h"
-#include "threads/Event.h"
-#include "threads/Thread.h"
+#include "cores/AudioEngine/Utils/AEChannelData.h"
 
 #include <stdint.h>
-#include <vector>
-
-#define AUDIO_BUFFER_LENGTH_MS  70 // Buffer up to 70ms of audio (~4 frames @ 60fps)
 
 class IAEStream;
 
-class CRetroPlayerAudio : public CThread
+class CRetroPlayerAudio
 {
-  struct AudioInfo { };
-
-  class CRetroPlayerAudioBuffer : public CRetroPlayerBuffer
-  {
-  public:
-    CRetroPlayerAudioBuffer(CRetroPlayerAudio *audio) : m_audio(audio) { }
-    virtual ~CRetroPlayerAudioBuffer() { }
-
-  protected:
-    virtual bool IsFull() const
-    {
-      const unsigned int NUM_CHANNELS = 2;
-      const unsigned int SIZE_FRAME = NUM_CHANNELS * sizeof(uint16_t);
-      const double buffertime = (m_audio && m_audio->GetSampleRate()) ?
-        1000.0 * GetSize() / SIZE_FRAME / m_audio->GetSampleRate() : 0.0; // ms
-      return buffertime > AUDIO_BUFFER_LENGTH_MS;
-    }
-
-  private:
-    CRetroPlayerAudio *m_audio;
-  };
-
-  // No audio metadata, so just use CRetroPlayerPacketBase
-  typedef CRetroPlayerPacket<AudioInfo> AudioPacket;
-
 public:
-  CRetroPlayerAudio();
-  ~CRetroPlayerAudio();
+  CRetroPlayerAudio(void);
+  ~CRetroPlayerAudio(void) { Cleanup(); }
 
-  /**
-   * Rev up the engines and start the thread.
-   * @param  samplerate - the desired samplerate
-   * @return the chosen samplerate, or 0 if failure
-   */
-  unsigned int GoForth(double samplerate);
+  bool Start(AEDataFormat format, double samplerate);
+  void Stop(void) { Cleanup(); }
 
-  /**
-   * Send audio samples to be processed by this class. Data format is:
-   * int16_t buf[4] = { l, r, l, r }; this would be 2 frames.
-   */
-  void SendAudioFrames(const int16_t *data, size_t frames);
-
-  /**
-   * Send a single frame. Frames are cached until Flush() is called.
-   */
-  void SendAudioFrame(int16_t left, int16_t right);
+  unsigned int AudioFrames(AEDataFormat format, unsigned int frames, const uint8_t* data);
 
   /**
    * Accumulative audio delay. Does not include delay due to current packet, so
@@ -88,11 +45,8 @@ public:
 
   unsigned int GetSampleRate() const;
 
-protected:
-  virtual void Process();
-
 private:
-  void ProcessPacket(const AudioPacket &packet);
+  void Cleanup(void);
 
   /**
    * Given a desired samplerate, this will choose an appropriate sample rate
@@ -102,7 +56,5 @@ private:
    */
   static unsigned int FindSampleRate(double samplerate);
 
-  IAEStream               *m_pAudioStream;
-  CRetroPlayerAudioBuffer m_buffer;
-  CEvent                  m_packetReady;
+  IAEStream* m_pAudioStream;
 };

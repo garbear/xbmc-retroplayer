@@ -23,223 +23,211 @@
 #include "cores/dvdplayer/DVDCodecs/DVDCodecUtils.h"
 #include "cores/dvdplayer/DVDCodecs/Video/DVDVideoCodec.h"
 #include "cores/VideoRenderers/RenderFlags.h"
+#include "cores/VideoRenderers/RenderManager.h"
 #include "cores/FFmpeg.h"
+#include "threads/SingleLock.h"
 #include "utils/log.h"
 
 #include "libswscale/swscale.h"
 
-CRetroPlayerVideo::CRetroPlayerVideo()
+// 1 second should be a good failsafe if the event isn't triggered
+#define WAIT_TIMEOUT_MS  1000
+
+CRetroPlayerVideo::CRetroPlayerVideo(void)
   : CThread("RetroPlayerVideo"),
-    m_swsContext(NULL),
-    m_bAllowFullscreen(false),
     m_framerate(0.0),
-    m_outputWidth(0),
-    m_outputHeight(0),
-    m_outputFramerate(0.0),
-    m_pixelFormat(GAME_PIXEL_FORMAT_0RGB1555)
+    m_format(AV_PIX_FMT_NONE),
+    m_picture(NULL),
+    m_swsContext(NULL),
+    m_bFrameReady(false)
 {
 }
 
-CRetroPlayerVideo::~CRetroPlayerVideo()
+void CRetroPlayerVideo::Cleanup(void)
 {
-  StopThread();
+  if (m_swsContext)
+  {
+    sws_freeContext(m_swsContext);
+    m_swsContext = NULL;
+  }
+
+  if (m_picture)
+  {
+    CDVDCodecUtils::FreePicture(m_picture);
+    m_picture = NULL;
+  }
 }
 
-void CRetroPlayerVideo::GoForth(double framerate, bool fullscreen)
+void CRetroPlayerVideo::Start(double framerate)
 {
-  m_framerate = framerate;
-  m_bAllowFullscreen = fullscreen;
-  Create();
+  if (!IsRunning())
+  {
+    m_framerate = framerate;
+    Create();
+  }
 }
 
-void CRetroPlayerVideo::Process()
+void CRetroPlayerVideo::Stop(void)
+{
+  StopThread(false);
+  m_frameReadyEvent.Set();
+}
+
+bool CRetroPlayerVideo::VideoFrame(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data)
+{
+  if (!m_bStop && !IsFrameReady())
+  {
+    if (Configure(format, width, height))
+    {
+      ColorspaceConversion(format, width, height, data, *m_picture);
+      SetFrameReady(true);
+      return true;
+    }
+    else
+    {
+      Stop();
+    }
+  }
+
+  return false;
+}
+
+void CRetroPlayerVideo::Process(void)
 {
   while (!m_bStop)
   {
-    // 1s should be a good failsafe if the event isn't triggered (shouldn't happen)
-    if (AbortableWait(m_frameEvent, 1000) == WAIT_INTERRUPTED)
+    if (AbortableWait(m_frameReadyEvent, WAIT_TIMEOUT_MS) == WAIT_INTERRUPTED)
       break;
 
-    VideoFrame *frame = NULL;
-    m_buffer.GetPacket(frame);
-    if (!frame)
-      continue;
+    if (IsFrameReady())
+    {
+      const double sleepTime = 0; // TODO: How is this calculated in DVDPlayer?
+      int buffer = g_renderManager.WaitForBuffer(m_bStop, std::max(DVD_TIME_TO_MSEC(sleepTime) + 500, 50));
 
-    if (!ProcessFrame(*frame))
-      break;
+      if (buffer < 0)
+      {
+        // There was a timeout waiting for buffer, drop the frame
+      }
+      else
+      {
+        int index = g_renderManager.AddVideoPicture(*m_picture);
+        if (index < 0)
+        {
+          // Video device might not be done yet, drop the frame
+        }
+        else
+        {
+          g_renderManager.FlipPage(m_bStop);
+        }
+      }
+
+      SetFrameReady(false);
+    }
   }
 
-  // Clean up
-  if (m_swsContext)
-    sws_freeContext(m_swsContext);
+  Cleanup();
 }
 
-bool CRetroPlayerVideo::ProcessFrame(const VideoFrame &frame)
+bool CRetroPlayerVideo::Configure(AVPixelFormat format, unsigned int width, unsigned int height)
 {
-  DVDVideoPicture *pPicture = CDVDCodecUtils::AllocatePicture(frame.meta.width, frame.meta.height);
-  try
-  {
-    if (!pPicture)
-    {
-      CLog::Log(LOGERROR, "RetroPlayerVideo: Failed to allocate picture");
-      throw false;
-    }
-
-    pPicture->dts            = DVD_NOPTS_VALUE;
-    pPicture->pts            = DVD_NOPTS_VALUE;
-    pPicture->format         = RENDER_FMT_YUV420P; // PIX_FMT_YUV420P
-    pPicture->color_range    = 0; // *not* CONF_FLAGS_YUV_FULLRANGE
-    pPicture->color_matrix   = 4; // CONF_FLAGS_YUVCOEF_BT601
-    pPicture->iFlags         = DVP_FLAG_ALLOCATED;
-    pPicture->iDisplayWidth  = frame.meta.width; // iWidth was set in AllocatePicture()
-    pPicture->iDisplayHeight = frame.meta.height; // iHeight was set in AllocatePicture()
-    pPicture->iDuration      = 1.0 / m_framerate;
-
-    // Got the picture, now make sure we're ready to render it
-    if (!CheckConfiguration(*pPicture, frame.meta.format))
-      throw false;
-
-    // CheckConfiguration() should have set up our SWScale context
-    if (!m_swsContext)
-    {
-      CLog::Log(LOGERROR, "RetroPlayerVideo: Failed to grab SWScale context, bailing");
-      throw false;
-    }
-
-    ColorspaceConversion(frame, *pPicture);
-
-    /* TODO
-    // Get ready to drop the picture off on RenderManger's doorstep
-    if (!g_renderManager.IsStarted())
-    {
-      CLog::Log(LOGERROR, "RetroPlayerVideo: Renderer not started, bailing");
-      throw false;
-    }
-    */
-
-    const double sleepTime = 0; // TODO: How is this calculated in DVDPlayer?
-    int buffer = g_renderManager.WaitForBuffer(m_bStop, std::max(DVD_TIME_TO_MSEC(sleepTime) + 500, 50));
-    // If buffer < 0, there was a timeout waiting for buffer, drop the frame
-    if (buffer >= 0)
-    {
-      int index = g_renderManager.AddVideoPicture(*pPicture);
-      // If index < 0, video device might not be done yet, drop the frame
-      if (index >= 0)
-        g_renderManager.FlipPage(CThread::m_bStop);
-    }
-  }
-  catch (bool result)
-  {
-    if (pPicture)
-      CDVDCodecUtils::FreePicture(pPicture);
-    return result;
-  }
-
-  CDVDCodecUtils::FreePicture(pPicture);
-  return true;
-}
-
-bool CRetroPlayerVideo::CheckConfiguration(const DVDVideoPicture &picture, GAME_PIXEL_FORMAT sourceFormat)
-{
-  const double framerate = 1 / picture.iDuration;
-
-  if (g_renderManager.IsConfigured() &&
-      m_outputWidth == picture.iWidth &&
-      m_outputHeight == picture.iHeight &&
-      m_outputFramerate == framerate &&
-      m_pixelFormat == sourceFormat)
-  {
-    // Already configured properly
-    return true;
-  }
-
-  // Determine RenderManager flags
-  unsigned int flags = 0;
-  if (picture.color_range == 1)
-    flags |= CONF_FLAGS_YUV_FULLRANGE;
-  flags |= CONF_FLAGS_YUVCOEF_BT601; // picture.color_matrix = 4
-  if (m_bAllowFullscreen)
-  {
-    flags |= CONF_FLAGS_FULLSCREEN;
-    m_bAllowFullscreen = false; // only allow on first configure
-  }
-
-  CLog::Log(LOGDEBUG, "RetroPlayerVideo: Change configuration: %dx%d, %4.2f fps", picture.iWidth, picture.iHeight, framerate);
-
-  int orientation = 0; // (90 = 5, 180 = 2, 270 = 7), if we ever want to use RETRO_ENVIRONMENT_SET_ROTATION
-
-  if (!g_renderManager.Configure(picture.iWidth,
-                                 picture.iHeight,
-                                 picture.iDisplayWidth,
-                                 picture.iDisplayHeight,
-                                 (float)framerate,
-                                 flags,
-                                 picture.format,
-                                 picture.extended_format,
-                                 orientation))
-  {
-    CLog::Log(LOGERROR, "RetroPlayerVideo: Failed to configure renderer");
+  // Check for valid format (TODO)
+  if (GetPitch(format, width) == 0)
     return false;
-  }
 
-  m_outputWidth = picture.iWidth;
-  m_outputHeight = picture.iHeight;
-  m_outputFramerate = framerate;
-  m_pixelFormat = sourceFormat;
-
-  PixelFormat pixelFormat;
-  switch (sourceFormat)
+  if (!g_renderManager.IsConfigured() ||
+      m_format           != format    ||
+      m_picture          == NULL      ||
+      m_picture->iWidth  != width     ||
+      m_picture->iHeight != height)
   {
-    case GAME_PIXEL_FORMAT_XRGB8888:
-      CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: XRGB8888, using PIX_FMT_0RGB32");
-      pixelFormat = PIX_FMT_0RGB32;
-      break;
-    case GAME_PIXEL_FORMAT_RGB565:
-      CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: RGB565, using PIX_FMT_RGB565");
-      pixelFormat = PIX_FMT_RGB565;
-      break;
-    case GAME_PIXEL_FORMAT_0RGB1555:
-    default:
-      CLog::Log(LOGINFO, "RetroPlayerVideo: Pixel Format: 0RGB1555, using PIX_FMT_RGB555");
-      pixelFormat = PIX_FMT_RGB555;
-      break;
+    // Determine RenderManager flags
+    unsigned int flags = CONF_FLAGS_YUVCOEF_BT601 | // color_matrix = 4
+                         CONF_FLAGS_FULLSCREEN;      // Allow fullscreen
+
+    CLog::Log(LOGDEBUG, "RetroPlayerVideo: Change configuration: %dx%d, %4.2f fps", width, height, m_framerate);
+
+    int orientation = 0; // (90 = 5, 180 = 2, 270 = 7), if we ever want to use RETRO_ENVIRONMENT_SET_ROTATION
+
+    if (!g_renderManager.Configure(width, height, width, height, (float)m_framerate,
+                                   flags, RENDER_FMT_YUV420P, 0, orientation))
+    {
+      CLog::Log(LOGERROR, "RetroPlayerVideo: Failed to configure renderer");
+      return false;
+    }
+
+    Cleanup();
+
+    m_swsContext = sws_getContext(width, height, format,
+                                  width, height, PIX_FMT_YUV420P,
+                                  SWS_FAST_BILINEAR | SwScaleCPUFlags(),
+                                  NULL, NULL, NULL);
+
+    m_picture = CDVDCodecUtils::AllocatePicture(width, height);
+
+    m_picture->dts            = DVD_NOPTS_VALUE;
+    m_picture->pts            = DVD_NOPTS_VALUE;
+    m_picture->format         = RENDER_FMT_YUV420P; // PIX_FMT_YUV420P
+    m_picture->color_range    = 0; // *not* CONF_FLAGS_YUV_FULLRANGE
+    m_picture->color_matrix   = 4; // CONF_FLAGS_YUVCOEF_BT601
+    m_picture->iFlags         = DVP_FLAG_ALLOCATED;
+    m_picture->iDisplayWidth  = width;
+    m_picture->iDisplayHeight = height;
+    m_picture->iDuration      = 1.0 / m_framerate;
+
+    m_format = format;
   }
-
-  if (m_swsContext)
-    sws_freeContext(m_swsContext);
-
-  m_swsContext = sws_getContext(
-    picture.iWidth, picture.iHeight, pixelFormat,
-    picture.iWidth, picture.iHeight, PIX_FMT_YUV420P,
-    SWS_FAST_BILINEAR | SwScaleCPUFlags(), NULL, NULL, NULL
-  );
 
   return true;
 }
 
-void CRetroPlayerVideo::ColorspaceConversion(const VideoFrame &input, const DVDVideoPicture &output)
+void CRetroPlayerVideo::ColorspaceConversion(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data, DVDVideoPicture &output)
 {
-  uint8_t *data = const_cast<uint8_t*>(input.buffer.data());
+  const unsigned int pitch = GetPitch(format, width);
 
-  uint8_t *src[] =       { data,                  0,                   0,                   0 };
-  int      srcStride[] = { (int)input.meta.pitch, 0,                   0,                   0 };
-  uint8_t *dst[] =       { output.data[0],        output.data[1],      output.data[2],      0 };
-  int      dstStride[] = { output.iLineSize[0],   output.iLineSize[1], output.iLineSize[2], 0 };
+  uint8_t* dataMutable = const_cast<uint8_t*>(data);
 
-  sws_scale(m_swsContext, src, srcStride, 0, input.meta.height, dst, dstStride);
+  uint8_t* src[] =       { dataMutable,         0,                   0,                   0 };
+  int      srcStride[] = { (int)pitch,          0,                   0,                   0 };
+  uint8_t* dst[] =       { output.data[0],      output.data[1],      output.data[2],      0 };
+  int      dstStride[] = { output.iLineSize[0], output.iLineSize[1], output.iLineSize[2], 0 };
+
+  sws_scale(m_swsContext, src, srcStride, 0, height, dst, dstStride);
 }
 
-void CRetroPlayerVideo::SendVideoFrame(const uint8_t *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT format)
+bool CRetroPlayerVideo::IsFrameReady(void)
 {
-  if (!m_bStop && IsRunning())
+  CSingleLock lock(m_frameReadyMutex);
+  return m_bFrameReady;
+}
+
+void CRetroPlayerVideo::SetFrameReady(bool bReady)
+{
+  CSingleLock lock(m_frameReadyMutex);
+
+  m_bFrameReady = bReady;
+  if (m_bFrameReady)
+    m_frameReadyEvent.Set();
+}
+
+unsigned int CRetroPlayerVideo::GetPitch(AVPixelFormat format, unsigned int width)
+{
+  unsigned int pitch = 0;
+
+  switch (format)
   {
-    VideoInfo info = { width, height, pitch, format };
-
-    m_buffer.AddPacket(data, pitch * height, info);
-
-    // Notify the video thread that we're ready to display the picture. If
-    // m_frameEvent is signaled before hitting Wait() above, then it will have
-    // to wait until the next SendVideoFrame() before continuing.
-    m_frameEvent.Set();
+    case PIX_FMT_0RGB32:
+      pitch = width * 4;
+      break;
+    case PIX_FMT_RGB565:
+      pitch = width * 2;
+      break;
+    case PIX_FMT_RGB555:
+      pitch = width * 2;
+      break;
+    default:
+      CLog::Log(LOGERROR, "RetroPlayerVideo: Unsupported format: %d", format);
+      break;
   }
+
+  return pitch;
 }

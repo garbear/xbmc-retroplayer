@@ -21,7 +21,6 @@
 
 #include "RetroPlayerAudio.h"
 #include "RetroPlayerVideo.h"
-#include "addons/include/xbmc_game_types.h"
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "games/GameClient.h"
@@ -31,7 +30,7 @@
 #include <stdint.h>
 #include <string>
 
-class CRetroPlayer : public IPlayer, public CThread
+class CRetroPlayer : public IPlayer, protected CThread
 {
 public:
   CRetroPlayer(IPlayerCallback& callback);
@@ -127,12 +126,9 @@ public:
   virtual void GetAudioCapabilities(std::vector<int> &audioCaps) { audioCaps.assign(1,IPC_AUD_ALL); };
   virtual void GetSubtitleCapabilities(std::vector<int> &subCaps) { subCaps.assign(1,IPC_SUBS_ALL); };
 
-  // TODO: game api
-  virtual void VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat);
-  virtual size_t AudioFrames(const int16_t *data, size_t frames);
-  virtual int16_t GetInputState(unsigned port, unsigned device, unsigned index, unsigned id);
-  virtual bool RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength);
-  virtual void SetRotation(GAME_ROTATION rotation);
+  // Game API
+  bool         VideoFrame(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data) { return m_video.VideoFrame(format, width, height, data); }
+  unsigned int AudioFrames(AEDataFormat format, unsigned int frames, const uint8_t* data) { return m_audio.AudioFrames(format, frames, data); }
 
 protected:
   virtual void Process();
@@ -152,7 +148,6 @@ private:
    *         or 1.0 if no audio.
    */
   void CreateAudio(double samplerate);
-  void CreateVideo(double framerate);
 
   CRetroPlayerVideo    m_video;
   CRetroPlayerAudio    m_audio;

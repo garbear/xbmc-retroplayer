@@ -1,6 +1,5 @@
 SRCS=RetroPlayer.cpp \
      RetroPlayerAudio.cpp \
-     RetroPlayerBuffer.cpp \
      RetroPlayerDialogs.cpp \
      RetroPlayerVideo.cpp
 

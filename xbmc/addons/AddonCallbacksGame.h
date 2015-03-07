@@ -50,8 +50,8 @@ public:
   static bool EnvironmentCanDupe(void* addonData);
   static void EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count);
   static bool EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info);
-  static void VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat);
-  static size_t AudioFrames(void* addonData, const int16_t *data, size_t frames);
+  static bool VideoFrame(void* addonData, GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data);
+  static unsigned int AudioFrames(void* addonData, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data);
   static int16_t InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id);
   static uint64_t InputGetDeviceCapabilities(void* addonData);
   static bool RumbleSetState(void* addonData, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength);

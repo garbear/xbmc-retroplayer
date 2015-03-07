@@ -49,7 +49,7 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->EnvironmentCanDupe             = EnvironmentCanDupe;
   m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
   m_callbacks->EnvironmentSetSystemAvInfo     = EnvironmentSetSystemAvInfo;
-  m_callbacks->VideoRefresh                   = VideoRefresh;
+  m_callbacks->VideoFrame                     = VideoFrame;
   m_callbacks->AudioFrames                    = AudioFrames;
   m_callbacks->InputState                     = InputState;
   m_callbacks->InputGetDeviceCapabilities     = InputGetDeviceCapabilities;
@@ -134,7 +134,8 @@ void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION 
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return;
-  retroPlayer->SetRotation(rotation);
+
+  //retroPlayer->SetRotation(rotation); // TODO
 }
 
 bool CAddonCallbacksGame::EnvironmentGetOverscan(void* addonData)
@@ -160,34 +161,67 @@ bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game
   return false;
 }
 
-void CAddonCallbacksGame::VideoRefresh(void* addonData, const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat)
+bool CAddonCallbacksGame::VideoFrame(void* addonData, GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data)
 {
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
-    return;
+    return false;
 
-  return retroPlayer->VideoFrame(data, width, height, pitch, pixelFormat);
+  AVPixelFormat pixelFormat(AV_PIX_FMT_NONE);
+
+  switch (format)
+  {
+    case GAME_RENDER_FMT_YUV420P:
+      pixelFormat = AV_PIX_FMT_YUV420P;
+      break;
+    case GAME_RENDER_FMT_0RGB8888:
+      pixelFormat = AV_PIX_FMT_0RGB32;
+      break;
+    case GAME_RENDER_FMT_RGB565:
+      pixelFormat = AV_PIX_FMT_RGB565;
+      break;
+    case GAME_RENDER_FMT_0RGB1555:
+      pixelFormat = AV_PIX_FMT_RGB555;
+      break;
+    case GAME_RENDER_FMT_NONE:
+    default:
+      break;
+  }
+
+  if (pixelFormat == AV_PIX_FMT_NONE || width == 0 || height == 0 || data == NULL)
+    return false;
+
+  return retroPlayer->VideoFrame(pixelFormat, width, height, data);
 }
 
-size_t CAddonCallbacksGame::AudioFrames(void* addonData, const int16_t *data, size_t frames)
+unsigned int CAddonCallbacksGame::AudioFrames(void* addonData, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data)
 {
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
     return 0;
 
-  if (!data || !frames)
+  AEDataFormat audioFormat(AE_FMT_INVALID);
+
+  switch (format)
+  {
+    case GAME_AUDIO_FMT_S16NE:
+      audioFormat = AE_FMT_S16NE;
+      break;
+    case GAME_RENDER_FMT_NONE:
+    default:
+      break;
+  }
+
+  if (audioFormat == AE_FMT_INVALID || frames == 0 || data == NULL)
     return 0;
 
-  return retroPlayer->AudioFrames(data, frames);
+  return retroPlayer->AudioFrames(audioFormat, frames, data);
 }
 
 int16_t CAddonCallbacksGame::InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id)
 {
-  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
-  if (!retroPlayer)
-    return 0;
-
-  return retroPlayer->GetInputState(port, device, index, id);
+  // TODO
+  return 0;
 }
 
 uint64_t CAddonCallbacksGame::InputGetDeviceCapabilities(void* addonData)

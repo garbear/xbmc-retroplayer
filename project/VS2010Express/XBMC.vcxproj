@@ -235,7 +235,6 @@
     <ClCompile Include="..\..\xbmc\cores\FFmpeg.cpp" />
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.cpp" />
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerAudio.cpp" />
-    <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerBuffer.cpp" />
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerDialogs.cpp" />
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.cpp" />
     <ClCompile Include="..\..\xbmc\cores\VideoRenderers\OverlayRendererGUI.cpp" />
@@ -897,7 +896,6 @@
     <ClInclude Include="..\..\xbmc\cores\FFmpeg.h" />
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.h" />
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerAudio.h" />
-    <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerBuffer.h" />
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerDialogs.h" />
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.h" />
     <ClInclude Include="..\..\xbmc\cores\VideoRenderers\OverlayRendererGUI.h" />

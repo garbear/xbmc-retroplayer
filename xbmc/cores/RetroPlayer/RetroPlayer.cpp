@@ -33,8 +33,6 @@
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 
-#include <assert.h>
-
 #define PLAYSPEED_PAUSED    0
 #define PLAYSPEED_NORMAL    1000
 #define REWIND_SCALE        4 // rewind 4 times slower than speed of play
@@ -46,9 +44,10 @@
 // TODO: Move to CGameClient
 #define AUTOSAVE_MS   30000 // autosave every 30 seconds
 
+#define AUDIO_FORMAT  AE_FMT_S16NE // TODO
+
 using namespace ADDON;
 using namespace GAME;
-using namespace std;
 
 CRetroPlayer::CRetroPlayer(IPlayerCallback& callback)
   : IPlayer(callback),
@@ -73,9 +72,8 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   // Resolve the file into the appropriate game client. This will open dialogs
   // for user input if necessary.
   GameClientPtr gameClient;
-  if (!CRetroPlayerDialogs::GetGameClient(file, gameClient))
+  if (!CRetroPlayerDialogs::GetGameClient(file, gameClient) || !gameClient)
     return false;
-  assert((bool)gameClient);
 
   // Load the DLL and retrieve system info from the game client
   if (gameClient->Create() != ADDON_STATUS_OK)
@@ -90,8 +88,8 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   if (!gameClient->OpenFile(file, this))
   {
     CLog::Log(LOGERROR, "RetroPlayer: Error opening file");
-    const string errorOpening = StringUtils::Format(g_localizeStrings.Get(13329).c_str(),
-                                                    file.GetURL().GetFileNameWithoutPath().c_str());
+    std::string errorOpening = StringUtils::Format(g_localizeStrings.Get(13329).c_str(),
+                                                   file.GetURL().GetFileNameWithoutPath().c_str());
     CGUIDialogOK::ShowAndGetInput(gameClient->Name(), errorOpening, 0, 0); // Error opening %s
     return false;
   }
@@ -169,9 +167,8 @@ bool CRetroPlayer::CloseFile(bool reopen /* = false */)
 
   m_pauseEvent.Set();
 
-  // Wait for AV threads to stop
-  m_audio.StopThread(true);
-  m_video.StopThread(true);
+  m_audio.Stop();
+  m_video.Stop();
 
   // TODO: g_renderManager.Init() (via OpenFile()) must be called from the main
   // thread, or locking g_graphicsContext will freeze XBMC. Does g_renderManager.UnInit()
@@ -194,7 +191,7 @@ void CRetroPlayer::Process()
     CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate changed from %f to %f",
       (float)(newFramerate / m_audioSpeedFactor), (float)newFramerate);
 
-  CreateVideo(newFramerate);
+  m_video.Start(newFramerate);
 
   const double frametime = 1000 * 1000 / newFramerate; // microseconds
 
@@ -255,9 +252,10 @@ void CRetroPlayer::CreateAudio(double samplerate)
   {
     // We want to sync the video clock to the audio. The creation of the audio
     // thread will return the sample rate decided by the audio stream.
-    m_samplerate = m_audio.GoForth(samplerate);
-    if (m_samplerate)
+    if (m_audio.Start(AUDIO_FORMAT, samplerate))
     {
+      m_samplerate = m_audio.GetSampleRate();
+
       CLog::Log(LOGDEBUG, "RetroPlayer: Created audio stream with sample rate %u from reported rate of %f",
         m_samplerate, (float)samplerate);
 
@@ -277,39 +275,6 @@ void CRetroPlayer::CreateAudio(double samplerate)
   // Record framerate correction factor back in our game client so that our
   // savestate buffer can be resized accordingly
   m_gameClient->SetFrameRateCorrection(m_audioSpeedFactor);
-}
-
-void CRetroPlayer::CreateVideo(double framerate)
-{
-  m_video.GoForth(framerate, m_PlayerOptions.fullscreen);
-}
-
-void CRetroPlayer::VideoFrame(const void *data, unsigned width, unsigned height, size_t pitch, GAME_PIXEL_FORMAT pixelFormat)
-{
-  m_video.SendVideoFrame(reinterpret_cast<const uint8_t*>(data), width, height, pitch, pixelFormat);
-}
-
-size_t CRetroPlayer::AudioFrames(const int16_t *data, size_t frames)
-{
-  if (m_playSpeed == PLAYSPEED_NORMAL)
-    m_audio.SendAudioFrames(data, frames);
-  return frames;
-}
-
-int16_t CRetroPlayer::GetInputState(unsigned port, unsigned device, unsigned index, unsigned id)
-{
-  return 0;
-}
-
-bool CRetroPlayer::RumbleState(unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength)
-{
-  // TODO
-  return false;
-}
-
-void CRetroPlayer::SetRotation(GAME_ROTATION rotation)
-{
-  // TODO
 }
 
 void CRetroPlayer::Pause()

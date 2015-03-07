@@ -97,14 +97,14 @@ typedef struct CB_GameLib
     * pitch == width * byte_per_pixel. Certain graphic APIs, such as OpenGL ES,
     * do not like textures that are not packed in memory.
     */
-  void (*VideoRefresh)(void* addonData, const void* data, unsigned width, unsigned height, size_t pitch, enum GAME_PIXEL_FORMAT pixelFormat);
+  bool (*VideoFrame)(void* addonData, GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data);
 
   /*!
     * Renders multiple audio frames in one go. One frame is defined as a sample
     * of left and right channels, interleaved, i.e.
     * int16_t buf[4] = { l, r, l, r }; would be 2 frames.
     */
-  size_t (*AudioFrames)(void* addonData, const int16_t* data, size_t frames);
+  unsigned int (*AudioFrames)(void* addonData, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data);
 
   /*!
     * Queries for input for player 'port'. device will be masked with
