@@ -234,9 +234,6 @@
 		682FAF171AA122D900E058BA /* RetroPlayerAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF0C1AA122D900E058BA /* RetroPlayerAudio.cpp */; };
 		682FAF181AA122D900E058BA /* RetroPlayerAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF0C1AA122D900E058BA /* RetroPlayerAudio.cpp */; };
 		682FAF191AA122D900E058BA /* RetroPlayerAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF0C1AA122D900E058BA /* RetroPlayerAudio.cpp */; };
-		682FAF1A1AA122D900E058BA /* RetroPlayerBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF0E1AA122D900E058BA /* RetroPlayerBuffer.cpp */; };
-		682FAF1B1AA122D900E058BA /* RetroPlayerBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF0E1AA122D900E058BA /* RetroPlayerBuffer.cpp */; };
-		682FAF1C1AA122D900E058BA /* RetroPlayerBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF0E1AA122D900E058BA /* RetroPlayerBuffer.cpp */; };
 		682FAF1D1AA122D900E058BA /* RetroPlayerDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF101AA122D900E058BA /* RetroPlayerDialogs.cpp */; };
 		682FAF1E1AA122D900E058BA /* RetroPlayerDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF101AA122D900E058BA /* RetroPlayerDialogs.cpp */; };
 		682FAF1F1AA122D900E058BA /* RetroPlayerDialogs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF101AA122D900E058BA /* RetroPlayerDialogs.cpp */; };
@@ -3774,8 +3771,6 @@
 		682FAF0B1AA122D900E058BA /* RetroPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayer.h; path = RetroPlayer/RetroPlayer.h; sourceTree = "<group>"; };
 		682FAF0C1AA122D900E058BA /* RetroPlayerAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerAudio.cpp; path = RetroPlayer/RetroPlayerAudio.cpp; sourceTree = "<group>"; };
 		682FAF0D1AA122D900E058BA /* RetroPlayerAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerAudio.h; path = RetroPlayer/RetroPlayerAudio.h; sourceTree = "<group>"; };
-		682FAF0E1AA122D900E058BA /* RetroPlayerBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerBuffer.cpp; path = RetroPlayer/RetroPlayerBuffer.cpp; sourceTree = "<group>"; };
-		682FAF0F1AA122D900E058BA /* RetroPlayerBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerBuffer.h; path = RetroPlayer/RetroPlayerBuffer.h; sourceTree = "<group>"; };
 		682FAF101AA122D900E058BA /* RetroPlayerDialogs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerDialogs.cpp; path = RetroPlayer/RetroPlayerDialogs.cpp; sourceTree = "<group>"; };
 		682FAF111AA122D900E058BA /* RetroPlayerDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerDialogs.h; path = RetroPlayer/RetroPlayerDialogs.h; sourceTree = "<group>"; };
 		682FAF121AA122D900E058BA /* RetroPlayerVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerVideo.cpp; path = RetroPlayer/RetroPlayerVideo.cpp; sourceTree = "<group>"; };
@@ -7150,8 +7145,6 @@
 				682FAF0B1AA122D900E058BA /* RetroPlayer.h */,
 				682FAF0C1AA122D900E058BA /* RetroPlayerAudio.cpp */,
 				682FAF0D1AA122D900E058BA /* RetroPlayerAudio.h */,
-				682FAF0E1AA122D900E058BA /* RetroPlayerBuffer.cpp */,
-				682FAF0F1AA122D900E058BA /* RetroPlayerBuffer.h */,
 				682FAF101AA122D900E058BA /* RetroPlayerDialogs.cpp */,
 				682FAF111AA122D900E058BA /* RetroPlayerDialogs.h */,
 				682FAF121AA122D900E058BA /* RetroPlayerVideo.cpp */,
@@ -10840,7 +10833,6 @@
 				E38E22970D25F9FE00618676 /* NfoFile.cpp in Sources */,
 				E38E22A00D25F9FE00618676 /* PartyModeManager.cpp in Sources */,
 				B542632B197D353B00726998 /* PosixInterfaceForCLog.cpp in Sources */,
-				682FAF1A1AA122D900E058BA /* RetroPlayerBuffer.cpp in Sources */,
 				E38E22A10D25F9FE00618676 /* Picture.cpp in Sources */,
 				E38E22A20D25F9FE00618676 /* PictureInfoLoader.cpp in Sources */,
 				E38E22A30D25F9FE00618676 /* PictureInfoTag.cpp in Sources */,
@@ -12532,7 +12524,6 @@
 				2F4564D71970129A00396109 /* GUIFontCache.cpp in Sources */,
 				DFF0F45E17528350002DA3A4 /* InfoTagMusic.cpp in Sources */,
 				DFF0F45F17528350002DA3A4 /* InfoTagVideo.cpp in Sources */,
-				682FAF1C1AA122D900E058BA /* RetroPlayerBuffer.cpp in Sources */,
 				DFF0F46017528350002DA3A4 /* Keyboard.cpp in Sources */,
 				DFF0F46117528350002DA3A4 /* LanguageHook.cpp in Sources */,
 				DFF0F46217528350002DA3A4 /* ListItem.cpp in Sources */,
@@ -13612,7 +13603,6 @@
 				E4991557174E656E00741B6D /* Dialog.cpp in Sources */,
 				E4991558174E656E00741B6D /* File.cpp in Sources */,
 				E4991559174E656E00741B6D /* InfoTagMusic.cpp in Sources */,
-				682FAF1B1AA122D900E058BA /* RetroPlayerBuffer.cpp in Sources */,
 				E499155A174E656E00741B6D /* InfoTagVideo.cpp in Sources */,
 				E499155B174E656E00741B6D /* Keyboard.cpp in Sources */,
 				E499155C174E656E00741B6D /* LanguageHook.cpp in Sources */,
