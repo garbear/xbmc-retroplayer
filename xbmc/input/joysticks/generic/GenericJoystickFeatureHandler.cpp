@@ -64,8 +64,7 @@ bool CGenericJoystickFeatureHandler::OnButtonPress(JoystickFeatureID id)
       }
       else
       {
-        if (std::find(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyId) == m_pressedButtons.end())
-          ProcessButtonPress(action);
+        ProcessButtonPress(action);
       }
     }
   }
@@ -112,11 +111,9 @@ bool CGenericJoystickFeatureHandler::OnButtonMotion(JoystickFeatureID id, float 
       }
       else
       {
-        std::vector<unsigned int>::iterator it = std::find(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyId);
-
-        if (magnitude >= 0.5f && it == m_pressedButtons.end())
+        if (magnitude >= 0.5f)
           ProcessButtonPress(action);
-        else if (magnitude < 0.5f && it != m_pressedButtons.end())
+        else if (magnitude < 0.5f)
           ProcessButtonRelease(buttonKeyId);
       }
     }
@@ -157,16 +154,14 @@ bool CGenericJoystickFeatureHandler::OnAnalogStickMotion(JoystickFeatureID id, f
     }
     else
     {
-      std::vector<unsigned int>::iterator it = std::find(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyIds[i]);
-
       if (buttonKeyId == buttonKeyIds[i])
       {
-        if (magnitude >= 0.5f && it == m_pressedButtons.end())
+        if (magnitude >= 0.5f)
           ProcessButtonPress(action);
-        else if (magnitude < 0.5f && it != m_pressedButtons.end())
+        else if (magnitude < 0.5f)
           ProcessButtonRelease(buttonKeyId);
       }
-      else if (it != m_pressedButtons.end())
+      else
       {
         ProcessButtonRelease(buttonKeyId);
       }
@@ -197,24 +192,29 @@ void CGenericJoystickFeatureHandler::OnTimeout(void)
 
 void CGenericJoystickFeatureHandler::ProcessButtonPress(const CAction& action)
 {
-  ClearHoldTimer();
+  if (std::find(m_pressedButtons.begin(), m_pressedButtons.end(), action.GetButtonCode()) == m_pressedButtons.end())
+  {
+    ClearHoldTimer();
 
-  CApplicationMessenger::Get().SendAction(action);
+    CApplicationMessenger::Get().SendAction(action);
 
-  CSingleLock lock(m_digitalMutex);
+    CSingleLock lock(m_digitalMutex);
 
-  m_pressedButtons.push_back(action.GetButtonCode());
-  StartHoldTimer(action.GetButtonCode());
+    m_pressedButtons.push_back(action.GetButtonCode());
+    StartHoldTimer(action.GetButtonCode());
+  }
 }
 
 void CGenericJoystickFeatureHandler::ProcessButtonRelease(unsigned int buttonKeyId)
 {
   std::vector<unsigned int>::iterator it = std::find(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyId);
   if (it != m_pressedButtons.end())
+  {
     m_pressedButtons.erase(it);
 
-  if (buttonKeyId == m_lastButtonPress || m_pressedButtons.empty())
-    ClearHoldTimer();
+    if (buttonKeyId == m_lastButtonPress || m_pressedButtons.empty())
+      ClearHoldTimer();
+  }
 }
 
 void CGenericJoystickFeatureHandler::StartHoldTimer(unsigned int buttonKeyId)
