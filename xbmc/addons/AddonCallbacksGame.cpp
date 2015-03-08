@@ -44,15 +44,14 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
 
   /* write XBMC game specific add-on function addresses to callback table */
   m_callbacks->CloseGame                      = CloseGame;
+  m_callbacks->OpenPort                       = OpenPort;
+  m_callbacks->ClosePort                      = ClosePort;
   m_callbacks->EnvironmentSetRotation         = EnvironmentSetRotation;
   m_callbacks->EnvironmentGetOverscan         = EnvironmentGetOverscan;
   m_callbacks->EnvironmentCanDupe             = EnvironmentCanDupe;
-  m_callbacks->EnvironmentSetInputDescriptors = EnvironmentSetInputDescriptors;
   m_callbacks->EnvironmentSetSystemAvInfo     = EnvironmentSetSystemAvInfo;
   m_callbacks->VideoFrame                     = VideoFrame;
   m_callbacks->AudioFrames                    = AudioFrames;
-  m_callbacks->InputState                     = InputState;
-  m_callbacks->InputGetDeviceCapabilities     = InputGetDeviceCapabilities;
   m_callbacks->RumbleSetState                 = RumbleSetState;
   m_callbacks->PerfGetTimeUsec                = PerfGetTimeUsec;
   m_callbacks->PerfGetCounter                 = PerfGetCounter;
@@ -61,8 +60,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->PerfRegister                   = PerfRegister;
   m_callbacks->PerfStart                      = PerfStart;
   m_callbacks->PerfStop                       = PerfStop;
-  m_callbacks->SensorSetState                 = SensorSetState;
-  m_callbacks->SensorGetInput                 = SensorGetInput;
   m_callbacks->CameraSetInfo                  = CameraSetInfo;
   m_callbacks->CameraStart                    = CameraStart;
   m_callbacks->CameraStop                     = CameraStop;
@@ -129,6 +126,16 @@ void CAddonCallbacksGame::CloseGame(void* addonData)
   retroPlayer->CloseFile();
 }
 
+bool CAddonCallbacksGame::OpenPort(void* addonData, unsigned int port, const char* addon_id, game_input_device_caps* device_caps)
+{
+  return false; // TODO
+}
+
+void CAddonCallbacksGame::ClosePort(void* addonData, unsigned int port)
+{
+  // TODO
+}
+
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)
 {
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
@@ -148,11 +155,6 @@ bool CAddonCallbacksGame::EnvironmentCanDupe(void* addonData)
 {
   // TODO: Move to library.xbmc.libretro and remove callback
   return true;
-}
-
-void CAddonCallbacksGame::EnvironmentSetInputDescriptors(void* addonData, const game_input_descriptor* descriptor, size_t count)
-{
-  // TODO
 }
 
 bool CAddonCallbacksGame::EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info)
@@ -218,18 +220,6 @@ unsigned int CAddonCallbacksGame::AudioFrames(void* addonData, GAME_AUDIO_FORMAT
   return retroPlayer->AudioFrames(audioFormat, frames, data);
 }
 
-int16_t CAddonCallbacksGame::InputState(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id)
-{
-  // TODO
-  return 0;
-}
-
-uint64_t CAddonCallbacksGame::InputGetDeviceCapabilities(void* addonData)
-{
-  // TODO
-  return (1 << GAME_DEVICE_JOYPAD);
-}
-
 bool CAddonCallbacksGame::RumbleSetState(void* addonData, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength)
 {
   return false;
@@ -271,18 +261,6 @@ void CAddonCallbacksGame::PerfStart(void* addonData, game_perf_counter *counter)
 void CAddonCallbacksGame::PerfStop(void* addonData, game_perf_counter *counter)
 {
   // TODO
-}
-
-bool CAddonCallbacksGame::SensorSetState(void* addonData, unsigned port, GAME_SENSOR_ACTION action, unsigned rate)
-{
-  // TODO
-  return false;
-}
-
-float CAddonCallbacksGame::SensorGetInput(void* addonData, unsigned port, unsigned id)
-{
-  // TODO
-  return 0.0f;
 }
 
 void CAddonCallbacksGame::CameraSetInfo(void* addonData, game_camera_info *camera_info)

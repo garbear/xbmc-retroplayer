@@ -74,7 +74,6 @@
 #include <vector>
 
 #define LIBRETRO_WRAPPER_LIBRARY   "game.libretro"
-#define GAMECLIENT_MAX_PLAYERS     8
 
 class CFileItem;
 class IPlayer;
@@ -143,19 +142,6 @@ public:
   void CloseFile();
 
   /**
-   * Each port (or player, if you will) must be associated with a device. The
-   * default device is GAME_DEVICE_JOYPAD.
-   *
-   * TODO: Do not exceed the number of devices that the game client supports.
-   * A quick analysis of SNES9x Next v2 showed that a third port will overflow
-   * a buffer. Currently, there is no way to determine the number of ports a
-   * client will support, so stick with 1.
-   *
-   * Precondition: OpenFile() must return true.
-   */
-  void SetDevice(unsigned int port, unsigned int device);
-
-  /**
    * Allow the game to run and produce a video frame.
    * Precondition: OpenFile() returned true.
    * Returns false if an exception is thrown in retro_run().
@@ -181,6 +167,8 @@ public:
 
   // If the game client provided no extensions, this will optimistically return true
   bool IsExtensionValid(const std::string& strExtension) const;
+
+  void UpdatePort(unsigned int port, bool bConnected);
 
 private:
   // Called by the constructors

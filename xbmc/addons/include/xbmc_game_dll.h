@@ -62,23 +62,14 @@ GAME_ERROR Run(void);
 GAME_ERROR Reset(void);
 
 /*!
- * Called by the frontend in response to keyboard events.
- *  - down is set if the key is being pressed, or false if it is being released
- *  - keycode is the RETROK value of the char
- *  - character is the text character of the pressed key. (UTF-32)
- *  - key_modifiers is a set of RETROKMOD values or'ed together
- *
- * The pressed/keycode state can be independent of the character. It is also
- * possible that multiple characters are generated from a single keypress.
- * Keycode events should be treated separately from character events.
- * However, when possible, the frontend should try to synchronize these. If
- * only a character is posted, keycode should be GAME_KEY_UNKNOWN.
- * Similarly if only a keycode event is generated with no corresponding
- * character, character should be 0.
- *
- * Replaces RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK.
+ * Set the status of an open port.
  */
-GAME_ERROR KeyboardEvent(bool down, unsigned keycode, uint32_t character, uint16_t key_modifiers);
+void UpdatePort(unsigned int port, bool port_connected);
+
+/*!
+ * Called in response to an input event on an open port.
+ */
+void InputEvent(unsigned int port, game_input_event* event);
 
 /*!
  * Gets information about system audio/video timings and geometry. Can be
@@ -88,9 +79,6 @@ GAME_ERROR KeyboardEvent(bool down, unsigned keycode, uint32_t character, uint16
  * core doesn't desire a particular aspect ratio.
  */
 GAME_ERROR GetSystemAVInfo(struct game_system_av_info *info);
-
-/*! Sets device to be used for player 'port' */
-GAME_ERROR SetControllerPortDevice(unsigned port, unsigned device);
 
 /*!
  * Returns the amount of data the implementation requires to serialize
@@ -291,9 +279,9 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->UnloadGame               = UnloadGame;
   pClient->Run                      = Run;
   pClient->Reset                    = Reset;
-  pClient->KeyboardEvent            = KeyboardEvent;
+  pClient->UpdatePort               = UpdatePort;
+  pClient->InputEvent               = InputEvent;
   pClient->GetSystemAVInfo          = GetSystemAVInfo;
-  pClient->SetControllerPortDevice  = SetControllerPortDevice;
   pClient->SerializeSize            = SerializeSize;
   pClient->Serialize                = Serialize;
   pClient->Deserialize              = Deserialize;

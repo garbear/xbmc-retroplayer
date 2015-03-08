@@ -34,6 +34,16 @@ typedef struct CB_GameLib
   void (*CloseGame)(void* addonData);
 
   /*!
+   * Request a port that can provide player input.
+   */
+  bool (*OpenPort)(void* addonData, unsigned int port, const char* addonId, game_input_device_caps* device_caps);
+
+  /*!
+   * Close an opened port.
+   */
+  void (*ClosePort)(void* addonData, unsigned int port);
+
+  /*!
     * Sets screen rotation of graphics. Is only implemented if rotation can be
     * accelerated by hardware. Valid values are 0, 1, 2, 3, which rotates
     * screen by 0, 90, 180, 270 degrees counter-clockwise respectively.
@@ -52,14 +62,6 @@ typedef struct CB_GameLib
     * NULL to video frame callback. Replaces RETRO_ENVIRONMENT_GET_CAN_DUPE.
     */
   bool (*EnvironmentCanDupe)(void* addonData);
-
-  /*!
-    * Sets an array of game_input_descriptors. It is up to the frontend to
-    * present this in a usable way. This function can be called at any time,
-    * but it is recommended to call it as early as possible. Replaces
-    * RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS.
-    */
-  void (*EnvironmentSetInputDescriptors)(void* addonData, const struct game_input_descriptor* descriptor, size_t count);
 
   /*!
     * Sets a new av_info structure. This can only be called from within
@@ -105,27 +107,6 @@ typedef struct CB_GameLib
     * int16_t buf[4] = { l, r, l, r }; would be 2 frames.
     */
   unsigned int (*AudioFrames)(void* addonData, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data);
-
-  /*!
-    * Queries for input for player 'port'. device will be masked with
-    * GAME_DEVICE_MASK. Specialization of devices such as
-    * GAME_DEVICE_JOYPAD_MULTITAP that have been set with
-    * SetControllerPortDevice() will still use the higher level
-    * GAME_DEVICE_JOYPAD to request input.
-    */
-  int16_t (*InputState)(void* addonData, unsigned port, unsigned device, unsigned index, unsigned id);
-
-  /*!
-    * Gets a bitmask telling which device type are expected to be handled
-    * properly in a call to InputState(). Devices which are not handled or
-    * recognized always return 0 in input_state().
-    *
-    * Example bitmask: caps = (1 << GAME_DEVICE_JOYPAD) | (1 << GAME_DEVICE_ANALOG).
-    * Should only be called in Run().
-    *
-    * Replaces RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES.
-    */
-  uint64_t (*InputGetDeviceCapabilities)(void* addonData);
 
   /*
     * Interface for performance counters. This is useful for performance
@@ -214,15 +195,6 @@ typedef struct CB_GameLib
     *   perf_cb.perf_log(); // Log all perf counters here for example
     * }
     */
-
-  /*!
-    * Sensor interface. The purpose of this interface is to allow setting
-    * state related to sensors such as polling rate, enabling/disable it
-    * entirely, etc. Replaces RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE.
-    */
-  bool (*SensorSetState)(void* addonData, unsigned port, enum GAME_SENSOR_ACTION action, unsigned rate);
-
-  float (*SensorGetInput)(void* addonData, unsigned port, unsigned id);
 
   /*!
     * Interface to a video camera driver. A game client can use this

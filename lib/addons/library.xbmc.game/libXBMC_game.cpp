@@ -62,6 +62,20 @@ DLLEXPORT void GAME_close_game(AddonCB* frontend, CB_GameLib* cb)
   return cb->CloseGame(frontend->addonData);
 }
 
+DLLEXPORT bool GAME_open_port(AddonCB* frontend, CB_GameLib* cb, unsigned int port, const char* addon_id, game_input_device_caps* device_caps)
+{
+  if (frontend == NULL || cb == NULL)
+    return false;
+  return cb->OpenPort(frontend->addonData, port, addon_id, device_caps);
+}
+
+DLLEXPORT void GAME_close_port(AddonCB* frontend, CB_GameLib* cb, unsigned int port)
+{
+  if (frontend == NULL || cb == NULL)
+    return;
+  return cb->ClosePort(frontend->addonData, port);
+}
+
 DLLEXPORT void GAME_environment_set_rotation(AddonCB* frontend, CB_GameLib* cb, GAME_ROTATION rotation)
 {
   if (frontend == NULL || cb == NULL)
@@ -83,13 +97,6 @@ DLLEXPORT bool GAME_environment_can_dupe(AddonCB* frontend, CB_GameLib* cb)
   return cb->EnvironmentCanDupe(frontend->addonData);
 }
 
-DLLEXPORT void GAME_environment_set_input_descriptors(AddonCB* frontend, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->EnvironmentSetInputDescriptors(frontend->addonData, descriptor, count);
-}
-
 DLLEXPORT bool GAME_environment_set_system_av_info(AddonCB* frontend, CB_GameLib* cb, const struct game_system_av_info* info)
 {
   if (frontend == NULL || cb == NULL)
@@ -109,20 +116,6 @@ DLLEXPORT unsigned int GAME_audio_frames(AddonCB* frontend, CB_GameLib* cb, GAME
   if (frontend == NULL || cb == NULL)
     return 0;
   return cb->AudioFrames(frontend->addonData, format, frames, data);
-}
-
-DLLEXPORT int16_t GAME_input_state(AddonCB* frontend, CB_GameLib* cb, unsigned port, unsigned device, unsigned index, unsigned id)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0;
-  return cb->InputState(frontend->addonData, port, device, index, id);
-}
-
-DLLEXPORT uint64_t GAME_input_get_device_capabilities(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0;
-  return cb->InputGetDeviceCapabilities(frontend->addonData);
 }
 
 DLLEXPORT bool GAME_rumble_set_state(AddonCB* frontend, CB_GameLib* cb, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength)
@@ -179,20 +172,6 @@ DLLEXPORT void GAME_perf_stop(AddonCB* frontend, CB_GameLib* cb, game_perf_count
   if (frontend == NULL || cb == NULL)
     return;
   return cb->PerfStop(frontend->addonData, counter);
-}
-
-DLLEXPORT bool GAME_sensor_set_state(AddonCB* frontend, CB_GameLib* cb, unsigned port, GAME_SENSOR_ACTION action, unsigned rate)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->SensorSetState(frontend->addonData, port, action, rate);
-}
-
-DLLEXPORT float GAME_sensor_get_input(AddonCB* frontend, CB_GameLib* cb, unsigned port, unsigned id)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0.0f;
-  return cb->SensorGetInput(frontend->addonData, port, id);
 }
 
 DLLEXPORT void GAME_camera_set_info(AddonCB* frontend, CB_GameLib* cb, game_camera_info *camera_info)

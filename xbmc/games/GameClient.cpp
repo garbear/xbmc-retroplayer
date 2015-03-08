@@ -311,8 +311,7 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
     m_player = player;
     InitSerialization();
 
-    // TODO: Need an API call in libretro that lets us know the number of ports
-    SetDevice(0, GAME_DEVICE_JOYPAD);
+    UpdatePort(0, true); // TODO
 
     return true;
   }
@@ -449,27 +448,6 @@ bool CGameClient::InitSerialization()
   return true;
 }
 
-void CGameClient::SetDevice(unsigned int port, unsigned int device)
-{
-  if (m_bIsPlaying)
-  {
-    // Validate port (TODO: Check if port is less that players that individual game client supports)
-    if (port < GAMECLIENT_MAX_PLAYERS)
-    {
-      // Validate device
-      if (device <= GAME_DEVICE_ANALOG ||
-          device == GAME_DEVICE_JOYPAD_MULTITAP ||
-          device == GAME_DEVICE_LIGHTGUN_SUPER_SCOPE ||
-          device == GAME_DEVICE_LIGHTGUN_JUSTIFIER ||
-          device == GAME_DEVICE_LIGHTGUN_JUSTIFIERS)
-      {
-        try { LogError(m_pStruct->SetControllerPortDevice(port, device), "SetControllerPortDevice()"); }
-        catch (...) { LogException("SetControllerPortDevice()"); }
-      }
-    }
-  }
-}
-
 void CGameClient::CloseFile()
 {
   CSingleLock lock(m_critSection);
@@ -516,6 +494,12 @@ bool CGameClient::RunFrame()
   }
 
   return true;
+}
+
+void CGameClient::UpdatePort(unsigned int port, bool bConnected)
+{
+  try { m_pStruct->UpdatePort(port, bConnected); }
+  catch (...) { LogException("UpdatePort()"); }
 }
 
 unsigned int CGameClient::RewindFrames(unsigned int frames)

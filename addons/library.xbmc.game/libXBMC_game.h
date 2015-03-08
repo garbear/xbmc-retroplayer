@@ -98,15 +98,14 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_register_me)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_unregister_me)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_close_game)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_open_port)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_close_port)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_rotation)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_get_overscan)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_can_dupe)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_input_descriptors)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_environment_set_system_av_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_video_frame)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_audio_frames)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_input_state)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_input_get_device_capabilities)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_rumble_set_state)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_perf_get_time_usec)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_perf_get_counter)) throw false;
@@ -115,8 +114,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_perf_register)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_perf_start)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_perf_stop)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_sensor_set_state)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_sensor_get_input)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_camera_set_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_camera_start)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libXBMC_game, GAME_camera_stop)) throw false;
@@ -146,6 +143,16 @@ public:
     return GAME_close_game(m_handle, m_callbacks);
   }
 
+  bool OpenPort(unsigned int port, const char* addon_id, game_input_device_caps* device_caps)
+  {
+    return GAME_open_port(m_handle, m_callbacks, port, addon_id, device_caps);
+  }
+
+  void ClosePort(unsigned int port)
+  {
+    return GAME_close_port(m_handle, m_callbacks, port);
+  }
+
   void EnvironmentSetRotation(enum GAME_ROTATION rotation)
   {
     return GAME_environment_set_rotation(m_handle, m_callbacks, rotation);
@@ -161,11 +168,6 @@ public:
     return GAME_environment_can_dupe(m_handle, m_callbacks);
   }
 
-  void EnvironmentSetInputDescriptors(const struct game_input_descriptor* descriptor, size_t count)
-  {
-    return GAME_environment_set_input_descriptors(m_handle, m_callbacks, descriptor, count);
-  }
-
   bool EnvironmentSetSystemAvInfo(const struct game_system_av_info* info)
   {
     return GAME_environment_set_system_av_info(m_handle, m_callbacks, info);
@@ -179,16 +181,6 @@ public:
   unsigned int AudioFrames(GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data)
   {
     return GAME_audio_frames(m_handle, m_callbacks, format, frames, data);
-  }
-
-  int16_t InputState(unsigned port, unsigned device, unsigned index, unsigned id)
-  {
-    return GAME_input_state(m_handle, m_callbacks, port, device, index, id);
-  }
-
-  uint64_t InputGetDeviceCapabilities(void)
-  {
-    return GAME_input_get_device_capabilities(m_handle, m_callbacks);
   }
 
   bool RumbleSetState(unsigned port, enum GAME_RUMBLE_EFFECT effect, uint16_t strength)
@@ -229,16 +221,6 @@ public:
   void PerfStop(struct game_perf_counter *counter)
   {
     return GAME_perf_stop(m_handle, m_callbacks, counter);
-  }
-
-  bool SensorSetState(unsigned port, enum GAME_SENSOR_ACTION action, unsigned rate)
-  {
-    return GAME_sensor_set_state(m_handle, m_callbacks, port, action, rate);
-  };
-
-  float SensorGetInput(unsigned port, unsigned id)
-  {
-    return GAME_sensor_get_input(m_handle, m_callbacks, port, id);
   }
 
   void CameraSetInfo(struct game_camera_info *camera_info)
@@ -310,15 +292,14 @@ protected:
     CB_GameLib* (*GAME_register_me)(void* handle);
     void (*GAME_unregister_me)(void* handle, CB_GameLib* cb);
     void (*GAME_close_game)(void* handle, CB_GameLib* cb);
+    bool (*GAME_open_port)(void* handle, CB_GameLib* cb, unsigned int port, const char* addon_id, game_input_device_caps* device_caps);
+    void (*GAME_close_port)(void* handle, CB_GameLib* cb, unsigned int port);
     void (*GAME_environment_set_rotation)(void* handle, CB_GameLib* cb, enum GAME_ROTATION rotation);
     bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
     bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
-    void (*GAME_environment_set_input_descriptors)(void* handle, CB_GameLib* cb, const struct game_input_descriptor* descriptor, size_t count);
     bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);
     bool (*GAME_video_frame)(void* handle, CB_GameLib* cb, GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data);
     unsigned int (*GAME_audio_frames)(void* handle, CB_GameLib* cb, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data);
-    int16_t (*GAME_input_state)(void* handle, CB_GameLib* cb, unsigned port, unsigned device, unsigned index, unsigned id);
-    uint64_t (*GAME_input_get_device_capabilities)(void* handle, CB_GameLib* cb);
     bool (*GAME_rumble_set_state)(void* handle, CB_GameLib* cb, unsigned port, enum GAME_RUMBLE_EFFECT effect, uint16_t strength);
     game_time_t (*GAME_perf_get_time_usec)(void* handle, CB_GameLib* cb);
     game_perf_tick_t (*GAME_perf_get_counter)(void* handle, CB_GameLib* cb);
@@ -327,8 +308,6 @@ protected:
     void (*GAME_perf_register)(void* handle, CB_GameLib* cb, struct game_perf_counter *counter);
     void (*GAME_perf_start)(void* handle, CB_GameLib* cb, struct game_perf_counter *counter);
     void (*GAME_perf_stop)(void* handle, CB_GameLib* cb, struct game_perf_counter *counter);
-    bool (*GAME_sensor_set_state)(void* handle, CB_GameLib* cb, unsigned port, enum GAME_SENSOR_ACTION action, unsigned rate);
-    float (*GAME_sensor_get_input)(void* handle, CB_GameLib* cb, unsigned port, unsigned id);
     void (*GAME_camera_set_info)(void* handle, CB_GameLib* cb, struct game_camera_info *camera_info);
     bool (*GAME_camera_start)(void* handle, CB_GameLib* cb);
     void (*GAME_camera_stop)(void* handle, CB_GameLib* cb);
