@@ -24,15 +24,19 @@ endmacro()
 
 # Build, link and optionally package an add-on
 macro (build_addon target prefix libs)
-  ADD_LIBRARY(${target} ${${prefix}_SOURCES})
-  TARGET_LINK_LIBRARIES(${target} ${${libs}})
   addon_version(${target} ${prefix})
-  SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${${prefix}_VERSION}
-                                             SOVERSION ${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}
-                                             PREFIX "")
-  IF(OS STREQUAL "android")
-    SET_TARGET_PROPERTIES(${target} PROPERTIES PREFIX "lib")
-  ENDIF(OS STREQUAL "android")
+  if(${prefix}_SOURCES)
+    ADD_LIBRARY(${target} ${${prefix}_SOURCES})
+    TARGET_LINK_LIBRARIES(${target} ${${libs}})
+    SET_TARGET_PROPERTIES(${target} PROPERTIES VERSION ${${prefix}_VERSION}
+                                               SOVERSION ${APP_VERSION_MAJOR}.${APP_VERSION_MINOR}
+                                               PREFIX "")
+    IF(OS STREQUAL "android")
+      SET_TARGET_PROPERTIES(${target} PROPERTIES PREFIX "lib")
+    ENDIF(OS STREQUAL "android")
+  else()
+    add_custom_target(${target})
+  endif()
 
   # set zip as default if addon-package is called without PACKAGE_XXX
   SET(CPACK_GENERATOR "ZIP")
@@ -60,23 +64,51 @@ macro (build_addon target prefix libs)
       # is changed within Visual Studio)
       string(REPLACE "$(Configuration)" "${CMAKE_BUILD_TYPE}" dll_location "${dll_location}")
 
-      # install the generated DLL file
-      INSTALL(PROGRAMS ${dll_location} DESTINATION ${target}
-              COMPONENT ${target}-${${prefix}_VERSION})
-
-      IF(CMAKE_BUILD_TYPE MATCHES Debug)
-        # for debug builds also install the PDB file
-        get_filename_component(dll_directory ${dll_location} DIRECTORY)
-        INSTALL(FILES ${dll_directory}/${target}.pdb DESTINATION ${target}
+      if(${prefix}_SOURCES)
+        # install the generated DLL file
+        INSTALL(PROGRAMS ${dll_location} DESTINATION ${target}
                 COMPONENT ${target}-${${prefix}_VERSION})
-      ENDIF()
+
+        IF(CMAKE_BUILD_TYPE MATCHES Debug)
+          # for debug builds also install the PDB file
+          get_filename_component(dll_directory ${dll_location} DIRECTORY)
+          INSTALL(FILES ${dll_directory}/${target}.pdb DESTINATION ${target}
+                  COMPONENT ${target}-${${prefix}_VERSION})
+        ENDIF()
+      endif()
+      if (${prefix}_CUSTOM_BINARY)
+        list(GET ${prefix}_CUSTOM_BINARY 0 FROM_BINARY)
+        list(GET ${prefix}_CUSTOM_BINARY 1 TO_BINARY)
+        install(FILES ${FROM_BINARY} DESTINATION ${target}/${TO_BINARY})
+      endif()
     ELSE(WIN32)
-      INSTALL(TARGETS ${target} DESTINATION ${target}
-              COMPONENT ${target}-${${prefix}_VERSION})
+      if(${prefix}_SOURCES)
+        INSTALL(TARGETS ${target} DESTINATION ${target}
+                COMPONENT ${target}-${${prefix}_VERSION})
+      endif()
+      if (${prefix}_CUSTOM_BINARY)
+        list(GET ${prefix}_CUSTOM_BINARY 0 FROM_BINARY)
+        list(GET ${prefix}_CUSTOM_BINARY 1 TO_BINARY)
+        if(OS STREQUAL "android")
+          set(TO_BINARY "lib${TO_BINARY}")
+        endif()
+        install(FILES ${FROM_BINARY} DESTINATION ${target}/${TO_BINARY}
+                COMPONENT ${target}-${${prefix}_VERSION})
+      endif()
     ENDIF(WIN32)
     add_cpack_workaround(${target} ${${prefix}_VERSION} ${ext})
   ELSE(PACKAGE_ZIP OR PACKAGE_TGZ)
-    INSTALL(TARGETS ${target} DESTINATION lib/kodi/addons/${target})
+    if(${prefix}_SOURCES)
+      INSTALL(TARGETS ${target} DESTINATION lib/kodi/addons/${target})
+    endif()
+    if (${prefix}_CUSTOM_BINARY)
+      list(GET ${prefix}_CUSTOM_BINARY 0 FROM_BINARY)
+      list(GET ${prefix}_CUSTOM_BINARY 1 TO_BINARY)
+      if(OS STREQUAL "android")
+        set(TO_BINARY "lib${TO_BINARY}")
+      endif()
+      install(FILES ${FROM_BINARY} DESTINATION lib/kodi/addons/${target} RENAME ${TO_BINARY})
+    endif()
     INSTALL(DIRECTORY ${target} DESTINATION share/kodi/addons)
   ENDIF(PACKAGE_ZIP OR PACKAGE_TGZ)
 endmacro()
