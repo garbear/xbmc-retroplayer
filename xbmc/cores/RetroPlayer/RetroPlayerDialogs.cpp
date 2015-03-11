@@ -39,12 +39,11 @@
 
 using namespace ADDON;
 using namespace GAME;
-using namespace std;
 
 bool CRetroPlayerDialogs::GetGameClient(const CFileItem &file, GameClientPtr &result)
 {
   // See how many game clients contend for this file
-  vector<string> candidates;
+  std::vector<std::string> candidates;
   CGameManager::Get().GetGameClientIDs(file, candidates);
 
   if (candidates.empty())
@@ -126,7 +125,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
   VECADDONS addons;
   CGameManager::GetAllGameClients(addons);
 
-  map<string, GameClientPtr> candidates;
+  std::map<std::string, GameClientPtr> candidates;
   for (VECADDONS::const_iterator itRemote = addons.begin(); itRemote != addons.end(); ++itRemote)
   {
     if (!(*itRemote)->IsType(ADDON_GAMEDLL))
@@ -153,7 +152,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
     if (bEnabled && bBroken)
       continue;
 
-    string strName = gc->Name();
+    std::string strName = gc->Name();
 
     // Append "(Disabled)" to the name if the add-on is disabled
     if (!bEnabled)
@@ -178,10 +177,10 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
   unsigned int i = 0;
 
   // Vector to translate button IDs to game client pointers
-  vector<string> choicesStr;
-  for (map<string, GameClientPtr>::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
+  std::vector<std::string> choicesStr;
+  for (std::map<std::string, GameClientPtr>::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
   {
-    const string& strName = it->first;
+    const std::string& strName = it->first;
     choicesInt.Add(i++, strName);
     choicesStr.push_back(strName);
   }
@@ -193,7 +192,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
     return false;
   }
 
-  map<string, GameClientPtr>::iterator it = candidates.find(choicesStr[btnid]);
+  std::map<std::string, GameClientPtr>::iterator it = candidates.find(choicesStr[btnid]);
   if (it == candidates.end())
     return false; // Shouldn't happen
 
@@ -242,7 +241,7 @@ bool CRetroPlayerDialogs::InstallGameClientDialog(const CFileItem &file, GameCli
   return true;
 }
 
-bool CRetroPlayerDialogs::InstallGameClient(const string &strId, const CFileItem &file, GameClientPtr &result)
+bool CRetroPlayerDialogs::InstallGameClient(const std::string &strId, const CFileItem &file, GameClientPtr &result)
 {
   // First, make sure the game client isn't installed
   CLog::Log(LOGDEBUG, "RetroPlayer: Trying to install game client %s", strId.c_str());
@@ -274,13 +273,13 @@ bool CRetroPlayerDialogs::InstallGameClient(const string &strId, const CFileItem
   return false;
 }
 
-bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds, const CFileItem &file, GameClientPtr &result)
+bool CRetroPlayerDialogs::ChooseGameClientDialog(const std::vector<std::string> &clientIds, const CFileItem &file, GameClientPtr &result)
 {
   CLog::Log(LOGDEBUG, "RetroPlayer: Multiple clients found: %s", StringUtils::Join(clientIds, ", ").c_str());
 
   // Turn ID strings into game client pointers (std::map enables sorting by name)
-  map<string, GameClientPtr> clients;
-  for (vector<string>::const_iterator it = clientIds.begin(); it != clientIds.end(); ++it)
+  std::map<std::string, GameClientPtr> clients;
+  for (std::vector<std::string>::const_iterator it = clientIds.begin(); it != clientIds.end(); ++it)
   {
     AddonPtr addon;
     GameClientPtr gc;
@@ -289,7 +288,7 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
       gc = std::dynamic_pointer_cast<CGameClient>(addon);
       if (gc)
       {
-        string strName = gc->Name();
+        std::string strName = gc->Name();
         // Make lower case for sorting purposes
         StringUtils::ToLower(strName);
         clients[strName] = gc;
@@ -302,12 +301,12 @@ bool CRetroPlayerDialogs::ChooseGameClientDialog(const vector<string> &clientIds
   CContextButtons choicesInt;
   unsigned int i = 0;
 
-  vector<string> choicesStr;
+  std::vector<std::string> choicesStr;
   choicesStr.reserve(clients.size());
 
-  for (map<string, GameClientPtr>::const_iterator it = clients.begin(); it != clients.end(); ++it)
+  for (std::map<std::string, GameClientPtr>::const_iterator it = clients.begin(); it != clients.end(); ++it)
   {
-    string strName = it->second->Name();
+    std::string strName = it->second->Name();
     choicesInt.Add(i++, strName);
     // Remember, our map keys are lower case
     StringUtils::ToLower(strName);
