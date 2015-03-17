@@ -60,12 +60,12 @@
  */
 
 #include "GameClientProperties.h"
-#include "GameTypes.h"
-#include "SerialState.h"
-//#include "tags/GameInfoTagLoader.h"
 #include "addons/Addon.h"
 #include "addons/AddonDll.h"
 #include "addons/DllGameClient.h"
+#include "games/GameTypes.h"
+#include "games/SerialState.h"
+//#include "games/tags/GameInfoTagLoader.h"
 #include "threads/CriticalSection.h"
 
 #include <set>

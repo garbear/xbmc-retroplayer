@@ -19,12 +19,12 @@
  */
 
 #include "GameClient.h"
-#include "GameManager.h"
 #include "addons/AddonManager.h"
 #include "cores/IPlayer.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
+#include "games/GameManager.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"

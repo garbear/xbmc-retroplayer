@@ -50,6 +50,7 @@ DIRECTORY_ARCHIVES=$(DVDPLAYER_ARCHIVES) \
                    xbmc/filesystem/MusicDatabaseDirectory/musicdatabasedirectory.a \
                    xbmc/filesystem/VideoDatabaseDirectory/videodatabasedirectory.a \
                    xbmc/filesystem/filesystem.a \
+                   xbmc/games/addons/gameaddons.a \
                    xbmc/games/games.a \
                    xbmc/games/tags/gameinfotags.a \
                    xbmc/games/windows/gamewindows.a \

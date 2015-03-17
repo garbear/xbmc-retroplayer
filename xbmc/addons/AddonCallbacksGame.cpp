@@ -20,7 +20,7 @@
 
 #include "AddonCallbacksGame.h"
 #include "cores/RetroPlayer/RetroPlayer.h"
-#include "games/GameClient.h"
+#include "games/addons/GameClient.h"
 #include "threads/SystemClock.h"
 #include "utils/log.h"
 

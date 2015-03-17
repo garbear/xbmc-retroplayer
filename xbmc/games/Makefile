@@ -1,6 +1,4 @@
 SRCS=ControllerLayout.cpp \
-     GameClient.cpp \
-     GameClientProperties.cpp \
      GameFileAutoLauncher.cpp \
      GameManager.cpp \
      GameSettings.cpp \

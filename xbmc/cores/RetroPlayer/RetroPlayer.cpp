@@ -24,7 +24,7 @@
 #include "cores/RetroPlayer/RetroPlayerDialogs.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "dialogs/GUIDialogOK.h"
-#include "games/GameClient.h"
+#include "games/addons/GameClient.h"
 #include "games/tags/GameInfoTag.h"
 #include "input/Key.h"
 #include "settings/Settings.h"

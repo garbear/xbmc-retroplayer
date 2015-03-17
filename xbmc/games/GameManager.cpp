@@ -19,12 +19,12 @@
  */
 
 #include "GameManager.h"
-#include "GameClient.h"
 #include "addons/AddonDatabase.h"
 #include "addons/AddonInstaller.h"
 #include "Application.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/Directory.h"
+#include "games/addons/GameClient.h"
 #include "profiles/ProfilesManager.h"
 #include "threads/SingleLock.h"
 #include "URL.h"

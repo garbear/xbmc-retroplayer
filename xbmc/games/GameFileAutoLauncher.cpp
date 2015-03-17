@@ -19,10 +19,10 @@
  */
 
 #include "GameFileAutoLauncher.h"
-#include "GameClient.h"
-#include "tags/GameInfoTag.h"
 #include "Application.h"
 #include "dialogs/GUIDialogYesNo.h"
+#include "games/addons/GameClient.h"
+#include "games/tags/GameInfoTag.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
 #include "threads/SingleLock.h"

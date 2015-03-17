@@ -40,7 +40,7 @@
 #include "DllPVRClient.h"
 #include "pvr/addons/PVRClient.h"
 #endif
-#include "games/GameClient.h"
+#include "games/addons/GameClient.h"
 #include "games/GameManager.h"
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
