@@ -41,30 +41,6 @@ using namespace XFILE;
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
 
-// --- HasLocalParentZip() -----------------------------------------------------
-
-bool HasLocalParentZip(const std::string& path, std::string& strParentZip)
-{
-  // Can't use parent zip if path isn't a child file of a zip folder
-  if (!URIUtils::IsInZIP(path))
-    return false;
-
-  // Make sure we're in the root folder of the zip (no parent folder)
-  CURL parentURL(URIUtils::GetParentPath(path));
-  if (!parentURL.GetFileName().empty())
-    return false;
-
-  // Make sure the container zip is on the local hard disk
-  std::string parentZip = parentURL.GetHostName();
-  if (!CURL(parentZip).GetProtocol().empty())
-    return false;
-
-  strParentZip = parentZip;
-  return true;
-}
-
-// --- CGameClient -------------------------------------------------------------
-
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
     m_apiVersion("0.0.0"),
@@ -199,43 +175,11 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   std::string strExtension = URIUtils::GetExtension(file.GetPath());
   StringUtils::ToLower(strExtension);
   if (!IsExtensionValid(strExtension))
-  {
-    // If the extension is .zip, try looking inside for files with valid extensions
-    if (strExtension == ".zip" && SupportsVFS())
-    {
-      // Enumerate the zip and look for a file inside the zip with a valid extension
-      std::string strZipUrl;
-
-      const CURL pathToUrl(translatedUrl.Get());
-      CURL url(URIUtils::CreateArchivePath("zip", pathToUrl, "", ""));
-      strZipUrl = url.Get();
-
-      std::string strValidExts;
-      for (std::set<std::string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
-        strValidExts += *it + "|";
-
-      CFileItemList itemList;
-      if (CDirectory::GetDirectory(strZipUrl, itemList, strValidExts, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO) && itemList.Size())
-      {
-        // Return true if any files matches the directory's extension filter
-        return itemList.Size() > 0;
-      }
-    }
     return false;
-  }
 
-  // If the client supports VFS, it can load all URIs
-  if (SupportsVFS())
-    return true;
-
-  // If file is on the VFS, check if it is in the top-level directory of a local zip
-  if (!translatedUrl.GetProtocol().empty())
-  {
-    std::string strParentZip;
-    if (IsExtensionValid(".zip") && HasLocalParentZip(translatedUrl.Get(), strParentZip))
-      return true;
+  // If the file is on the VFS, the game client must support VFS
+  if (!translatedUrl.GetProtocol().empty() && !SupportsVFS())
     return false;
-  }
 
   return true;
 }
@@ -269,37 +213,6 @@ bool CGameClient::OpenInternal(const CFileItem& file)
     translatedUrl.SetProtocol("");
 
   std::string strTranslatedUrl = translatedUrl.Get();
-
-  // If the game client doesn't support VFS, we'll need a backup plan
-  if (!SupportsVFS() && !translatedUrl.GetProtocol().empty())
-  {
-    // Maybe the file is in a local zip, and the game client supports zips
-    std::string strParentZip;
-    if (IsExtensionValid(".zip") && HasLocalParentZip(translatedUrl.Get(), strParentZip))
-      strTranslatedUrl = strParentZip;
-  }
-
-  // If the game client doesn't support zips, we can try to load the file via the zip:// VFS protocol
-  if (SupportsVFS() && StringUtils::EqualsNoCase(URIUtils::GetExtension(strTranslatedUrl), ".zip") && !IsExtensionValid(".zip"))
-  {
-    // Enumerate the zip and look for a file inside the zip with a valid extension
-    std::string strZipUrl;
-
-    const CURL pathToUrl(translatedUrl.Get());
-    CURL url(URIUtils::CreateArchivePath("zip", pathToUrl, "", ""));
-    strZipUrl = url.Get();
-
-    std::string strValidExts;
-    for (std::set<std::string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
-      strValidExts += *it + "|";
-
-    CFileItemList itemList;
-    if (CDirectory::GetDirectory(strZipUrl, itemList, strValidExts, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO) && itemList.Size())
-    {
-      // Use the first file discovered
-      strTranslatedUrl = itemList[0]->GetPath();
-    }
-  }
 
   GAME_ERROR error = GAME_ERROR_FAILED;
   try { LogError(error = m_pStruct->LoadGame(strTranslatedUrl.c_str()), "LoadGame()"); }
