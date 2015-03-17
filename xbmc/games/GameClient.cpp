@@ -41,11 +41,6 @@ using namespace XFILE;
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
 
-#ifdef TARGET_WINDOWS
-  #pragma warning (push)
-  #pragma warning (disable : 4355) // "this" : used in base member initializer list
-#endif
-
 // --- HasLocalParentZip() -----------------------------------------------------
 
 bool HasLocalParentZip(const std::string& path, std::string& strParentZip)
@@ -600,7 +595,3 @@ const char* CGameClient::ToString(GAME_ERROR error)
       return "unknown error";
   }
 }
-
-#ifdef TARGET_WINDOWS
-  #pragma warning (pop)
-#endif
