@@ -24,10 +24,10 @@
 #include "settings/lib/Setting.h"
 
 #include <string>
+#include <vector>
 
 using namespace GAME;
 
-/* static */
 CGameSettings& CGameSettings::Get()
 {
   static CGameSettings gameSettingsInstance;

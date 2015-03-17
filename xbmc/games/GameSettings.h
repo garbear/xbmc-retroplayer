@@ -35,10 +35,8 @@ public:
   // Inherited from ISettingCallback
   virtual void OnSettingAction(const CSetting* setting);
 
-private: // non-copyable
+private:
   CGameSettings() { }
-  CGameSettings(const CGameSettings&);
-  CGameSettings& operator=(const CGameSettings&);
 };
 
 } // namespace GAME
