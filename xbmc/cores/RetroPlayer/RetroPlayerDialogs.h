@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "games/GameClient.h"
+#include "games/GameTypes.h"
 
 #include <string>
 #include <vector>

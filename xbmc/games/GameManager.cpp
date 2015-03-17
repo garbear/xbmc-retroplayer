@@ -19,6 +19,7 @@
  */
 
 #include "GameManager.h"
+#include "GameClient.h"
 #include "addons/AddonDatabase.h"
 #include "addons/AddonInstaller.h"
 #include "Application.h"

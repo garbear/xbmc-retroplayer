@@ -23,7 +23,7 @@
 #include "RetroPlayerVideo.h"
 #include "cores/IPlayer.h"
 #include "FileItem.h"
-#include "games/GameClient.h"
+#include "games/GameTypes.h"
 #include "threads/Thread.h"
 #include "threads/Event.h"
 

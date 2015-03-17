@@ -29,4 +29,8 @@ class CControllerLayout;
 typedef std::shared_ptr<CControllerLayout> ControllerLayoutPtr;
 typedef std::vector<ControllerLayoutPtr>   ControllerLayoutVector;
 
+class CGameClient;
+typedef std::shared_ptr<CGameClient> GameClientPtr;
+typedef std::vector<GameClientPtr>   GameClientVector;
+
 }

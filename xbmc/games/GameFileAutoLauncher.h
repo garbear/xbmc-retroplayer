@@ -20,7 +20,7 @@
 #pragma once
 
 #include "FileItem.h"
-#include "GameClient.h"
+#include "GameTypes.h"
 #include "threads/CriticalSection.h"
 #include "threads/SystemClock.h"
 #include "threads/Thread.h"

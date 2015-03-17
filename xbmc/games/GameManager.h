@@ -19,8 +19,9 @@
  */
 #pragma once
 
-#include "GameClient.h"
 #include "GameFileAutoLauncher.h"
+#include "GameTypes.h"
+#include "addons/Addon.h"
 #include "FileItem.h"
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"

@@ -19,6 +19,7 @@
  */
 
 #include "GameFileAutoLauncher.h"
+#include "GameClient.h"
 #include "tags/GameInfoTag.h"
 #include "Application.h"
 #include "dialogs/GUIDialogYesNo.h"

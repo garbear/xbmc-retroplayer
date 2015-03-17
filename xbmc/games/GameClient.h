@@ -60,6 +60,7 @@
  */
 
 #include "GameClientProperties.h"
+#include "GameTypes.h"
 #include "SerialState.h"
 //#include "tags/GameInfoTagLoader.h"
 #include "addons/Addon.h"
@@ -67,10 +68,8 @@
 #include "addons/DllGameClient.h"
 #include "threads/CriticalSection.h"
 
-#include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #define LIBRETRO_WRAPPER_LIBRARY   "game.libretro"
 
@@ -79,10 +78,6 @@ class IPlayer;
 
 namespace GAME
 {
-
-class CGameClient;
-typedef std::shared_ptr<CGameClient> GameClientPtr;
-typedef std::vector<GameClientPtr>   GameClientVector;
 
 class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
 {
