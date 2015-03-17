@@ -65,7 +65,6 @@
 #include "addons/Addon.h"
 #include "addons/AddonDll.h"
 #include "addons/DllGameClient.h"
-#include "addons/include/xbmc_addon_types.h"
 #include "threads/CriticalSection.h"
 
 #include <memory>
@@ -94,12 +93,6 @@ public:
 
   virtual ADDON::AddonPtr GetRunningInstance() const;
 
-  // Initialise the instance of this add-on
-  ADDON_STATUS Create();
-
-  // Destroy the instance of this add-on
-  void Destroy(void);
-
   virtual void OnEnabled();
   virtual void OnDisabled();
 
@@ -109,9 +102,6 @@ public:
   // Override LibPath() to return a helper library for v1 clients
   // TODO: Don't make this function virtual, find another way
   virtual const std::string LibPath() const;
-
-  // Return true if this instance is initialised, false otherwise
-  bool ReadyToUse(void) const { return m_bReadyToUse; }
 
   // Query properties of the game client
   const std::set<std::string>& GetExtensions() const    { return m_extensions; }
@@ -197,7 +187,6 @@ private:
   ADDON::AddonVersion   m_apiVersion;
   CGameClientProperties m_libraryProps;        // Properties to pass to the DLL
   const std::string     m_strGameClientPath;   // Path to the game client library
-  bool                  m_bReadyToUse;         // True if this add-on is connected to the backend, false otherwise */
 
   // Game API xml parameters
   std::set<std::string> m_extensions;

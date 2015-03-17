@@ -109,7 +109,6 @@ CGameClient::CGameClient(const cp_extension_t* ext)
 
 void CGameClient::InitializeProperties(void)
 {
-  m_bReadyToUse = false;
   m_bIsPlaying = false;
   m_player = NULL;
   m_region = GAME_REGION_NTSC;
@@ -123,7 +122,9 @@ void CGameClient::InitializeProperties(void)
 
 CGameClient::~CGameClient(void)
 {
-  Destroy();
+  if (m_bIsPlaying && m_player)
+    m_player->CloseFile();
+
   SAFE_DELETE(m_pInfo);
 }
 
@@ -134,49 +135,6 @@ AddonPtr CGameClient::GetRunningInstance() const
     return std::dynamic_pointer_cast<CAddon>(gameAddon);
 
   return CAddon::GetRunningInstance();
-}
-
-ADDON_STATUS CGameClient::Create(void)
-{
-  ADDON_STATUS status = ADDON_STATUS_UNKNOWN;
-
-  // Ensure that a previous instance is destroyed
-  Destroy();
-
-  // Initialise the add-on
-  bool bReadyToUse = false;
-  CLog::Log(LOGDEBUG, "GAME - %s - creating game add-on instance '%s'", __FUNCTION__, Name().c_str());
-  try
-  {
-    status = CAddonDll<DllGameClient, GameClient, game_client_properties>::Create();
-    if (status == ADDON_STATUS_OK)
-    {
-      bReadyToUse = true;
-      LogAddonProperties();
-    }
-  }
-  catch (...) { LogException(__FUNCTION__); }
-
-  m_bReadyToUse = bReadyToUse;
-
-  return status;
-}
-
-void CGameClient::Destroy(void)
-{
-  if (m_bIsPlaying && m_player)
-    m_player->CloseFile();
-
-  // Reset 'ready to use' to false
-  if (!m_bReadyToUse)
-    return;
-  m_bReadyToUse = false;
-
-  CLog::Log(LOGDEBUG, "GAME: %s - destroying game add-on %s", __FUNCTION__, ID().c_str());
-
-  // Destroy the add-on
-  try { CAddonDll<DllGameClient, GameClient, game_client_properties>::Destroy(); }
-  catch (...) { LogException(__FUNCTION__); }
 }
 
 void CGameClient::OnEnabled()
@@ -301,7 +259,7 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 {
   CSingleLock lock(m_critSection);
 
-  if (!ReadyToUse() || !CanOpen(file))
+  if (!Initialized() || !CanOpen(file))
     return false;
 
   CloseFile();
@@ -452,7 +410,7 @@ void CGameClient::CloseFile()
 {
   CSingleLock lock(m_critSection);
 
-  if (m_bReadyToUse && m_bIsPlaying)
+  if (Initialized() && m_bIsPlaying)
   {
     try { LogError(m_pStruct->UnloadGame(), "UnloadGame()"); }
     catch (...) { LogException("UnloadGame()"); }
