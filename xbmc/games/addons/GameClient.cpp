@@ -386,6 +386,73 @@ void CGameClient::UpdatePort(unsigned int port, bool bConnected)
   catch (...) { LogException("UpdatePort()"); }
 }
 
+bool CGameClient::OnButtonPress(JoystickFeatureID id, bool bPressed)
+{
+  const unsigned int port = 0; // TODO
+
+  game_input_event event = { };
+
+  event.type = GAME_INPUT_EVENT_DIGITAL_BUTTON;
+  event.source_index = id;
+  event.digital_button.pressed = bPressed;
+
+  try { m_pStruct->InputEvent(port, &event); }
+  catch (...) { LogException("InputEvent()"); }
+
+  return true;
+}
+
+bool CGameClient::OnButtonMotion(JoystickFeatureID id, float magnitude)
+{
+  const unsigned int port = 0; // TODO
+
+  game_input_event event = { };
+
+  event.type = GAME_INPUT_EVENT_ANALOG_BUTTON;
+  event.source_index = id;
+  event.analog_button.magnitude = magnitude;
+
+  try { m_pStruct->InputEvent(port, &event); }
+  catch (...) { LogException("InputEvent()"); }
+
+  return true;
+}
+
+bool CGameClient::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+{
+  const unsigned int port = 0; // TODO
+
+  game_input_event event = { };
+
+  event.type = GAME_INPUT_EVENT_ANALOG_STICK;
+  event.source_index = id;
+  event.analog_stick.x = x;
+  event.analog_stick.y = y;
+
+  try { m_pStruct->InputEvent(port, &event); }
+  catch (...) { LogException("InputEvent()"); }
+
+  return true;
+}
+
+bool CGameClient::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+{
+  const unsigned int port = 0; // TODO
+
+  game_input_event event = { };
+
+  event.type = GAME_INPUT_EVENT_ACCELEROMETER;
+  event.source_index = id;
+  event.accelerometer.x = x;
+  event.accelerometer.y = y;
+  event.accelerometer.z = z;
+
+  try { m_pStruct->InputEvent(port, &event); }
+  catch (...) { LogException("InputEvent()"); }
+
+  return true;
+}
+
 void CGameClient::SetFrameRateCorrection(double correctionFactor)
 {
   if (correctionFactor != 0.0)

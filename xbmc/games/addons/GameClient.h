@@ -65,6 +65,7 @@
 #include "addons/DllGameClient.h"
 #include "games/GameTypes.h"
 #include "games/SerialState.h"
+#include "input/joysticks/IJoystickFeatureHandler.h"
 //#include "games/tags/GameInfoTagLoader.h"
 #include "threads/CriticalSection.h"
 
@@ -79,7 +80,8 @@ class IPlayer;
 namespace GAME
 {
 
-class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
+class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>,
+                    public IJoystickFeatureHandler
 {
 public:
   CGameClient(const ADDON::AddonProps& props);
@@ -132,6 +134,12 @@ public:
   size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
   size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
   void UpdatePort(unsigned int port, bool bConnected);
+
+  // Implementation of IJoystickFeatureHandler
+  virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
+  virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
+  virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
+  virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z);
 
 private:
   // Called by the constructors
