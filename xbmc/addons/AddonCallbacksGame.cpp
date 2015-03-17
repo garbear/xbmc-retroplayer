@@ -128,12 +128,30 @@ void CAddonCallbacksGame::CloseGame(void* addonData)
 
 bool CAddonCallbacksGame::OpenPort(void* addonData, unsigned int port, const char* addon_id, game_input_device_caps* device_caps)
 {
-  return false; // TODO
+  CGameClient* gameClient = GetGameClient(addonData, __FUNCTION__);
+  if (!gameClient || !addon_id)
+    return false;
+
+  if (gameClient->OpenPort(port, addon_id))
+  {
+    if (device_caps)
+    {
+      memset(device_caps, 0, sizeof(*device_caps));
+      device_caps->digital_button_count = 8; // TODO
+    }
+    return true;
+  }
+
+  return false;
 }
 
 void CAddonCallbacksGame::ClosePort(void* addonData, unsigned int port)
 {
-  // TODO
+  CGameClient* gameClient = GetGameClient(addonData, __FUNCTION__);
+  if (!gameClient)
+    return;
+
+  gameClient->ClosePort(port);
 }
 
 void CAddonCallbacksGame::EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation)

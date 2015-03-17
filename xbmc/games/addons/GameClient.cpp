@@ -24,6 +24,7 @@
 #include "FileItem.h"
 #include "filesystem/SpecialProtocol.h"
 #include "games/GameManager.h"
+#include "input/PortManager.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
@@ -32,6 +33,7 @@
 #include "utils/URIUtils.h"
 
 #include <algorithm>
+#include <assert.h>
 
 using namespace ADDON;
 using namespace GAME;
@@ -58,6 +60,34 @@ struct NormalizeExtension
     return ext;
   }
 };
+
+// --- CGameController ---------------------------------------------------------
+
+CGameController::CGameController(CGameClient* addon, int port)
+  : m_addon(addon), m_port(port)
+{
+  assert(m_addon);
+}
+
+bool CGameController::OnButtonPress(JoystickFeatureID id, bool bPressed)
+{
+  return m_addon->OnButtonPress(m_port, id, bPressed);
+}
+
+bool CGameController::OnButtonMotion(JoystickFeatureID id, float magnitude)
+{
+  return m_addon->OnButtonMotion(m_port, id, magnitude);
+}
+
+bool CGameController::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+{
+  return m_addon->OnAnalogStickMotion(m_port, id, x, y);
+}
+
+bool CGameController::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+{
+  return m_addon->OnAccelerometerMotion(m_port, id, x, y, z);
+}
 
 // --- CGameClient -------------------------------------------------------------
 
@@ -406,19 +436,44 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
   return rewound;
 }
 
-void CGameClient::UpdatePort(unsigned int port, bool bConnected)
+bool CGameClient::OpenPort(int port, const std::string& strDeviceId)
+{
+  std::map<int, CGameController*>::const_iterator it = m_controllers.find(port);
+  if (it == m_controllers.end())
+  {
+    CGameController* controller = new CGameController(this, port);
+    CPortManager::Get().OpenPort(controller, strDeviceId);
+    m_controllers[port] = controller;
+
+    return true;
+  }
+
+  return false;
+}
+
+void CGameClient::ClosePort(int port)
+{
+  std::map<int, CGameController*>::const_iterator it = m_controllers.find(port);
+  if (it != m_controllers.end())
+  {
+    CPortManager::Get().ClosePort(it->second);
+    delete it->second;
+    m_controllers.erase(it);
+  }
+}
+
+void CGameClient::UpdatePort(int port, bool bConnected)
 {
   try { m_pStruct->UpdatePort(port, bConnected); }
   catch (...) { LogException("UpdatePort()"); }
 }
 
-bool CGameClient::OnButtonPress(JoystickFeatureID id, bool bPressed)
+bool CGameClient::OnButtonPress(int port, JoystickFeatureID id, bool bPressed)
 {
-  const unsigned int port = 0; // TODO
-
-  game_input_event event = { };
+  game_input_event event;
 
   event.type = GAME_INPUT_EVENT_DIGITAL_BUTTON;
+  event.port = port;
   event.source_index = id;
   event.digital_button.pressed = bPressed;
 
@@ -428,13 +483,12 @@ bool CGameClient::OnButtonPress(JoystickFeatureID id, bool bPressed)
   return true;
 }
 
-bool CGameClient::OnButtonMotion(JoystickFeatureID id, float magnitude)
+bool CGameClient::OnButtonMotion(int port, JoystickFeatureID id, float magnitude)
 {
-  const unsigned int port = 0; // TODO
-
-  game_input_event event = { };
+  game_input_event event;
 
   event.type = GAME_INPUT_EVENT_ANALOG_BUTTON;
+  event.port = port;
   event.source_index = id;
   event.analog_button.magnitude = magnitude;
 
@@ -444,13 +498,12 @@ bool CGameClient::OnButtonMotion(JoystickFeatureID id, float magnitude)
   return true;
 }
 
-bool CGameClient::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+bool CGameClient::OnAnalogStickMotion(int port, JoystickFeatureID id, float x, float y)
 {
-  const unsigned int port = 0; // TODO
-
-  game_input_event event = { };
+  game_input_event event;
 
   event.type = GAME_INPUT_EVENT_ANALOG_STICK;
+  event.port = port;
   event.source_index = id;
   event.analog_stick.x = x;
   event.analog_stick.y = y;
@@ -461,13 +514,12 @@ bool CGameClient::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
   return true;
 }
 
-bool CGameClient::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+bool CGameClient::OnAccelerometerMotion(int port, JoystickFeatureID id, float x, float y, float z)
 {
-  const unsigned int port = 0; // TODO
-
-  game_input_event event = { };
+  game_input_event event;
 
   event.type = GAME_INPUT_EVENT_ACCELEROMETER;
+  event.port = port;
   event.source_index = id;
   event.accelerometer.x = x;
   event.accelerometer.y = y;

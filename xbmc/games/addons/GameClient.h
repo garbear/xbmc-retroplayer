@@ -69,6 +69,7 @@
 //#include "games/tags/GameInfoTagLoader.h"
 #include "threads/CriticalSection.h"
 
+#include <map>
 #include <set>
 #include <string>
 
@@ -80,8 +81,25 @@ class IPlayer;
 namespace GAME
 {
 
-class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>,
-                    public IJoystickFeatureHandler
+class CGameClient;
+
+class CGameController : public IJoystickFeatureHandler
+{
+public:
+  CGameController(CGameClient* addon, int port);
+
+  // Implementation of IJoystickFeatureHandler
+  virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
+  virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
+  virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
+  virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z);
+
+private:
+  CGameClient* const m_addon;
+  const int          m_port;
+};
+
+class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
 {
 public:
   CGameClient(const ADDON::AddonProps& props);
@@ -133,13 +151,15 @@ public:
   unsigned int RewindFrames(unsigned int frames); // Returns number of frames rewound
   size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
   size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
-  void UpdatePort(unsigned int port, bool bConnected);
 
-  // Implementation of IJoystickFeatureHandler
-  virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
-  virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
-  virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
-  virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z);
+  bool OpenPort(int port, const std::string& strDeviceId);
+  void ClosePort(int port);
+  void UpdatePort(int port, bool bConnected);
+
+  bool OnButtonPress(int port, JoystickFeatureID id, bool bPressed);
+  bool OnButtonMotion(int port, JoystickFeatureID id, float magnitude);
+  bool OnAnalogStickMotion(int port, JoystickFeatureID id, float x, float y);
+  bool OnAccelerometerMotion(int port, JoystickFeatureID id, float x, float y, float z);
 
 private:
   // Called by the constructors
@@ -180,6 +200,9 @@ private:
   unsigned int          m_serializeSize;
   bool                  m_bRewindEnabled;
   CSerialState          m_serialState;
+
+  // Input
+  std::map<int, CGameController*>  m_controllers; // port -> controller
 
   CCriticalSection      m_critSection;
 };

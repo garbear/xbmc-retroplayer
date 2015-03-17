@@ -252,6 +252,7 @@ typedef struct game_input_device_caps
 typedef struct game_input_event
 {
   GAME_INPUT_EVENT_SOURCE type;
+  int                     port;
   unsigned int            source_index;
   union
   {

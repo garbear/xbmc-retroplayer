@@ -33,6 +33,7 @@ using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
   CPeripheral(scanResult),
+  m_requestedPort(JOYSTICK_PORT_UNKNOWN),
   m_featureHandler(),
   m_buttonMap(NULL),
   m_inputHandler(NULL)
@@ -62,6 +63,8 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
         unsigned int index;
         if (addonBus->SplitLocation(m_strLocation, addon, index))
         {
+          m_requestedPort = addon->GetRequestedPort(index);
+
           m_buttonMap = new CAddonJoystickButtonMap(addon, index);
           if (m_buttonMap->Load())
             m_inputHandler = new CGenericJoystickInputHandler(this, m_buttonMap);

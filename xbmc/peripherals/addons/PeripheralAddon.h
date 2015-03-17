@@ -83,6 +83,7 @@ namespace PERIPHERALS
     /** @name Joystick methods */
     //@{
     bool GetJoystickFeatures(unsigned int index, JoystickFeatureMap& features);
+    int  GetRequestedPort(unsigned int index);
     //@}
 
     static const char          *ToString(PERIPHERAL_ERROR error);

@@ -25,6 +25,8 @@
 
 #include <string>
 
+#define JOYSTICK_PORT_UNKNOWN  0
+
 class IJoystickInputHandler;
 class IJoystickButtonMap;
 
@@ -46,12 +48,15 @@ namespace PERIPHERALS
     virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
     virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z);
 
+    int RequestedPort(void) const { return m_requestedPort; }
+
     IJoystickInputHandler* GetInputHandler(void) { return m_inputHandler; }
 
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName)    { m_strDeviceName = strName; } // Override value in peripherals.xml
 
   protected:
+    int                            m_requestedPort;
     CGenericJoystickFeatureHandler m_featureHandler;
     IJoystickButtonMap*            m_buttonMap;
     IJoystickInputHandler*         m_inputHandler;

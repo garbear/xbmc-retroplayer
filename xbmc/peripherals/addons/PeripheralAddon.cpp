@@ -465,7 +465,6 @@ bool CPeripheralAddon::GetJoystickFeatures(unsigned int index, JoystickFeatureMa
 
     for (std::vector<ADDON::JoystickFeature*>::const_iterator it = joystick.Features().begin(); it != joystick.Features().end(); ++it)
     {
-      // Skip invalid features
       if (*it && ToJoystickID((*it)->ID()) && (*it)->Type())
         features[ToJoystickID((*it)->ID())] = JoystickFeaturePtr((*it)->Clone());
     }
@@ -477,6 +476,28 @@ bool CPeripheralAddon::GetJoystickFeatures(unsigned int index, JoystickFeatureMa
   }
 
   return false;
+}
+
+int CPeripheralAddon::GetRequestedPort(unsigned int index)
+{
+  int requestedPort = JOYSTICK_PORT_UNKNOWN;
+
+  PERIPHERAL_ERROR retVal;
+
+  JOYSTICK_INFO joystickStruct;
+
+  try { LogError(retVal = m_pStruct->GetJoystickInfo(index, &joystickStruct), "GetJoystickInfo()"); }
+  catch (std::exception &e) { LogException(e, "GetJoystickInfo()"); return false;  }
+
+  if (retVal == PERIPHERAL_NO_ERROR)
+  {
+    requestedPort = joystickStruct.requested_port_num;
+
+    try { m_pStruct->FreeJoystickInfo(&joystickStruct); }
+    catch (std::exception &e) { LogException(e, "FreeJoystickInfo()"); }
+  }
+
+  return requestedPort;
 }
 
 const char *CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
