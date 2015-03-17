@@ -46,6 +46,30 @@ using namespace XFILE;
   #pragma warning (disable : 4355) // "this" : used in base member initializer list
 #endif
 
+// --- HasLocalParentZip() -----------------------------------------------------
+
+bool HasLocalParentZip(const std::string& path, std::string& strParentZip)
+{
+  // Can't use parent zip if path isn't a child file of a zip folder
+  if (!URIUtils::IsInZIP(path))
+    return false;
+
+  // Make sure we're in the root folder of the zip (no parent folder)
+  CURL parentURL(URIUtils::GetParentPath(path));
+  if (!parentURL.GetFileName().empty())
+    return false;
+
+  // Make sure the container zip is on the local hard disk
+  std::string parentZip = parentURL.GetHostName();
+  if (!CURL(parentZip).GetProtocol().empty())
+    return false;
+
+  strParentZip = parentZip;
+  return true;
+}
+
+// --- CGameClient -------------------------------------------------------------
+
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
     m_apiVersion("0.0.0"),
@@ -146,19 +170,6 @@ void CGameClient::OnDisabled()
   CGameManager::Get().UnregisterAddonByID(ID());
 }
 
-void CGameClient::LogAddonProperties(void)
-{
-  std::vector<std::string> vecExtensions(m_extensions.begin(), m_extensions.end());
-
-  CLog::Log(LOGINFO, "GAME: ------------------------------------");
-  CLog::Log(LOGINFO, "GAME: Loaded DLL for %s", ID().c_str());
-  CLog::Log(LOGINFO, "GAME: Client: %s at version %s", Name().c_str(), Version().asString().c_str());
-  CLog::Log(LOGINFO, "GAME: Valid extensions: %s", StringUtils::Join(vecExtensions, " ").c_str());
-  CLog::Log(LOGINFO, "GAME: Supports VFS: %s", m_bSupportsVFS ? "yes" : "no");
-  CLog::Log(LOGINFO, "GAME: Supports no game: %s", m_bSupportsNoGame ? "yes" : "no");
-  CLog::Log(LOGINFO, "GAME: ------------------------------------");
-}
-
 const std::string CGameClient::LibPath() const
 {
   // Use helper library add-on to load libretro cores
@@ -173,26 +184,6 @@ const std::string CGameClient::LibPath() const
   }
 
   return CAddon::LibPath();
-}
-
-bool HasLocalParentZip(const std::string& path, std::string& strParentZip)
-{
-  // Can't use parent zip if path isn't a child file of a zip folder
-  if (!URIUtils::IsInZIP(path))
-    return false;
-
-  // Make sure we're in the root folder of the zip (no parent folder)
-  CURL parentURL(URIUtils::GetParentPath(path));
-  if (!parentURL.GetFileName().empty())
-    return false;
-
-  // Make sure the container zip is on the local hard disk
-  std::string parentZip = parentURL.GetHostName();
-  if (!CURL(parentZip).GetProtocol().empty())
-    return false;
-
-  strParentZip = parentZip;
-  return true;
 }
 
 bool CGameClient::CanOpen(const CFileItem& file) const
@@ -405,6 +396,29 @@ bool CGameClient::InitSerialization()
   return true;
 }
 
+void CGameClient::Reset()
+{
+  if (m_bIsPlaying)
+  {
+    // TODO: Reset all controller ports to their same value. bSNES since v073r01
+    // resets controllers to JOYPAD after a reset, so guard against this.
+    try { LogError(m_pStruct->Reset(), "Reset()"); }
+    catch (...) { LogException("Reset()"); }
+
+    if (m_bRewindEnabled)
+    {
+      m_serialState.ReInit();
+
+      GAME_ERROR error = GAME_ERROR_FAILED;
+      try { LogError(error = m_pStruct->Serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()), "Serialize()"); }
+      catch (...) { LogException("Serialize()"); }
+
+      if (error != GAME_ERROR_NO_ERROR)
+        m_bRewindEnabled = false;
+    }
+  }
+}
+
 void CGameClient::CloseFile()
 {
   CSingleLock lock(m_critSection);
@@ -453,12 +467,6 @@ bool CGameClient::RunFrame()
   return true;
 }
 
-void CGameClient::UpdatePort(unsigned int port, bool bConnected)
-{
-  try { m_pStruct->UpdatePort(port, bConnected); }
-  catch (...) { LogException("UpdatePort()"); }
-}
-
 unsigned int CGameClient::RewindFrames(unsigned int frames)
 {
   CSingleLock lock(m_critSection);
@@ -476,27 +484,10 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
   return rewound;
 }
 
-void CGameClient::Reset()
+void CGameClient::UpdatePort(unsigned int port, bool bConnected)
 {
-  if (m_bIsPlaying)
-  {
-    // TODO: Reset all controller ports to their same value. bSNES since v073r01
-    // resets controllers to JOYPAD after a reset, so guard against this.
-    try { LogError(m_pStruct->Reset(), "Reset()"); }
-    catch (...) { LogException("Reset()"); }
-
-    if (m_bRewindEnabled)
-    {
-      m_serialState.ReInit();
-
-      GAME_ERROR error = GAME_ERROR_FAILED;
-      try { LogError(error = m_pStruct->Serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()), "Serialize()"); }
-      catch (...) { LogException("Serialize()"); }
-
-      if (error != GAME_ERROR_NO_ERROR)
-        m_bRewindEnabled = false;
-    }
-  }
+  try { m_pStruct->UpdatePort(port, bConnected); }
+  catch (...) { LogException("UpdatePort()"); }
 }
 
 void CGameClient::SetFrameRateCorrection(double correctionFactor)
@@ -505,6 +496,21 @@ void CGameClient::SetFrameRateCorrection(double correctionFactor)
     m_frameRateCorrection = correctionFactor;
   if (m_bRewindEnabled)
     m_serialState.SetMaxFrames((size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
+}
+
+bool CGameClient::IsExtensionValid(const std::string& strExtension) const
+{
+  if (m_extensions.empty())
+    return true; // Be optimistic :)
+  if (strExtension.empty())
+    return false;
+
+  // Convert to lower case and canonicalize with a leading "."
+  std::string strExtension2(strExtension);
+  StringUtils::ToLower(strExtension2);
+  if (strExtension2[0] != '.')
+    strExtension2.insert(0, ".");
+  return m_extensions.find(strExtension2) != m_extensions.end();
 }
 
 void CGameClient::SetExtensions(const std::string &strExtensionList, std::set<std::string>& extensions)
@@ -544,21 +550,6 @@ void CGameClient::SetPlatforms(const string& strPlatformList)
 }
 */
 
-bool CGameClient::IsExtensionValid(const std::string& strExtension) const
-{
-  if (m_extensions.empty())
-    return true; // Be optimistic :)
-  if (strExtension.empty())
-    return false;
-
-  // Convert to lower case and canonicalize with a leading "."
-  std::string strExtension2(strExtension);
-  StringUtils::ToLower(strExtension2);
-  if (strExtension2[0] != '.')
-    strExtension2.insert(0, ".");
-  return m_extensions.find(strExtension2) != m_extensions.end();
-}
-
 bool CGameClient::LogError(GAME_ERROR error, const char* strMethod) const
 {
   if (error != GAME_ERROR_NO_ERROR)
@@ -577,23 +568,36 @@ void CGameClient::LogException(const char* strFunctionName) const
   CLog::Log(LOGERROR, "Please contact the developer of this add-on: %s", Author().c_str());
 }
 
+void CGameClient::LogAddonProperties(void) const
+{
+  std::vector<std::string> vecExtensions(m_extensions.begin(), m_extensions.end());
+
+  CLog::Log(LOGINFO, "GAME: ------------------------------------");
+  CLog::Log(LOGINFO, "GAME: Loaded DLL for %s", ID().c_str());
+  CLog::Log(LOGINFO, "GAME: Client: %s at version %s", Name().c_str(), Version().asString().c_str());
+  CLog::Log(LOGINFO, "GAME: Valid extensions: %s", StringUtils::Join(vecExtensions, " ").c_str());
+  CLog::Log(LOGINFO, "GAME: Supports VFS: %s", m_bSupportsVFS ? "yes" : "no");
+  CLog::Log(LOGINFO, "GAME: Supports no game: %s", m_bSupportsNoGame ? "yes" : "no");
+  CLog::Log(LOGINFO, "GAME: ------------------------------------");
+}
+
 const char* CGameClient::ToString(GAME_ERROR error)
 {
   switch (error)
   {
-  case GAME_ERROR_NO_ERROR:
-    return "no error";
-  case GAME_ERROR_NOT_IMPLEMENTED:
-    return "not implemented";
-  case GAME_ERROR_REJECTED:
-    return "rejected by the client";
-  case GAME_ERROR_INVALID_PARAMETERS:
-    return "invalid parameters for this method";
-  case GAME_ERROR_FAILED:
-    return "the command failed";
-  case GAME_ERROR_UNKNOWN:
-  default:
-    return "unknown error";
+    case GAME_ERROR_NO_ERROR:
+      return "no error";
+    case GAME_ERROR_NOT_IMPLEMENTED:
+      return "not implemented";
+    case GAME_ERROR_REJECTED:
+      return "rejected by the client";
+    case GAME_ERROR_INVALID_PARAMETERS:
+      return "invalid parameters for this method";
+    case GAME_ERROR_FAILED:
+      return "the command failed";
+    case GAME_ERROR_UNKNOWN:
+    default:
+      return "unknown error";
   }
 }
 

@@ -91,23 +91,23 @@ public:
   CGameClient(const cp_extension_t* props);
   virtual ~CGameClient(void);
 
-  virtual ADDON::AddonPtr GetRunningInstance() const;
-
-  virtual void OnEnabled();
-  virtual void OnDisabled();
-
-  // Path to the game client library
-  const std::string& GameClientPath() const { return m_strGameClientPath; }
-
-  // Override LibPath() to return a helper library for v1 clients
-  // TODO: Don't make this function virtual, find another way
-  virtual const std::string LibPath() const;
+  // Implementation of CAddon
+  virtual ADDON::AddonPtr   GetRunningInstance() const;
+  virtual void              OnEnabled();
+  virtual void              OnDisabled();
+  virtual const std::string LibPath() const; // TODO: Don't make this function virtual, find another way
 
   // Query properties of the game client
   const std::set<std::string>& GetExtensions() const    { return m_extensions; }
   bool                         SupportsVFS() const      { return m_bSupportsVFS; }
   bool                         SupportsNoGame() const   { return m_bSupportsNoGame; }
   //const GamePlatforms&         GetPlatforms() const     { return m_platforms; }
+
+  // Optimistically returns true if the game client provided no extensions
+  bool                         IsExtensionValid(const std::string& strExtension) const;
+
+  // Path to the game client library (ODO: Remove me)
+  const std::string&           GameClientPath() const   { return m_strGameClientPath; }
 
   // Query properties of the running game
   bool               IsPlaying() const     { return m_bIsPlaying; }
@@ -118,6 +118,7 @@ public:
   double             GetSampleRate() const { return m_sampleRate; }
 
   // Modify the value returned by GetFrameRate(), used to sync gameplay to audio
+  // TODO: Remove me
   void SetFrameRateCorrection(double correctionFactor);
 
   /**
@@ -127,61 +128,31 @@ public:
    */
   bool CanOpen(const CFileItem& file) const;
 
+  // Game API functions
   bool OpenFile(const CFileItem& file, IPlayer* player);
-
-  void CloseFile();
-
-  /**
-   * Allow the game to run and produce a video frame.
-   * Precondition: OpenFile() returned true.
-   * Returns false if an exception is thrown in retro_run().
-   */
-  bool RunFrame();
-
-  /**
-   * Rewind gameplay 'frames' frames.
-   * As there is a fixed size buffer backing
-   * save state deltas, it might not be possible to rewind as many
-   * frames as desired. The function returns number of frames actually rewound.
-   */
-  unsigned int RewindFrames(unsigned int frames);
-
-  // Returns how many frames it is possible to rewind with a call to RewindFrames()
-  size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
-
-  // Returns the maximum amount of frames that can ever be rewound
-  size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
-
-  // Reset the game, if running
   void Reset();
-
-  // If the game client provided no extensions, this will optimistically return true
-  bool IsExtensionValid(const std::string& strExtension) const;
-
+  void CloseFile();
+  bool RunFrame();
+  unsigned int RewindFrames(unsigned int frames); // Returns number of frames rewound
+  size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
+  size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
   void UpdatePort(unsigned int port, bool bConnected);
 
 private:
   // Called by the constructors
   void InitializeProperties(void);
 
-  void LogAddonProperties(void);
-
+  // Private Game API functions
   bool OpenInternal(const CFileItem& file);
-
   bool LoadGameInfo();
-
-  /**
-   * Initialize the game client serialization subsystem. If successful,
-   * m_bRewindEnabled and m_serializeSize are set appropriately.
-   */
   bool InitSerialization();
 
-  // Parse a pipe-separated list returned from the game client
+  // Helper functions
   static void SetExtensions(const std::string& strExtensionList, std::set<std::string>& extensions);
   //void SetPlatforms(const std::string& strPlatformList);
-
   bool LogError(GAME_ERROR error, const char* strMethod) const;
   void LogException(const char* strFunctionName) const;
+  void LogAddonProperties(void) const; // Unused currently
   static const char* ToString(GAME_ERROR error);
 
   ADDON::AddonVersion   m_apiVersion;
