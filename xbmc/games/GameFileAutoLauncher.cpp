@@ -35,7 +35,6 @@
 #define TIMEOUT_MS           2 * 60 * 1000 // 2 mins
 
 using namespace GAME;
-using namespace std;
 
 CGameFileAutoLauncher::CGameFileAutoLauncher() : CThread("Game launcher")
 {
@@ -124,7 +123,7 @@ void CGameFileAutoLauncher::Launch(const GameClientPtr& gameClient)
 
   CLog::Log(LOGDEBUG, "GameFileAutoLauncher: prompting user for launch of %s", file->GetPath().c_str());
 
-  string strTitle;
+  std::string strTitle;
   if (file->HasGameInfoTag())
     strTitle = file->GetGameInfoTag()->GetTitle();
   if (strTitle.empty())

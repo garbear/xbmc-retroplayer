@@ -37,7 +37,6 @@
 using namespace ADDON;
 using namespace GAME;
 using namespace XFILE;
-using namespace std;
 
 
 /* TEMPORARY */
@@ -160,7 +159,7 @@ bool CGameManager::RegisterAddon(const GameClientPtr& client)
   return true;
 }
 
-void CGameManager::UnregisterAddonByID(const string& strClientId)
+void CGameManager::UnregisterAddonByID(const std::string& strClientId)
 {
   CSingleLock lock(m_critSection);
 
@@ -169,7 +168,7 @@ void CGameManager::UnregisterAddonByID(const string& strClientId)
     m_gameClients.erase(it);
 }
 
-bool CGameManager::GetClient(const string& strClientId, GameClientPtr& addon) const
+bool CGameManager::GetClient(const std::string& strClientId, GameClientPtr& addon) const
 {
   CSingleLock lock(m_critSection);
 
@@ -182,11 +181,11 @@ bool CGameManager::GetClient(const string& strClientId, GameClientPtr& addon) co
   return false;
 }
 
-void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candidates) const
+void CGameManager::GetGameClientIDs(const CFileItem& file, std::vector<std::string>& candidates) const
 {
   CSingleLock lock(m_critSection);
 
-  const string strRequestedClient = file.GetProperty("gameclient").asString();
+  const std::string strRequestedClient = file.GetProperty("gameclient").asString();
 
   for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
@@ -206,7 +205,7 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, vector<string>& candi
   }
 }
 
-void CGameManager::GetExtensions(vector<string> &exts) const
+void CGameManager::GetExtensions(std::vector<std::string> &exts) const
 {
   CSingleLock lock(m_critSection);
   exts.insert(exts.end(), m_gameExtensions.begin(), m_gameExtensions.end());
@@ -222,7 +221,7 @@ bool CGameManager::IsGame(const std::string &path) const
 {
   // Get the file extension (must use a CURL, if the string is top-level zip
   // directory it might not end in .zip)
-  string extension(URIUtils::GetExtension(CURL(path).GetFileNameWithoutPath()));
+  std::string extension(URIUtils::GetExtension(CURL(path).GetFileNameWithoutPath()));
   StringUtils::ToLower(extension);
   if (extension.empty())
     return false;

@@ -36,7 +36,6 @@
 using namespace ADDON;
 using namespace GAME;
 using namespace XFILE;
-using namespace std;
 
 #define EXTENSION_SEPARATOR          "|"
 #define GAME_REGION_NTSC_STRING      "NTSC"
@@ -86,19 +85,19 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       SetPlatforms(strPlatforms);
     }
     */
-    string strExtensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
+    std::string strExtensions = CAddonMgr::Get().GetExtValue(ext->configuration, "extensions");
     if (!strExtensions.empty())
     {
       Props().extrainfo.insert(make_pair("extensions", strExtensions));
       SetExtensions(strExtensions, m_extensions);
     }
-    string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_vfs");
+    std::string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_vfs");
     if (!strSupportsVFS.empty())
     {
       Props().extrainfo.insert(make_pair("supports_vfs", strSupportsVFS));
       m_bSupportsVFS = (strSupportsVFS == "true" || strSupportsVFS == "yes");
     }
-    string strSupportsNoGame = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
+    std::string strSupportsNoGame = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
     if (!strSupportsNoGame.empty())
     {
       Props().extrainfo.insert(make_pair("supports_no_game", strSupportsNoGame));
@@ -149,7 +148,7 @@ void CGameClient::OnDisabled()
 
 void CGameClient::LogAddonProperties(void)
 {
-  vector<string> vecExtensions(m_extensions.begin(), m_extensions.end());
+  std::vector<std::string> vecExtensions(m_extensions.begin(), m_extensions.end());
 
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
   CLog::Log(LOGINFO, "GAME: Loaded DLL for %s", ID().c_str());
@@ -176,7 +175,7 @@ const std::string CGameClient::LibPath() const
   return CAddon::LibPath();
 }
 
-bool HasLocalParentZip(const string& path, string& strParentZip)
+bool HasLocalParentZip(const std::string& path, std::string& strParentZip)
 {
   // Can't use parent zip if path isn't a child file of a zip folder
   if (!URIUtils::IsInZIP(path))
@@ -188,7 +187,7 @@ bool HasLocalParentZip(const string& path, string& strParentZip)
     return false;
 
   // Make sure the container zip is on the local hard disk
-  string parentZip = parentURL.GetHostName();
+  std::string parentZip = parentURL.GetHostName();
   if (!CURL(parentZip).GetProtocol().empty())
     return false;
 
@@ -211,7 +210,7 @@ bool CGameClient::CanOpen(const CFileItem& file) const
     translatedUrl.SetProtocol("");
 
   // Filter by extension
-  string strExtension = URIUtils::GetExtension(file.GetPath());
+  std::string strExtension = URIUtils::GetExtension(file.GetPath());
   StringUtils::ToLower(strExtension);
   if (!IsExtensionValid(strExtension))
   {
@@ -225,8 +224,8 @@ bool CGameClient::CanOpen(const CFileItem& file) const
       CURL url(URIUtils::CreateArchivePath("zip", pathToUrl, "", ""));
       strZipUrl = url.Get();
 
-      string strValidExts;
-      for (set<string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
+      std::string strValidExts;
+      for (std::set<std::string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
         strValidExts += *it + "|";
 
       CFileItemList itemList;
@@ -246,7 +245,7 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   // If file is on the VFS, check if it is in the top-level directory of a local zip
   if (!translatedUrl.GetProtocol().empty())
   {
-    string strParentZip;
+    std::string strParentZip;
     if (IsExtensionValid(".zip") && HasLocalParentZip(translatedUrl.Get(), strParentZip))
       return true;
     return false;
@@ -283,13 +282,13 @@ bool CGameClient::OpenInternal(const CFileItem& file)
   if (translatedUrl.GetProtocol() == "file")
     translatedUrl.SetProtocol("");
 
-  string strTranslatedUrl = translatedUrl.Get();
+  std::string strTranslatedUrl = translatedUrl.Get();
 
   // If the game client doesn't support VFS, we'll need a backup plan
   if (!SupportsVFS() && !translatedUrl.GetProtocol().empty())
   {
     // Maybe the file is in a local zip, and the game client supports zips
-    string strParentZip;
+    std::string strParentZip;
     if (IsExtensionValid(".zip") && HasLocalParentZip(translatedUrl.Get(), strParentZip))
       strTranslatedUrl = strParentZip;
   }
@@ -304,8 +303,8 @@ bool CGameClient::OpenInternal(const CFileItem& file)
     CURL url(URIUtils::CreateArchivePath("zip", pathToUrl, "", ""));
     strZipUrl = url.Get();
 
-    string strValidExts;
-    for (set<string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
+    std::string strValidExts;
+    for (std::set<std::string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
       strValidExts += *it + "|";
 
     CFileItemList itemList;
@@ -508,14 +507,14 @@ void CGameClient::SetFrameRateCorrection(double correctionFactor)
     m_serialState.SetMaxFrames((size_t)(CSettings::Get().GetInt("gamesgeneral.rewindtime") * GetFrameRate()));
 }
 
-void CGameClient::SetExtensions(const string &strExtensionList, std::set<std::string>& extensions)
+void CGameClient::SetExtensions(const std::string &strExtensionList, std::set<std::string>& extensions)
 {
   extensions.clear();
 
-  vector<string> vecExtensions = StringUtils::Split(strExtensionList, EXTENSION_SEPARATOR);
-  for (vector<string>::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
+  std::vector<std::string> vecExtensions = StringUtils::Split(strExtensionList, EXTENSION_SEPARATOR);
+  for (std::vector<std::string>::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
   {
-    string& ext = *it;
+    std::string& ext = *it;
     if (ext.empty())
       continue;
 
@@ -545,7 +544,7 @@ void CGameClient::SetPlatforms(const string& strPlatformList)
 }
 */
 
-bool CGameClient::IsExtensionValid(const string& strExtension) const
+bool CGameClient::IsExtensionValid(const std::string& strExtension) const
 {
   if (m_extensions.empty())
     return true; // Be optimistic :)
@@ -553,7 +552,7 @@ bool CGameClient::IsExtensionValid(const string& strExtension) const
     return false;
 
   // Convert to lower case and canonicalize with a leading "."
-  string strExtension2(strExtension);
+  std::string strExtension2(strExtension);
   StringUtils::ToLower(strExtension2);
   if (strExtension2[0] != '.')
     strExtension2.insert(0, ".");
