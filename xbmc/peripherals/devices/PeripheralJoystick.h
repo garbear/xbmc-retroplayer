@@ -40,10 +40,7 @@ namespace PERIPHERALS
 
     void SetDeviceName(const std::string& strName)    { m_strDeviceName = strName; } // Override value in peripherals.xml
 
-    virtual void OnButtonMotion(unsigned int index, bool bPressed);
-    virtual void OnHatMotion(unsigned int index, HatDirection direction);
-    virtual void OnAxisMotion(unsigned int index, float position);
-    virtual void ProcessAxisMotions(void);
+    IJoystickInputHandler* GetInputHandler(void) { return m_inputHandler; }
 
   protected:
     CGenericJoystickFeatureHandler m_featureHandler;

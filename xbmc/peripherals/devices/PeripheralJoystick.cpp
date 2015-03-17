@@ -76,33 +76,3 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
   return m_inputHandler != NULL;
 }
-
-void CPeripheralJoystick::OnButtonMotion(unsigned int index, bool bPressed)
-{
-  CLog::Log(LOGDEBUG, "Joystick %s: Button %u %s", m_strDeviceName.c_str(), index,
-            bPressed ? "pressed" : "released");
-
-  if (m_inputHandler)
-    m_inputHandler->OnButtonMotion(index, bPressed);
-}
-
-void CPeripheralJoystick::OnHatMotion(unsigned int index, HatDirection direction)
-{
-  CLog::Log(LOGDEBUG, "Joystick %s: Hat %u %s", m_strDeviceName.c_str(), index,
-            CJoystickTranslator::HatDirectionToString(direction));
-
-  if (m_inputHandler)
-    m_inputHandler->OnHatMotion(index, direction);
-}
-
-void CPeripheralJoystick::OnAxisMotion(unsigned int index, float position)
-{
-  if (m_inputHandler)
-    m_inputHandler->OnAxisMotion(index, position);
-}
-
-void CPeripheralJoystick::ProcessAxisMotions()
-{
-  if (m_inputHandler)
-    m_inputHandler->ProcessAxisMotions();
-}
