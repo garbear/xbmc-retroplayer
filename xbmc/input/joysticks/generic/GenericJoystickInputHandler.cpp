@@ -56,9 +56,9 @@ void CGenericJoystickInputHandler::OnButtonMotion(unsigned int index, bool bPres
               feature, bPressed ? "pressed" : "released");
 
     if (!oldState && pressed)
-      m_handler->OnButtonPress(feature);
+      m_handler->OnButtonPress(feature, true);
     else if (oldState && !pressed)
-      m_handler->OnButtonRelease(feature);
+      m_handler->OnButtonPress(feature, false);
   }
   else if (bPressed)
   {
@@ -96,7 +96,7 @@ void CGenericJoystickInputHandler::ProcessHatDirection(int index,
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickInputHandler: Feature %d activated",
                 feature);
-      m_handler->OnButtonPress(feature);
+      m_handler->OnButtonPress(feature, true);
     }
     else
     {
@@ -113,7 +113,7 @@ void CGenericJoystickInputHandler::ProcessHatDirection(int index,
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickInputHandler: Feature %d deactivated",
                 feature);
-      m_handler->OnButtonRelease(feature);
+      m_handler->OnButtonPress(feature, false);
     }
   }
 }
