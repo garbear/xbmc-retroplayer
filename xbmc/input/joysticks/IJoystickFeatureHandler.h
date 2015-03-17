@@ -41,7 +41,7 @@ public:
    * \return True if the event was handled otherwise false
    */
   virtual bool OnButtonPress(JoystickFeatureID id) { return false; }
- 
+
   /*!
    * \brief A digital button has been released
    *
