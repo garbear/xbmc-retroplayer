@@ -193,20 +193,6 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 
   CloseFile();
 
-  if (OpenInternal(file))
-  {
-    m_player = player;
-    InitSerialization();
-
-    UpdatePort(0, true); // TODO
-
-    return true;
-  }
-  return false;
-}
-
-bool CGameClient::OpenInternal(const CFileItem& file)
-{
   // Try to resolve path to a local file, as not all game clients support VFS
   CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
   if (translatedUrl.GetProtocol() == "file")
@@ -218,15 +204,19 @@ bool CGameClient::OpenInternal(const CFileItem& file)
   try { LogError(error = m_pStruct->LoadGame(strTranslatedUrl.c_str()), "LoadGame()"); }
   catch (...) { LogException("LoadGame()"); }
 
-  if (error != GAME_ERROR_NO_ERROR)
-    return false;
-
-  if (LoadGameInfo())
+  if (error == GAME_ERROR_NO_ERROR && LoadGameInfo())
   {
-    m_filePath = strTranslatedUrl;
+    m_filePath   = strTranslatedUrl;
+    m_player     = player;
     m_bIsPlaying = true;
+
+    InitSerialization();
+
+    UpdatePort(0, true); // TODO
+
     return true;
   }
+
   return false;
 }
 

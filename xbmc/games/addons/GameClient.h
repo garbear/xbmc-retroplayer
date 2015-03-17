@@ -138,7 +138,6 @@ private:
   void InitializeProperties(void);
 
   // Private Game API functions
-  bool OpenInternal(const CFileItem& file);
   bool LoadGameInfo();
   bool InitSerialization();
 
