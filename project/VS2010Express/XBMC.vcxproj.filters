@@ -352,6 +352,9 @@
     <Filter Include="games\windows">
       <UniqueIdentifier>{b27eff5a-49e1-4e7d-b4c2-f4e46d18629a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\addons">
+      <UniqueIdentifier>{040f514d-944b-497a-9d28-9d6b58b72822}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3203,12 +3206,6 @@
     <ClCompile Include="..\..\xbmc\games\SerialState.cpp">
       <Filter>games</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\GameClient.cpp">
-      <Filter>games</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\GameClientProperties.cpp">
-      <Filter>games</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.cpp">
       <Filter>cores\RetroPlayer</Filter>
     </ClCompile>
@@ -3241,6 +3238,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\guilib\GUIControllerLayout.cpp">
       <Filter>guilib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GameClient.cpp">
+      <Filter>games\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GameClientProperties.cpp">
+      <Filter>games\addons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6252,9 +6255,6 @@
     <ClInclude Include="..\..\xbmc\addons\DllGameClient.h">
       <Filter>addons</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\GameClient.h">
-      <Filter>games</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h">
       <Filter>games</Filter>
     </ClInclude>
@@ -6268,9 +6268,6 @@
       <Filter>games</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameClient.h">
-      <Filter>games</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\GameClientProperties.h">
       <Filter>games</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.h">
@@ -6308,6 +6305,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\guilib\GUIControllerLayout.h">
       <Filter>guilib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GameClient.h">
+      <Filter>games\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GameClientProperties.h">
+      <Filter>games\addons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
