@@ -64,7 +64,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
         {
           m_buttonMap = new CAddonJoystickButtonMap(addon, index);
           if (m_buttonMap->Load())
-            m_inputHandler = new CGenericJoystickInputHandler(&m_featureHandler, m_buttonMap);
+            m_inputHandler = new CGenericJoystickInputHandler(this, m_buttonMap);
           else
             SAFE_DELETE(m_buttonMap);
         }
@@ -75,4 +75,24 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
   }
 
   return m_inputHandler != NULL;
+}
+
+bool CPeripheralJoystick::OnButtonPress(JoystickFeatureID id, bool bPressed)
+{
+  return m_featureHandler.OnButtonPress(id, bPressed);
+}
+
+bool CPeripheralJoystick::OnButtonMotion(JoystickFeatureID id, float magnitude)
+{
+  return m_featureHandler.OnButtonMotion(id, magnitude);
+}
+
+bool CPeripheralJoystick::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+{
+  return m_featureHandler.OnAnalogStickMotion(id, x, y);
+}
+
+bool CPeripheralJoystick::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+{
+  return m_featureHandler.OnAccelerometerMotion(id, x, y, z);
 }
