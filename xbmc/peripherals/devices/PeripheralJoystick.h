@@ -24,6 +24,7 @@
 #include "input/joysticks/generic/GenericJoystickFeatureHandler.h"
 
 #include <string>
+#include <vector>
 
 #define JOYSTICK_PORT_UNKNOWN  0
 
@@ -55,9 +56,13 @@ namespace PERIPHERALS
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName)    { m_strDeviceName = strName; } // Override value in peripherals.xml
 
+    void RegisterInputHandler(IJoystickFeatureHandler* handler);
+    void UnregisterInputHandler(IJoystickFeatureHandler* handler);
+
   protected:
     int                            m_requestedPort;
-    CGenericJoystickFeatureHandler m_featureHandler;
+    std::vector<IJoystickFeatureHandler*> m_handlers;
+    CGenericJoystickFeatureHandler m_fallbackHandler;
     IJoystickButtonMap*            m_buttonMap;
     IJoystickInputHandler*         m_inputHandler;
   };

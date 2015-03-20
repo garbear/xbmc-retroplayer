@@ -57,7 +57,7 @@ void CPortManager::OpenPort(IJoystickFeatureHandler* handler, const std::string&
 {
   SPort port;
 
-  port.handler      = handler;
+  port.handler = handler;
   port.controllerId = strDeviceId;
 
   m_ports.push_back(port);
@@ -78,7 +78,7 @@ size_t CPortManager::DevicesAttached(int portNumber) const
 
   if (portNumber != JOYSTICK_PORT_UNKNOWN)
   {
-    unsigned int portIndex = portNumber - 1;
+    const unsigned int portIndex = portNumber - 1;
     if (portIndex < m_ports.size())
       devicesAttached = m_ports[portIndex].devices.size();
   }
@@ -111,17 +111,29 @@ void CPortManager::AssignDevices(void)
 
 void CPortManager::ClearDevices(void)
 {
-  for (std::vector<SPort>::iterator it = m_ports.begin(); it != m_ports.end(); ++it)
-    it->devices.clear();
+  for (std::vector<SPort>::iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
+  {
+    for (std::vector<PERIPHERALS::CPeripheral*>::iterator itDevice = itPort->devices.begin(); itDevice != itPort->devices.end(); ++itDevice)
+    {
+      // Remove port's input handler from device
+      if ((*itDevice)->Type() == PERIPHERAL_JOYSTICK)
+        static_cast<CPeripheralJoystick*>(*itDevice)->UnregisterInputHandler(itPort->handler);
+    }
+    itPort->devices.clear();
+  }
   m_deviceDepth = 0;
 }
 
 void CPortManager::AddDevice(CPeripheral *device, int requestedPort)
 {
-  const int          targetPort  = GetNextOpenPort(requestedPort);
+  const int targetPort = GetNextOpenPort(requestedPort);
   const unsigned int targetIndex = targetPort - 1;
 
   m_ports[targetIndex].devices.push_back(device);
+
+  // Assign port's input handler to device
+  if (device->Type() == PERIPHERAL_JOYSTICK)
+    static_cast<CPeripheralJoystick*>(device)->RegisterInputHandler(m_ports[targetIndex].handler);
 
   // Update max device count
   m_deviceDepth = std::max(DevicesAttached(targetPort), m_deviceDepth);

@@ -41,7 +41,7 @@ private:
 public:
   static CPortManager& Get(void);
 
-  ~CPortManager(void) { }
+  ~CPortManager(void) { ClearDevices(); }
 
   void OpenPort(IJoystickFeatureHandler* handler, const std::string& strDeviceId);
   void ClosePort(IJoystickFeatureHandler* handler);
