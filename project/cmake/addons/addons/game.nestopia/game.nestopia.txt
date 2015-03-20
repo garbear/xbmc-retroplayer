@@ -1,1 +1,1 @@
-game.nestopia https://github.com/kodi-game/game.nestopia a7df1e8
+game.nestopia https://github.com/kodi-game/game.nestopia c5bdd46
