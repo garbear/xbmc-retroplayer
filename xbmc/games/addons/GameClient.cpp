@@ -31,6 +31,8 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
+#include <algorithm>
+
 using namespace ADDON;
 using namespace GAME;
 using namespace XFILE;
@@ -38,6 +40,26 @@ using namespace XFILE;
 #define EXTENSION_SEPARATOR          "|"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
+
+// --- NormalizeExtension ------------------------------------------------------
+
+struct NormalizeExtension
+{
+  std::string operator()(const std::string& strExtension)
+  {
+    std::string ext = strExtension;
+
+    StringUtils::ToLower(ext);
+
+    // Make sure extension starts with "."
+    if (ext[0] != '.')
+      ext.insert(0, ".");
+
+    return ext;
+  }
+};
+
+// --- CGameClient -------------------------------------------------------------
 
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
@@ -53,7 +75,10 @@ CGameClient::CGameClient(const AddonProps& props)
     SetPlatforms(it->second);
   */
   if ((it = props.extrainfo.find("extensions")) != props.extrainfo.end())
-    SetExtensions(it->second, m_extensions);
+  {
+    std::vector<std::string> extensions = ParseExtensions(it->second);
+    m_extensions.insert(extensions.begin(), extensions.end());
+  }
   if ((it = props.extrainfo.find("supports_vfs")) != props.extrainfo.end())
     m_bSupportsVFS = (it->second == "true" || it->second == "yes");
   if ((it = props.extrainfo.find("supports_no_game")) != props.extrainfo.end())
@@ -82,7 +107,8 @@ CGameClient::CGameClient(const cp_extension_t* ext)
     if (!strExtensions.empty())
     {
       Props().extrainfo.insert(make_pair("extensions", strExtensions));
-      SetExtensions(strExtensions, m_extensions);
+      std::vector<std::string> extensions = ParseExtensions(strExtensions);
+      m_extensions.insert(extensions.begin(), extensions.end());
     }
     std::string strSupportsVFS = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_vfs");
     if (!strSupportsVFS.empty())
@@ -476,25 +502,13 @@ bool CGameClient::IsExtensionValid(const std::string& strExtension) const
   return m_extensions.find(strExtension2) != m_extensions.end();
 }
 
-void CGameClient::SetExtensions(const std::string &strExtensionList, std::set<std::string>& extensions)
+std::vector<std::string> CGameClient::ParseExtensions(const std::string& strExtensionList)
 {
-  extensions.clear();
+  std::vector<std::string> extensions = StringUtils::Split(strExtensionList, EXTENSION_SEPARATOR);
 
-  std::vector<std::string> vecExtensions = StringUtils::Split(strExtensionList, EXTENSION_SEPARATOR);
-  for (std::vector<std::string>::iterator it = vecExtensions.begin(); it != vecExtensions.end(); it++)
-  {
-    std::string& ext = *it;
-    if (ext.empty())
-      continue;
+  std::transform(extensions.begin(), extensions.end(), extensions.begin(), NormalizeExtension());
 
-    StringUtils::ToLower(ext);
-
-    // Make sure extension starts with "."
-    if (ext[0] != '.')
-      ext.insert(0, ".");
-
-    extensions.insert(ext);
-  }
+  return extensions;
 }
 
 /*

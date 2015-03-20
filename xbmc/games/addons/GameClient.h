@@ -150,7 +150,7 @@ private:
   bool InitSerialization();
 
   // Helper functions
-  static void SetExtensions(const std::string& strExtensionList, std::set<std::string>& extensions);
+  static std::vector<std::string> ParseExtensions(const std::string& strExtensionList);
   //void SetPlatforms(const std::string& strPlatformList);
   bool LogError(GAME_ERROR error, const char* strMethod) const;
   void LogException(const char* strFunctionName) const;
