@@ -303,6 +303,9 @@
 		682FAF9E1AA1253800E058BA /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF9C1AA1253800E058BA /* AddonCallbacksGame.cpp */; };
 		682FAF9F1AA1253800E058BA /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF9C1AA1253800E058BA /* AddonCallbacksGame.cpp */; };
 		682FAFA01AA1253800E058BA /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF9C1AA1253800E058BA /* AddonCallbacksGame.cpp */; };
+		6838402B1ABBFA480011BFE9 /* PortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 683840291ABBFA480011BFE9 /* PortManager.cpp */; };
+		6838402C1ABBFA480011BFE9 /* PortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 683840291ABBFA480011BFE9 /* PortManager.cpp */; };
+		6838402D1ABBFA480011BFE9 /* PortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 683840291ABBFA480011BFE9 /* PortManager.cpp */; };
 		68B61C201A39667200965EAC /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */; };
 		68B61C211A39667200965EAC /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */; };
 		68B61C221A39667200965EAC /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */; };
@@ -3822,6 +3825,8 @@
 		682FAF981AA1250A00E058BA /* GUIControllerLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIControllerLayout.h; sourceTree = "<group>"; };
 		682FAF9C1AA1253800E058BA /* AddonCallbacksGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksGame.cpp; sourceTree = "<group>"; };
 		682FAF9D1AA1253800E058BA /* AddonCallbacksGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksGame.h; sourceTree = "<group>"; };
+		683840291ABBFA480011BFE9 /* PortManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PortManager.cpp; sourceTree = "<group>"; };
+		6838402A1ABBFA480011BFE9 /* PortManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PortManager.h; sourceTree = "<group>"; };
 		68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		68B61C1F1A39667200965EAC /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
 		68B61C231A3974E000965EAC /* PeripheralJoystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralJoystick.cpp; sourceTree = "<group>"; };
@@ -6504,6 +6509,8 @@
 				18B7C8D012942546009E7A26 /* KeyboardStat.h */,
 				18B7C8D112942546009E7A26 /* MouseStat.cpp */,
 				18B7C8D212942546009E7A26 /* MouseStat.h */,
+				683840291ABBFA480011BFE9 /* PortManager.cpp */,
+				6838402A1ABBFA480011BFE9 /* PortManager.h */,
 				E38E1EAD0D25F9FD00618676 /* XBIRRemote.h */,
 				18B7C8D512942546009E7A26 /* XBMC_keyboard.h */,
 				7C779E31104A57E500F444C4 /* XBMC_keysym.h */,
@@ -10815,6 +10822,7 @@
 				E38E225D0D25F9FE00618676 /* strfn.cpp in Sources */,
 				E38E225E0D25F9FE00618676 /* strlist.cpp in Sources */,
 				E38E22600D25F9FE00618676 /* system.cpp in Sources */,
+				6838402B1ABBFA480011BFE9 /* PortManager.cpp in Sources */,
 				E38E22610D25F9FE00618676 /* timefn.cpp in Sources */,
 				E38E22620D25F9FE00618676 /* ulinks.cpp in Sources */,
 				E38E22630D25F9FE00618676 /* unicode.cpp in Sources */,
@@ -11776,6 +11784,7 @@
 				DFF0F17A17528350002DA3A4 /* DVDInputStreamHttp.cpp in Sources */,
 				DFF0F17B17528350002DA3A4 /* DVDInputStreamMemory.cpp in Sources */,
 				DFF0F17C17528350002DA3A4 /* DVDInputStreamNavigator.cpp in Sources */,
+				6838402D1ABBFA480011BFE9 /* PortManager.cpp in Sources */,
 				DFF0F17D17528350002DA3A4 /* DVDInputStreamPVRManager.cpp in Sources */,
 				DFF0F17E17528350002DA3A4 /* DVDInputStreamRTMP.cpp in Sources */,
 				DFF0F17F17528350002DA3A4 /* DVDInputStreamTV.cpp in Sources */,
@@ -13642,6 +13651,7 @@
 				E4991582174E682F00741B6D /* AutoPool.mm in Sources */,
 				E4991583174E684000741B6D /* CocoaInterface.mm in Sources */,
 				E4991584174E684000741B6D /* DarwinUtils.mm in Sources */,
+				6838402C1ABBFA480011BFE9 /* PortManager.cpp in Sources */,
 				E4991586174E684000741B6D /* OSXGNUReplacements.c in Sources */,
 				E499158A174E68D800741B6D /* LinuxRendererGLES.cpp in Sources */,
 				E499158B174E68EE00741B6D /* DVDCodecUtils.cpp in Sources */,
