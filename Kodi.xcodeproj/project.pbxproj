@@ -240,9 +240,6 @@
 		682FAF201AA122D900E058BA /* RetroPlayerVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF121AA122D900E058BA /* RetroPlayerVideo.cpp */; };
 		682FAF211AA122D900E058BA /* RetroPlayerVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF121AA122D900E058BA /* RetroPlayerVideo.cpp */; };
 		682FAF221AA122D900E058BA /* RetroPlayerVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF121AA122D900E058BA /* RetroPlayerVideo.cpp */; };
-		682FAF291AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF251AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp */; };
-		682FAF2A1AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF251AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp */; };
-		682FAF2B1AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF251AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp */; };
 		682FAF2C1AA1230E00E058BA /* GenericJoystickInputHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF271AA1230E00E058BA /* GenericJoystickInputHandler.cpp */; };
 		682FAF2D1AA1230E00E058BA /* GenericJoystickInputHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF271AA1230E00E058BA /* GenericJoystickInputHandler.cpp */; };
 		682FAF2E1AA1230E00E058BA /* GenericJoystickInputHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682FAF271AA1230E00E058BA /* GenericJoystickInputHandler.cpp */; };
@@ -306,6 +303,9 @@
 		6838402B1ABBFA480011BFE9 /* PortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 683840291ABBFA480011BFE9 /* PortManager.cpp */; };
 		6838402C1ABBFA480011BFE9 /* PortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 683840291ABBFA480011BFE9 /* PortManager.cpp */; };
 		6838402D1ABBFA480011BFE9 /* PortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 683840291ABBFA480011BFE9 /* PortManager.cpp */; };
+		684F65A11ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 684F659F1ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp */; };
+		684F65A21ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 684F659F1ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp */; };
+		684F65A31ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 684F659F1ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp */; };
 		68B61C201A39667200965EAC /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */; };
 		68B61C211A39667200965EAC /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */; };
 		68B61C221A39667200965EAC /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */; };
@@ -3778,12 +3778,9 @@
 		682FAF111AA122D900E058BA /* RetroPlayerDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerDialogs.h; path = RetroPlayer/RetroPlayerDialogs.h; sourceTree = "<group>"; };
 		682FAF121AA122D900E058BA /* RetroPlayerVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RetroPlayerVideo.cpp; path = RetroPlayer/RetroPlayerVideo.cpp; sourceTree = "<group>"; };
 		682FAF131AA122D900E058BA /* RetroPlayerVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetroPlayerVideo.h; path = RetroPlayer/RetroPlayerVideo.h; sourceTree = "<group>"; };
-		682FAF251AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenericJoystickFeatureHandler.cpp; path = joysticks/generic/GenericJoystickFeatureHandler.cpp; sourceTree = "<group>"; };
-		682FAF261AA1230E00E058BA /* GenericJoystickFeatureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenericJoystickFeatureHandler.h; path = joysticks/generic/GenericJoystickFeatureHandler.h; sourceTree = "<group>"; };
 		682FAF271AA1230E00E058BA /* GenericJoystickInputHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenericJoystickInputHandler.cpp; path = joysticks/generic/GenericJoystickInputHandler.cpp; sourceTree = "<group>"; };
 		682FAF281AA1230E00E058BA /* GenericJoystickInputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenericJoystickInputHandler.h; path = joysticks/generic/GenericJoystickInputHandler.h; sourceTree = "<group>"; };
 		682FAF2F1AA1231600E058BA /* IJoystickButtonMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJoystickButtonMap.h; path = joysticks/IJoystickButtonMap.h; sourceTree = "<group>"; };
-		682FAF301AA1231600E058BA /* IJoystickFeatureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJoystickFeatureHandler.h; path = joysticks/IJoystickFeatureHandler.h; sourceTree = "<group>"; };
 		682FAF311AA1231600E058BA /* IJoystickInputHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJoystickInputHandler.h; path = joysticks/IJoystickInputHandler.h; sourceTree = "<group>"; };
 		682FAF321AA1231600E058BA /* InputPrimitive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputPrimitive.cpp; path = joysticks/InputPrimitive.cpp; sourceTree = "<group>"; };
 		682FAF331AA1231600E058BA /* InputPrimitive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputPrimitive.h; path = joysticks/InputPrimitive.h; sourceTree = "<group>"; };
@@ -3827,6 +3824,9 @@
 		682FAF9D1AA1253800E058BA /* AddonCallbacksGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksGame.h; sourceTree = "<group>"; };
 		683840291ABBFA480011BFE9 /* PortManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PortManager.cpp; sourceTree = "<group>"; };
 		6838402A1ABBFA480011BFE9 /* PortManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PortManager.h; sourceTree = "<group>"; };
+		684F659E1ABC5DA1005A5C11 /* IJoystickDriverHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJoystickDriverHandler.h; path = joysticks/IJoystickDriverHandler.h; sourceTree = "<group>"; };
+		684F659F1ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenericJoystickDriverHandler.cpp; path = joysticks/generic/GenericJoystickDriverHandler.cpp; sourceTree = "<group>"; };
+		684F65A01ABC5DAD005A5C11 /* GenericJoystickDriverHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenericJoystickDriverHandler.h; path = joysticks/generic/GenericJoystickDriverHandler.h; sourceTree = "<group>"; };
 		68B61C1E1A39667200965EAC /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		68B61C1F1A39667200965EAC /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
 		68B61C231A3974E000965EAC /* PeripheralJoystick.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralJoystick.cpp; sourceTree = "<group>"; };
@@ -7163,8 +7163,8 @@
 		682FAF231AA122F800E058BA /* joysticks */ = {
 			isa = PBXGroup;
 			children = (
+				684F659E1ABC5DA1005A5C11 /* IJoystickDriverHandler.h */,
 				682FAF2F1AA1231600E058BA /* IJoystickButtonMap.h */,
-				682FAF301AA1231600E058BA /* IJoystickFeatureHandler.h */,
 				682FAF311AA1231600E058BA /* IJoystickInputHandler.h */,
 				682FAF321AA1231600E058BA /* InputPrimitive.cpp */,
 				682FAF331AA1231600E058BA /* InputPrimitive.h */,
@@ -7177,8 +7177,8 @@
 		682FAF241AA1230000E058BA /* generic */ = {
 			isa = PBXGroup;
 			children = (
-				682FAF251AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp */,
-				682FAF261AA1230E00E058BA /* GenericJoystickFeatureHandler.h */,
+				684F659F1ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp */,
+				684F65A01ABC5DAD005A5C11 /* GenericJoystickDriverHandler.h */,
 				682FAF271AA1230E00E058BA /* GenericJoystickInputHandler.cpp */,
 				682FAF281AA1230E00E058BA /* GenericJoystickInputHandler.h */,
 			);
@@ -10933,6 +10933,7 @@
 				F506297A0E57B9680066625A /* MultiPathFile.cpp in Sources */,
 				DFEB902819E9337200728978 /* AEResampleFactory.cpp in Sources */,
 				F5F2EF4B0E593E0D0092C37F /* DVDFileInfo.cpp in Sources */,
+				684F65A11ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp in Sources */,
 				F5FDF51D0E7218950005B0A6 /* AsyncFileCopy.cpp in Sources */,
 				E4E91BB80E7F7338001F0546 /* NptXbmcFile.cpp in Sources */,
 				F5FAB0710EFABAC800BAD4AE /* VTPFile.cpp in Sources */,
@@ -11496,7 +11497,6 @@
 				7C920CF9181669FF00DA1477 /* TextureOperations.cpp in Sources */,
 				DFEF0BAC180ADE6400AEAED1 /* FileItemListModification.cpp in Sources */,
 				DFEF0BC1180ADEDA00AEAED1 /* SmartPlaylistFileItemListModifier.cpp in Sources */,
-				682FAF291AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp in Sources */,
 				7CC82C9318284F9F0010DF30 /* CharsetDetection.cpp in Sources */,
 				7C26126C182068660086E04D /* SettingsOperations.cpp in Sources */,
 				7C7BCDC517727951004842FB /* IListProvider.cpp in Sources */,
@@ -11802,7 +11802,6 @@
 				DFF0F18B17528350002DA3A4 /* DVDSubtitleTagMicroDVD.cpp in Sources */,
 				DFF0F18C17528350002DA3A4 /* DVDSubtitleTagSami.cpp in Sources */,
 				DFF0F18D17528350002DA3A4 /* DVDAudio.cpp in Sources */,
-				682FAF2B1AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp in Sources */,
 				DFF0F18E17528350002DA3A4 /* DVDClock.cpp in Sources */,
 				DF56EF261A798A5E00CAAEFB /* HttpRangeUtils.cpp in Sources */,
 				DFF0F18F17528350002DA3A4 /* DVDDemuxSPU.cpp in Sources */,
@@ -11982,6 +11981,7 @@
 				DFF0F23B17528350002DA3A4 /* RarDirectory.cpp in Sources */,
 				DFF0F23C17528350002DA3A4 /* RarFile.cpp in Sources */,
 				682FAF371AA1231600E058BA /* InputPrimitive.cpp in Sources */,
+				684F65A31ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp in Sources */,
 				DFF0F23D17528350002DA3A4 /* RarManager.cpp in Sources */,
 				DFF0F23E17528350002DA3A4 /* RSSDirectory.cpp in Sources */,
 				DFF0F23F17528350002DA3A4 /* RTVDirectory.cpp in Sources */,
@@ -12756,6 +12756,7 @@
 				E4991154174E5CC300741B6D /* crypt.cpp in Sources */,
 				E4991155174E5CC300741B6D /* encname.cpp in Sources */,
 				E4991156174E5CC300741B6D /* errhnd.cpp in Sources */,
+				684F65A21ABC5DAD005A5C11 /* GenericJoystickDriverHandler.cpp in Sources */,
 				E4991157174E5CC300741B6D /* extinfo.cpp in Sources */,
 				68B61C211A39667200965EAC /* PeripheralBusAddon.cpp in Sources */,
 				E4991158174E5CC300741B6D /* extract.cpp in Sources */,
@@ -13288,7 +13289,6 @@
 				E4991390174E5F0E00741B6D /* MusicInfoTagLoaderSPC.cpp in Sources */,
 				E4991392174E5F0E00741B6D /* MusicInfoTagLoaderYM.cpp in Sources */,
 				E4991393174E5F0E00741B6D /* TagLibVFSStream.cpp in Sources */,
-				682FAF2A1AA1230E00E058BA /* GenericJoystickFeatureHandler.cpp in Sources */,
 				E4991394174E5F0E00741B6D /* TagLoaderTagLib.cpp in Sources */,
 				E4991395174E5F0E00741B6D /* GUIWindowMusicBase.cpp in Sources */,
 				E4991396174E5F0E00741B6D /* GUIWindowMusicNav.cpp in Sources */,
