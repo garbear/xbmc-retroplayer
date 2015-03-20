@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -46,17 +47,23 @@ public:
   void OpenPort(IJoystickInputHandler* handler, const std::string& strDeviceId);
   void ClosePort(IJoystickInputHandler* handler);
 
-  size_t DevicesAttached(int portNumber) const;
-
 private:
-  void AssignDevices(void);
+  void ProcessDevices(void);
   void ClearDevices(void);
 
-  void AddDevice(PERIPHERALS::CPeripheral* device, int requestedPort);
+  std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void) const;
 
+  void AssignDevices(const std::vector<PERIPHERALS::CPeripheral*>& devices);
+  void AssignDevice(PERIPHERALS::CPeripheral* device, int requestedPort);
+
+  void ProcessHandlers(std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& oldDeviceMap) const;
+
+  // Utility functions
+  size_t DevicesAttached(int portNumber) const;
   int GetNextOpenPort(int startPort = 1) const;
+  IJoystickInputHandler* GetInputHandler(PERIPHERALS::CPeripheral* device) const;
+  std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*> GetDeviceMap(void) const;
 
-  std::vector<SPort>                     m_ports;
-  std::vector<PERIPHERALS::CPeripheral*> m_devices;
-  size_t                                 m_deviceDepth;
+  std::vector<SPort> m_ports;
+  size_t             m_deviceDepth;
 };
