@@ -6270,9 +6270,6 @@
     <ClInclude Include="..\..\xbmc\games\SerialState.h">
       <Filter>games</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\GameClient.h">
-      <Filter>games</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayer.h">
       <Filter>cores\RetroPlayer</Filter>
     </ClInclude>
