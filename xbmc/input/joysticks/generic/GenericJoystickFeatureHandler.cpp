@@ -48,7 +48,7 @@ CGenericJoystickFeatureHandler::CGenericJoystickFeatureHandler(void) :
 {
 }
 
-bool CGenericJoystickFeatureHandler::OnButtonPress(JoystickFeatureID id)
+bool CGenericJoystickFeatureHandler::OnButtonPress(JoystickFeatureID id, bool bPressed)
 {
   unsigned int buttonKeyId = GetButtonKeyID(id);
   if (buttonKeyId != 0)
@@ -58,37 +58,16 @@ bool CGenericJoystickFeatureHandler::OnButtonPress(JoystickFeatureID id)
     {
       if (action.IsAnalog())
       {
-        const float amount = 1.0f;
+        const float amount = bPressed ? 1.0f : 0.0f;
         CAction actionWithAmount(action.GetID(), amount, 0.0f, action.GetName());
         CApplicationMessenger::Get().SendAction(action);
       }
       else
       {
-        ProcessButtonPress(action);
-      }
-    }
-  }
-
-  return true;
-}
-
-bool CGenericJoystickFeatureHandler::OnButtonRelease(JoystickFeatureID id)
-{
-  unsigned int buttonKeyId = GetButtonKeyID(id);
-  if (buttonKeyId != 0)
-  {
-    CAction action(CButtonTranslator::GetInstance().GetAction(g_windowManager.GetActiveWindowID(), CKey(buttonKeyId, 0)));
-    if (action.GetID() > 0)
-    {
-      if (action.IsAnalog())
-      {
-        const float amount = 0.0f;
-        CAction actionWithAmount(action.GetID(), amount, 0.0f, action.GetName());
-        CApplicationMessenger::Get().SendAction(action);
-      }
-      else
-      {
-        ProcessButtonRelease(buttonKeyId);
+        if (bPressed)
+          ProcessButtonPress(action);
+        else
+          ProcessButtonRelease(buttonKeyId);
       }
     }
   }

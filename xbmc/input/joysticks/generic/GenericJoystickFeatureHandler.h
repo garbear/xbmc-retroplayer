@@ -42,8 +42,7 @@ public:
   virtual ~CGenericJoystickFeatureHandler(void) { }
 
   // implementation of IJoystickFeatureHandler
-  virtual bool OnButtonPress(JoystickFeatureID id);
-  virtual bool OnButtonRelease(JoystickFeatureID id);
+  virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
   virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
   virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
   virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z);
