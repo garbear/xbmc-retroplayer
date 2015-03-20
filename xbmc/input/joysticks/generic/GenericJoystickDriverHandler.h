@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "input/joysticks/IJoystickInputHandler.h"
+#include "input/joysticks/IJoystickDriverHandler.h"
 
 #include <set>
 #include <vector>
@@ -28,17 +28,17 @@ class IJoystickFeatureHandler;
 class IJoystickButtonMap;
 
 /*!
- * \brief Generic implementation of IJoystickInputHandler to translate raw
+ * \brief Generic implementation of IJoystickDriverHandler to translate raw
  *        actions into physical joystick features using the provided button map
  */
-class CGenericJoystickInputHandler : public IJoystickInputHandler
+class CGenericJoystickDriverHandler : public IJoystickDriverHandler
 {
 public:
-  CGenericJoystickInputHandler(IJoystickFeatureHandler *handler, IJoystickButtonMap *buttonMap);
+  CGenericJoystickDriverHandler(IJoystickFeatureHandler *handler, IJoystickButtonMap *buttonMap);
 
-  virtual ~CGenericJoystickInputHandler() { }
+  virtual ~CGenericJoystickDriverHandler() { }
 
-  // implementation of IJoystickInputHandler
+  // implementation of IJoystickDriverHandler
   virtual void OnButtonMotion(unsigned int index, bool bPressed);
   virtual void OnHatMotion(unsigned int index, HatDirection direction);
   virtual void OnAxisMotion(unsigned int index, float position);

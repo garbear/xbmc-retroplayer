@@ -28,7 +28,7 @@
 
 #define JOYSTICK_PORT_UNKNOWN  0
 
-class IJoystickInputHandler;
+class IJoystickDriverHandler;
 class IJoystickButtonMap;
 
 namespace PERIPHERALS
@@ -51,7 +51,7 @@ namespace PERIPHERALS
 
     int RequestedPort(void) const { return m_requestedPort; }
 
-    IJoystickInputHandler* GetInputHandler(void) { return m_inputHandler; }
+    IJoystickDriverHandler* GetDriverHandler(void) { return m_driverHandler; }
 
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName)    { m_strDeviceName = strName; } // Override value in peripherals.xml
@@ -64,6 +64,6 @@ namespace PERIPHERALS
     std::vector<IJoystickFeatureHandler*> m_handlers;
     CGenericJoystickFeatureHandler m_fallbackHandler;
     IJoystickButtonMap*            m_buttonMap;
-    IJoystickInputHandler*         m_inputHandler;
+    IJoystickDriverHandler*        m_driverHandler;
   };
 }

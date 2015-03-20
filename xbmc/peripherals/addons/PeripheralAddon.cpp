@@ -23,7 +23,7 @@
 #include "addons/AddonManager.h"
 #include "filesystem/SpecialProtocol.h"
 #include "input/joysticks/InputPrimitive.h"
-#include "input/joysticks/IJoystickInputHandler.h"
+#include "input/joysticks/IJoystickDriverHandler.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
 #include "peripherals/devices/PeripheralJoystick.h"
@@ -400,7 +400,7 @@ bool CPeripheralAddon::ProcessEvents(void)
       case PERIPHERAL_JOYSTICK:
       {
         CPeripheralJoystick* joystickDevice = static_cast<CPeripheralJoystick*>(device);
-        if (!joystickDevice->GetInputHandler())
+        if (!joystickDevice->GetDriverHandler())
           continue;
 
         switch (event.Type())
@@ -410,7 +410,7 @@ bool CPeripheralAddon::ProcessEvents(void)
             const bool bPressed = (event.ButtonState() == JOYSTICK_STATE_BUTTON_PRESSED);
             CLog::Log(LOGDEBUG, "Joystick %s: Button %u %s", joystickDevice->DeviceName().c_str(),
                       event.DriverIndex(), bPressed ? "pressed" : "released");
-            joystickDevice->GetInputHandler()->OnButtonMotion(event.DriverIndex(), bPressed);
+            joystickDevice->GetDriverHandler()->OnButtonMotion(event.DriverIndex(), bPressed);
             break;
           }
           case PERIPHERAL_EVENT_TYPE_DRIVER_HAT:
@@ -418,12 +418,12 @@ bool CPeripheralAddon::ProcessEvents(void)
             const HatDirection dir = ToHatDirection(event.HatState());
             CLog::Log(LOGDEBUG, "Joystick %s: Hat %u %s", joystickDevice->DeviceName().c_str(),
                       event.DriverIndex(), CJoystickTranslator::HatDirectionToString(dir));
-            joystickDevice->GetInputHandler()->OnHatMotion(event.DriverIndex(), dir);
+            joystickDevice->GetDriverHandler()->OnHatMotion(event.DriverIndex(), dir);
             break;
           }
           case PERIPHERAL_EVENT_TYPE_DRIVER_AXIS:
           {
-            joystickDevice->GetInputHandler()->OnAxisMotion(event.DriverIndex(), event.AxisState());
+            joystickDevice->GetDriverHandler()->OnAxisMotion(event.DriverIndex(), event.AxisState());
             joysticksWithAxisMotion.insert(joystickDevice);
             break;
           }
@@ -438,7 +438,7 @@ bool CPeripheralAddon::ProcessEvents(void)
     }
 
     for (std::set<CPeripheralJoystick*>::iterator it = joysticksWithAxisMotion.begin(); it != joysticksWithAxisMotion.end(); ++it)
-      (*it)->GetInputHandler()->ProcessAxisMotions();
+      (*it)->GetDriverHandler()->ProcessAxisMotions();
 
     try { m_pStruct->FreeEvents(eventCount, pEvents); }
     catch (std::exception &e) { LogException(e, "FreeJoysticks()"); }

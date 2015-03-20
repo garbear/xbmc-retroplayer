@@ -19,7 +19,7 @@
  */
 
 #include "PeripheralJoystick.h"
-#include "input/joysticks/generic/GenericJoystickInputHandler.h"
+#include "input/joysticks/generic/GenericJoystickDriverHandler.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/addons/AddonJoystickButtonMap.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
@@ -37,14 +37,14 @@ CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult)
   CPeripheral(scanResult),
   m_requestedPort(JOYSTICK_PORT_UNKNOWN),
   m_buttonMap(NULL),
-  m_inputHandler(NULL)
+  m_driverHandler(NULL)
 {
   m_features.push_back(FEATURE_JOYSTICK);
 }
 
 CPeripheralJoystick::~CPeripheralJoystick(void)
 {
-  delete m_inputHandler;
+  delete m_driverHandler;
   delete m_buttonMap;
 }
 
@@ -68,7 +68,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
           m_buttonMap = new CAddonJoystickButtonMap(addon, index);
           if (m_buttonMap->Load())
-            m_inputHandler = new CGenericJoystickInputHandler(this, m_buttonMap);
+            m_driverHandler = new CGenericJoystickDriverHandler(this, m_buttonMap);
           else
             SAFE_DELETE(m_buttonMap);
         }
@@ -78,7 +78,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
     }
   }
 
-  return m_inputHandler != NULL;
+  return m_driverHandler != NULL;
 }
 
 bool CPeripheralJoystick::OnButtonPress(JoystickFeatureID id, bool bPressed)

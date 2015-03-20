@@ -18,7 +18,7 @@
  *
  */
 
-#include "GenericJoystickInputHandler.h"
+#include "GenericJoystickDriverHandler.h"
 #include "input/joysticks/InputPrimitive.h"
 #include "input/joysticks/IJoystickFeatureHandler.h"
 #include "input/joysticks/IJoystickButtonMap.h"
@@ -29,13 +29,13 @@
 
 #define ANALOG_DIGITAL_THRESHOLD  0.5f
 
-CGenericJoystickInputHandler::CGenericJoystickInputHandler(IJoystickFeatureHandler *handler, IJoystickButtonMap* buttonMap)
+CGenericJoystickDriverHandler::CGenericJoystickDriverHandler(IJoystickFeatureHandler *handler, IJoystickButtonMap* buttonMap)
  : m_handler(handler),
    m_buttonMap(buttonMap)
 {
 }
 
-void CGenericJoystickInputHandler::OnButtonMotion(unsigned int index, bool bPressed)
+void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int index, bool bPressed)
 {
   const char pressed = bPressed ? 1 : 0;
 
@@ -52,7 +52,7 @@ void CGenericJoystickInputHandler::OnButtonMotion(unsigned int index, bool bPres
 
   if (feature != JOY_ID_BUTTON_UNKNOWN)
   {
-    CLog::Log(LOGDEBUG, "CGenericJoystickInputHandler: Feature %d %s",
+    CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d %s",
               feature, bPressed ? "pressed" : "released");
 
     if (!oldState && pressed)
@@ -62,14 +62,14 @@ void CGenericJoystickInputHandler::OnButtonMotion(unsigned int index, bool bPres
   }
   else if (bPressed)
   {
-    CLog::Log(LOGDEBUG, "CGenericJoystickInputHandler: No feature for button %u",
+    CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: No feature for button %u",
               index);
   }
 
   oldState = pressed;
 }
 
-void CGenericJoystickInputHandler::OnHatMotion(unsigned int index, HatDirection newDirection)
+void CGenericJoystickDriverHandler::OnHatMotion(unsigned int index, HatDirection newDirection)
 {
   if (m_hatStates.size() <= index)
     m_hatStates.resize(index + 1);
@@ -84,7 +84,7 @@ void CGenericJoystickInputHandler::OnHatMotion(unsigned int index, HatDirection 
   oldDirection = newDirection;
 }
 
-void CGenericJoystickInputHandler::ProcessHatDirection(int index,
+void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
     HatDirection oldDir, HatDirection newDir, HatDirection targetDir)
 {
   if ((oldDir & targetDir) == HatDirectionNone &&
@@ -94,13 +94,13 @@ void CGenericJoystickInputHandler::ProcessHatDirection(int index,
     JoystickFeatureID feature = m_buttonMap->GetFeature(left);
     if (feature != JOY_ID_BUTTON_UNKNOWN)
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickInputHandler: Feature %d activated",
+      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d activated",
                 feature);
       m_handler->OnButtonPress(feature, true);
     }
     else
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickInputHandler: No feature for hat %u %s",
+      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: No feature for hat %u %s",
                 index, CJoystickTranslator::HatDirectionToString(targetDir));
     }
   }
@@ -111,14 +111,14 @@ void CGenericJoystickInputHandler::ProcessHatDirection(int index,
     JoystickFeatureID feature = m_buttonMap->GetFeature(left);
     if (feature != JOY_ID_BUTTON_UNKNOWN)
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickInputHandler: Feature %d deactivated",
+      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d deactivated",
                 feature);
       m_handler->OnButtonPress(feature, false);
     }
   }
 }
 
-void CGenericJoystickInputHandler::OnAxisMotion(unsigned int index, float newPosition)
+void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int index, float newPosition)
 {
   if (m_axisStates.size() <= index)
     m_axisStates.resize(index + 1);
@@ -172,7 +172,7 @@ void CGenericJoystickInputHandler::OnAxisMotion(unsigned int index, float newPos
   }
 }
 
-void CGenericJoystickInputHandler::ProcessAxisMotions()
+void CGenericJoystickDriverHandler::ProcessAxisMotions()
 {
   std::vector<JoystickFeatureID> featuresToProcess;
   featuresToProcess.swap(m_featuresWithMotion);
@@ -229,7 +229,7 @@ void CGenericJoystickInputHandler::ProcessAxisMotions()
   }
 }
 
-float CGenericJoystickInputHandler::GetAxisState(int axisIndex) const
+float CGenericJoystickDriverHandler::GetAxisState(int axisIndex) const
 {
   return (0 <= axisIndex && axisIndex < (int)m_axisStates.size()) ? m_axisStates[axisIndex] : 0;
 }

@@ -1,5 +1,5 @@
-SRCS=GenericJoystickFeatureHandler.cpp \
-     GenericJoystickInputHandler.cpp \
+SRCS=GenericJoystickDriverHandler.cpp \
+     GenericJoystickFeatureHandler.cpp \
 
 LIB=input_joysticks_generic.a
 

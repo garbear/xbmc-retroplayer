@@ -31,7 +31,7 @@
 #include <vector>
 
 class CInputPrimitive;
-class IJoystickInputHandler;
+class IJoystickDriverHandler;
 
 namespace PERIPHERALS
 {

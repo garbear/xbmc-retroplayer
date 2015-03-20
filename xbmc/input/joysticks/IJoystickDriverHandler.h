@@ -26,10 +26,10 @@
  * \brief Interface defining methods to handle joystick events for raw driver
  *        elements (buttons, hats, axes)
  */
-class IJoystickInputHandler
+class IJoystickDriverHandler
 {
 public:
-  virtual ~IJoystickInputHandler(void) { }
+  virtual ~IJoystickDriverHandler(void) { }
 
   /*!
    * \brief Handle button motion
