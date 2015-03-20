@@ -24,7 +24,7 @@
 #include <set>
 #include <vector>
 
-class IJoystickFeatureHandler;
+class IJoystickInputHandler;
 class IJoystickButtonMap;
 
 /*!
@@ -34,7 +34,7 @@ class IJoystickButtonMap;
 class CGenericJoystickDriverHandler : public IJoystickDriverHandler
 {
 public:
-  CGenericJoystickDriverHandler(IJoystickFeatureHandler *handler, IJoystickButtonMap *buttonMap);
+  CGenericJoystickDriverHandler(IJoystickInputHandler* handler, IJoystickButtonMap* buttonMap);
 
   virtual ~CGenericJoystickDriverHandler() { }
 
@@ -49,8 +49,8 @@ private:
 
   float GetAxisState(int axisIndex) const;
 
-  IJoystickFeatureHandler     *m_handler;
-  IJoystickButtonMap          *m_buttonMap;
+  IJoystickInputHandler*      m_handler;
+  IJoystickButtonMap*         m_buttonMap;
   std::vector<char>           m_buttonStates; // std::vector is specialized for <bool>
   std::vector<HatDirection>   m_hatStates;
   std::vector<float>          m_axisStates;

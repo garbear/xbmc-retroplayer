@@ -20,8 +20,8 @@
 
 #include "GenericJoystickDriverHandler.h"
 #include "input/joysticks/InputPrimitive.h"
-#include "input/joysticks/IJoystickFeatureHandler.h"
 #include "input/joysticks/IJoystickButtonMap.h"
+#include "input/joysticks/IJoystickInputHandler.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "utils/log.h"
 
@@ -29,7 +29,7 @@
 
 #define ANALOG_DIGITAL_THRESHOLD  0.5f
 
-CGenericJoystickDriverHandler::CGenericJoystickDriverHandler(IJoystickFeatureHandler *handler, IJoystickButtonMap* buttonMap)
+CGenericJoystickDriverHandler::CGenericJoystickDriverHandler(IJoystickInputHandler* handler, IJoystickButtonMap* buttonMap)
  : m_handler(handler),
    m_buttonMap(buttonMap)
 {
@@ -44,7 +44,7 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int index, bool bPre
 
   if (m_buttonStates[index] == pressed)
     return;
-  
+
   char& oldState = m_buttonStates[index];
 
   CInputPrimitive button(index);

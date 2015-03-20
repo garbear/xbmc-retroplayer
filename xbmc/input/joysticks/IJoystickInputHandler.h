@@ -26,10 +26,10 @@
  * \brief Interface for handling events for physical joystick features like
  *        buttons, triggers and analog sticks
  */
-class IJoystickFeatureHandler
+class IJoystickInputHandler
 {
 public:
-  virtual ~IJoystickFeatureHandler(void) { }
+  virtual ~IJoystickInputHandler(void) { }
 
   /*!
    * \brief A digital button has been pressed or released

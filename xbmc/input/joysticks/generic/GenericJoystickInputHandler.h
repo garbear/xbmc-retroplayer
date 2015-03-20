@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "input/joysticks/IJoystickFeatureHandler.h"
+#include "input/joysticks/IJoystickInputHandler.h"
 #include "threads/CriticalSection.h"
 #include "threads/Timer.h"
 
@@ -29,19 +29,19 @@ class CAction;
 
 /*!
  * \ingroup joysticks_generic
- * \brief Generic implementation of IJoystickFeatureHandler to translate
- *        joystick features into joystick.xml buttons
+ * \brief Generic implementation of IJoystickInputHandler to translate
+ *        input events from physical joystick features into joystick.xml buttons
  *
- * \sa IJoystickFeatureHandler
+ * \sa IJoystickInputHandler
  */
-class CGenericJoystickFeatureHandler : public IJoystickFeatureHandler, public ITimerCallback
+class CGenericJoystickInputHandler : public IJoystickInputHandler, public ITimerCallback
 {
 public:
-  CGenericJoystickFeatureHandler(void);
+  CGenericJoystickInputHandler(void);
 
-  virtual ~CGenericJoystickFeatureHandler(void) { }
+  virtual ~CGenericJoystickInputHandler(void) { }
 
-  // implementation of IJoystickFeatureHandler
+  // implementation of IJoystickInputHandler
   virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
   virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
   virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);

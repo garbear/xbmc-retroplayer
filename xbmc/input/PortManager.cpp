@@ -29,7 +29,7 @@ using namespace PERIPHERALS;
 
 struct HandlerEqual
 {
-  HandlerEqual(IJoystickFeatureHandler* handler) : m_handler(handler) { }
+  HandlerEqual(IJoystickInputHandler* handler) : m_handler(handler) { }
 
   bool operator()(const SPort& port)
   {
@@ -37,7 +37,7 @@ struct HandlerEqual
   }
 
 private:
-  IJoystickFeatureHandler* const m_handler;
+  IJoystickInputHandler* const m_handler;
 };
 
 // --- CPortManager ------------------------------------------------------------
@@ -53,7 +53,7 @@ CPortManager& CPortManager::Get()
   return instance;
 }
 
-void CPortManager::OpenPort(IJoystickFeatureHandler* handler, const std::string& strDeviceId)
+void CPortManager::OpenPort(IJoystickInputHandler* handler, const std::string& strDeviceId)
 {
   SPort port;
 
@@ -65,7 +65,7 @@ void CPortManager::OpenPort(IJoystickFeatureHandler* handler, const std::string&
   AssignDevices();
 }
 
-void CPortManager::ClosePort(IJoystickFeatureHandler* handler)
+void CPortManager::ClosePort(IJoystickInputHandler* handler)
 {
   m_ports.erase(std::remove_if(m_ports.begin(), m_ports.end(), HandlerEqual(handler)), m_ports.end());
 

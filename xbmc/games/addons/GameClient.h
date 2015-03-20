@@ -65,8 +65,7 @@
 #include "addons/DllGameClient.h"
 #include "games/GameTypes.h"
 #include "games/SerialState.h"
-#include "input/joysticks/IJoystickFeatureHandler.h"
-//#include "games/tags/GameInfoTagLoader.h"
+#include "input/joysticks/IJoystickInputHandler.h"
 #include "threads/CriticalSection.h"
 
 #include <map>
@@ -83,12 +82,12 @@ namespace GAME
 
 class CGameClient;
 
-class CGameController : public IJoystickFeatureHandler
+class CGameController : public IJoystickInputHandler
 {
 public:
   CGameController(CGameClient* addon, int port);
 
-  // Implementation of IJoystickFeatureHandler
+  // Implementation of IJoystickInputHandler
   virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
   virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
   virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);

@@ -18,7 +18,7 @@
  *
  */
 
-#include "GenericJoystickFeatureHandler.h"
+#include "GenericJoystickInputHandler.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/ButtonTranslator.h"
 #include "input/Key.h"
@@ -42,13 +42,13 @@
 #define ARRAY_SIZE(x)  (sizeof(x) / sizeof((x)[0]))
 #endif
 
-CGenericJoystickFeatureHandler::CGenericJoystickFeatureHandler(void) :
+CGenericJoystickInputHandler::CGenericJoystickInputHandler(void) :
   m_holdTimer(this),
   m_lastButtonPress(0)
 {
 }
 
-bool CGenericJoystickFeatureHandler::OnButtonPress(JoystickFeatureID id, bool bPressed)
+bool CGenericJoystickInputHandler::OnButtonPress(JoystickFeatureID id, bool bPressed)
 {
   unsigned int buttonKeyId = GetButtonKeyID(id);
   if (buttonKeyId != 0)
@@ -75,7 +75,7 @@ bool CGenericJoystickFeatureHandler::OnButtonPress(JoystickFeatureID id, bool bP
   return true;
 }
 
-bool CGenericJoystickFeatureHandler::OnButtonMotion(JoystickFeatureID id, float magnitude)
+bool CGenericJoystickInputHandler::OnButtonMotion(JoystickFeatureID id, float magnitude)
 {
   unsigned int buttonKeyId = GetButtonKeyID(id);
   if (buttonKeyId != 0)
@@ -101,7 +101,7 @@ bool CGenericJoystickFeatureHandler::OnButtonMotion(JoystickFeatureID id, float 
   return true;
 }
 
-bool CGenericJoystickFeatureHandler::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+bool CGenericJoystickInputHandler::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
 {
   unsigned int buttonKeyId  = GetButtonKeyID(id, x, y);
 
@@ -150,12 +150,12 @@ bool CGenericJoystickFeatureHandler::OnAnalogStickMotion(JoystickFeatureID id, f
   return true;
 }
 
-bool CGenericJoystickFeatureHandler::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+bool CGenericJoystickInputHandler::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
 {
   return OnAnalogStickMotion(id, x, y); // TODO
 }
 
-void CGenericJoystickFeatureHandler::OnTimeout(void)
+void CGenericJoystickInputHandler::OnTimeout(void)
 {
   CSingleLock lock(m_digitalMutex);
 
@@ -169,7 +169,7 @@ void CGenericJoystickFeatureHandler::OnTimeout(void)
   }
 }
 
-void CGenericJoystickFeatureHandler::ProcessButtonPress(const CAction& action)
+void CGenericJoystickInputHandler::ProcessButtonPress(const CAction& action)
 {
   if (std::find(m_pressedButtons.begin(), m_pressedButtons.end(), action.GetButtonCode()) == m_pressedButtons.end())
   {
@@ -184,7 +184,7 @@ void CGenericJoystickFeatureHandler::ProcessButtonPress(const CAction& action)
   }
 }
 
-void CGenericJoystickFeatureHandler::ProcessButtonRelease(unsigned int buttonKeyId)
+void CGenericJoystickInputHandler::ProcessButtonRelease(unsigned int buttonKeyId)
 {
   std::vector<unsigned int>::iterator it = std::find(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyId);
   if (it != m_pressedButtons.end())
@@ -196,19 +196,19 @@ void CGenericJoystickFeatureHandler::ProcessButtonRelease(unsigned int buttonKey
   }
 }
 
-void CGenericJoystickFeatureHandler::StartHoldTimer(unsigned int buttonKeyId)
+void CGenericJoystickInputHandler::StartHoldTimer(unsigned int buttonKeyId)
 {
   m_holdTimer.Start(REPEAT_TIMEOUT_MS, true);
   m_lastButtonPress = buttonKeyId;
 }
 
-void CGenericJoystickFeatureHandler::ClearHoldTimer(void)
+void CGenericJoystickInputHandler::ClearHoldTimer(void)
 {
   m_holdTimer.Stop(true);
   m_lastButtonPress = 0;
 }
 
-unsigned int CGenericJoystickFeatureHandler::GetButtonKeyID(JoystickFeatureID id, float x /* = 0.0f */, float y /* = 0.0f */, float z /* = 0.0f */)
+unsigned int CGenericJoystickInputHandler::GetButtonKeyID(JoystickFeatureID id, float x /* = 0.0f */, float y /* = 0.0f */, float z /* = 0.0f */)
 {
   switch (id)
   {

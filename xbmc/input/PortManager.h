@@ -22,13 +22,13 @@
 #include <string>
 #include <vector>
 
-class IJoystickFeatureHandler;
+class IJoystickInputHandler;
 
 namespace PERIPHERALS { class CPeripheral; }
 
 struct SPort
 {
-  IJoystickFeatureHandler*               handler;
+  IJoystickInputHandler*                 handler;
   std::vector<PERIPHERALS::CPeripheral*> devices;
   std::string                            controllerId;
 };
@@ -43,8 +43,8 @@ public:
 
   ~CPortManager(void) { ClearDevices(); }
 
-  void OpenPort(IJoystickFeatureHandler* handler, const std::string& strDeviceId);
-  void ClosePort(IJoystickFeatureHandler* handler);
+  void OpenPort(IJoystickInputHandler* handler, const std::string& strDeviceId);
+  void ClosePort(IJoystickInputHandler* handler);
 
   size_t DevicesAttached(int portNumber) const;
 

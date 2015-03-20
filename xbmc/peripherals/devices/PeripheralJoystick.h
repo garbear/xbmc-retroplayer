@@ -21,7 +21,7 @@
 
 #include "Peripheral.h"
 #include "input/joysticks/JoystickTypes.h"
-#include "input/joysticks/generic/GenericJoystickFeatureHandler.h"
+#include "input/joysticks/generic/GenericJoystickInputHandler.h"
 
 #include <string>
 #include <vector>
@@ -34,7 +34,7 @@ class IJoystickButtonMap;
 namespace PERIPHERALS
 {
   class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
-                              public IJoystickFeatureHandler
+                              public IJoystickInputHandler
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
@@ -43,7 +43,7 @@ namespace PERIPHERALS
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
-    // implementation of IJoystickFeatureHandler
+    // implementation of IJoystickInputHandler
     virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
     virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
     virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
@@ -56,13 +56,13 @@ namespace PERIPHERALS
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName)    { m_strDeviceName = strName; } // Override value in peripherals.xml
 
-    void RegisterInputHandler(IJoystickFeatureHandler* handler);
-    void UnregisterInputHandler(IJoystickFeatureHandler* handler);
+    void RegisterInputHandler(IJoystickInputHandler* handler);
+    void UnregisterInputHandler(IJoystickInputHandler* handler);
 
   protected:
     int                            m_requestedPort;
-    std::vector<IJoystickFeatureHandler*> m_handlers;
-    CGenericJoystickFeatureHandler m_fallbackHandler;
+    std::vector<IJoystickInputHandler*> m_handlers;
+    CGenericJoystickInputHandler   m_fallbackHandler;
     IJoystickButtonMap*            m_buttonMap;
     IJoystickDriverHandler*        m_driverHandler;
   };
