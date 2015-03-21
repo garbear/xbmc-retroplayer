@@ -525,8 +525,8 @@
     <ClCompile Include="..\..\xbmc\input\InertialScrollingHandler.cpp" />
     <ClCompile Include="..\..\xbmc\input\InputManager.cpp" />
     <ClCompile Include="..\..\xbmc\input\joysticks\generic\GenericJoystickDriverHandler.cpp" />
-    <ClCompile Include="..\..\xbmc\input\joysticks\InputPrimitive.cpp" />
     <ClCompile Include="..\..\xbmc\input\joysticks\generic\GenericJoystickInputHandler.cpp" />
+    <ClCompile Include="..\..\xbmc\input\joysticks\JoystickDriverPrimitive.cpp" />
     <ClCompile Include="..\..\xbmc\input\Key.cpp" />
     <ClCompile Include="..\..\xbmc\input\KeyboardLayout.cpp" />
     <ClCompile Include="..\..\xbmc\input\KeyboardLayoutConfiguration.cpp" />
@@ -945,10 +945,10 @@
     <ClInclude Include="..\..\xbmc\input\joysticks\generic\GenericJoystickDriverHandler.h" />
     <ClInclude Include="..\..\xbmc\input\joysticks\IJoystickActionHandler.h" />
     <ClInclude Include="..\..\xbmc\input\joysticks\IJoystickDriverHandler.h" />
-    <ClInclude Include="..\..\xbmc\input\joysticks\InputPrimitive.h" />
     <ClInclude Include="..\..\xbmc\input\joysticks\generic\GenericJoystickInputHandler.h" />
     <ClInclude Include="..\..\xbmc\input\joysticks\IJoystickButtonMap.h" />
     <ClInclude Include="..\..\xbmc\input\joysticks\IJoystickInputHandler.h" />
+    <ClInclude Include="..\..\xbmc\input\joysticks\JoystickDriverPrimitive.h" />
     <ClInclude Include="..\..\xbmc\input\joysticks\JoystickTypes.h" />
     <ClInclude Include="..\..\xbmc\input\Key.h" />
     <ClInclude Include="..\..\xbmc\input\PortManager.h" />
