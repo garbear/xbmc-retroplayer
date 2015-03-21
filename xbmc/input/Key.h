@@ -35,13 +35,9 @@
 #define KEY_BUTTON_B                        257
 #define KEY_BUTTON_X                        258
 #define KEY_BUTTON_Y                        259
-#define KEY_BUTTON_BLACK                    260
-#define KEY_BUTTON_WHITE                    261
+
 #define KEY_BUTTON_LEFT_TRIGGER             262
 #define KEY_BUTTON_RIGHT_TRIGGER            263
-
-#define KEY_BUTTON_LEFT_THUMB_STICK         264
-#define KEY_BUTTON_RIGHT_THUMB_STICK        265
 
 #define KEY_BUTTON_RIGHT_THUMB_STICK_UP     266 // right thumb stick directions
 #define KEY_BUTTON_RIGHT_THUMB_STICK_DOWN   267 // for defining different actions per direction
