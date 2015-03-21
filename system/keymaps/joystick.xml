@@ -8,16 +8,16 @@
       <y>FullScreen</y>
       <start>ActivateWindow(PlayerControls)</start>
       <back>Back</back>
-      <dpadleft>Left</dpadleft>
-      <dpadright>Right</dpadright>
-      <dpadup>Up</dpadup>
-      <dpaddown>Down</dpaddown>
+      <left>Left</left>
+      <right>Right</right>
+      <up>Up</up>
+      <down>Down</down>
       <leftthumbbutton>Screenshot</leftthumbbutton>
       <rightthumbbutton>ActivateWindow(ShutdownMenu)</rightthumbbutton>
-      <leftthumbstickleft>AnalogSeekBack</leftthumbstickleft>
-      <leftthumbstickright>AnalogSeekForward</leftthumbstickright>
-      <rightthumbstickup>VolumeUp</rightthumbstickup>
-      <rightthumbstickdown>VolumeDown</rightthumbstickdown>
+      <leftstickleft>AnalogSeekBack</leftstickleft>
+      <leftstickright>AnalogSeekForward</leftstickright>
+      <rightstickup>VolumeUp</rightstickup>
+      <rightstickdown>VolumeDown</rightstickdown>
       <guide>ActivateWindow(Home)</guide>
       <lefttrigger>ScrollUp</lefttrigger>
       <righttrigger>ScrollDown</righttrigger>
