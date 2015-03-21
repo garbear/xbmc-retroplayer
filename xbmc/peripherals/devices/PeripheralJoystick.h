@@ -21,6 +21,7 @@
 
 #include "Peripheral.h"
 #include "input/joysticks/JoystickTypes.h"
+#include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/joysticks/generic/GenericJoystickInputHandler.h"
 
 #include <string>
@@ -28,12 +29,12 @@
 
 #define JOYSTICK_PORT_UNKNOWN  0
 
-class IJoystickDriverHandler;
 class IJoystickButtonMap;
 
 namespace PERIPHERALS
 {
   class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
+                              public IJoystickDriverHandler,
                               public IJoystickInputHandler
   {
   public:
@@ -43,6 +44,12 @@ namespace PERIPHERALS
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
+    // implementation of IJoystickDriverHandler
+    virtual void OnButtonMotion(unsigned int index, bool bPressed);
+    virtual void OnHatMotion(unsigned int index, HatDirection direction);
+    virtual void OnAxisMotion(unsigned int index, float position);
+    virtual void ProcessAxisMotions(void);
+
     // implementation of IJoystickInputHandler
     virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
     virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
@@ -51,7 +58,6 @@ namespace PERIPHERALS
 
     int RequestedPort(void) const { return m_requestedPort; }
 
-    IJoystickDriverHandler* GetDriverHandler(void) { return m_driverHandler; }
     IJoystickButtonMap*     GetButtonMap(void) { return m_buttonMap; }
 
     // TODO: Move to CPeripheral

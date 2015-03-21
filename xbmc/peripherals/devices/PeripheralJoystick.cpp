@@ -81,6 +81,30 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
   return m_driverHandler != NULL;
 }
 
+void CPeripheralJoystick::OnButtonMotion(unsigned int index, bool bPressed)
+{
+  if (m_driverHandler)
+    m_driverHandler->OnButtonMotion(index, bPressed);
+}
+
+void CPeripheralJoystick::OnHatMotion(unsigned int index, HatDirection direction)
+{
+  if (m_driverHandler)
+    m_driverHandler->OnHatMotion(index, direction);
+}
+
+void CPeripheralJoystick::OnAxisMotion(unsigned int index, float position)
+{
+  if (m_driverHandler)
+    m_driverHandler->OnAxisMotion(index, position);
+}
+
+void CPeripheralJoystick::ProcessAxisMotions(void)
+{
+  if (m_driverHandler)
+    m_driverHandler->ProcessAxisMotions();
+}
+
 bool CPeripheralJoystick::OnButtonPress(JoystickFeatureID id, bool bPressed)
 {
   bool bHandled = false;

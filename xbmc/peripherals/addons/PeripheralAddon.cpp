@@ -401,8 +401,6 @@ bool CPeripheralAddon::ProcessEvents(void)
       case PERIPHERAL_JOYSTICK:
       {
         CPeripheralJoystick* joystickDevice = static_cast<CPeripheralJoystick*>(device);
-        if (!joystickDevice->GetDriverHandler())
-          continue;
 
         switch (event.Type())
         {
@@ -411,7 +409,7 @@ bool CPeripheralAddon::ProcessEvents(void)
             const bool bPressed = (event.ButtonState() == JOYSTICK_STATE_BUTTON_PRESSED);
             CLog::Log(LOGDEBUG, "Joystick %s: Button %u %s", joystickDevice->DeviceName().c_str(),
                       event.DriverIndex(), bPressed ? "pressed" : "released");
-            joystickDevice->GetDriverHandler()->OnButtonMotion(event.DriverIndex(), bPressed);
+            joystickDevice->OnButtonMotion(event.DriverIndex(), bPressed);
             break;
           }
           case PERIPHERAL_EVENT_TYPE_DRIVER_HAT:
@@ -419,12 +417,12 @@ bool CPeripheralAddon::ProcessEvents(void)
             const HatDirection dir = ToHatDirection(event.HatState());
             CLog::Log(LOGDEBUG, "Joystick %s: Hat %u %s", joystickDevice->DeviceName().c_str(),
                       event.DriverIndex(), CJoystickTranslator::HatDirectionToString(dir));
-            joystickDevice->GetDriverHandler()->OnHatMotion(event.DriverIndex(), dir);
+            joystickDevice->OnHatMotion(event.DriverIndex(), dir);
             break;
           }
           case PERIPHERAL_EVENT_TYPE_DRIVER_AXIS:
           {
-            joystickDevice->GetDriverHandler()->OnAxisMotion(event.DriverIndex(), event.AxisState());
+            joystickDevice->OnAxisMotion(event.DriverIndex(), event.AxisState());
             joysticksWithAxisMotion.insert(joystickDevice);
             break;
           }
@@ -439,7 +437,7 @@ bool CPeripheralAddon::ProcessEvents(void)
     }
 
     for (std::set<CPeripheralJoystick*>::iterator it = joysticksWithAxisMotion.begin(); it != joysticksWithAxisMotion.end(); ++it)
-      (*it)->GetDriverHandler()->ProcessAxisMotions();
+      (*it)->ProcessAxisMotions();
 
     try { m_pStruct->FreeEvents(eventCount, pEvents); }
     catch (std::exception &e) { LogException(e, "FreeJoysticks()"); }
