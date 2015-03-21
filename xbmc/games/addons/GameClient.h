@@ -82,10 +82,10 @@ namespace GAME
 
 class CGameClient;
 
-class CGameController : public IJoystickInputHandler
+class CDeviceInput : public IJoystickInputHandler
 {
 public:
-  CGameController(CGameClient* addon, int port);
+  CDeviceInput(CGameClient* addon, int port);
 
   // Implementation of IJoystickInputHandler
   virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
@@ -201,7 +201,7 @@ private:
   CSerialState          m_serialState;
 
   // Input
-  std::map<int, CGameController*>  m_controllers; // port -> controller
+  std::map<int, CDeviceInput*>  m_devices; // port -> controller
 
   CCriticalSection      m_critSection;
 };

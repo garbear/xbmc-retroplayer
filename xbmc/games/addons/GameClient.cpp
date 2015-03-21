@@ -61,30 +61,30 @@ struct NormalizeExtension
   }
 };
 
-// --- CGameController ---------------------------------------------------------
+// --- CDeviceInput ---------------------------------------------------------
 
-CGameController::CGameController(CGameClient* addon, int port)
+CDeviceInput::CDeviceInput(CGameClient* addon, int port)
   : m_addon(addon), m_port(port)
 {
   assert(m_addon);
 }
 
-bool CGameController::OnButtonPress(JoystickFeatureID id, bool bPressed)
+bool CDeviceInput::OnButtonPress(JoystickFeatureID id, bool bPressed)
 {
   return m_addon->OnButtonPress(m_port, id, bPressed);
 }
 
-bool CGameController::OnButtonMotion(JoystickFeatureID id, float magnitude)
+bool CDeviceInput::OnButtonMotion(JoystickFeatureID id, float magnitude)
 {
   return m_addon->OnButtonMotion(m_port, id, magnitude);
 }
 
-bool CGameController::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+bool CDeviceInput::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
 {
   return m_addon->OnAnalogStickMotion(m_port, id, x, y);
 }
 
-bool CGameController::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+bool CDeviceInput::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
 {
   return m_addon->OnAccelerometerMotion(m_port, id, x, y, z);
 }
@@ -438,12 +438,12 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
 
 bool CGameClient::OpenPort(int port, const std::string& strDeviceId)
 {
-  std::map<int, CGameController*>::const_iterator it = m_controllers.find(port);
-  if (it == m_controllers.end())
+  std::map<int, CDeviceInput*>::const_iterator it = m_devices.find(port);
+  if (it == m_devices.end())
   {
-    CGameController* controller = new CGameController(this, port);
-    CPortManager::Get().OpenPort(controller, strDeviceId);
-    m_controllers[port] = controller;
+    CDeviceInput* deviceInput = new CDeviceInput(this, port);
+    CPortManager::Get().OpenPort(deviceInput, strDeviceId);
+    m_devices[port] = deviceInput;
 
     return true;
   }
@@ -453,12 +453,12 @@ bool CGameClient::OpenPort(int port, const std::string& strDeviceId)
 
 void CGameClient::ClosePort(int port)
 {
-  std::map<int, CGameController*>::const_iterator it = m_controllers.find(port);
-  if (it != m_controllers.end())
+  std::map<int, CDeviceInput*>::const_iterator it = m_devices.find(port);
+  if (it != m_devices.end())
   {
     CPortManager::Get().ClosePort(it->second);
     delete it->second;
-    m_controllers.erase(it);
+    m_devices.erase(it);
   }
 }
 
