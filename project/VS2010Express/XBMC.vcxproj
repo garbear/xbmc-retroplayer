@@ -429,7 +429,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\windows\GUIDialogControllerFeatures.cpp" />
+    <ClCompile Include="..\..\xbmc\games\windows\GUIDialogControllerInput.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.cpp" />
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp" />
@@ -928,7 +928,7 @@
     <ClInclude Include="..\..\xbmc\games\SerialState.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h" />
-    <ClInclude Include="..\..\xbmc\games\windows\GUIDialogControllerFeatures.h" />
+    <ClInclude Include="..\..\xbmc\games\windows\GUIDialogControllerInput.h" />
     <ClInclude Include="..\..\xbmc\games\windows\GUIViewStateWindowGames.h" />
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.h" />
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h" />
