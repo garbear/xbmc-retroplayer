@@ -1,6 +1,6 @@
 # XBMC Media Center language file
-# Addon Name: NES Controller
-# Addon id: game.controller.nes
+# Addon Name: SNES Controller
+# Addon id: game.controller.snes
 # Addon Provider: Team-Kodi
 msgid ""
 msgstr ""
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30000"
-msgid "NES controller"
+msgid "SNES controller"
 msgstr ""
 
 msgctxt "#30001"
@@ -29,29 +29,45 @@ msgid "B"
 msgstr ""
 
 msgctxt "#30003"
-msgid "Start"
+msgid "X"
 msgstr ""
 
 msgctxt "#30004"
-msgid "Select"
+msgid "Y"
 msgstr ""
 
 msgctxt "#30005"
-msgid "D-pad"
+msgid "Start"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Up"
+msgid "Select"
 msgstr ""
 
 msgctxt "#30007"
-msgid "Right"
+msgid "D-pad"
 msgstr ""
 
 msgctxt "#30008"
-msgid "Down"
+msgid "Up"
 msgstr ""
 
 msgctxt "#30009"
+msgid "Right"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Down"
+msgstr ""
+
+msgctxt "#30011"
 msgid "Left"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Right bumper"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Left bumper"
 msgstr ""

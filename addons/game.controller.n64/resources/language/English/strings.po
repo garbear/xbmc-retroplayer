@@ -1,7 +1,7 @@
 # XBMC Media Center language file
-# Addon Name: NES Controller
-# Addon id: game.controller.nes
-# Addon Provider: Team-Kodi
+# Addon Name: Nintendo 64 (Mupen64plus)
+# Addon id: gameclient.mupen64plus
+# Addon Provider: Libretro Team
 msgid ""
 msgstr ""
 "Project-Id-Version: Libretro Clients\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30000"
-msgid "NES controller"
+msgid "N64 controller"
 msgstr ""
 
 msgctxt "#30001"
@@ -29,29 +29,53 @@ msgid "B"
 msgstr ""
 
 msgctxt "#30003"
-msgid "Start"
+msgid "C-up"
 msgstr ""
 
 msgctxt "#30004"
-msgid "Select"
+msgid "C-right"
 msgstr ""
 
 msgctxt "#30005"
-msgid "D-pad"
+msgid "C-down"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Up"
+msgid "C-left"
 msgstr ""
 
 msgctxt "#30007"
-msgid "Right"
+msgid "Start"
 msgstr ""
 
 msgctxt "#30008"
-msgid "Down"
+msgid "D-pad"
 msgstr ""
 
 msgctxt "#30009"
+msgid "Up"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Right"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Down"
+msgstr ""
+
+msgctxt "#30012"
 msgid "Left"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Right bumper"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Left bumper"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Analog stick"
 msgstr ""
