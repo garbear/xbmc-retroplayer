@@ -221,10 +221,6 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != ID())
     return false;
 
-  CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
-  if (translatedUrl.GetProtocol() == "file")
-    translatedUrl.SetProtocol("");
-
   // Filter by extension
   std::string strExtension = URIUtils::GetExtension(file.GetPath());
   StringUtils::ToLower(strExtension);
@@ -232,7 +228,11 @@ bool CGameClient::CanOpen(const CFileItem& file) const
     return false;
 
   // If the file is on the VFS, the game client must support VFS
-  if (!translatedUrl.GetProtocol().empty() && !SupportsVFS())
+  CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+
+  const bool bIsLocalFS = translatedUrl.GetProtocol() == "file" || translatedUrl.GetProtocol().empty();
+
+  if (!bIsLocalFS && !SupportsVFS())
     return false;
 
   return true;
