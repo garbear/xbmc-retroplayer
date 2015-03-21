@@ -3224,12 +3224,6 @@
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.cpp">
       <Filter>games\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\ControllerLayout.cpp">
-      <Filter>games</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xbmc\guilib\GUIControllerLayout.cpp">
-      <Filter>guilib</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\games\addons\GameClient.cpp">
       <Filter>games\addons</Filter>
     </ClCompile>
@@ -3250,6 +3244,12 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\input\joysticks\JoystickTranslator.cpp">
       <Filter>input\joysticks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\guilib\GUIGamePeripheral.cpp">
+      <Filter>guilib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GamePeripheral.cpp">
+      <Filter>games</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6288,14 +6288,8 @@
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGamePeripherals.h">
       <Filter>games\windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\ControllerLayout.h">
-      <Filter>games</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameTypes.h">
       <Filter>games</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\guilib\GUIControllerLayout.h">
-      <Filter>guilib</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\addons\GameClient.h">
       <Filter>games\addons</Filter>
@@ -6320,6 +6314,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\input\joysticks\JoystickTranslator.h">
       <Filter>input\joysticks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\guilib\GUIGamePeripheral.h">
+      <Filter>guilib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GamePeripheral.h">
+      <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
