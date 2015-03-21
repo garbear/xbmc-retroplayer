@@ -43,7 +43,7 @@ private:
 // --- CPortManager ------------------------------------------------------------
 
 CPortManager::CPortManager(void)
-  : m_deviceDepth(0)
+  : m_minDeviceDepth(0)
 {
 }
 
@@ -51,6 +51,14 @@ CPortManager& CPortManager::Get()
 {
   static CPortManager instance;
   return instance;
+}
+
+void CPortManager::ClearDevices(void)
+{
+  for (std::vector<SPort>::iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
+    itPort->devices.clear();
+
+  m_minDeviceDepth = 0;
 }
 
 void CPortManager::OpenPort(IJoystickInputHandler* handler, const std::string& strDeviceId)
@@ -90,14 +98,6 @@ void CPortManager::ProcessDevices(void)
   ProcessHandlers(oldDeviceMap);
 }
 
-void CPortManager::ClearDevices(void)
-{
-  for (std::vector<SPort>::iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
-    itPort->devices.clear();
-
-  m_deviceDepth = 0;
-}
-
 std::vector<CPeripheral*> CPortManager::ScanPeripherals(void) const
 {
   std::vector<CPeripheral*> peripherals;
@@ -133,83 +133,51 @@ void CPortManager::ProcessHandlers(std::map<CPeripheral*, IJoystickInputHandler*
     IJoystickInputHandler* oldHandler = oldDeviceMap[itNew->first];
     IJoystickInputHandler* newHandler = itNew->second;
 
-    if (oldHandler != newHandler)
+    if (oldHandler != newHandler) // Check if handler changed
     {
       CPeripheralJoystick* joystick = static_cast<CPeripheralJoystick*>(itNew->first);
 
+      // Unregister old handler
       if (oldHandler != NULL)
         joystick->UnregisterInputHandler(oldHandler);
+
+      // Register new handler
       joystick->RegisterInputHandler(newHandler);
     }
 
+    // Remove this device from oldDeviceMap to indicate we've seen it
     if (oldHandler != NULL)
       oldDeviceMap.erase(oldDeviceMap.find(itNew->first));
   }
 
+  // Devices left in oldDeviceMap have no input handlers
   for (std::map<CPeripheral*, IJoystickInputHandler*>::const_iterator itOld = oldDeviceMap.begin();
        itOld != newDeviceMap.end(); ++itOld)
   {
-    CPeripheralJoystick* joystick = static_cast<CPeripheralJoystick*>(itOld->first);
-    joystick->UnregisterInputHandler(itOld->second);
+    static_cast<CPeripheralJoystick*>(itOld->first)->UnregisterInputHandler(itOld->second);
   }
 }
 
 void CPortManager::AssignDevice(CPeripheral* device, int requestedPort)
 {
-  const int          targetPort  = GetNextOpenPort(requestedPort);
-  const unsigned int targetIndex = targetPort - 1;
+  const unsigned int index = GetNextOpenPort(requestedPort - 1);
+  SPort&             port  = m_ports[index];
 
-  m_ports[targetIndex].devices.push_back(device);
+  port.devices.push_back(device);
 
-  // Update max device count
-  m_deviceDepth = std::max(DevicesAttached(targetPort), m_deviceDepth);
+  // Update min device count
+  m_minDeviceDepth = GetMinDeviceDepth();
 }
 
-size_t CPortManager::DevicesAttached(int portNumber) const
+unsigned int CPortManager::GetNextOpenPort(unsigned int startPort /* = 0 */) const
 {
-  unsigned int devicesAttached = 0;
-
-  if (portNumber != JOYSTICK_PORT_UNKNOWN)
+  for (unsigned int i = 0, port = startPort; i < m_ports.size(); i++, port = (port + 1) % m_ports.size())
   {
-    const unsigned int portIndex = portNumber - 1;
-    if (portIndex < m_ports.size())
-      devicesAttached = m_ports[portIndex].devices.size();
-  }
-
-  return devicesAttached;
-}
-
-int CPortManager::GetNextOpenPort(int startPort /* = 1 */) const
-{
-  if (startPort == JOYSTICK_PORT_UNKNOWN)
-    startPort = 1;
-
-  for (std::vector<SPort>::const_iterator it = m_ports.begin(); it != m_ports.end(); ++it)
-  {
-    if (DevicesAttached(startPort) < m_deviceDepth)
-      break; // Found an open slot
-
-    startPort++;
-
-    if (startPort > (int)m_ports.size())
-      startPort = 1;
+    if (m_ports[port].devices.size() == m_minDeviceDepth)
+      return port;
   }
 
   return startPort;
-}
-
-IJoystickInputHandler* CPortManager::GetInputHandler(CPeripheral* device) const
-{
-  for (std::vector<SPort>::const_iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
-  {
-    std::vector<CPeripheral*>::const_iterator itDevice = std::find(itPort->devices.begin(),
-                                                                   itPort->devices.end(),
-                                                                   device);
-    if (itDevice != itPort->devices.end())
-      return itPort->handler;
-  }
-
-  return NULL;
 }
 
 std::map<CPeripheral*, IJoystickInputHandler*> CPortManager::GetDeviceMap(void) const
@@ -226,4 +194,14 @@ std::map<CPeripheral*, IJoystickInputHandler*> CPortManager::GetDeviceMap(void) 
   }
 
   return deviceMap;
+}
+
+unsigned int CPortManager::GetMinDeviceDepth(void) const
+{
+  size_t minDeviceDepth = 0xffff;
+
+  for (std::vector<SPort>::const_iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
+    minDeviceDepth = std::min(minDeviceDepth, itPort->devices.size());
+
+  return minDeviceDepth;
 }

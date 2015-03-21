@@ -48,22 +48,20 @@ public:
   void ClosePort(IJoystickInputHandler* handler);
 
 private:
-  void ProcessDevices(void);
   void ClearDevices(void);
 
   std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void) const;
 
+  void ProcessDevices(void);
   void AssignDevices(const std::vector<PERIPHERALS::CPeripheral*>& devices);
   void AssignDevice(PERIPHERALS::CPeripheral* device, int requestedPort);
-
   void ProcessHandlers(std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& oldDeviceMap) const;
 
   // Utility functions
-  size_t DevicesAttached(int portNumber) const;
-  int GetNextOpenPort(int startPort = 1) const;
-  IJoystickInputHandler* GetInputHandler(PERIPHERALS::CPeripheral* device) const;
+  unsigned int GetNextOpenPort(unsigned int startPort = 0) const;
   std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*> GetDeviceMap(void) const;
+  unsigned int GetMinDeviceDepth(void) const;
 
   std::vector<SPort> m_ports;
-  size_t             m_deviceDepth;
+  size_t             m_minDeviceDepth;
 };
