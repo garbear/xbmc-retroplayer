@@ -19,7 +19,7 @@
  */
 
 #include "GUIWindowGamePeripherals.h"
-#include "GUIDialogControllerFeatures.h"
+#include "GUIDialogControllerInput.h"
 #include "addons/AddonManager.h"
 #include "games/ControllerLayout.h"
 #include "guilib/GUIControllerLayout.h"
@@ -78,7 +78,7 @@ bool CGUIWindowGamePeripherals::OnClick(int iItem)
 {
   if (0 <= iItem && iItem < (int)m_layouts.size())
   {
-    CGUIDialogControllerFeatures* pMenu = dynamic_cast<CGUIDialogControllerFeatures*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTROLLER_FEATURES));
+    CGUIDialogControllerInput* pMenu = dynamic_cast<CGUIDialogControllerInput*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTROLLER_INPUT));
     if (pMenu)
       pMenu->DoModal(m_layouts[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
     return true;

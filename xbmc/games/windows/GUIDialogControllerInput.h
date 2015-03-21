@@ -30,11 +30,11 @@ class CGUIButtonControl;
 class CGUIFocusPlane;
 namespace GAME { class CControllerLayout; }
 
-class CGUIDialogControllerFeatures : public CGUIDialog
+class CGUIDialogControllerInput : public CGUIDialog
 {
 public:
-  CGUIDialogControllerFeatures(void);
-  virtual ~CGUIDialogControllerFeatures(void) { }
+  CGUIDialogControllerInput(void);
+  virtual ~CGUIDialogControllerInput(void) { }
 
   void DoModal(const GAME::ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl);
 

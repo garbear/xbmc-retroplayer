@@ -26,7 +26,7 @@
 #include "guilib/GUIFocusPlane.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
-#include "GUIDialogControllerFeatures.h"
+#include "GUIDialogControllerInput.h"
 #include "input/Key.h"
 #include "utils/log.h"
 
@@ -37,15 +37,15 @@
 using namespace ADDON;
 using namespace GAME;
 
-CGUIDialogControllerFeatures::CGUIDialogControllerFeatures(void)
-  : CGUIDialog(WINDOW_DIALOG_CONTROLLER_FEATURES, "DialogControllerFeatures.xml"),
+CGUIDialogControllerInput::CGUIDialogControllerInput(void)
+  : CGUIDialog(WINDOW_DIALOG_CONTROLLER_INPUT, "DialogControllerInput.xml"),
     m_layout(NULL),
     m_focusControl(NULL)
 {
   m_loadType = KEEP_IN_MEMORY;
 }
 
-void CGUIDialogControllerFeatures::DoModal(const ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl)
+void CGUIDialogControllerInput::DoModal(const ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl)
 {
   if (IsDialogRunning())
     return;
@@ -58,7 +58,7 @@ void CGUIDialogControllerFeatures::DoModal(const ControllerLayoutPtr& layout, CG
   CleanupButtons();
 }
 
-bool CGUIDialogControllerFeatures::SetupButtons(const ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl)
+bool CGUIDialogControllerInput::SetupButtons(const ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl)
 {
   if (!layout || !focusControl)
     return false;
@@ -98,7 +98,7 @@ bool CGUIDialogControllerFeatures::SetupButtons(const ControllerLayoutPtr& layou
   return true;
 }
 
-void CGUIDialogControllerFeatures::CleanupButtons(void)
+void CGUIDialogControllerInput::CleanupButtons(void)
 {
   CGUIControlGroupList* pGroupList = dynamic_cast<CGUIControlGroupList*>(GetControl(GROUP_LIST));
   if (pGroupList)
@@ -108,7 +108,7 @@ void CGUIDialogControllerFeatures::CleanupButtons(void)
   m_focusControl = NULL;
 }
 
-CGUIButtonControl* CGUIDialogControllerFeatures::GetButtonTemplate(void)
+CGUIButtonControl* CGUIDialogControllerInput::GetButtonTemplate(void)
 {
   CGUIButtonControl* pButtonTemplate = dynamic_cast<CGUIButtonControl*>(GetFirstFocusableControl(BUTTON_TEMPLATE));
   if (!pButtonTemplate)
@@ -116,7 +116,7 @@ CGUIButtonControl* CGUIDialogControllerFeatures::GetButtonTemplate(void)
   return pButtonTemplate;
 }
 
-CGUIButtonControl* CGUIDialogControllerFeatures::MakeButton(const std::string& strLabel,
+CGUIButtonControl* CGUIDialogControllerInput::MakeButton(const std::string& strLabel,
                                                             unsigned int       id,
                                                             CGUIButtonControl* pButtonTemplate)
 {
@@ -131,7 +131,7 @@ CGUIButtonControl* CGUIDialogControllerFeatures::MakeButton(const std::string& s
   return pButton;
 }
 
-bool CGUIDialogControllerFeatures::OnMove(void)
+bool CGUIDialogControllerInput::OnMove(void)
 {
   if (m_layout && m_focusControl)
   {
@@ -148,7 +148,7 @@ bool CGUIDialogControllerFeatures::OnMove(void)
   return false;
 }
 
-bool CGUIDialogControllerFeatures::OnClick(int iSelectedControl)
+bool CGUIDialogControllerInput::OnClick(int iSelectedControl)
 {
   if (m_layout && m_focusControl && iSelectedControl >= BUTTON_START)
   {
@@ -165,7 +165,7 @@ bool CGUIDialogControllerFeatures::OnClick(int iSelectedControl)
   return false;
 }
 
-bool CGUIDialogControllerFeatures::OnMessage(CGUIMessage& message)
+bool CGUIDialogControllerInput::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
@@ -193,7 +193,7 @@ bool CGUIDialogControllerFeatures::OnMessage(CGUIMessage& message)
   return false;
 }
 
-bool CGUIDialogControllerFeatures::OnAction(const CAction& action)
+bool CGUIDialogControllerInput::OnAction(const CAction& action)
 {
   if (action.GetID() == ACTION_CONTEXT_MENU)
   {
@@ -204,7 +204,7 @@ bool CGUIDialogControllerFeatures::OnAction(const CAction& action)
   return CGUIDialog::OnAction(action);
 }
 
-void CGUIDialogControllerFeatures::OnInitWindow(void)
+void CGUIDialogControllerInput::OnInitWindow(void)
 {
   CGUIDialog::OnInitWindow();
 
@@ -218,7 +218,7 @@ void CGUIDialogControllerFeatures::OnInitWindow(void)
   OnMove();
 }
 
-void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
+void CGUIDialogControllerInput::OnDeinitWindow(int nextWindowID)
 {
   if (m_focusControl)
     m_focusControl->Unfocus();
@@ -234,7 +234,7 @@ void CGUIDialogControllerFeatures::OnDeinitWindow(int nextWindowID)
   CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
-int CGUIDialogControllerFeatures::GetSelectedControl(int iControl)
+int CGUIDialogControllerInput::GetSelectedControl(int iControl)
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
 
@@ -244,7 +244,7 @@ int CGUIDialogControllerFeatures::GetSelectedControl(int iControl)
   return -1;
 }
 
-void CGUIDialogControllerFeatures::SetSelectedControl(int iControl, int iSelectedControl)
+void CGUIDialogControllerInput::SetSelectedControl(int iControl, int iSelectedControl)
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), iControl, iSelectedControl);
   OnMessage(msg);

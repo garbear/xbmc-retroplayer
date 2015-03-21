@@ -1,4 +1,4 @@
-SRCS=GUIDialogControllerFeatures.cpp \
+SRCS=GUIDialogControllerInput.cpp \
      GUIViewStateWindowGames.cpp \
      GUIWindowGamePeripherals.cpp \
      GUIWindowGames.cpp
