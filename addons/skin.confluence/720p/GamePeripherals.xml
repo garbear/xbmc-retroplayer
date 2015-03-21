@@ -29,7 +29,7 @@
 			<top>50</top>
 			<width>680</width>
 			<height>425</height>
-			<control type="controllerlayout" id="3">
+			<control type="gameperipheral" id="3">
 				<left>100</left>
 				<top>75</top>
 				<width>480</width>
@@ -175,5 +175,5 @@
 			<include>Window_OpenClose_Animation</include>
 			<animation effect="slide" start="0,0" end="-40,0" time="100" condition="Window.IsVisible(Mutebug)">conditional</animation>
 		</control>
-	</controls>	
+	</controls>
 </window>

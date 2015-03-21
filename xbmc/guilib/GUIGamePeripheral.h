@@ -23,19 +23,19 @@
 #include "games/GameTypes.h"
 #include "threads/CriticalSection.h"
 
-class CGUIControllerLayout : public CGUIImage
+class CGUIGamePeripheral : public CGUIImage
 {
 public:
-  CGUIControllerLayout(int parentID, int controlID, float posX, float posY, float width, float height);
-  CGUIControllerLayout(const CGUIControllerLayout &from);
-  virtual ~CGUIControllerLayout(void) { }
-  virtual CGUIControllerLayout *Clone() const { return new CGUIControllerLayout(*this); }
+  CGUIGamePeripheral(int parentID, int controlID, float posX, float posY, float width, float height);
+  CGUIGamePeripheral(const CGUIGamePeripheral &from);
+  virtual ~CGUIGamePeripheral(void) { }
+  virtual CGUIGamePeripheral *Clone() const { return new CGUIGamePeripheral(*this); }
 
   virtual void Render();
 
-  void ActivateLayout(const GAME::ControllerLayoutPtr& layout);
+  void ActivatePeripheral(const GAME::GamePeripheralPtr& peripheral);
 
 private:
-  GAME::ControllerLayoutPtr m_currentLayout;
-  CCriticalSection          m_mutex;
+  GAME::GamePeripheralPtr m_currentPeripheral;
+  CCriticalSection        m_mutex;
 };

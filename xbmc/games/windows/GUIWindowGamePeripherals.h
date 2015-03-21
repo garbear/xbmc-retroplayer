@@ -70,8 +70,8 @@ public:
   void ProcessAxisMotions(PERIPHERALS::CPeripheralJoystick* joystick);
 
 protected:
-  GAME::ControllerLayoutPtr GetLayout(const ADDON::AddonPtr& peripheral) const;
-  GAME::ControllerLayoutPtr LoadLayout(const ADDON::AddonPtr& peripheral);
+  GAME::GamePeripheralPtr GetPeripheral(const ADDON::AddonPtr& addon) const;
+  GAME::GamePeripheralPtr LoadPeripheral(const ADDON::AddonPtr& addon);
 
   virtual void OnInitWindow(void);
 
@@ -84,7 +84,7 @@ private:
   int GetSelectedItem(int iControl);
 
   std::vector<CGUIJoystickDriverHandler*> m_driverHandlers;
-  GAME::ControllerLayoutVector m_layouts;
-  CFileItemList                m_items;
-  int                          m_selectedItem;
+  GAME::GamePeripheralVector m_peripherals;
+  CFileItemList              m_items;
+  int                        m_selectedItem;
 };

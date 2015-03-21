@@ -18,7 +18,7 @@
  *
  */
 
-#include "ControllerLayout.h"
+#include "GamePeripheral.h"
 #include "guilib/GUIControl.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
@@ -59,10 +59,10 @@ using namespace GAME;
 #define LAYOUT_GEOMETRY_DPAD         "dpad"
 
 
-ControllerLayoutPtr CControllerLayout::EmptyPtr;
+GamePeripheralPtr CGamePeripheral::EmptyPtr;
 
-CControllerLayout::CControllerLayout(const ADDON::AddonPtr& peripheral, CGUIControl* control) :
-    m_peripheral(peripheral),
+CGamePeripheral::CGamePeripheral(const ADDON::AddonPtr& addon, CGUIControl* control) :
+    m_addon(addon),
     m_width(0),
     m_height(0)
 {
@@ -70,12 +70,12 @@ CControllerLayout::CControllerLayout(const ADDON::AddonPtr& peripheral, CGUICont
     m_controlRegion = control->CalcRenderRegion();
 }
 
-bool CControllerLayout::Load(void)
+bool CGamePeripheral::Load(void)
 {
-  if (!m_peripheral)
+  if (!m_addon)
     return false;
 
-  std::string strLayoutXmlPath = m_peripheral->LibPath();
+  std::string strLayoutXmlPath = m_addon->LibPath();
 
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(strLayoutXmlPath))
@@ -308,7 +308,7 @@ bool CControllerLayout::Load(void)
   }
 
   m_strControllerLabel = TranslateLabel(label);
-  m_strImagePath = URIUtils::AddFileToFolder(URIUtils::GetDirectory(m_peripheral->LibPath()), image);
+  m_strImagePath = URIUtils::AddFileToFolder(URIUtils::GetDirectory(m_addon->LibPath()), image);
   m_width = iWidth;
   m_height = iHeight;
 
@@ -319,14 +319,14 @@ bool CControllerLayout::Load(void)
   }
 
   CLog::Log(LOGDEBUG, "Loaded layout \"%s\" for %s with %u buttons",
-            m_strControllerLabel.c_str(), m_peripheral->ID().c_str(), (unsigned int)m_buttons.size());
+            m_strControllerLabel.c_str(), m_addon->ID().c_str(), (unsigned int)m_buttons.size());
 
   return true;
 }
 
-bool CControllerLayout::IsValid(void) const
+bool CGamePeripheral::IsValid(void) const
 {
-  return m_peripheral &&
+  return m_addon &&
          !m_controlRegion.IsEmpty() &&
          !m_strControllerLabel.empty() &&
          !m_strImagePath.empty() &&
@@ -335,27 +335,27 @@ bool CControllerLayout::IsValid(void) const
          !m_buttons.empty();
 }
 
-void CControllerLayout::LogInvalid(void) const
+void CGamePeripheral::LogInvalid(void) const
 {
-  if (!m_peripheral)
+  if (!m_addon)
     CLog::Log(LOGERROR, "Invalid peripheral");
   if (m_controlRegion.IsEmpty())
-    CLog::Log(LOGERROR, "%s: Invalid control region: x1=%d, y1=%d, x2=%d, y2=%d", m_peripheral->ID().c_str(),
+    CLog::Log(LOGERROR, "%s: Invalid control region: x1=%d, y1=%d, x2=%d, y2=%d", m_addon->ID().c_str(),
               (int)m_controlRegion.x1, (int)m_controlRegion.y1,
               (int)m_controlRegion.x2, (int)m_controlRegion.y2);
   if (m_strControllerLabel.empty())
-    CLog::Log(LOGERROR, "%s: Missing layout label", m_peripheral->ID().c_str());
+    CLog::Log(LOGERROR, "%s: Missing layout label", m_addon->ID().c_str());
   if (m_strImagePath.empty())
-    CLog::Log(LOGERROR, "%s: Missing image path", m_peripheral->ID().c_str());
+    CLog::Log(LOGERROR, "%s: Missing image path", m_addon->ID().c_str());
   if (m_width <= 0)
-    CLog::Log(LOGERROR, "%s: Invalid width: %d", m_peripheral->ID().c_str(), m_width);
+    CLog::Log(LOGERROR, "%s: Invalid width: %d", m_addon->ID().c_str(), m_width);
   if (m_height <= 0)
-    CLog::Log(LOGERROR, "%s: Invalid height: %d", m_peripheral->ID().c_str(), m_height);
+    CLog::Log(LOGERROR, "%s: Invalid height: %d", m_addon->ID().c_str(), m_height);
   if (m_buttons.empty())
-    CLog::Log(LOGERROR, "%s: Missing valid buttons", m_peripheral->ID().c_str());
+    CLog::Log(LOGERROR, "%s: Missing valid buttons", m_addon->ID().c_str());
 }
 
-CCircle CControllerLayout::Scale(const CCircle& focusArea, float layoutWidth, float layoutHeight) const
+CCircle CGamePeripheral::Scale(const CCircle& focusArea, float layoutWidth, float layoutHeight) const
 {
   const CPoint offset = m_controlRegion.P1();
   const float scaleX = m_controlRegion.Width() / layoutWidth;
@@ -364,14 +364,14 @@ CCircle CControllerLayout::Scale(const CCircle& focusArea, float layoutWidth, fl
   return CCircle(offset.x + focusArea.x * scaleX, offset.y + focusArea.y * scaleY, focusArea.r * scaleX * scaleY);
 }
 
-std::string CControllerLayout::TranslateLabel(const std::string& strLabel)
+std::string CGamePeripheral::TranslateLabel(const std::string& strLabel)
 {
   if (StringUtils::IsNaturalNumber(strLabel))
-    return m_peripheral->GetString(std::strtol(strLabel.c_str(), NULL, 10));
+    return m_addon->GetString(std::strtol(strLabel.c_str(), NULL, 10));
   return strLabel;
 }
 
-int CControllerLayout::TranslateInt(const std::string& strInt)
+int CGamePeripheral::TranslateInt(const std::string& strInt)
 {
   const char *s = strInt.c_str();
   char *p = NULL;

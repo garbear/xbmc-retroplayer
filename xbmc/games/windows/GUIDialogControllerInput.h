@@ -28,7 +28,7 @@
 
 class CGUIButtonControl;
 class CGUIFocusPlane;
-namespace GAME { class CControllerLayout; }
+namespace GAME { class CGamePeripheral; }
 
 class CGUIDialogControllerInput : public CGUIDialog
 {
@@ -36,7 +36,7 @@ public:
   CGUIDialogControllerInput(void);
   virtual ~CGUIDialogControllerInput(void) { }
 
-  void DoModal(const GAME::ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl);
+  void DoModal(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
 
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction& action);
@@ -52,13 +52,15 @@ protected:
   virtual void OnDeinitWindow(int nextWindowID);
 
 private:
-  bool SetupButtons(const GAME::ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl);
+  void PromptForInput(unsigned int buttonIndex);
+
+  bool SetupButtons(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
   void CleanupButtons(void);
 
   int GetSelectedControl(int iControl);
   void SetSelectedControl(int iControl, int iSelectedControl);
 
-  GAME::ControllerLayoutPtr m_layout;
-  CGUIFocusPlane*           m_focusControl;
-  std::map<GAME::ControllerLayoutPtr, unsigned int> m_lastControlIds; // layout add-on ID -> last selected control ID
+  GAME::GamePeripheralPtr m_peripheral;
+  CGUIFocusPlane*         m_focusControl;
+  std::map<GAME::GamePeripheralPtr, unsigned int> m_lastControlIds; // peripheral add-on ID -> last selected control ID
 };

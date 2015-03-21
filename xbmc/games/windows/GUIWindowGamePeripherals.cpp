@@ -21,8 +21,8 @@
 #include "GUIWindowGamePeripherals.h"
 #include "GUIDialogControllerInput.h"
 #include "addons/AddonManager.h"
-#include "games/ControllerLayout.h"
-#include "guilib/GUIControllerLayout.h"
+#include "games/GamePeripheral.h"
+#include "guilib/GUIGamePeripheral.h"
 #include "guilib/GUIFocusPlane.h"
 #include "guilib/GUIMessage.h"
 #include "guilib/GUIWindowManager.h"
@@ -44,7 +44,7 @@ using namespace PERIPHERALS;
 
 #define CONTROL_PERIPHERAL_LIST     1
 #define CONTROL_FOCUS_PLANE         2
-#define CONTROL_CONTROLLER_LAYOUT   3
+#define CONTROL_GAME_PERIPHERAL     3
 
 // --- CGUIJoystickDriverHandler ---------------------------------------------------------
 
@@ -99,39 +99,39 @@ std::vector<CPeripheral*> CGUIWindowGamePeripherals::ScanPeripherals(void)
   return peripherals;
 }
 
-ControllerLayoutPtr CGUIWindowGamePeripherals::GetLayout(const AddonPtr& peripheral) const
+GamePeripheralPtr CGUIWindowGamePeripherals::GetPeripheral(const AddonPtr& addon) const
 {
-  for (ControllerLayoutVector::const_iterator it = m_layouts.begin(); it != m_layouts.end(); ++it)
+  for (GamePeripheralVector::const_iterator it = m_peripherals.begin(); it != m_peripherals.end(); ++it)
   {
-    if ((*it)->Addon()->ID() == peripheral->ID())
+    if ((*it)->Addon()->ID() == addon->ID())
       return *it;
   }
-  return CControllerLayout::EmptyPtr;
+  return CGamePeripheral::EmptyPtr;
 }
 
-ControllerLayoutPtr CGUIWindowGamePeripherals::LoadLayout(const AddonPtr& peripheral)
+GamePeripheralPtr CGUIWindowGamePeripherals::LoadPeripheral(const AddonPtr& addon)
 {
-  const ControllerLayoutPtr& layout = GetLayout(peripheral);
-  if (!layout)
+  const GamePeripheralPtr& peripheral = GetPeripheral(addon);
+  if (!peripheral)
   {
-    CGUIControl* control = GetControl(CONTROL_CONTROLLER_LAYOUT);
-    ControllerLayoutPtr newLayout = ControllerLayoutPtr(new CControllerLayout(peripheral, control));
-    if (newLayout->Load())
+    CGUIControl* control = GetControl(CONTROL_GAME_PERIPHERAL);
+    GamePeripheralPtr newPeripheral = GamePeripheralPtr(new CGamePeripheral(addon, control));
+    if (newPeripheral->Load())
     {
-      m_layouts.push_back(newLayout);
-      return *(m_layouts.end() - 1);
+      m_peripherals.push_back(newPeripheral);
+      return *(m_peripherals.end() - 1);
     }
   }
-  return layout;
+  return peripheral;
 }
 
 bool CGUIWindowGamePeripherals::OnClick(int iItem)
 {
-  if (0 <= iItem && iItem < (int)m_layouts.size())
+  if (0 <= iItem && iItem < (int)m_peripherals.size())
   {
     CGUIDialogControllerInput* pMenu = dynamic_cast<CGUIDialogControllerInput*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTROLLER_INPUT));
     if (pMenu)
-      pMenu->DoModal(m_layouts[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
+      pMenu->DoModal(m_peripherals[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
     return true;
   }
   return false;
@@ -139,14 +139,14 @@ bool CGUIWindowGamePeripherals::OnClick(int iItem)
 
 bool CGUIWindowGamePeripherals::OnSelect(int iItem)
 {
-  if (0 <= iItem && iItem < (int)m_layouts.size() && iItem != m_selectedItem)
+  if (0 <= iItem && iItem < (int)m_peripherals.size() && iItem != m_selectedItem)
   {
     m_selectedItem = iItem;
 
-    CGUIControllerLayout* pLayout = dynamic_cast<CGUIControllerLayout*>(GetControl(CONTROL_CONTROLLER_LAYOUT));
-    if (pLayout)
+    CGUIGamePeripheral* pPeripheral = dynamic_cast<CGUIGamePeripheral*>(GetControl(CONTROL_GAME_PERIPHERAL));
+    if (pPeripheral)
     {
-      pLayout->ActivateLayout(m_layouts[iItem]);
+      pPeripheral->ActivatePeripheral(m_peripherals[iItem]);
       return true;
     }
   }
@@ -170,11 +170,11 @@ void CGUIWindowGamePeripherals::OnInitWindow()
   CAddonMgr::Get().GetAddons(ADDON_GAME_PERIPHERAL, peripherals);
   for (VECADDONS::const_iterator it = peripherals.begin(); it != peripherals.end(); ++it)
   {
-    if (!LoadLayout(*it))
-      CLog::Log(LOGERROR, "Failed to load controller layout for %s", (*it)->ID().c_str());
+    if (!LoadPeripheral(*it))
+      CLog::Log(LOGERROR, "Failed to load peripheral %s", (*it)->ID().c_str());
   }
 
-  for (ControllerLayoutVector::iterator it = m_layouts.begin(); it != m_layouts.end(); ++it)
+  for (GamePeripheralVector::iterator it = m_peripherals.begin(); it != m_peripherals.end(); ++it)
   {
     CFileItemPtr item(new CFileItem((*it)->Label()));
     m_items.Add(item);

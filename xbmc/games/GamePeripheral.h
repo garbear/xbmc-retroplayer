@@ -37,17 +37,17 @@ struct Button
   CCircle     focusArea;
 };
 
-class CControllerLayout
+class CGamePeripheral
 {
 public:
-  CControllerLayout(const ADDON::AddonPtr& peripheral, CGUIControl* control);
-  ~CControllerLayout(void) {  }
+  CGamePeripheral(const ADDON::AddonPtr& addon, CGUIControl* control);
+  CGamePeripheral(void) {  }
 
-  static ControllerLayoutPtr EmptyPtr;
+  static GamePeripheralPtr EmptyPtr;
 
   bool Load(void);
 
-  ADDON::AddonPtr            Addon(void) const     { return m_peripheral; }
+  ADDON::AddonPtr            Addon(void) const     { return m_addon; }
   const std::string&         Label(void) const     { return m_strControllerLabel; }
   const std::string&         ImagePath(void) const { return m_strImagePath; }
   const std::vector<Button>& Buttons(void) const   { return m_buttons; }
@@ -61,7 +61,7 @@ private:
   std::string TranslateLabel(const std::string& strLabel);
   static int TranslateInt(const std::string& strInt);
 
-  ADDON::AddonPtr     m_peripheral;
+  ADDON::AddonPtr     m_addon;
   CRect               m_controlRegion;
   std::string         m_strControllerLabel;
   std::string         m_strImagePath;

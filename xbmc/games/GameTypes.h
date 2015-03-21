@@ -25,9 +25,9 @@
 namespace GAME
 {
 
-class CControllerLayout;
-typedef std::shared_ptr<CControllerLayout> ControllerLayoutPtr;
-typedef std::vector<ControllerLayoutPtr>   ControllerLayoutVector;
+class CGamePeripheral;
+typedef std::shared_ptr<CGamePeripheral> GamePeripheralPtr;
+typedef std::vector<GamePeripheralPtr>   GamePeripheralVector;
 
 class CGameClient;
 typedef std::shared_ptr<CGameClient> GameClientPtr;

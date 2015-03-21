@@ -18,7 +18,8 @@
  *
  */
 
-#include "games/ControllerLayout.h"
+#include "GUIDialogControllerInput.h"
+#include "games/GamePeripheral.h"
 #include "guilib/Geometry.h"
 #include "guilib/GUIButtonControl.h"
 #include "guilib/GUIControl.h"
@@ -26,7 +27,6 @@
 #include "guilib/GUIFocusPlane.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
-#include "GUIDialogControllerInput.h"
 #include "input/Key.h"
 #include "utils/log.h"
 
@@ -39,28 +39,48 @@ using namespace GAME;
 
 CGUIDialogControllerInput::CGUIDialogControllerInput(void)
   : CGUIDialog(WINDOW_DIALOG_CONTROLLER_INPUT, "DialogControllerInput.xml"),
-    m_layout(NULL),
+    m_peripheral(NULL),
     m_focusControl(NULL)
 {
   m_loadType = KEEP_IN_MEMORY;
 }
 
-void CGUIDialogControllerInput::DoModal(const ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl)
+void CGUIDialogControllerInput::DoModal(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
 {
   if (IsDialogRunning())
     return;
 
   Initialize();
 
-  if (SetupButtons(layout, focusControl))
+  if (SetupButtons(peripheral, focusControl))
     CGUIDialog::DoModal();
 
   CleanupButtons();
 }
 
-bool CGUIDialogControllerInput::SetupButtons(const ControllerLayoutPtr& layout, CGUIFocusPlane* focusControl)
+void CGUIDialogControllerInput::PromptForInput(unsigned int buttonIndex)
 {
-  if (!layout || !focusControl)
+  const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
+  if (buttonIndex < buttons.size())
+  {
+    const GAME::Button& buton = buttons[buttonIndex];
+
+    // TODO: Change label
+    const std::string& strLabel = buton.strLabel;
+
+    // TODO: Wait for input
+    // input = GetInput();
+
+    // TODO: Record input
+    // buttonMap->SetInput(button, input);
+
+    // TODO: Change label back
+  }
+}
+
+bool CGUIDialogControllerInput::SetupButtons(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
+{
+  if (!peripheral || !focusControl)
     return false;
 
   CGUIButtonControl* pButtonTemplate = GetButtonTemplate();
@@ -69,7 +89,7 @@ bool CGUIDialogControllerInput::SetupButtons(const ControllerLayoutPtr& layout, 
   if (!pButtonTemplate || !pGroupList)
     return false;
 
-  const std::vector<GAME::Button>& buttons = layout->Buttons();
+  const std::vector<GAME::Button>& buttons = peripheral->Buttons();
 
   unsigned int buttonId = BUTTON_START;
   for (std::vector<GAME::Button>::const_iterator it = buttons.begin(); it != buttons.end(); ++it)
@@ -87,11 +107,11 @@ bool CGUIDialogControllerInput::SetupButtons(const ControllerLayoutPtr& layout, 
   m_defaultControl = GROUP_LIST;
   m_lastControlID = BUTTON_START;
 
-  m_layout = layout;
+  m_peripheral = peripheral;
   m_focusControl = focusControl;
 
   // restore last selected control
-  std::map<GAME::ControllerLayoutPtr, unsigned int>::const_iterator it = m_lastControlIds.find(m_layout);
+  std::map<GAME::GamePeripheralPtr, unsigned int>::const_iterator it = m_lastControlIds.find(m_peripheral);
   if (it != m_lastControlIds.end())
     m_lastControlID = it->second;
 
@@ -104,7 +124,7 @@ void CGUIDialogControllerInput::CleanupButtons(void)
   if (pGroupList)
     pGroupList->ClearAll();
 
-  m_layout = NULL;
+  m_peripheral = NULL;
   m_focusControl = NULL;
 }
 
@@ -133,9 +153,9 @@ CGUIButtonControl* CGUIDialogControllerInput::MakeButton(const std::string& strL
 
 bool CGUIDialogControllerInput::OnMove(void)
 {
-  if (m_layout && m_focusControl)
+  if (m_peripheral && m_focusControl)
   {
-    const std::vector<GAME::Button>& buttons = m_layout->Buttons();
+    const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
 
     int iSelectedIndex = GetSelectedControl(GROUP_LIST) - BUTTON_START;
     if (0 <= iSelectedIndex && iSelectedIndex < (int)buttons.size())
@@ -150,16 +170,10 @@ bool CGUIDialogControllerInput::OnMove(void)
 
 bool CGUIDialogControllerInput::OnClick(int iSelectedControl)
 {
-  if (m_layout && m_focusControl && iSelectedControl >= BUTTON_START)
+  if (m_peripheral && m_focusControl && iSelectedControl >= BUTTON_START)
   {
-    const std::vector<GAME::Button>& buttons = m_layout->Buttons();
-
-    unsigned int iSelectedIndex = iSelectedControl - BUTTON_START;
-    if (iSelectedIndex < buttons.size())
-    {
-      // TODO: prompt user to press button
-      return true;
-    }
+    PromptForInput(iSelectedControl - BUTTON_START);
+    return true;
   }
 
   return false;
@@ -224,11 +238,11 @@ void CGUIDialogControllerInput::OnDeinitWindow(int nextWindowID)
     m_focusControl->Unfocus();
 
   // save selected item for next time
-  if (m_layout)
+  if (m_peripheral)
   {
     int iSelectedControl = GetSelectedControl(GROUP_LIST);
     if (iSelectedControl >= BUTTON_START)
-      m_lastControlIds[m_layout] = iSelectedControl;
+      m_lastControlIds[m_peripheral] = iSelectedControl;
   }
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
