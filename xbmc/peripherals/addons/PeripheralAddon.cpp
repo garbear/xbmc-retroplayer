@@ -543,7 +543,7 @@ JoystickFeatureID CPeripheralAddon::ToJoystickID(JOYSTICK_FEATURE_ID id)
   case JOYSTICK_FEATURE_BUTTON_L_STICK:  return JoystickIDButtonLeftStick;
   case JOYSTICK_FEATURE_BUTTON_R_STICK:  return JoystickIDButtonRightStick;
   case JOYSTICK_FEATURE_TRIGGER_L:       return JoystickIDTriggerLeft;
-  case JOYSTICK_FEATURE_TRIGGER_R:       return JoystickIDTriggerRright;
+  case JOYSTICK_FEATURE_TRIGGER_R:       return JoystickIDTriggerRight;
   case JOYSTICK_FEATURE_ANALOG_STICK_L:  return JoystickIDAnalogStickLeft;
   case JOYSTICK_FEATURE_ANALOG_STICK_R:  return JoystickIDAnalogStickRight;
   case JOYSTICK_FEATURE_ACCELEROMETER:   return JoystickIDAccelerometer;
@@ -576,7 +576,7 @@ JOYSTICK_FEATURE_ID CPeripheralAddon::ToFeatureID(JoystickFeatureID id)
   case JoystickIDButtonLeftStick:   return JOYSTICK_FEATURE_BUTTON_L_STICK;
   case JoystickIDButtonRightStick:  return JOYSTICK_FEATURE_BUTTON_R_STICK;
   case JoystickIDTriggerLeft:       return JOYSTICK_FEATURE_TRIGGER_L;
-  case JoystickIDTriggerRright:     return JOYSTICK_FEATURE_TRIGGER_R;
+  case JoystickIDTriggerRight:      return JOYSTICK_FEATURE_TRIGGER_R;
   case JoystickIDAnalogStickLeft:   return JOYSTICK_FEATURE_ANALOG_STICK_L;
   case JoystickIDAnalogStickRight:  return JOYSTICK_FEATURE_ANALOG_STICK_R;
   case JoystickIDAccelerometer:     return JOYSTICK_FEATURE_ACCELEROMETER;

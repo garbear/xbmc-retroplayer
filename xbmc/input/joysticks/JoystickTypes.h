@@ -58,7 +58,7 @@ enum JoystickFeatureID
   JoystickIDButtonDown,
   JoystickIDButtonLeft,
   JoystickIDTriggerLeft,
-  JoystickIDTriggerRright,
+  JoystickIDTriggerRight,
   JoystickIDAnalogStickLeft,
   JoystickIDAnalogStickRight,
   JoystickIDAccelerometer,

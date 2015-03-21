@@ -60,7 +60,7 @@ JoystickInputType CJoystickTranslator::GetInputType(JoystickFeatureID featureId)
     case JoystickIDButtonDown:        return JoystickDigitalButton;
     case JoystickIDButtonLeft:        return JoystickDigitalButton;
     case JoystickIDTriggerLeft:       return JoystickAnalogButton;
-    case JoystickIDTriggerRright:     return JoystickAnalogButton;
+    case JoystickIDTriggerRight:      return JoystickAnalogButton;
     case JoystickIDAnalogStickLeft:   return JoystickAnalogStick;
     case JoystickIDAnalogStickRight:  return JoystickAnalogStick;
     case JoystickIDAccelerometer:     return JoystickAccelerometer;
@@ -93,7 +93,7 @@ unsigned int CJoystickTranslator::GetButtonKeyID(JoystickFeatureID featureId, fl
     case JoystickIDButtonDown:        return KEY_BUTTON_DPAD_DOWN;
     case JoystickIDButtonLeft:        return KEY_BUTTON_DPAD_LEFT;
     case JoystickIDTriggerLeft:       return KEY_BUTTON_LEFT_TRIGGER;
-    case JoystickIDTriggerRright:     return KEY_BUTTON_RIGHT_TRIGGER;
+    case JoystickIDTriggerRight:      return KEY_BUTTON_RIGHT_TRIGGER;
     case JoystickIDAnalogStickLeft:
            if (y >= x && y >  -x)       return KEY_BUTTON_LEFT_THUMB_STICK_UP;
       else if (y <  x && y >= -x)       return KEY_BUTTON_LEFT_THUMB_STICK_RIGHT;
