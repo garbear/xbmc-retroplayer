@@ -22,6 +22,7 @@
 #include "input/joysticks/IJoystickButtonMap.h"
 #include "input/joysticks/IJoystickInputHandler.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
+#include "input/joysticks/JoystickTranslator.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "utils/log.h"
 
@@ -50,7 +51,7 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int index, bool bPre
   CJoystickDriverPrimitive button(index);
   JoystickFeatureID feature = m_buttonMap->GetFeature(button);
 
-  if (feature != JOY_ID_BUTTON_UNKNOWN)
+  if (feature != JoystickIDButtonUnknown)
   {
     CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d %s",
               feature, bPressed ? "pressed" : "released");
@@ -92,7 +93,7 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
   {
     CJoystickDriverPrimitive left(index, HatDirectionLeft);
     JoystickFeatureID feature = m_buttonMap->GetFeature(left);
-    if (feature != JOY_ID_BUTTON_UNKNOWN)
+    if (feature != JoystickIDButtonUnknown)
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d activated",
                 feature);
@@ -109,7 +110,7 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
   {
     CJoystickDriverPrimitive left(index, HatDirectionLeft);
     JoystickFeatureID feature = m_buttonMap->GetFeature(left);
-    if (feature != JOY_ID_BUTTON_UNKNOWN)
+    if (feature != JoystickIDButtonUnknown)
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d deactivated",
                 feature);
@@ -180,10 +181,7 @@ void CGenericJoystickDriverHandler::ProcessAxisMotions()
   for (std::vector<JoystickFeatureID>::const_iterator it = featuresToProcess.begin(); it != featuresToProcess.end(); ++it)
   {
     const JoystickFeatureID feature = *it;
-    switch (feature)
-    {
-    case JOY_ID_ANALOG_STICK_L:
-    case JOY_ID_ANALOG_STICK_R:
+    if (CJoystickTranslator::GetInputType(feature) == JoystickAnalogStick)
     {
       int  horizIndex;
       bool horizInverted;
@@ -198,10 +196,8 @@ void CGenericJoystickDriverHandler::ProcessAxisMotions()
         const float vertPos  = GetAxisState(vertIndex)  * (vertInverted  ? -1.0f : 1.0f);
         m_handler->OnAnalogStickMotion(feature, horizPos, vertPos);
       }
-      break;
     }
-
-    case JOY_ID_ACCELEROMETER:
+    else if (CJoystickTranslator::GetInputType(feature) == JoystickAccelerometer)
     {
       int  xIndex;
       bool xInverted;
@@ -220,11 +216,6 @@ void CGenericJoystickDriverHandler::ProcessAxisMotions()
         const float zPos = GetAxisState(zIndex) * (zInverted ? -1.0f : 1.0f);
         m_handler->OnAccelerometerMotion(feature, xPos, yPos, zPos);
       }
-      break;
-    }
-
-    default:
-      break;
     }
   }
 }

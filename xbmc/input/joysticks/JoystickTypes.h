@@ -19,35 +19,49 @@
  */
 #pragma once
 
+#define DEFAULT_GAME_CONTROLLER   "game.controller.default"
+
 /*!
  * \ingroup joysticks
- * \brief Feature IDs for physical elements on a joystick
+ * \brief Types of physical elements on a joystick that emit input events
+ */
+enum JoystickInputType
+{
+  JoystickDigitalButton,   /*!< @brief Button with two states, pressed and released */
+  JoystickAnalogButton,    /*!< @brief Trigger or pressure-sensitive button */
+  JoystickAnalogStick,     /*!< @brief Control stick capable of motion in two directions */
+  JoystickAccelerometer,   /*!< @brief Accelerometer with x, y and z axes */
+};
+
+/*!
+ * \ingroup joysticks
+ * \brief Features available on the default controller
  */
 enum JoystickFeatureID
 {
-  JOY_ID_BUTTON_UNKNOWN = 0,
-  JOY_ID_BUTTON_A,
-  JOY_ID_BUTTON_B,
-  JOY_ID_BUTTON_X,
-  JOY_ID_BUTTON_Y,
-  JOY_ID_BUTTON_C,
-  JOY_ID_BUTTON_Z,
-  JOY_ID_BUTTON_START,
-  JOY_ID_BUTTON_SELECT,
-  JOY_ID_BUTTON_MODE,
-  JOY_ID_BUTTON_L,
-  JOY_ID_BUTTON_R,
-  JOY_ID_TRIGGER_L,
-  JOY_ID_TRIGGER_R,
-  JOY_ID_BUTTON_L_STICK,
-  JOY_ID_BUTTON_R_STICK,
-  JOY_ID_BUTTON_LEFT,
-  JOY_ID_BUTTON_RIGHT,
-  JOY_ID_BUTTON_UP,
-  JOY_ID_BUTTON_DOWN,
-  JOY_ID_ANALOG_STICK_L,
-  JOY_ID_ANALOG_STICK_R,
-  JOY_ID_ACCELEROMETER,
+  JoystickIDButtonUnknown = 0,
+  JoystickIDButtonA,
+  JoystickIDButtonB,
+  JoystickIDButtonX,
+  JoystickIDButtonY,
+  JoystickIDButtonC,
+  JoystickIDButtonZ,
+  JoystickIDButtonStart,
+  JoystickIDButtonSelect,
+  JoystickIDButtonGuide,
+  JoystickIDButtonLeftBumper,
+  JoystickIDButtonRightBumper,
+  JoystickIDButtonLeftStick,
+  JoystickIDButtonRightStick,
+  JoystickIDButtonUp,
+  JoystickIDButtonRight,
+  JoystickIDButtonDown,
+  JoystickIDButtonLeft,
+  JoystickIDTriggerLeft,
+  JoystickIDTriggerRright,
+  JoystickIDAnalogStickLeft,
+  JoystickIDAnalogStickRight,
+  JoystickIDAccelerometer,
 };
 
 /*!
@@ -69,34 +83,11 @@ enum HatDirection
 
 /*!
  * \ingroup joysticks
- * \brief Directions a semiaxis can point
+ * \brief Directions in which a semiaxis can point
  */
 enum SemiAxisDirection
 {
   SemiAxisDirectionNegative = -1,  // semiaxis lies in the interval [-1.0, 0.0]
   SemiAxisDirectionUnknown  =  0,  // semiaxis is unknown or invalid
   SemiAxisDirectionPositive =  1,  // semiaxis lies in the interval [0.0, 1.0]
-};
-
-class CJoystickTranslator
-{
-public:
-  static const char* HatDirectionToString(HatDirection dir)
-  {
-    switch (dir)
-    {
-      case HatDirectionLeft:      return "LEFT";
-      case HatDirectionRight:     return "RIGHT";
-      case HatDirectionUp:        return "UP";
-      case HatDirectionDown:      return "DOWN";
-      case HatDirectionLeftUp:    return "UP LEFT";
-      case HatDirectionLeftDown:  return "DOWN LEFT";
-      case HatDirectionRightUp:   return "UP RIGHT";
-      case HatDirectionRightDown: return "DOWN RIGHT";
-      case HatDirectionNone:
-      default:
-        break;
-    }
-    return "RELEASED";
-  }
 };

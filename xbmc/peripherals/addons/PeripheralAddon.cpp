@@ -24,6 +24,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
+#include "input/joysticks/JoystickTranslator.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
 #include "peripherals/devices/PeripheralJoystick.h"
@@ -526,60 +527,66 @@ JoystickFeatureID CPeripheralAddon::ToJoystickID(JOYSTICK_FEATURE_ID id)
 {
   switch (id)
   {
-  case JOYSTICK_FEATURE_BUTTON_A:        return JOY_ID_BUTTON_A;
-  case JOYSTICK_FEATURE_BUTTON_B:        return JOY_ID_BUTTON_B;
-  case JOYSTICK_FEATURE_BUTTON_X:        return JOY_ID_BUTTON_X;
-  case JOYSTICK_FEATURE_BUTTON_Y:        return JOY_ID_BUTTON_Y;
-  case JOYSTICK_FEATURE_BUTTON_C:        return JOY_ID_BUTTON_C;
-  case JOYSTICK_FEATURE_BUTTON_Z:        return JOY_ID_BUTTON_Z;
-  case JOYSTICK_FEATURE_BUTTON_START:    return JOY_ID_BUTTON_START;
-  case JOYSTICK_FEATURE_BUTTON_SELECT:   return JOY_ID_BUTTON_SELECT;
-  case JOYSTICK_FEATURE_BUTTON_HOME:     return JOY_ID_BUTTON_MODE;
-  case JOYSTICK_FEATURE_BUTTON_UP:       return JOY_ID_BUTTON_UP;
-  case JOYSTICK_FEATURE_BUTTON_DOWN:     return JOY_ID_BUTTON_DOWN;
-  case JOYSTICK_FEATURE_BUTTON_LEFT:     return JOY_ID_BUTTON_LEFT;
-  case JOYSTICK_FEATURE_BUTTON_RIGHT:    return JOY_ID_BUTTON_RIGHT;
-  case JOYSTICK_FEATURE_BUTTON_L:        return JOY_ID_BUTTON_L;
-  case JOYSTICK_FEATURE_BUTTON_R:        return JOY_ID_BUTTON_R;
-  case JOYSTICK_FEATURE_BUTTON_L_STICK:  return JOY_ID_BUTTON_L_STICK;
-  case JOYSTICK_FEATURE_BUTTON_R_STICK:  return JOY_ID_BUTTON_R_STICK;
-  case JOYSTICK_FEATURE_TRIGGER_L:       return JOY_ID_TRIGGER_L;
-  case JOYSTICK_FEATURE_TRIGGER_R:       return JOY_ID_TRIGGER_R;
-  case JOYSTICK_FEATURE_ANALOG_STICK_L:  return JOY_ID_ANALOG_STICK_L;
-  case JOYSTICK_FEATURE_ANALOG_STICK_R:  return JOY_ID_ANALOG_STICK_R;
-  case JOYSTICK_FEATURE_ACCELEROMETER:   return JOY_ID_ACCELEROMETER;
-  default:                               return JOY_ID_BUTTON_UNKNOWN;
+  case JOYSTICK_FEATURE_BUTTON_A:        return JoystickIDButtonA;
+  case JOYSTICK_FEATURE_BUTTON_B:        return JoystickIDButtonB;
+  case JOYSTICK_FEATURE_BUTTON_X:        return JoystickIDButtonX;
+  case JOYSTICK_FEATURE_BUTTON_Y:        return JoystickIDButtonY;
+  case JOYSTICK_FEATURE_BUTTON_C:        return JoystickIDButtonC;
+  case JOYSTICK_FEATURE_BUTTON_Z:        return JoystickIDButtonZ;
+  case JOYSTICK_FEATURE_BUTTON_START:    return JoystickIDButtonStart;
+  case JOYSTICK_FEATURE_BUTTON_SELECT:   return JoystickIDButtonSelect;
+  case JOYSTICK_FEATURE_BUTTON_HOME:     return JoystickIDButtonGuide;
+  case JOYSTICK_FEATURE_BUTTON_UP:       return JoystickIDButtonUp;
+  case JOYSTICK_FEATURE_BUTTON_DOWN:     return JoystickIDButtonDown;
+  case JOYSTICK_FEATURE_BUTTON_LEFT:     return JoystickIDButtonLeft;
+  case JOYSTICK_FEATURE_BUTTON_RIGHT:    return JoystickIDButtonRight;
+  case JOYSTICK_FEATURE_BUTTON_L:        return JoystickIDButtonLeftBumper;
+  case JOYSTICK_FEATURE_BUTTON_R:        return JoystickIDButtonRightBumper;
+  case JOYSTICK_FEATURE_BUTTON_L_STICK:  return JoystickIDButtonLeftStick;
+  case JOYSTICK_FEATURE_BUTTON_R_STICK:  return JoystickIDButtonRightStick;
+  case JOYSTICK_FEATURE_TRIGGER_L:       return JoystickIDTriggerLeft;
+  case JOYSTICK_FEATURE_TRIGGER_R:       return JoystickIDTriggerRright;
+  case JOYSTICK_FEATURE_ANALOG_STICK_L:  return JoystickIDAnalogStickLeft;
+  case JOYSTICK_FEATURE_ANALOG_STICK_R:  return JoystickIDAnalogStickRight;
+  case JOYSTICK_FEATURE_ACCELEROMETER:   return JoystickIDAccelerometer;
+  case JOYSTICK_FEATURE_UNKNOWN:
+  default:
+      break;
   }
+  return JoystickIDButtonUnknown;
 }
 
 JOYSTICK_FEATURE_ID CPeripheralAddon::ToFeatureID(JoystickFeatureID id)
 {
   switch (id)
   {
-  case JOY_ID_BUTTON_A:        return JOYSTICK_FEATURE_BUTTON_A;
-  case JOY_ID_BUTTON_B:        return JOYSTICK_FEATURE_BUTTON_B;
-  case JOY_ID_BUTTON_X:        return JOYSTICK_FEATURE_BUTTON_X;
-  case JOY_ID_BUTTON_Y:        return JOYSTICK_FEATURE_BUTTON_Y;
-  case JOY_ID_BUTTON_C:        return JOYSTICK_FEATURE_BUTTON_C;
-  case JOY_ID_BUTTON_Z:        return JOYSTICK_FEATURE_BUTTON_Z;
-  case JOY_ID_BUTTON_START:    return JOYSTICK_FEATURE_BUTTON_START;
-  case JOY_ID_BUTTON_SELECT:   return JOYSTICK_FEATURE_BUTTON_SELECT;
-  case JOY_ID_BUTTON_MODE:     return JOYSTICK_FEATURE_BUTTON_HOME;
-  case JOY_ID_BUTTON_UP:       return JOYSTICK_FEATURE_BUTTON_UP;
-  case JOY_ID_BUTTON_DOWN:     return JOYSTICK_FEATURE_BUTTON_DOWN;
-  case JOY_ID_BUTTON_LEFT:     return JOYSTICK_FEATURE_BUTTON_LEFT;
-  case JOY_ID_BUTTON_RIGHT:    return JOYSTICK_FEATURE_BUTTON_RIGHT;
-  case JOY_ID_BUTTON_L:        return JOYSTICK_FEATURE_BUTTON_L;
-  case JOY_ID_BUTTON_R:        return JOYSTICK_FEATURE_BUTTON_R;
-  case JOY_ID_BUTTON_L_STICK:  return JOYSTICK_FEATURE_BUTTON_L_STICK;
-  case JOY_ID_BUTTON_R_STICK:  return JOYSTICK_FEATURE_BUTTON_R_STICK;
-  case JOY_ID_TRIGGER_L:       return JOYSTICK_FEATURE_TRIGGER_L;
-  case JOY_ID_TRIGGER_R:       return JOYSTICK_FEATURE_TRIGGER_R;
-  case JOY_ID_ANALOG_STICK_L:  return JOYSTICK_FEATURE_ANALOG_STICK_L;
-  case JOY_ID_ANALOG_STICK_R:  return JOYSTICK_FEATURE_ANALOG_STICK_R;
-  case JOY_ID_ACCELEROMETER:   return JOYSTICK_FEATURE_ACCELEROMETER;
-  default:                     return JOYSTICK_FEATURE_UNKNOWN;
+  case JoystickIDButtonA:           return JOYSTICK_FEATURE_BUTTON_A;
+  case JoystickIDButtonB:           return JOYSTICK_FEATURE_BUTTON_B;
+  case JoystickIDButtonX:           return JOYSTICK_FEATURE_BUTTON_X;
+  case JoystickIDButtonY:           return JOYSTICK_FEATURE_BUTTON_Y;
+  case JoystickIDButtonC:           return JOYSTICK_FEATURE_BUTTON_C;
+  case JoystickIDButtonZ:           return JOYSTICK_FEATURE_BUTTON_Z;
+  case JoystickIDButtonStart:       return JOYSTICK_FEATURE_BUTTON_START;
+  case JoystickIDButtonSelect:      return JOYSTICK_FEATURE_BUTTON_SELECT;
+  case JoystickIDButtonGuide:       return JOYSTICK_FEATURE_BUTTON_HOME;
+  case JoystickIDButtonUp:          return JOYSTICK_FEATURE_BUTTON_UP;
+  case JoystickIDButtonDown:        return JOYSTICK_FEATURE_BUTTON_DOWN;
+  case JoystickIDButtonLeft:        return JOYSTICK_FEATURE_BUTTON_LEFT;
+  case JoystickIDButtonRight:       return JOYSTICK_FEATURE_BUTTON_RIGHT;
+  case JoystickIDButtonLeftBumper:  return JOYSTICK_FEATURE_BUTTON_L;
+  case JoystickIDButtonRightBumper: return JOYSTICK_FEATURE_BUTTON_R;
+  case JoystickIDButtonLeftStick:   return JOYSTICK_FEATURE_BUTTON_L_STICK;
+  case JoystickIDButtonRightStick:  return JOYSTICK_FEATURE_BUTTON_R_STICK;
+  case JoystickIDTriggerLeft:       return JOYSTICK_FEATURE_TRIGGER_L;
+  case JoystickIDTriggerRright:     return JOYSTICK_FEATURE_TRIGGER_R;
+  case JoystickIDAnalogStickLeft:   return JOYSTICK_FEATURE_ANALOG_STICK_L;
+  case JoystickIDAnalogStickRight:  return JOYSTICK_FEATURE_ANALOG_STICK_R;
+  case JoystickIDAccelerometer:     return JOYSTICK_FEATURE_ACCELEROMETER;
+  case JoystickIDButtonUnknown:
+  default:
+      break;
   }
+  return JOYSTICK_FEATURE_UNKNOWN;
 }
 
 HatDirection CPeripheralAddon::ToHatDirection(JOYSTICK_STATE_HAT state)

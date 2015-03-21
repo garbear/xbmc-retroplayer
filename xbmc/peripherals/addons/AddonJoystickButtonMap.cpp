@@ -103,7 +103,7 @@ std::map<CJoystickDriverPrimitive, JoystickFeatureID> CAddonJoystickButtonMap::G
 
 JoystickFeatureID CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& source)
 {
-  JoystickFeatureID id(JOY_ID_BUTTON_UNKNOWN);
+  JoystickFeatureID id = JoystickIDButtonUnknown;
 
   std::map<CJoystickDriverPrimitive, JoystickFeatureID>::const_iterator it = m_actions.find(source);
   if (it != m_actions.end())

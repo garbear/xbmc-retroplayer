@@ -1,4 +1,5 @@
 SRCS=JoystickDriverPrimitive.cpp \
+     JoystickTranslator.cpp \
 
 LIB=input_joysticks.a
 

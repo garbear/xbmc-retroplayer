@@ -21,6 +21,7 @@
 #include "GenericJoystickInputHandler.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/ButtonTranslator.h"
+#include "input/joysticks/JoystickTranslator.h"
 #include "input/Key.h"
 #include "threads/SingleLock.h"
 #include "ApplicationMessenger.h"
@@ -50,7 +51,7 @@ CGenericJoystickInputHandler::CGenericJoystickInputHandler(void) :
 
 bool CGenericJoystickInputHandler::OnButtonPress(JoystickFeatureID id, bool bPressed)
 {
-  unsigned int buttonKeyId = GetButtonKeyID(id);
+  unsigned int buttonKeyId = CJoystickTranslator::GetButtonKeyID(id);
   if (buttonKeyId != 0)
   {
     CAction action(CButtonTranslator::GetInstance().GetAction(g_windowManager.GetActiveWindowID(), CKey(buttonKeyId, 0)));
@@ -77,7 +78,7 @@ bool CGenericJoystickInputHandler::OnButtonPress(JoystickFeatureID id, bool bPre
 
 bool CGenericJoystickInputHandler::OnButtonMotion(JoystickFeatureID id, float magnitude)
 {
-  unsigned int buttonKeyId = GetButtonKeyID(id);
+  unsigned int buttonKeyId = CJoystickTranslator::GetButtonKeyID(id);
   if (buttonKeyId != 0)
   {
     CAction action(CButtonTranslator::GetInstance().GetAction(g_windowManager.GetActiveWindowID(), CKey(buttonKeyId, 0)));
@@ -103,14 +104,14 @@ bool CGenericJoystickInputHandler::OnButtonMotion(JoystickFeatureID id, float ma
 
 bool CGenericJoystickInputHandler::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
 {
-  unsigned int buttonKeyId  = GetButtonKeyID(id, x, y);
+  unsigned int buttonKeyId  = CJoystickTranslator::GetButtonKeyID(id, x, y);
 
   float magnitude = MAX(ABS(x), ABS(y));
 
-  unsigned int buttonRightId = GetButtonKeyID(id,  1.0f,  0.0f);
-  unsigned int buttonUpId    = GetButtonKeyID(id,  0.0f,  1.0f);
-  unsigned int buttonLeftId  = GetButtonKeyID(id, -1.0f,  0.0f);
-  unsigned int buttonDownId  = GetButtonKeyID(id,  0.0f, -1.0f);
+  unsigned int buttonRightId = CJoystickTranslator::GetButtonKeyID(id,  1.0f,  0.0f);
+  unsigned int buttonUpId    = CJoystickTranslator::GetButtonKeyID(id,  0.0f,  1.0f);
+  unsigned int buttonLeftId  = CJoystickTranslator::GetButtonKeyID(id, -1.0f,  0.0f);
+  unsigned int buttonDownId  = CJoystickTranslator::GetButtonKeyID(id,  0.0f, -1.0f);
 
   unsigned int buttonKeyIds[] = {buttonRightId, buttonUpId, buttonLeftId, buttonDownId};
 
@@ -206,76 +207,4 @@ void CGenericJoystickInputHandler::ClearHoldTimer(void)
 {
   m_holdTimer.Stop(true);
   m_lastButtonPress = 0;
-}
-
-unsigned int CGenericJoystickInputHandler::GetButtonKeyID(JoystickFeatureID id, float x /* = 0.0f */, float y /* = 0.0f */, float z /* = 0.0f */)
-{
-  switch (id)
-  {
-  case JOY_ID_BUTTON_A:
-    return KEY_BUTTON_A;
-  case JOY_ID_BUTTON_B:
-    return KEY_BUTTON_B;
-  case JOY_ID_BUTTON_X:
-    return KEY_BUTTON_X;
-  case JOY_ID_BUTTON_Y:
-    return KEY_BUTTON_Y;
-  case JOY_ID_BUTTON_C:
-    return KEY_BUTTON_BLACK;
-  case JOY_ID_BUTTON_Z:
-    return KEY_BUTTON_WHITE;
-  case JOY_ID_BUTTON_START:
-    return KEY_BUTTON_START;
-  case JOY_ID_BUTTON_SELECT:
-    return KEY_BUTTON_BACK;
-  case JOY_ID_BUTTON_MODE:
-    return KEY_BUTTON_GUIDE;
-  case JOY_ID_BUTTON_L:
-    return KEY_BUTTON_LEFT_SHOULDER;
-  case JOY_ID_BUTTON_R:
-    return KEY_BUTTON_RIGHT_SHOULDER;
-  case JOY_ID_TRIGGER_L:
-    return KEY_BUTTON_LEFT_TRIGGER;
-  case JOY_ID_TRIGGER_R:
-    return KEY_BUTTON_RIGHT_TRIGGER;
-  case JOY_ID_BUTTON_L_STICK:
-    return KEY_BUTTON_LEFT_THUMB_BUTTON;
-  case JOY_ID_BUTTON_R_STICK:
-    return KEY_BUTTON_RIGHT_THUMB_BUTTON;
-  case JOY_ID_BUTTON_LEFT:
-    return KEY_BUTTON_DPAD_LEFT;
-  case JOY_ID_BUTTON_RIGHT:
-    return KEY_BUTTON_DPAD_RIGHT;
-  case JOY_ID_BUTTON_UP:
-    return KEY_BUTTON_DPAD_UP;
-  case JOY_ID_BUTTON_DOWN:
-    return KEY_BUTTON_DPAD_DOWN;
-  case JOY_ID_ANALOG_STICK_L:
-    if (y >= x && y > -x)
-      return KEY_BUTTON_LEFT_THUMB_STICK_UP;
-    else if (y < x && y >= -x)
-      return KEY_BUTTON_LEFT_THUMB_STICK_RIGHT;
-    else if (y <= x && y < -x)
-      return KEY_BUTTON_LEFT_THUMB_STICK_DOWN;
-    else if (y > x && y <= -x)
-      return KEY_BUTTON_LEFT_THUMB_STICK_LEFT;
-    break;
-  case JOY_ID_ANALOG_STICK_R:
-    if (y >= x && y > -x)
-      return KEY_BUTTON_RIGHT_THUMB_STICK_UP;
-    else if (y < x && y >= -x)
-      return KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT;
-    else if (y <= x && y < -x)
-      return KEY_BUTTON_RIGHT_THUMB_STICK_DOWN;
-    else if (y > x && y <= -x)
-      return KEY_BUTTON_RIGHT_THUMB_STICK_LEFT;
-    break;
-  case JOY_ID_ACCELEROMETER:
-    return 0; // TODO
-  case JOY_ID_BUTTON_UNKNOWN:
-  default:
-    break;
-  }
-
-  return 0;
 }
