@@ -38,8 +38,8 @@ public:
   virtual void OnDeinitWindow(int nextWindowID);
 
 protected:
-  const GAME::ControllerLayoutPtr& GetLayout(const ADDON::AddonPtr& peripheral) const;
-  const GAME::ControllerLayoutPtr& LoadLayout(const ADDON::AddonPtr& peripheral);
+  GAME::ControllerLayoutPtr GetLayout(const ADDON::AddonPtr& peripheral) const;
+  GAME::ControllerLayoutPtr LoadLayout(const ADDON::AddonPtr& peripheral);
 
   virtual void OnInitWindow(void);
 

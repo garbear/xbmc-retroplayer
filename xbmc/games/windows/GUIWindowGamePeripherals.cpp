@@ -48,7 +48,7 @@ CGUIWindowGamePeripherals::CGUIWindowGamePeripherals(void) :
 {
 }
 
-const ControllerLayoutPtr& CGUIWindowGamePeripherals::GetLayout(const AddonPtr& peripheral) const
+ControllerLayoutPtr CGUIWindowGamePeripherals::GetLayout(const AddonPtr& peripheral) const
 {
   for (ControllerLayoutVector::const_iterator it = m_layouts.begin(); it != m_layouts.end(); ++it)
   {
@@ -58,7 +58,7 @@ const ControllerLayoutPtr& CGUIWindowGamePeripherals::GetLayout(const AddonPtr& 
   return CControllerLayout::EmptyPtr;
 }
 
-const ControllerLayoutPtr& CGUIWindowGamePeripherals::LoadLayout(const AddonPtr& peripheral)
+ControllerLayoutPtr CGUIWindowGamePeripherals::LoadLayout(const AddonPtr& peripheral)
 {
   const ControllerLayoutPtr& layout = GetLayout(peripheral);
   if (!layout)
