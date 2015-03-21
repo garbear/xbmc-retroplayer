@@ -25,11 +25,11 @@
 
 using namespace PERIPHERALS;
 
-// --- HandlerEqual ------------------------------------------------------------
+// --- InputHandlerEqual ------------------------------------------------------------
 
-struct HandlerEqual
+struct InputHandlerEqual
 {
-  HandlerEqual(IJoystickInputHandler* handler) : m_handler(handler) { }
+  InputHandlerEqual(IJoystickInputHandler* handler) : m_handler(handler) { }
 
   bool operator()(const SPort& port)
   {
@@ -75,7 +75,7 @@ void CPortManager::OpenPort(IJoystickInputHandler* handler, const std::string& s
 
 void CPortManager::ClosePort(IJoystickInputHandler* handler)
 {
-  m_ports.erase(std::remove_if(m_ports.begin(), m_ports.end(), HandlerEqual(handler)), m_ports.end());
+  m_ports.erase(std::remove_if(m_ports.begin(), m_ports.end(), InputHandlerEqual(handler)), m_ports.end());
 
   ProcessDevices();
 }
