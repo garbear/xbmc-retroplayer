@@ -63,14 +63,18 @@ namespace PERIPHERALS
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName) { m_strDeviceName = strName; } // Override value in peripherals.xml
 
+    void RegisterDriverHandler(IJoystickDriverHandler* handler);
+    void UnregisterDriverHandler(IJoystickDriverHandler* handler);
+
     void RegisterInputHandler(IJoystickInputHandler* handler);
     void UnregisterInputHandler(IJoystickInputHandler* handler);
 
   protected:
     int                                 m_requestedPort;
-    IJoystickDriverHandler*             m_driverHandler;
     IJoystickButtonMap*                 m_buttonMap;
-    std::vector<IJoystickInputHandler*> m_handlers;
+    std::vector<IJoystickDriverHandler*> m_driverHandlers;
+    std::vector<IJoystickInputHandler*> m_inputHandlers;
+    IJoystickDriverHandler*             m_driverHandler;
     CGenericJoystickInputHandler        m_fallbackHandler;
   };
 }

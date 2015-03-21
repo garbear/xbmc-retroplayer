@@ -22,9 +22,36 @@
 #include "addons/Addon.h"
 #include "games/GameTypes.h"
 #include "guilib/GUIWindow.h"
+#include "input/joysticks/IJoystickDriverHandler.h"
 #include "FileItem.h"
 
 #include <map>
+
+namespace PERIPHERALS
+{
+  class CPeripheral;
+  class CPeripheralJoystick;
+}
+
+class CGUIWindowGamePeripherals;
+
+class CGUIJoystickDriverHandler : public IJoystickDriverHandler
+{
+public:
+  CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* window, PERIPHERALS::CPeripheralJoystick* joystick);
+
+  virtual ~CGUIJoystickDriverHandler(void);
+
+  // Implementation of IJoystickDriverHandler
+  virtual void OnButtonMotion(unsigned int index, bool bPressed);
+  virtual void OnHatMotion(unsigned int index, HatDirection direction);
+  virtual void OnAxisMotion(unsigned int index, float position);
+  virtual void ProcessAxisMotions(void);
+
+private:
+  CGUIWindowGamePeripherals* const        m_window;
+  PERIPHERALS::CPeripheralJoystick* const m_joystick;
+};
 
 class CGUIWindowGamePeripherals : public CGUIWindow
 {
@@ -37,6 +64,11 @@ public:
 
   virtual void OnDeinitWindow(int nextWindowID);
 
+  void OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, bool bPressed);
+  void OnHatMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, HatDirection direction);
+  void OnAxisMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, float position);
+  void ProcessAxisMotions(PERIPHERALS::CPeripheralJoystick* joystick);
+
 protected:
   GAME::ControllerLayoutPtr GetLayout(const ADDON::AddonPtr& peripheral) const;
   GAME::ControllerLayoutPtr LoadLayout(const ADDON::AddonPtr& peripheral);
@@ -44,11 +76,14 @@ protected:
   virtual void OnInitWindow(void);
 
 private:
+  std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void);
+
   bool OnClick(int iItem);
   bool OnSelect(int iItem);
 
   int GetSelectedItem(int iControl);
 
+  std::vector<CGUIJoystickDriverHandler*> m_driverHandlers;
   GAME::ControllerLayoutVector m_layouts;
   CFileItemList                m_items;
   int                          m_selectedItem;
