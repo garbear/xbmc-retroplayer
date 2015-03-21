@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "InputPrimitive.h"
+#include "JoystickDriverPrimitive.h"
 
 #include <stdint.h>
 #include <string>
@@ -27,8 +27,8 @@
 /*!
  * \ingroup joysticks
  *
- * \brief Button map interface to translate between raw button/hat/axis elements
- *        and physical joystick features.
+ * \brief Button map interface to translate between the driver's raw
+ *        button/hat/axis elements and physical joystick features.
  */
 class IJoystickButtonMap
 {
@@ -43,14 +43,14 @@ public:
   virtual bool Load(void) = 0;
 
   /*!
-   * \brief Get the feature ID associated with in input primitive
+   * \brief Get the feature ID associated with a driver primitive
    *
-   * \param button The input primitive (a button, hat direction or semi-axis)
+   * \param button The driver primitive (a button, hat direction or semi-axis)
    *
-   * \return The ID, or UNKNOWN if input primitive isn't associated with an
+   * \return The ID, or UNKNOWN if driver primitive isn't associated with an
    *         feature ID
    */
-  virtual JoystickFeatureID GetFeature(const CInputPrimitive& button) = 0;
+  virtual JoystickFeatureID GetFeature(const CJoystickDriverPrimitive& button) = 0;
 
   /*!
    * \brief Get the raw button, raw hat direction or raw semi-axis associated
@@ -58,12 +58,12 @@ public:
    *
    * \param id      The feature ID. ID must correspond to a single button
    *                primitive, so no analog sticks or accelerometers.
-   * \param button  The resolved input primitive
+   * \param button  The resolved driver primitive
    *
-   * \return true if the ID resolved to an input primitive, false if the ID was
+   * \return true if the ID resolved to a driver primitive, false if the ID was
    *         invalid or resolved to an analog stick/accelerometer
    */
-  virtual bool GetInputPrimitive(JoystickFeatureID id, CInputPrimitive& button) = 0;
+  virtual bool GetDriverPrimitive(JoystickFeatureID id, CJoystickDriverPrimitive& button) = 0;
 
   /*!
    * \brief Get the raw axis indices and polarity for the given analog stick ID

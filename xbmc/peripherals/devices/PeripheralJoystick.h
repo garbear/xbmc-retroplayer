@@ -52,6 +52,7 @@ namespace PERIPHERALS
     int RequestedPort(void) const { return m_requestedPort; }
 
     IJoystickDriverHandler* GetDriverHandler(void) { return m_driverHandler; }
+    IJoystickButtonMap*     GetButtonMap(void) { return m_buttonMap; }
 
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName)    { m_strDeviceName = strName; } // Override value in peripherals.xml

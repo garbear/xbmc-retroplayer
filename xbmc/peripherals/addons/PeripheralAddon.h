@@ -30,7 +30,6 @@
 #include <memory>
 #include <vector>
 
-class CInputPrimitive;
 class IJoystickDriverHandler;
 
 namespace PERIPHERALS

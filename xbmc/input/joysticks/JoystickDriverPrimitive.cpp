@@ -18,9 +18,9 @@
  *
  */
 
-#include "InputPrimitive.h"
+#include "JoystickDriverPrimitive.h"
 
-CInputPrimitive::CInputPrimitive(void)
+CJoystickDriverPrimitive::CJoystickDriverPrimitive(void)
   : m_type(),
     m_index(0),
     m_hatDirection(),
@@ -28,41 +28,41 @@ CInputPrimitive::CInputPrimitive(void)
 {
 }
 
-CInputPrimitive::CInputPrimitive(unsigned int buttonIndex)
-  : m_type(InputPrimitiveTypeButton),
+CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int buttonIndex)
+  : m_type(DriverPrimitiveTypeButton),
     m_index(buttonIndex),
     m_hatDirection(),
     m_semiAxisDirection()
 {
 }
 
-CInputPrimitive::CInputPrimitive(unsigned int hatIndex, HatDirection direction)
-  : m_type(InputPrimitiveTypeHatDirection),
+CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int hatIndex, HatDirection direction)
+  : m_type(DriverPrimitiveTypeHatDirection),
     m_index(hatIndex),
     m_hatDirection(direction),
     m_semiAxisDirection()
 {
 }
 
-CInputPrimitive::CInputPrimitive(unsigned int axisIndex, SemiAxisDirection direction)
-  : m_type(InputPrimitiveTypeSemiAxis),
+CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int axisIndex, SemiAxisDirection direction)
+  : m_type(DriverPrimitiveTypeSemiAxis),
     m_index(axisIndex),
     m_hatDirection(),
     m_semiAxisDirection(direction)
 {
 }
 
-bool CInputPrimitive::operator==(const CInputPrimitive& rhs) const
+bool CJoystickDriverPrimitive::operator==(const CJoystickDriverPrimitive& rhs) const
 {
   if (m_type == rhs.m_type)
   {
     switch (m_type)
     {
-    case InputPrimitiveTypeButton:
+    case DriverPrimitiveTypeButton:
       return m_index == rhs.m_index;
-    case InputPrimitiveTypeHatDirection:
+    case DriverPrimitiveTypeHatDirection:
       return m_index == rhs.m_index && m_hatDirection == rhs.m_hatDirection;
-    case InputPrimitiveTypeSemiAxis:
+    case DriverPrimitiveTypeSemiAxis:
       return m_index == rhs.m_index && m_semiAxisDirection == rhs.m_semiAxisDirection;
     default:
       return true;
@@ -71,7 +71,7 @@ bool CInputPrimitive::operator==(const CInputPrimitive& rhs) const
   return false;
 }
 
-bool CInputPrimitive::operator<(const CInputPrimitive& rhs) const
+bool CJoystickDriverPrimitive::operator<(const CJoystickDriverPrimitive& rhs) const
 {
   if (m_type < rhs.m_type) return true;
   if (m_type > rhs.m_type) return false;
@@ -82,13 +82,13 @@ bool CInputPrimitive::operator<(const CInputPrimitive& rhs) const
     if (m_index > rhs.m_index) return false;
   }
 
-  if (m_type == InputPrimitiveTypeHatDirection)
+  if (m_type == DriverPrimitiveTypeHatDirection)
   {
     if (m_hatDirection < rhs.m_hatDirection) return true;
     if (m_hatDirection > rhs.m_hatDirection) return false;
   }
 
-  if (m_type == InputPrimitiveTypeSemiAxis)
+  if (m_type == DriverPrimitiveTypeSemiAxis)
   {
     if (m_semiAxisDirection < rhs.m_semiAxisDirection) return true;
     if (m_semiAxisDirection > rhs.m_semiAxisDirection) return false;
@@ -97,14 +97,13 @@ bool CInputPrimitive::operator<(const CInputPrimitive& rhs) const
   return false;
 }
 
-bool CInputPrimitive::IsValid(void) const
+bool CJoystickDriverPrimitive::IsValid(void) const
 {
-  return m_type == InputPrimitiveTypeButton ||
-        (m_type == InputPrimitiveTypeHatDirection && (m_hatDirection == HatDirectionLeft  ||
+  return m_type == DriverPrimitiveTypeButton ||
+        (m_type == DriverPrimitiveTypeHatDirection && (m_hatDirection == HatDirectionLeft  ||
                                                        m_hatDirection == HatDirectionRight ||
                                                        m_hatDirection == HatDirectionUp    ||
                                                        m_hatDirection == HatDirectionDown))  ||
-        (m_type == InputPrimitiveTypeSemiAxis && (m_semiAxisDirection == SemiAxisDirectionPositive ||
+        (m_type == DriverPrimitiveTypeSemiAxis && (m_semiAxisDirection == SemiAxisDirectionPositive ||
                                                    m_semiAxisDirection == SemiAxisDirectionNegative));
-                                                   
 }

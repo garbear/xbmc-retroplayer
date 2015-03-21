@@ -33,15 +33,15 @@ bool CAddonJoystickButtonMap::Load(void)
   if (!m_addon->GetJoystickFeatures(m_index, m_features))
     return false;
 
-  std::map<CInputPrimitive, JoystickFeatureID> actionMap = GetActionMap(m_features);
+  std::map<CJoystickDriverPrimitive, JoystickFeatureID> actionMap = GetActionMap(m_features);
   m_actions.swap(actionMap);
 
   return true;
 }
 
-std::map<CInputPrimitive, JoystickFeatureID> CAddonJoystickButtonMap::GetActionMap(const JoystickFeatureMap& features)
+std::map<CJoystickDriverPrimitive, JoystickFeatureID> CAddonJoystickButtonMap::GetActionMap(const JoystickFeatureMap& features)
 {
-  std::map<CInputPrimitive, JoystickFeatureID> actionMap;
+  std::map<CJoystickDriverPrimitive, JoystickFeatureID> actionMap;
 
   for (JoystickFeatureMap::const_iterator it = features.begin(); it != features.end(); ++it)
   {
@@ -53,43 +53,43 @@ std::map<CInputPrimitive, JoystickFeatureID> CAddonJoystickButtonMap::GetActionM
     case JOYSTICK_DRIVER_TYPE_BUTTON:
     {
       const ADDON::DriverButton* button = static_cast<const ADDON::DriverButton*>(feature);
-      actionMap[CInputPrimitive(button->Index())] = id;
+      actionMap[CJoystickDriverPrimitive(button->Index())] = id;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_HAT_DIRECTION:
     {
       const ADDON::DriverHat* hat = static_cast<const ADDON::DriverHat*>(feature);
-      actionMap[CInputPrimitive(hat->Index(), ToHatDirection(hat->Direction()))] = id;
+      actionMap[CJoystickDriverPrimitive(hat->Index(), ToHatDirection(hat->Direction()))] = id;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
     {
       const ADDON::DriverSemiAxis* semiaxis = static_cast<const ADDON::DriverSemiAxis*>(feature);
-      actionMap[CInputPrimitive(semiaxis->Index(), ToSemiAxisDirection(semiaxis->Direction()))] = id;
+      actionMap[CJoystickDriverPrimitive(semiaxis->Index(), ToSemiAxisDirection(semiaxis->Direction()))] = id;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:
     {
       const ADDON::DriverAnalogStick* analogStick = static_cast<const ADDON::DriverAnalogStick*>(feature);
-      actionMap[CInputPrimitive(analogStick->XIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CInputPrimitive(analogStick->XIndex(), SemiAxisDirectionNegative)] = id;
-      actionMap[CInputPrimitive(analogStick->YIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CInputPrimitive(analogStick->YIndex(), SemiAxisDirectionNegative)] = id;
+      actionMap[CJoystickDriverPrimitive(analogStick->XIndex(), SemiAxisDirectionPositive)] = id;
+      actionMap[CJoystickDriverPrimitive(analogStick->XIndex(), SemiAxisDirectionNegative)] = id;
+      actionMap[CJoystickDriverPrimitive(analogStick->YIndex(), SemiAxisDirectionPositive)] = id;
+      actionMap[CJoystickDriverPrimitive(analogStick->YIndex(), SemiAxisDirectionNegative)] = id;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_ACCELEROMETER:
     {
       const ADDON::DriverAccelerometer* accelerometer = static_cast<const ADDON::DriverAccelerometer*>(feature);
-      actionMap[CInputPrimitive(accelerometer->XIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CInputPrimitive(accelerometer->XIndex(), SemiAxisDirectionNegative)] = id;
-      actionMap[CInputPrimitive(accelerometer->YIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CInputPrimitive(accelerometer->YIndex(), SemiAxisDirectionNegative)] = id;
-      actionMap[CInputPrimitive(accelerometer->ZIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CInputPrimitive(accelerometer->ZIndex(), SemiAxisDirectionNegative)] = id;
+      actionMap[CJoystickDriverPrimitive(accelerometer->XIndex(), SemiAxisDirectionPositive)] = id;
+      actionMap[CJoystickDriverPrimitive(accelerometer->XIndex(), SemiAxisDirectionNegative)] = id;
+      actionMap[CJoystickDriverPrimitive(accelerometer->YIndex(), SemiAxisDirectionPositive)] = id;
+      actionMap[CJoystickDriverPrimitive(accelerometer->YIndex(), SemiAxisDirectionNegative)] = id;
+      actionMap[CJoystickDriverPrimitive(accelerometer->ZIndex(), SemiAxisDirectionPositive)] = id;
+      actionMap[CJoystickDriverPrimitive(accelerometer->ZIndex(), SemiAxisDirectionNegative)] = id;
       break;
     }
 
@@ -101,18 +101,18 @@ std::map<CInputPrimitive, JoystickFeatureID> CAddonJoystickButtonMap::GetActionM
   return actionMap;
 }
 
-JoystickFeatureID CAddonJoystickButtonMap::GetFeature(const CInputPrimitive& source)
+JoystickFeatureID CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& source)
 {
   JoystickFeatureID id(JOY_ID_BUTTON_UNKNOWN);
 
-  std::map<CInputPrimitive, JoystickFeatureID>::const_iterator it = m_actions.find(source);
+  std::map<CJoystickDriverPrimitive, JoystickFeatureID>::const_iterator it = m_actions.find(source);
   if (it != m_actions.end())
     id = it->second;
 
   return id;
 }
 
-bool CAddonJoystickButtonMap::GetInputPrimitive(JoystickFeatureID id, CInputPrimitive& button)
+bool CAddonJoystickButtonMap::GetDriverPrimitive(JoystickFeatureID id, CJoystickDriverPrimitive& button)
 {
   bool retVal(false);
 
@@ -126,7 +126,7 @@ bool CAddonJoystickButtonMap::GetInputPrimitive(JoystickFeatureID id, CInputPrim
     case JOYSTICK_DRIVER_TYPE_BUTTON:
     {
       const ADDON::DriverButton* driverButton = static_cast<const ADDON::DriverButton*>(feature);
-      button = CInputPrimitive(driverButton->Index());
+      button = CJoystickDriverPrimitive(driverButton->Index());
       retVal = true;
       break;
     }
@@ -135,7 +135,7 @@ bool CAddonJoystickButtonMap::GetInputPrimitive(JoystickFeatureID id, CInputPrim
     {
       const ADDON::DriverHat* driverHat = static_cast<const ADDON::DriverHat*>(feature);
       const HatDirection dir = ToHatDirection(driverHat->Direction());
-      button = CInputPrimitive(driverHat->Index(), dir);
+      button = CJoystickDriverPrimitive(driverHat->Index(), dir);
       retVal = true;
       break;
     }
@@ -144,7 +144,7 @@ bool CAddonJoystickButtonMap::GetInputPrimitive(JoystickFeatureID id, CInputPrim
     {
       const ADDON::DriverSemiAxis* driverSemiAxis = static_cast<const ADDON::DriverSemiAxis*>(feature);
       const SemiAxisDirection dir = ToSemiAxisDirection(driverSemiAxis->Direction());
-      button = CInputPrimitive(driverSemiAxis->Index(), dir);
+      button = CJoystickDriverPrimitive(driverSemiAxis->Index(), dir);
       retVal = true;
       break;
     }

@@ -1,4 +1,4 @@
-SRCS=InputPrimitive.cpp \
+SRCS=JoystickDriverPrimitive.cpp \
 
 LIB=input_joysticks.a
 

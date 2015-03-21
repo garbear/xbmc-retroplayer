@@ -19,9 +19,9 @@
  */
 
 #include "GenericJoystickDriverHandler.h"
-#include "input/joysticks/InputPrimitive.h"
 #include "input/joysticks/IJoystickButtonMap.h"
 #include "input/joysticks/IJoystickInputHandler.h"
+#include "input/joysticks/JoystickDriverPrimitive.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "utils/log.h"
 
@@ -47,7 +47,7 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int index, bool bPre
 
   char& oldState = m_buttonStates[index];
 
-  CInputPrimitive button(index);
+  CJoystickDriverPrimitive button(index);
   JoystickFeatureID feature = m_buttonMap->GetFeature(button);
 
   if (feature != JOY_ID_BUTTON_UNKNOWN)
@@ -90,7 +90,7 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
   if ((oldDir & targetDir) == HatDirectionNone &&
       (newDir & targetDir) != HatDirectionNone)
   {
-    CInputPrimitive left(index, HatDirectionLeft);
+    CJoystickDriverPrimitive left(index, HatDirectionLeft);
     JoystickFeatureID feature = m_buttonMap->GetFeature(left);
     if (feature != JOY_ID_BUTTON_UNKNOWN)
     {
@@ -107,7 +107,7 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
   else if ((oldDir & targetDir) != HatDirectionNone &&
            (newDir & targetDir) == HatDirectionNone)
   {
-    CInputPrimitive left(index, HatDirectionLeft);
+    CJoystickDriverPrimitive left(index, HatDirectionLeft);
     JoystickFeatureID feature = m_buttonMap->GetFeature(left);
     if (feature != JOY_ID_BUTTON_UNKNOWN)
     {
@@ -129,8 +129,8 @@ void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int index, float newPo
   float oldPosition = m_axisStates[index];
   m_axisStates[index] = newPosition;
 
-  CInputPrimitive positiveAxis(index, SemiAxisDirectionPositive);
-  CInputPrimitive negativeAxis(index, SemiAxisDirectionNegative);
+  CJoystickDriverPrimitive positiveAxis(index, SemiAxisDirectionPositive);
+  CJoystickDriverPrimitive negativeAxis(index, SemiAxisDirectionNegative);
 
   JoystickFeatureID positiveFeature = m_buttonMap->GetFeature(positiveAxis);
   JoystickFeatureID negativeFeature = m_buttonMap->GetFeature(negativeAxis);
