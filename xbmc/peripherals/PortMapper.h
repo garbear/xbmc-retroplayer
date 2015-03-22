@@ -32,6 +32,10 @@ namespace PERIPHERALS
   class CPortMapper : public Observer
   {
   public:
+    CPortMapper(void);
+
+    virtual ~CPortMapper(void);
+
     virtual void Notify(const Observable &obs, const ObservableMessage msg);
 
   private:

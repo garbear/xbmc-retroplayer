@@ -24,11 +24,22 @@
 
 using namespace PERIPHERALS;
 
+CPortMapper::CPortMapper(void)
+{
+  CPortManager::Get().RegisterObserver(this);
+}
+
+CPortMapper::~CPortMapper(void)
+{
+  CPortManager::Get().UnregisterObserver(this);
+}
+
 void CPortMapper::Notify(const Observable &obs, const ObservableMessage msg)
 {
   switch (msg)
   {
     case ObservableMessagePeripheralsChanged:
+    case ObservableMessagePortsChanged:
       ProcessPeripherals();
       break;
     default:

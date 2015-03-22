@@ -50,6 +50,9 @@ void CPortManager::OpenPort(IJoystickInputHandler* handler)
 
   SPort newPort = { handler, 0 };
   m_ports.push_back(newPort);
+
+  SetChanged();
+  NotifyObservers(ObservableMessagePortsChanged);
 }
 
 void CPortManager::ClosePort(IJoystickInputHandler* handler)
@@ -57,6 +60,9 @@ void CPortManager::ClosePort(IJoystickInputHandler* handler)
   CSingleLock lock(m_mutex);
 
   m_ports.erase(std::remove_if(m_ports.begin(), m_ports.end(), InputHandlerEqual(handler)), m_ports.end());
+
+  SetChanged();
+  NotifyObservers(ObservableMessagePortsChanged);
 }
 
 void CPortManager::GetPortMap(const std::vector<PERIPHERALS::CPeripheral*>& devices,
