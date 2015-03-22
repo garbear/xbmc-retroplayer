@@ -19,7 +19,7 @@
  */
 
 #include "GUIGamePeripheral.h"
-#include "games/GamePeripheral.h"
+#include "games/addons/GamePeripheral.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 

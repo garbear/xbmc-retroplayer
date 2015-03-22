@@ -19,7 +19,7 @@
  */
 
 #include "GUIDialogControllerInput.h"
-#include "games/GamePeripheral.h"
+#include "games/addons/GamePeripheral.h"
 #include "guilib/Geometry.h"
 #include "guilib/GUIButtonControl.h"
 #include "guilib/GUIControl.h"

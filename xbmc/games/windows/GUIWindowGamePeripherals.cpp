@@ -21,7 +21,7 @@
 #include "GUIWindowGamePeripherals.h"
 #include "GUIDialogControllerInput.h"
 #include "addons/AddonManager.h"
-#include "games/GamePeripheral.h"
+#include "games/addons/GamePeripheral.h"
 #include "guilib/GUIGamePeripheral.h"
 #include "guilib/GUIFocusPlane.h"
 #include "guilib/GUIMessage.h"

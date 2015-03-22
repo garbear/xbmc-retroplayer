@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "GameTypes.h"
+#include "games/GameTypes.h"
 #include "addons/Addon.h"
 #include "guilib/Geometry.h"
 
