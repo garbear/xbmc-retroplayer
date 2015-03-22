@@ -24,7 +24,7 @@
 #include "addons/include/xbmc_pvr_types.h"
 #include "addons/include/xbmc_codec_types.h"
 #include "addons/include/xbmc_game_callbacks.h"
-#include "addons/include/xbmc_peripheral_callbacks.h"
+#include "addons/include/kodi_peripheral_callbacks.h"
 #include "../../addons/library.xbmc.gui/libXBMC_gui.h"
 
 #ifdef TARGET_WINDOWS
