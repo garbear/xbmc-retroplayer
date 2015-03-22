@@ -56,11 +56,9 @@ private:
 
   void ClearDevices(void);
 
-  std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void) const;
-
   void ProcessDevices(void);
+  std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void) const;
   void AssignDevices(const std::vector<PERIPHERALS::CPeripheral*>& devices);
-  void AssignDevice(PERIPHERALS::CPeripheral* device, int requestedPort);
   void ProcessHandlers(const DeviceMap& oldDeviceMap) const;
 
   // Utility functions

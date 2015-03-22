@@ -112,7 +112,7 @@ void CPortManager::ProcessDevices(void)
   // Scan for peripherals
   std::vector<CPeripheral*> peripherals = ScanPeripherals();
 
-  // Assign devices
+  // Assign devices to ports
   AssignDevices(peripherals);
 
   // Notify devices whose ports have changed
@@ -140,7 +140,9 @@ void CPortManager::AssignDevices(const std::vector<CPeripheral*>& devices)
         requestedPort = joystick->RequestedPort();
     }
 
-    AssignDevice(*it, requestedPort);
+    const unsigned int targetPort = GetNextOpenPort(requestedPort - 1);
+
+    m_ports[targetPort].devices.push_back(*it);
   }
 }
 
@@ -167,14 +169,6 @@ void CPortManager::ProcessHandlers(const DeviceMap& oldDeviceMap) const
       joystick->RegisterInputHandler(newHandler);
     }
   }
-}
-
-void CPortManager::AssignDevice(CPeripheral* device, int requestedPort)
-{
-  const unsigned int index = GetNextOpenPort(requestedPort - 1);
-  SPort&             port  = m_ports[index];
-
-  port.devices.push_back(device);
 }
 
 unsigned int CPortManager::GetNextOpenPort(unsigned int startPort /* = 0 */) const
