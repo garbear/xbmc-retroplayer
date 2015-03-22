@@ -104,7 +104,7 @@ void CPortManager::Notify(const Observable &obs, const ObservableMessage msg)
 void CPortManager::ProcessDevices(void)
 {
   // Record the old handler-device map for later processing
-  std::map<CPeripheral*, IJoystickInputHandler*> oldDeviceMap = GetDeviceMap();
+  DeviceMap oldDeviceMap = GetDeviceMap();
 
   // Clear the previous assignments
   ClearDevices();
@@ -144,14 +144,15 @@ void CPortManager::AssignDevices(const std::vector<CPeripheral*>& devices)
   }
 }
 
-void CPortManager::ProcessHandlers(std::map<CPeripheral*, IJoystickInputHandler*>& oldDeviceMap) const
+void CPortManager::ProcessHandlers(const DeviceMap& oldDeviceMap) const
 {
-  std::map<CPeripheral*, IJoystickInputHandler*> newDeviceMap = GetDeviceMap();
+  DeviceMap newDeviceMap = GetDeviceMap();
 
-  for (std::map<CPeripheral*, IJoystickInputHandler*>::const_iterator itNew = newDeviceMap.begin();
-       itNew != newDeviceMap.end(); ++itNew)
+  for (DeviceMap::const_iterator itNew = newDeviceMap.begin(); itNew != newDeviceMap.end(); ++itNew)
   {
-    IJoystickInputHandler* oldHandler = oldDeviceMap[itNew->first];
+    DeviceMap::const_iterator itOld = oldDeviceMap.find(itNew->first);
+
+    IJoystickInputHandler* oldHandler = itOld != oldDeviceMap.end() ? itOld->second : NULL;
     IJoystickInputHandler* newHandler = itNew->second;
 
     if (oldHandler != newHandler) // Check if handler changed
@@ -189,9 +190,9 @@ unsigned int CPortManager::GetNextOpenPort(unsigned int startPort /* = 0 */) con
   return startPort;
 }
 
-std::map<CPeripheral*, IJoystickInputHandler*> CPortManager::GetDeviceMap(void) const
+CPortManager::DeviceMap CPortManager::GetDeviceMap(void) const
 {
-  std::map<CPeripheral*, IJoystickInputHandler*> deviceMap;
+  DeviceMap deviceMap;
 
   for (std::vector<SPort>::const_iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
   {

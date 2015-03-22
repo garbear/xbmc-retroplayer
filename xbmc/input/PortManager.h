@@ -52,6 +52,8 @@ public:
   virtual void Notify(const Observable &obs, const ObservableMessage msg);
 
 private:
+  typedef std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*> DeviceMap;
+
   void ClearDevices(void);
 
   std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void) const;
@@ -59,11 +61,11 @@ private:
   void ProcessDevices(void);
   void AssignDevices(const std::vector<PERIPHERALS::CPeripheral*>& devices);
   void AssignDevice(PERIPHERALS::CPeripheral* device, int requestedPort);
-  void ProcessHandlers(std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& oldDeviceMap) const;
+  void ProcessHandlers(const DeviceMap& oldDeviceMap) const;
 
   // Utility functions
   unsigned int GetNextOpenPort(unsigned int startPort = 0) const;
-  std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*> GetDeviceMap(void) const;
+  DeviceMap GetDeviceMap(void) const;
   unsigned int GetMinDeviceDepth(void) const;
 
   std::vector<SPort> m_ports;
