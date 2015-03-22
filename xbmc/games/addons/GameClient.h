@@ -85,7 +85,7 @@ class CGameClient;
 class CDeviceInput : public IJoystickInputHandler
 {
 public:
-  CDeviceInput(CGameClient* addon, int port);
+  CDeviceInput(CGameClient* addon, int port, const std::string& strDeviceId);
 
   // Implementation of IJoystickInputHandler
   virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
@@ -96,6 +96,7 @@ public:
 private:
   CGameClient* const m_addon;
   const int          m_port;
+  std::string        m_strDeviceId; // TODO
 };
 
 class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>

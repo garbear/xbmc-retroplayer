@@ -31,7 +31,6 @@ struct SPort
 {
   IJoystickInputHandler*                 handler;
   std::vector<PERIPHERALS::CPeripheral*> devices;
-  std::string                            controllerId;
 };
 
 class CPortManager
@@ -44,7 +43,7 @@ public:
 
   ~CPortManager(void) { ClearDevices(); }
 
-  void OpenPort(IJoystickInputHandler* handler, const std::string& strDeviceId);
+  void OpenPort(IJoystickInputHandler* handler);
   void ClosePort(IJoystickInputHandler* handler);
 
 private:

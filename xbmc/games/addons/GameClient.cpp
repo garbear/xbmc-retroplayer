@@ -61,10 +61,10 @@ struct NormalizeExtension
   }
 };
 
-// --- CDeviceInput ---------------------------------------------------------
+// --- CDeviceInput ------------------------------------------------------------
 
-CDeviceInput::CDeviceInput(CGameClient* addon, int port)
-  : m_addon(addon), m_port(port)
+CDeviceInput::CDeviceInput(CGameClient* addon, int port, const std::string& strDeviceId)
+  : m_addon(addon), m_port(port), m_strDeviceId(strDeviceId)
 {
   assert(m_addon);
 }
@@ -441,8 +441,8 @@ bool CGameClient::OpenPort(int port, const std::string& strDeviceId)
   std::map<int, CDeviceInput*>::const_iterator it = m_devices.find(port);
   if (it == m_devices.end())
   {
-    CDeviceInput* deviceInput = new CDeviceInput(this, port);
-    CPortManager::Get().OpenPort(deviceInput, strDeviceId);
+    CDeviceInput* deviceInput = new CDeviceInput(this, port, strDeviceId);
+    CPortManager::Get().OpenPort(deviceInput);
     m_devices[port] = deviceInput;
 
     return true;

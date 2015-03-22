@@ -61,12 +61,11 @@ void CPortManager::ClearDevices(void)
   m_minDeviceDepth = 0;
 }
 
-void CPortManager::OpenPort(IJoystickInputHandler* handler, const std::string& strDeviceId)
+void CPortManager::OpenPort(IJoystickInputHandler* handler)
 {
   SPort port;
 
   port.handler = handler;
-  port.controllerId = strDeviceId;
 
   m_ports.push_back(port);
 
