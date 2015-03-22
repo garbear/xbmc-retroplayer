@@ -3248,8 +3248,8 @@
     <ClCompile Include="..\..\xbmc\guilib\GUIGamePeripheral.cpp">
       <Filter>guilib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\GamePeripheral.cpp">
-      <Filter>games</Filter>
+    <ClCompile Include="..\..\xbmc\games\addons\GamePeripheral.cpp">
+      <Filter>games\addons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6318,8 +6318,8 @@
     <ClInclude Include="..\..\xbmc\guilib\GUIGamePeripheral.h">
       <Filter>guilib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\GamePeripheral.h">
-      <Filter>games</Filter>
+    <ClInclude Include="..\..\xbmc\games\addons\GamePeripheral.h">
+      <Filter>games\addons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

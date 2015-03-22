@@ -416,9 +416,9 @@
     <ClCompile Include="..\..\xbmc\filesystem\ZipManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameClient.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameClientProperties.cpp" />
+    <ClCompile Include="..\..\xbmc\games\addons\GamePeripheral.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp" />
-    <ClCompile Include="..\..\xbmc\games\GamePeripheral.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameSettings.cpp" />
     <ClCompile Include="..\..\xbmc\games\SerialState.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp" />
@@ -921,9 +921,9 @@
     <ClInclude Include="..\..\xbmc\filesystem\win32\Win32SMBFile.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameClient.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameClientProperties.h" />
+    <ClInclude Include="..\..\xbmc\games\addons\GamePeripheral.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h" />
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />
-    <ClInclude Include="..\..\xbmc\games\GamePeripheral.h" />
     <ClInclude Include="..\..\xbmc\games\GameSettings.h" />
     <ClInclude Include="..\..\xbmc\games\GameTypes.h" />
     <ClInclude Include="..\..\xbmc\games\SerialState.h" />
