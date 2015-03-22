@@ -75,20 +75,23 @@ void CPortManager::GetPortMap(const std::vector<PERIPHERALS::CPeripheral*>& devi
     ports = m_ports; // Modify copy so device count starts from zero next time
   }
 
-  for (std::vector<CPeripheral*>::const_iterator it = devices.begin(); it != devices.end(); ++it)
+  if (!ports.empty())
   {
-    int requestedPort = JOYSTICK_PORT_UNKNOWN;
-    if ((*it)->Type() == PERIPHERAL_JOYSTICK)
+    for (std::vector<CPeripheral*>::const_iterator it = devices.begin(); it != devices.end(); ++it)
     {
-      CPeripheralJoystick* joystick = static_cast<CPeripheralJoystick*>(*it);
-      if (joystick->RequestedPort() != JOYSTICK_PORT_UNKNOWN && joystick->RequestedPort() <= (int)m_ports.size())
-        requestedPort = joystick->RequestedPort() - 1;
+      int requestedPort = JOYSTICK_PORT_UNKNOWN;
+      if ((*it)->Type() == PERIPHERAL_JOYSTICK)
+      {
+        CPeripheralJoystick* joystick = static_cast<CPeripheralJoystick*>(*it);
+        if (joystick->RequestedPort() != JOYSTICK_PORT_UNKNOWN && joystick->RequestedPort() <= (int)m_ports.size())
+          requestedPort = joystick->RequestedPort() - 1;
+      }
+
+      unsigned int targetPort = GetNextOpenPort(ports, requestedPort);
+
+      portMap[*it] = ports[targetPort].handler;
+      ports[targetPort].deviceCount++;
     }
-
-    unsigned int targetPort = GetNextOpenPort(ports, requestedPort);
-
-    portMap[*it] = ports[targetPort].handler;
-    ports[targetPort].deviceCount++;
   }
 }
 
