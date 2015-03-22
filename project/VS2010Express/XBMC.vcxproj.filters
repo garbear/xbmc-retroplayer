@@ -6321,6 +6321,9 @@
     <ClInclude Include="..\..\xbmc\games\addons\GamePeripheral.h">
       <Filter>games\addons</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\input\IKeyboardHandler.h">
+      <Filter>input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">
