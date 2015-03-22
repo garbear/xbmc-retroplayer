@@ -25,16 +25,13 @@
 
 using namespace PERIPHERALS;
 
-// --- InputHandlerEqual ------------------------------------------------------------
+// --- InputHandlerEqual -------------------------------------------------------
 
 struct InputHandlerEqual
 {
   InputHandlerEqual(IJoystickInputHandler* handler) : m_handler(handler) { }
 
-  bool operator()(const SPort& port)
-  {
-    return port.handler == m_handler;
-  }
+  bool operator()(const SPort& port) { return port.handler == m_handler; }
 
 private:
   IJoystickInputHandler* const m_handler;
@@ -43,7 +40,6 @@ private:
 // --- CPortManager ------------------------------------------------------------
 
 CPortManager::CPortManager(void)
-  : m_minDeviceDepth(0)
 {
 }
 
@@ -57,8 +53,6 @@ void CPortManager::ClearDevices(void)
 {
   for (std::vector<SPort>::iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
     itPort->devices.clear();
-
-  m_minDeviceDepth = 0;
 }
 
 void CPortManager::OpenPort(IJoystickInputHandler* handler)
@@ -163,16 +157,15 @@ void CPortManager::AssignDevice(CPeripheral* device, int requestedPort)
   SPort&             port  = m_ports[index];
 
   port.devices.push_back(device);
-
-  // Update min device count
-  m_minDeviceDepth = GetMinDeviceDepth();
 }
 
 unsigned int CPortManager::GetNextOpenPort(unsigned int startPort /* = 0 */) const
 {
+  unsigned int minDeviceDepth = GetMinDeviceDepth();
+
   for (unsigned int i = 0, port = startPort; i < m_ports.size(); i++, port = (port + 1) % m_ports.size())
   {
-    if (m_ports[port].devices.size() == m_minDeviceDepth)
+    if (m_ports[port].devices.size() == minDeviceDepth)
       return port;
   }
 

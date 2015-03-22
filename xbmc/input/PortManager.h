@@ -41,7 +41,7 @@ private:
 public:
   static CPortManager& Get(void);
 
-  ~CPortManager(void) { ClearDevices(); }
+  ~CPortManager(void) { }
 
   void OpenPort(IJoystickInputHandler* handler);
   void ClosePort(IJoystickInputHandler* handler);
@@ -62,5 +62,4 @@ private:
   unsigned int GetMinDeviceDepth(void) const;
 
   std::vector<SPort> m_ports;
-  size_t             m_minDeviceDepth;
 };
