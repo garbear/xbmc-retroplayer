@@ -51,15 +51,13 @@ public:
 
   void Initialize();
 
-  CKey TranslateKey(XBMC_keysym& keysym);
-
   const CKey ProcessKeyDown(XBMC_keysym& keysym);
   void       ProcessKeyUp(void);
 
   std::string GetKeyName(int KeyID);
 
 private:
-  static bool LookupSymAndUnicodePeripherals(XBMC_keysym &keysym, uint8_t *key, char *unicode);
+  bool LookupSymAndUnicodePeripherals(XBMC_keysym &keysym, uint8_t *key, char *unicode);
 
   XBMC_keysym m_lastKeysym;
   unsigned int m_lastKeyTime;
