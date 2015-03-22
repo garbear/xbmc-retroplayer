@@ -27,6 +27,7 @@
 #include "guilib/GUIMessage.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
+#include "input/joysticks/JoystickTypes.h"
 #include "input/Key.h"
 #include "peripherals/devices/PeripheralJoystick.h"
 #include "peripherals/Peripherals.h"
@@ -40,13 +41,11 @@ using namespace ADDON;
 using namespace GAME;
 using namespace PERIPHERALS;
 
-#define DEFAULT_GAME_CONTROLLER     "game.controller.default"
-
 #define CONTROL_PERIPHERAL_LIST     1
 #define CONTROL_FOCUS_PLANE         2
 #define CONTROL_GAME_PERIPHERAL     3
 
-// --- CGUIJoystickDriverHandler ---------------------------------------------------------
+// --- CGUIJoystickDriverHandler -----------------------------------------------
 
 CGUIJoystickDriverHandler::CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* window, CPeripheralJoystick* joystick)
   : m_window(window), m_joystick(joystick)
