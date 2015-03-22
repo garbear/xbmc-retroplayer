@@ -20,6 +20,7 @@
 #include "PortManager.h"
 #include "peripherals/devices/PeripheralJoystick.h"
 #include "peripherals/Peripherals.h"
+#include "threads/SingleLock.h"
 
 #include <algorithm>
 
@@ -41,12 +42,18 @@ private:
 
 CPortManager::CPortManager(void)
 {
+  g_peripherals.RegisterObserver(this);
 }
 
 CPortManager& CPortManager::Get()
 {
   static CPortManager instance;
   return instance;
+}
+
+CPortManager::~CPortManager(void)
+{
+  g_peripherals.UnregisterObserver(this);
 }
 
 void CPortManager::ClearDevices(void)
@@ -57,6 +64,8 @@ void CPortManager::ClearDevices(void)
 
 void CPortManager::OpenPort(IJoystickInputHandler* handler)
 {
+  CSingleLock lock(m_mutex);
+
   SPort port;
 
   port.handler = handler;
@@ -68,9 +77,28 @@ void CPortManager::OpenPort(IJoystickInputHandler* handler)
 
 void CPortManager::ClosePort(IJoystickInputHandler* handler)
 {
+  CSingleLock lock(m_mutex);
+
   m_ports.erase(std::remove_if(m_ports.begin(), m_ports.end(), InputHandlerEqual(handler)), m_ports.end());
 
   ProcessDevices();
+}
+
+void CPortManager::Notify(const Observable &obs, const ObservableMessage msg)
+{
+  switch (msg)
+  {
+    case ObservableMessagePeripheralsChanged:
+    {
+      CSingleLock lock(m_mutex);
+
+      ProcessDevices();
+
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 void CPortManager::ProcessDevices(void)
@@ -87,7 +115,7 @@ void CPortManager::ProcessDevices(void)
   // Assign devices
   AssignDevices(peripherals);
 
-  // Notify devices whose ports have changed (TODO: refactor this)
+  // Notify devices whose ports have changed
   ProcessHandlers(oldDeviceMap);
 }
 
@@ -137,17 +165,6 @@ void CPortManager::ProcessHandlers(std::map<CPeripheral*, IJoystickInputHandler*
       // Register new handler
       joystick->RegisterInputHandler(newHandler);
     }
-
-    // Remove this device from oldDeviceMap to indicate we've seen it
-    if (oldHandler != NULL)
-      oldDeviceMap.erase(oldDeviceMap.find(itNew->first));
-  }
-
-  // Devices left in oldDeviceMap have no input handlers
-  for (std::map<CPeripheral*, IJoystickInputHandler*>::const_iterator itOld = oldDeviceMap.begin();
-       itOld != newDeviceMap.end(); ++itOld)
-  {
-    static_cast<CPeripheralJoystick*>(itOld->first)->UnregisterInputHandler(itOld->second);
   }
 }
 

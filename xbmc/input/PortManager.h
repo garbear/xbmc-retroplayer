@@ -19,6 +19,9 @@
  */
 #pragma once
 
+#include "threads/CriticalSection.h"
+#include "utils/Observer.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -33,7 +36,7 @@ struct SPort
   std::vector<PERIPHERALS::CPeripheral*> devices;
 };
 
-class CPortManager
+class CPortManager : public Observer
 {
 private:
   CPortManager(void);
@@ -41,10 +44,12 @@ private:
 public:
   static CPortManager& Get(void);
 
-  ~CPortManager(void) { }
+  virtual ~CPortManager(void);
 
   void OpenPort(IJoystickInputHandler* handler);
   void ClosePort(IJoystickInputHandler* handler);
+
+  virtual void Notify(const Observable &obs, const ObservableMessage msg);
 
 private:
   void ClearDevices(void);
@@ -62,4 +67,5 @@ private:
   unsigned int GetMinDeviceDepth(void) const;
 
   std::vector<SPort> m_ports;
+  CCriticalSection   m_mutex;
 };
