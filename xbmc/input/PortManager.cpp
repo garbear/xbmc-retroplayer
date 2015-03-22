@@ -136,11 +136,11 @@ void CPortManager::AssignDevices(const std::vector<CPeripheral*>& devices)
     if ((*it)->Type() == PERIPHERAL_JOYSTICK)
     {
       CPeripheralJoystick* joystick = static_cast<CPeripheralJoystick*>(*it);
-      if (joystick->RequestedPort() <= (int)m_ports.size())
-        requestedPort = joystick->RequestedPort();
+      if (joystick->RequestedPort() != JOYSTICK_PORT_UNKNOWN && joystick->RequestedPort() <= (int)m_ports.size())
+        requestedPort = joystick->RequestedPort() - 1;
     }
 
-    const unsigned int targetPort = GetNextOpenPort(requestedPort - 1);
+    const unsigned int targetPort = GetNextOpenPort(requestedPort);
 
     m_ports[targetPort].devices.push_back(*it);
   }
@@ -181,7 +181,7 @@ unsigned int CPortManager::GetNextOpenPort(unsigned int startPort /* = 0 */) con
       return port;
   }
 
-  return startPort;
+  return 0;
 }
 
 CPortManager::DeviceMap CPortManager::GetDeviceMap(void) const
