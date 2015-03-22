@@ -726,6 +726,7 @@
     <ClCompile Include="..\..\xbmc\peripherals\dialogs\GUIDialogPeripheralManager.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\dialogs\GUIDialogPeripheralSettings.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\Peripherals.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\PortMapper.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIDialogPictureInfo.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIViewStatePictures.cpp" />
     <ClCompile Include="..\..\xbmc\pictures\GUIWindowPictures.cpp" />
@@ -1024,6 +1025,7 @@
     <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.h" />
     <ClInclude Include="..\..\xbmc\network\upnp\UPnPSettings.h" />
     <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\PortMapper.h" />
     <ClInclude Include="..\..\xbmc\playlists\SmartPlaylistFileItemListModifier.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogLockSettings.h" />
     <ClInclude Include="..\..\xbmc\profiles\dialogs\GUIDialogProfileSettings.h" />

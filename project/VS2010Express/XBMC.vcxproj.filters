@@ -3251,6 +3251,9 @@
     <ClCompile Include="..\..\xbmc\games\addons\GamePeripheral.cpp">
       <Filter>games\addons</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\PortMapper.cpp">
+      <Filter>peripherals</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6323,6 +6326,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\input\IKeyboardHandler.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\PortMapper.h">
+      <Filter>peripherals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
