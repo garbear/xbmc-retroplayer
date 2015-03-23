@@ -1,8 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XBMC", "XBMC.vcxproj", "{3A68081D-E8F9-4523-9436-530DE9E5530A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kodi", "XBMC.vcxproj", "{3A68081D-E8F9-4523-9436-530DE9E5530A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C8F6C172-56F2-4E76-B5FA-C3B423B31BE7} = {C8F6C172-56F2-4E76-B5FA-C3B423B31BE7}
 	EndProjectSection
@@ -85,9 +85,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "visVortex", "..\..\xbmc\vis
 		{034B1D02-CA92-455D-8866-DB95BEE49C10} = {034B1D02-CA92-455D-8866-DB95BEE49C10}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libXBMC_peripheral", "..\..\lib\addons\library.xbmc.peripheral\project\VS2010Express\libXBMC_peripheral.vcxproj", "{FEA71D39-CB68-486B-A978-246E661A3F89}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libKODI_peripheral", "..\..\lib\addons\library.kodi.peripheral\project\VS2010Express\libKODI_peripheral.vcxproj", "{FEA71D39-CB68-486B-A978-246E661A3F89}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libXBMC_game", "..\..\lib\addons\library.xbmc.game\project\VS2010Express\libXBMC_game.vcxproj", "{1400C916-B4AD-41D7-ACEE-A853F3B89B38}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libKODI_game", "..\..\lib\addons\library.kodi.game\project\VS2010Express\libKODI_game.vcxproj", "{1400C916-B4AD-41D7-ACEE-A853F3B89B38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
