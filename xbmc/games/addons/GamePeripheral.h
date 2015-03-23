@@ -43,7 +43,7 @@ public:
   CGamePeripheral(const ADDON::AddonPtr& addon, CGUIControl* control);
   CGamePeripheral(void) {  }
 
-  static GamePeripheralPtr EmptyPtr;
+  static const GamePeripheralPtr EmptyPtr;
 
   bool Load(void);
 

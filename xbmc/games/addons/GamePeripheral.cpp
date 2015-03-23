@@ -59,7 +59,7 @@ using namespace GAME;
 #define LAYOUT_GEOMETRY_DPAD         "dpad"
 
 
-GamePeripheralPtr CGamePeripheral::EmptyPtr;
+const GamePeripheralPtr CGamePeripheral::EmptyPtr;
 
 CGamePeripheral::CGamePeripheral(const ADDON::AddonPtr& addon, CGUIControl* control) :
     m_addon(addon),
