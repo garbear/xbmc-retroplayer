@@ -13646,7 +13646,7 @@ msgstr ""
 
 #: xbmc/addons/Addon.cpp
 msgctxt "#35010"
-msgid "Peripheral add-ons"
+msgid "Peripheral libraries"
 msgstr ""
 
 #empty strings from id 35011 to 35099
