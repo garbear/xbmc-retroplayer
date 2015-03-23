@@ -529,10 +529,8 @@ JoystickFeatureID CPeripheralAddon::ToJoystickID(JOYSTICK_FEATURE_ID id)
   case JOYSTICK_FEATURE_BUTTON_B:        return JoystickIDButtonB;
   case JOYSTICK_FEATURE_BUTTON_X:        return JoystickIDButtonX;
   case JOYSTICK_FEATURE_BUTTON_Y:        return JoystickIDButtonY;
-  case JOYSTICK_FEATURE_BUTTON_C:        return JoystickIDButtonC;
-  case JOYSTICK_FEATURE_BUTTON_Z:        return JoystickIDButtonZ;
   case JOYSTICK_FEATURE_BUTTON_START:    return JoystickIDButtonStart;
-  case JOYSTICK_FEATURE_BUTTON_SELECT:   return JoystickIDButtonSelect;
+  case JOYSTICK_FEATURE_BUTTON_SELECT:   return JoystickIDButtonBack;
   case JOYSTICK_FEATURE_BUTTON_HOME:     return JoystickIDButtonGuide;
   case JOYSTICK_FEATURE_BUTTON_UP:       return JoystickIDButtonUp;
   case JOYSTICK_FEATURE_BUTTON_DOWN:     return JoystickIDButtonDown;
@@ -562,10 +560,8 @@ JOYSTICK_FEATURE_ID CPeripheralAddon::ToFeatureID(JoystickFeatureID id)
   case JoystickIDButtonB:           return JOYSTICK_FEATURE_BUTTON_B;
   case JoystickIDButtonX:           return JOYSTICK_FEATURE_BUTTON_X;
   case JoystickIDButtonY:           return JOYSTICK_FEATURE_BUTTON_Y;
-  case JoystickIDButtonC:           return JOYSTICK_FEATURE_BUTTON_C;
-  case JoystickIDButtonZ:           return JOYSTICK_FEATURE_BUTTON_Z;
   case JoystickIDButtonStart:       return JOYSTICK_FEATURE_BUTTON_START;
-  case JoystickIDButtonSelect:      return JOYSTICK_FEATURE_BUTTON_SELECT;
+  case JoystickIDButtonBack:        return JOYSTICK_FEATURE_BUTTON_SELECT;
   case JoystickIDButtonGuide:       return JOYSTICK_FEATURE_BUTTON_HOME;
   case JoystickIDButtonUp:          return JOYSTICK_FEATURE_BUTTON_UP;
   case JoystickIDButtonDown:        return JOYSTICK_FEATURE_BUTTON_DOWN;

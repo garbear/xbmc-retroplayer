@@ -49,7 +49,7 @@ JoystickInputType CJoystickTranslator::GetInputType(JoystickFeatureID featureId)
     case JoystickIDButtonX:           return JoystickDigitalButton;
     case JoystickIDButtonY:           return JoystickDigitalButton;
     case JoystickIDButtonStart:       return JoystickDigitalButton;
-    case JoystickIDButtonSelect:      return JoystickDigitalButton;
+    case JoystickIDButtonBack:        return JoystickDigitalButton;
     case JoystickIDButtonGuide:       return JoystickDigitalButton;
     case JoystickIDButtonLeftBumper:  return JoystickDigitalButton;
     case JoystickIDButtonRightBumper: return JoystickDigitalButton;
@@ -82,7 +82,7 @@ unsigned int CJoystickTranslator::GetButtonKeyID(JoystickFeatureID featureId, fl
     case JoystickIDButtonX:           return KEY_BUTTON_X;
     case JoystickIDButtonY:           return KEY_BUTTON_Y;
     case JoystickIDButtonStart:       return KEY_BUTTON_START;
-    case JoystickIDButtonSelect:      return KEY_BUTTON_BACK;
+    case JoystickIDButtonBack:        return KEY_BUTTON_BACK;
     case JoystickIDButtonGuide:       return KEY_BUTTON_GUIDE;
     case JoystickIDButtonLeftBumper:  return KEY_BUTTON_LEFT_SHOULDER;
     case JoystickIDButtonRightBumper: return KEY_BUTTON_RIGHT_SHOULDER;
