@@ -53,7 +53,7 @@ void CPortMapper::ProcessPeripherals(void)
   g_peripherals.GetPeripheralsWithFeature(joysticks, FEATURE_JOYSTICK);
 
   std::map<CPeripheral*, IJoystickInputHandler*> newPortMap;
-  CPortManager::Get().GetPortMap(joysticks, newPortMap);
+  CPortManager::Get().MapDevices(joysticks, newPortMap);
 
   ProcessChanges(m_portMap, newPortMap);
   m_portMap.swap(newPortMap);

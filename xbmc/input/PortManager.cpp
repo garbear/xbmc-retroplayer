@@ -25,19 +25,6 @@
 
 using namespace PERIPHERALS;
 
-// --- InputHandlerEqual -------------------------------------------------------
-
-struct InputHandlerEqual
-{
-  InputHandlerEqual(IJoystickInputHandler* handler) : handler(handler) { }
-
-  bool operator()(const SPort& port) { return port.handler == handler; }
-
-  IJoystickInputHandler* const handler;
-};
-
-// --- CPortManager ------------------------------------------------------------
-
 CPortManager& CPortManager::Get(void)
 {
   static CPortManager instance;
@@ -59,14 +46,14 @@ void CPortManager::ClosePort(IJoystickInputHandler* handler)
 {
   CSingleLock lock(m_mutex);
 
-  m_ports.erase(std::remove_if(m_ports.begin(), m_ports.end(), InputHandlerEqual(handler)), m_ports.end());
+  m_ports.erase(std::remove_if(m_ports.begin(), m_ports.end(), PortInputHandlerEqual(handler)), m_ports.end());
 
   SetChanged();
   NotifyObservers(ObservableMessagePortsChanged);
 }
 
-void CPortManager::GetPortMap(const std::vector<PERIPHERALS::CPeripheral*>& devices,
-                              std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& portMap) const
+void CPortManager::MapDevices(const std::vector<PERIPHERALS::CPeripheral*>& devices,
+                              std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& deviceToPortMap) const
 {
   std::vector<SPort> ports;
 
@@ -89,7 +76,7 @@ void CPortManager::GetPortMap(const std::vector<PERIPHERALS::CPeripheral*>& devi
 
       unsigned int targetPort = GetNextOpenPort(ports, requestedPort);
 
-      portMap[*it] = ports[targetPort].handler;
+      deviceToPortMap[*it] = ports[targetPort].handler;
       ports[targetPort].deviceCount++;
     }
   }
