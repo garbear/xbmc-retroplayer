@@ -127,7 +127,7 @@ namespace XBMCAddon
        * *Note, choices are (author, changelog, description, disclaimer, fanart. icon, id, name, path,\n
        *                     profile, stars, summary, type, version, platforms, extensions)
        * 
-       * *Note, platforms and extensions are only available for xbmc.gameclient addons, and "" otherwise
+       * *Note, platforms and extensions are only available for kodi.gameclient addons, and "" otherwise
        * 
        * example:
        *   - version = self.Addon.getAddonInfo('version')
