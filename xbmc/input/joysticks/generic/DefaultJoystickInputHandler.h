@@ -59,7 +59,7 @@ private:
 
   static JoystickFeatureID GetFeatureID(unsigned int featureIndex);
 
-  CTimer                    m_holdTimer;
+  CTimer                    m_holdTimer; // TODO: This creates a new thread every button press!
   unsigned int              m_lastButtonPress;
   std::vector<unsigned int> m_pressedButtons;
   CCriticalSection          m_digitalMutex;
