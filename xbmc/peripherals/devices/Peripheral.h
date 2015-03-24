@@ -24,8 +24,9 @@
 #include "peripherals/PeripheralTypes.h"
 
 class TiXmlDocument;
-
 class CSetting;
+class IJoystickDriverHandler;
+class IJoystickInputHandler;
 
 namespace PERIPHERALS
 {
@@ -162,6 +163,12 @@ namespace PERIPHERALS
     virtual std::vector<CSetting *> GetSettings(void) const;
 
     virtual bool ErrorOccured(void) const { return m_bError; }
+
+    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler) { }
+    virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler) { }
+
+    virtual void RegisterJoystickInputHandler(IJoystickInputHandler* handler) { }
+    virtual void UnregisterJoystickInputHandler(IJoystickInputHandler* handler) { }
 
   protected:
     virtual void ClearSettings(void);

@@ -24,6 +24,7 @@
 #include "devices/PeripheralDisk.h"
 #include "devices/PeripheralHID.h"
 #include "devices/PeripheralJoystick.h"
+#include "devices/PeripheralKeyboard.h"
 #include "devices/PeripheralNIC.h"
 #include "devices/PeripheralNyxboard.h"
 #include "devices/PeripheralTuner.h"
@@ -31,6 +32,7 @@
 #include "devices/PeripheralImon.h"
 #include "bus/PeripheralBusUSB.h"
 #include "bus/PeripheralBusAddon.h"
+#include "bus/virtual/PeripheralBusApplication.h"
 #include "dialogs/GUIDialogPeripheralManager.h"
 
 #if defined(HAVE_LIBCEC)
@@ -91,6 +93,7 @@ void CPeripherals::Initialise(void)
 #if defined(HAVE_LIBCEC)
     m_busses.push_back(new CPeripheralBusCEC(this));
 #endif
+    m_busses.push_back(new CPeripheralBusApplication(this));
     m_busses.push_back(new CPeripheralBusAddon(this));
 
     /* initialise all known busses */
@@ -290,10 +293,14 @@ CPeripheral *CPeripherals::CreatePeripheral(CPeripheralBus &bus, const Periphera
 
   case PERIPHERAL_IMON:
     peripheral = new CPeripheralImon(mappedResult);
-    break;
+      break;
 
   case PERIPHERAL_JOYSTICK:
     peripheral = new CPeripheralJoystick(mappedResult);
+    break;
+
+  case PERIPHERAL_KEYBOARD:
+    peripheral = new CPeripheralKeyboard(mappedResult);
     break;
 
   default:

@@ -49,11 +49,15 @@ void CPortMapper::Notify(const Observable &obs, const ObservableMessage msg)
 
 void CPortMapper::ProcessPeripherals(void)
 {
-  std::vector<CPeripheral*> joysticks;
-  g_peripherals.GetPeripheralsWithFeature(joysticks, FEATURE_JOYSTICK);
+  std::vector<CPeripheral*> devices;
+  g_peripherals.GetPeripheralsWithFeature(devices, FEATURE_JOYSTICK);
+
+  std::vector<CPeripheral*> keyboards;
+  g_peripherals.GetPeripheralsWithFeature(keyboards, FEATURE_KEYBOARD);
+  devices.insert(devices.end(), keyboards.begin(), keyboards.end());
 
   std::map<CPeripheral*, IJoystickInputHandler*> newPortMap;
-  CPortManager::Get().MapDevices(joysticks, newPortMap);
+  CPortManager::Get().MapDevices(devices, newPortMap);
 
   ProcessChanges(m_portMap, newPortMap);
   m_portMap.swap(newPortMap);
@@ -75,10 +79,10 @@ void CPortMapper::ProcessChanges(const std::map<CPeripheral*, IJoystickInputHand
 
       // Unregister old handler
       if (oldHandler != NULL)
-        joystick->UnregisterInputHandler(oldHandler);
+        joystick->UnregisterJoystickInputHandler(oldHandler);
 
       // Register new handler
-      joystick->RegisterInputHandler(newHandler);
+      joystick->RegisterJoystickInputHandler(newHandler);
     }
   }
 }

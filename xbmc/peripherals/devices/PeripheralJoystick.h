@@ -42,6 +42,10 @@ namespace PERIPHERALS
 
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
+    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler);
+    virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler);
+    virtual void RegisterJoystickInputHandler(IJoystickInputHandler* handler);
+    virtual void UnregisterJoystickInputHandler(IJoystickInputHandler* handler);
 
     // implementation of IJoystickDriverHandler
     virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
@@ -62,12 +66,6 @@ namespace PERIPHERALS
 
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName) { m_strDeviceName = strName; } // Override value in peripherals.xml
-
-    void RegisterDriverHandler(IJoystickDriverHandler* handler);
-    void UnregisterDriverHandler(IJoystickDriverHandler* handler);
-
-    void RegisterInputHandler(IJoystickInputHandler* handler);
-    void UnregisterInputHandler(IJoystickInputHandler* handler);
 
   protected:
     int                                  m_requestedPort;

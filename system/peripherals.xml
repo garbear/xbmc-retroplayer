@@ -45,4 +45,6 @@
   </peripheral>
 
   <peripheral bus="addon" class="joystick" name="Peripheral add-on joystick" mapTo="joystick" />
+
+  <peripheral bus="application" class="keyboard" name="Keyboard" mapTo="keyboard" />
 </peripherals>

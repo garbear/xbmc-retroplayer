@@ -53,12 +53,12 @@ CGUIJoystickDriverHandler::CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* 
   assert(m_window);
   assert(m_joystick);
 
-  m_joystick->RegisterDriverHandler(this);
+  m_joystick->RegisterJoystickDriverHandler(this);
 }
 
 CGUIJoystickDriverHandler::~CGUIJoystickDriverHandler(void)
 {
-  m_joystick->UnregisterDriverHandler(this);
+  m_joystick->UnregisterJoystickDriverHandler(this);
 }
 
 void CGUIJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
