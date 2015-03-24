@@ -21,10 +21,11 @@
 
 #include "JoystickTypes.h"
 
+#include <string>
+
 /*!
  * \ingroup joysticks
- * \brief Interface for handling events for physical joystick features like
- *        buttons, triggers and analog sticks
+ * \brief Interface for handling input events for game peripherals
  */
 class IJoystickInputHandler
 {
@@ -32,23 +33,28 @@ public:
   virtual ~IJoystickInputHandler(void) { }
 
   /*!
+   * \brief The add-on ID of the game peripheral associated with this input handler
+   *
+   * \return The ID of the add-on extending kodi.game.peripheral
+   */
+  virtual std::string DeviceID(void) const = 0;
+
+  /*!
    * \brief A digital button has been pressed or released
    *
-   * \param id        The ID of the button or trigger
-   * \param bPressed  True if pressed, false if released
+   * \param featureIndex The index of the button declared in the add-on's layout
+   * \param bPressed     True if pressed, false if released
    *
    * \return True if the event was handled otherwise false
    */
   virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed) { return false; }
 
   /*!
-   * \brief An analog button has changed state
+   * \brief An analog button (trigger or a pressure-sensitive button) has changed state
    *
-   * This could be a trigger or a pressure-sensitive button.
-   *
-   * \param id        The ID of the button or trigger
-   * \param magnitude The button pressure or trigger travel distance in the
-   *                  closed interval [0, 1]
+   * \param featureIndex The index of the button declared in the add-on's layout
+   * \param magnitude    The button pressure or trigger travel distance in the
+   *                     closed interval [0, 1]
    *
    * \return True if the event was handled otherwise false
    */
@@ -57,20 +63,21 @@ public:
   /*!
    * \brief An analog stick has moved
    *
-   * \param id        The ID of the analog stick
-   * \param x         The x coordinate in the closed interval [-1, 1]
-   * \param y         The y coordinate in the closed interval [-1, 1]
+   * \param featureIndex The index of the analog stick declared in the add-on's layout
+   * \param x            The x coordinate in the closed interval [-1, 1]
+   * \param y            The y coordinate in the closed interval [-1, 1]
    *
    * \return True if the event was handled otherwise false
    */
   virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y) { return false; }
 
   /*!
-   * \brief An accelerometer's acceleration has changed
+   * \brief An accelerometer's state has changed
    *
-   * \param x         The x coordinate in the closed interval [-1, 1]
-   * \param y         The y coordinate in the closed interval [-1, 1]
-   * \param z         The z coordinate in the closed interval [-1, 1]
+   * \param featureIndex The index of the accelerometer declared in the add-on's layout
+   * \param x            The x coordinate in the closed interval [-1, 1]
+   * \param y            The y coordinate in the closed interval [-1, 1]
+   * \param z            The z coordinate in the closed interval [-1, 1]
    *
    * \return True if the event was handled otherwise false
    */

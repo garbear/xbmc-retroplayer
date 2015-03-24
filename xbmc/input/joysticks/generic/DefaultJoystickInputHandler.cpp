@@ -49,6 +49,11 @@ CDefaultJoystickInputHandler::CDefaultJoystickInputHandler(void) :
 {
 }
 
+std::string CDefaultJoystickInputHandler::DeviceID(void) const
+{
+  return DEFAULT_GAME_CONTROLLER;
+}
+
 bool CDefaultJoystickInputHandler::OnButtonPress(unsigned int featureIndex, bool bPressed)
 {
   const JoystickFeatureID id = GetFeatureID(featureIndex);

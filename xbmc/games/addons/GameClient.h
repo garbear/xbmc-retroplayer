@@ -88,6 +88,7 @@ public:
   CDeviceInput(CGameClient* addon, int port, const std::string& strDeviceId);
 
   // Implementation of IJoystickInputHandler
+  virtual std::string DeviceID(void) const { return m_strDeviceId; }
   virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
   virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
   virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);

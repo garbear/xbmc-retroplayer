@@ -29,8 +29,7 @@ class CAction;
 
 /*!
  * \ingroup joysticks_generic
- * \brief Generic implementation of IJoystickInputHandler to translate
- *        input events from physical joystick features into joystick.xml buttons
+ * \brief Implementation of IJoystickInputHandler for the default controller
  *
  * \sa IJoystickInputHandler
  */
@@ -42,6 +41,7 @@ public:
   virtual ~CDefaultJoystickInputHandler(void) { }
 
   // implementation of IJoystickInputHandler
+  virtual std::string DeviceID(void) const;
   virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
   virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
   virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);

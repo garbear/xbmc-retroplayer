@@ -34,8 +34,7 @@ class IJoystickButtonMap;
 namespace PERIPHERALS
 {
   class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
-                              public IJoystickDriverHandler,
-                              public IJoystickInputHandler
+                              public IJoystickDriverHandler
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
@@ -50,15 +49,7 @@ namespace PERIPHERALS
     virtual void OnAxisMotion(unsigned int axisIndex, float position);
     virtual void ProcessAxisMotions(void);
 
-    // implementation of IJoystickInputHandler
-    virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
-    virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
-    virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);
-    virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z);
-
     int RequestedPort(void) const { return m_requestedPort; }
-
-    IJoystickButtonMap* GetButtonMap(void) { return m_buttonMap; }
 
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName) { m_strDeviceName = strName; } // Override value in peripherals.xml
@@ -73,7 +64,6 @@ namespace PERIPHERALS
     int                                 m_requestedPort;
     IJoystickButtonMap*                 m_buttonMap;
     std::vector<IJoystickDriverHandler*> m_driverHandlers;
-    std::vector<IJoystickInputHandler*> m_inputHandlers;
     IJoystickDriverHandler*             m_driverHandler;
     CDefaultJoystickInputHandler        m_fallbackHandler;
   };

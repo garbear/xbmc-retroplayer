@@ -51,8 +51,8 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, boo
   unsigned int feature;
   if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(buttonIndex), feature))
   {
-    CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d %s",
-              feature, bPressed ? "pressed" : "released");
+    CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u %s",
+              m_handler->DeviceID().c_str(), feature, bPressed ? "pressed" : "released");
 
     if (!oldState && pressed)
       m_handler->OnButtonPress(feature, true);
@@ -61,8 +61,8 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, boo
   }
   else if (bPressed)
   {
-    CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: No feature for button %u",
-              buttonIndex);
+    CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s has no feature for button %u",
+              m_handler->DeviceID().c_str(), buttonIndex);
   }
 
   oldState = pressed;
@@ -92,14 +92,14 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
     unsigned int feature;
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d activated",
-                feature);
+      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u activated",
+                m_handler->DeviceID().c_str(), feature);
       m_handler->OnButtonPress(feature, true);
     }
     else
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: No feature for hat %u %s",
-                index, CJoystickTranslator::HatDirectionToString(targetDir));
+      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s has no feature for hat %u %s",
+                m_handler->DeviceID().c_str(), index, CJoystickTranslator::HatDirectionToString(targetDir));
     }
   }
   else if ((oldDir & targetDir) != HatDirectionNone &&
@@ -108,8 +108,8 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
     unsigned int feature;
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d deactivated",
-                feature);
+      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u deactivated",
+                m_handler->DeviceID().c_str(), feature);
       m_handler->OnButtonPress(feature, false);
     }
   }
