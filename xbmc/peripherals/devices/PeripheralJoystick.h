@@ -61,10 +61,10 @@ namespace PERIPHERALS
     void UnregisterInputHandler(IJoystickInputHandler* handler);
 
   protected:
-    int                                 m_requestedPort;
-    IJoystickButtonMap*                 m_buttonMap;
+    int                                  m_requestedPort;
+    IJoystickButtonMap*                  m_buttonMap;
+    IJoystickDriverHandler*              m_defaultDriverHandler;
     std::vector<IJoystickDriverHandler*> m_driverHandlers;
-    IJoystickDriverHandler*             m_driverHandler;
-    CDefaultJoystickInputHandler        m_fallbackHandler;
+    CDefaultJoystickInputHandler         m_defaultInputHandler;
   };
 }
