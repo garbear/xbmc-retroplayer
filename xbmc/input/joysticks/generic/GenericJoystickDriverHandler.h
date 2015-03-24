@@ -49,10 +49,10 @@ private:
 
   float GetAxisState(int axisIndex) const;
 
-  IJoystickInputHandler*      m_handler;
-  IJoystickButtonMap*         m_buttonMap;
-  std::vector<char>           m_buttonStates; // std::vector is specialized for <bool>
-  std::vector<HatDirection>   m_hatStates;
-  std::vector<float>          m_axisStates;
-  std::vector<unsigned int>   m_featuresWithMotion;
+  IJoystickInputHandler* const m_handler;
+  IJoystickButtonMap* const    m_buttonMap;
+  std::vector<char>            m_buttonStates; // std::vector is specialized for <bool>
+  std::vector<HatDirection>    m_hatStates;
+  std::vector<float>           m_axisStates;
+  std::vector<unsigned int>    m_featuresWithMotion;
 };
