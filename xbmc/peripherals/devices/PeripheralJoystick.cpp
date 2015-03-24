@@ -117,44 +117,44 @@ void CPeripheralJoystick::ProcessAxisMotions(void)
     m_driverHandler->ProcessAxisMotions();
 }
 
-bool CPeripheralJoystick::OnButtonPress(JoystickFeatureID id, bool bPressed)
+bool CPeripheralJoystick::OnButtonPress(unsigned int featureIndex, bool bPressed)
 {
   bool bHandled = false;
 
   for (std::vector<IJoystickInputHandler*>::iterator it = m_inputHandlers.begin(); it != m_inputHandlers.end(); ++it)
-    bHandled |= (*it)->OnButtonPress(id, bPressed);
+    bHandled |= (*it)->OnButtonPress(featureIndex, bPressed);
 
-  return bHandled || m_fallbackHandler.OnButtonPress(id, bPressed);
+  return bHandled || m_fallbackHandler.OnButtonPress(featureIndex, bPressed);
 }
 
-bool CPeripheralJoystick::OnButtonMotion(JoystickFeatureID id, float magnitude)
+bool CPeripheralJoystick::OnButtonMotion(unsigned int featureIndex, float magnitude)
 {
   bool bHandled = false;
 
   for (std::vector<IJoystickInputHandler*>::iterator it = m_inputHandlers.begin(); it != m_inputHandlers.end(); ++it)
-    bHandled |= (*it)->OnButtonMotion(id, magnitude);
+    bHandled |= (*it)->OnButtonMotion(featureIndex, magnitude);
 
-  return bHandled || m_fallbackHandler.OnButtonMotion(id, magnitude);
+  return bHandled || m_fallbackHandler.OnButtonMotion(featureIndex, magnitude);
 }
 
-bool CPeripheralJoystick::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+bool CPeripheralJoystick::OnAnalogStickMotion(unsigned int featureIndex, float x, float y)
 {
   bool bHandled = false;
 
   for (std::vector<IJoystickInputHandler*>::iterator it = m_inputHandlers.begin(); it != m_inputHandlers.end(); ++it)
-    bHandled |= (*it)->OnAnalogStickMotion(id, x, y);
+    bHandled |= (*it)->OnAnalogStickMotion(featureIndex, x, y);
 
-  return bHandled || m_fallbackHandler.OnAnalogStickMotion(id, x, y);
+  return bHandled || m_fallbackHandler.OnAnalogStickMotion(featureIndex, x, y);
 }
 
-bool CPeripheralJoystick::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+bool CPeripheralJoystick::OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z)
 {
   bool bHandled = false;
 
   for (std::vector<IJoystickInputHandler*>::iterator it = m_inputHandlers.begin(); it != m_inputHandlers.end(); ++it)
-    bHandled |= (*it)->OnAccelerometerMotion(id, x, y, z);
+    bHandled |= (*it)->OnAccelerometerMotion(featureIndex, x, y, z);
 
-  return bHandled || m_fallbackHandler.OnAccelerometerMotion(id, x, y, z);
+  return bHandled || m_fallbackHandler.OnAccelerometerMotion(featureIndex, x, y, z);
 }
 
 void CPeripheralJoystick::RegisterDriverHandler(IJoystickDriverHandler* handler)

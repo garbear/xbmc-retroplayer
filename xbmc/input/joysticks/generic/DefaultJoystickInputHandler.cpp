@@ -18,7 +18,7 @@
  *
  */
 
-#include "GenericJoystickInputHandler.h"
+#include "DefaultJoystickInputHandler.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/ButtonTranslator.h"
 #include "input/joysticks/JoystickTranslator.h"
@@ -43,14 +43,16 @@
 #define ARRAY_SIZE(x)  (sizeof(x) / sizeof((x)[0]))
 #endif
 
-CGenericJoystickInputHandler::CGenericJoystickInputHandler(void) :
+CDefaultJoystickInputHandler::CDefaultJoystickInputHandler(void) :
   m_holdTimer(this),
   m_lastButtonPress(0)
 {
 }
 
-bool CGenericJoystickInputHandler::OnButtonPress(JoystickFeatureID id, bool bPressed)
+bool CDefaultJoystickInputHandler::OnButtonPress(unsigned int featureIndex, bool bPressed)
 {
+  const JoystickFeatureID id = GetFeatureID(featureIndex);
+
   unsigned int buttonKeyId = CJoystickTranslator::GetButtonKeyID(id);
   if (buttonKeyId != 0)
   {
@@ -76,8 +78,10 @@ bool CGenericJoystickInputHandler::OnButtonPress(JoystickFeatureID id, bool bPre
   return true;
 }
 
-bool CGenericJoystickInputHandler::OnButtonMotion(JoystickFeatureID id, float magnitude)
+bool CDefaultJoystickInputHandler::OnButtonMotion(unsigned int featureIndex, float magnitude)
 {
+  const JoystickFeatureID id = GetFeatureID(featureIndex);
+
   unsigned int buttonKeyId = CJoystickTranslator::GetButtonKeyID(id);
   if (buttonKeyId != 0)
   {
@@ -102,8 +106,10 @@ bool CGenericJoystickInputHandler::OnButtonMotion(JoystickFeatureID id, float ma
   return true;
 }
 
-bool CGenericJoystickInputHandler::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+bool CDefaultJoystickInputHandler::OnAnalogStickMotion(unsigned int featureIndex, float x, float y)
 {
+  const JoystickFeatureID id = GetFeatureID(featureIndex);
+
   unsigned int buttonKeyId  = CJoystickTranslator::GetButtonKeyID(id, x, y);
 
   float magnitude = MAX(ABS(x), ABS(y));
@@ -151,12 +157,12 @@ bool CGenericJoystickInputHandler::OnAnalogStickMotion(JoystickFeatureID id, flo
   return true;
 }
 
-bool CGenericJoystickInputHandler::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+bool CDefaultJoystickInputHandler::OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z)
 {
-  return OnAnalogStickMotion(id, x, y); // TODO
+  return OnAnalogStickMotion(featureIndex, x, y); // TODO
 }
 
-void CGenericJoystickInputHandler::OnTimeout(void)
+void CDefaultJoystickInputHandler::OnTimeout(void)
 {
   CSingleLock lock(m_digitalMutex);
 
@@ -170,7 +176,7 @@ void CGenericJoystickInputHandler::OnTimeout(void)
   }
 }
 
-void CGenericJoystickInputHandler::ProcessButtonPress(const CAction& action)
+void CDefaultJoystickInputHandler::ProcessButtonPress(const CAction& action)
 {
   if (std::find(m_pressedButtons.begin(), m_pressedButtons.end(), action.GetButtonCode()) == m_pressedButtons.end())
   {
@@ -185,7 +191,7 @@ void CGenericJoystickInputHandler::ProcessButtonPress(const CAction& action)
   }
 }
 
-void CGenericJoystickInputHandler::ProcessButtonRelease(unsigned int buttonKeyId)
+void CDefaultJoystickInputHandler::ProcessButtonRelease(unsigned int buttonKeyId)
 {
   std::vector<unsigned int>::iterator it = std::find(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyId);
   if (it != m_pressedButtons.end())
@@ -197,14 +203,44 @@ void CGenericJoystickInputHandler::ProcessButtonRelease(unsigned int buttonKeyId
   }
 }
 
-void CGenericJoystickInputHandler::StartHoldTimer(unsigned int buttonKeyId)
+void CDefaultJoystickInputHandler::StartHoldTimer(unsigned int buttonKeyId)
 {
   m_holdTimer.Start(REPEAT_TIMEOUT_MS, true);
   m_lastButtonPress = buttonKeyId;
 }
 
-void CGenericJoystickInputHandler::ClearHoldTimer(void)
+void CDefaultJoystickInputHandler::ClearHoldTimer(void)
 {
   m_holdTimer.Stop(true);
   m_lastButtonPress = 0;
+}
+
+JoystickFeatureID CDefaultJoystickInputHandler::GetFeatureID(unsigned int featureIndex)
+{
+  switch (featureIndex)
+  {
+    case  0: return JoystickIDButtonA;
+    case  1: return JoystickIDButtonB;
+    case  2: return JoystickIDButtonX;
+    case  3: return JoystickIDButtonY;
+    case  4: return JoystickIDButtonStart;
+    case  5: return JoystickIDButtonBack;
+    case  6: return JoystickIDButtonGuide;
+    case  7: return JoystickIDButtonLeftBumper;
+    case  8: return JoystickIDButtonRightBumper;
+    case  9: return JoystickIDButtonLeftStick;
+    case 10: return JoystickIDButtonRightStick;
+    case 11: return JoystickIDButtonUp;
+    case 12: return JoystickIDButtonRight;
+    case 13: return JoystickIDButtonDown;
+    case 14: return JoystickIDButtonLeft;
+    case 15: return JoystickIDTriggerLeft;
+    case 16: return JoystickIDTriggerRight;
+    case 17: return JoystickIDAnalogStickLeft;
+    case 18: return JoystickIDAnalogStickRight;
+    case 19: return JoystickIDAccelerometer;
+    default:
+      break;
+  }
+  return JoystickIDButtonUnknown;
 }

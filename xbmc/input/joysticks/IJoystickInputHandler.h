@@ -39,7 +39,7 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed) { return false; }
+  virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed) { return false; }
 
   /*!
    * \brief An analog button has changed state
@@ -52,7 +52,7 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude) { return false; }
+  virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude) { return false; }
 
   /*!
    * \brief An analog stick has moved
@@ -63,7 +63,7 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y) { return false; }
+  virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y) { return false; }
 
   /*!
    * \brief An accelerometer's acceleration has changed
@@ -74,5 +74,5 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z) { return false; }
+  virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z) { return false; }
 };

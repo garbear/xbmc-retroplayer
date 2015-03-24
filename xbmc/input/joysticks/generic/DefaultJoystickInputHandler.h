@@ -34,18 +34,18 @@ class CAction;
  *
  * \sa IJoystickInputHandler
  */
-class CGenericJoystickInputHandler : public IJoystickInputHandler, public ITimerCallback
+class CDefaultJoystickInputHandler : public IJoystickInputHandler, public ITimerCallback
 {
 public:
-  CGenericJoystickInputHandler(void);
+  CDefaultJoystickInputHandler(void);
 
-  virtual ~CGenericJoystickInputHandler(void) { }
+  virtual ~CDefaultJoystickInputHandler(void) { }
 
   // implementation of IJoystickInputHandler
-  virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
-  virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
-  virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
-  virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z);
+  virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
+  virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
+  virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);
+  virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z);
 
   // implementation of ITimerCallback
   virtual void OnTimeout(void);
@@ -56,6 +56,8 @@ private:
 
   void StartHoldTimer(unsigned int buttonKeyId);
   void ClearHoldTimer(void);
+
+  static JoystickFeatureID GetFeatureID(unsigned int featureIndex);
 
   CTimer                    m_holdTimer;
   unsigned int              m_lastButtonPress;
