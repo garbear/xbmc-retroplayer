@@ -118,7 +118,7 @@ GamePeripheralPtr CGUIWindowGamePeripherals::LoadPeripheral(const AddonPtr& addo
     if (newPeripheral->Load())
     {
       m_peripherals.push_back(newPeripheral);
-      return *(m_peripherals.end() - 1);
+      return newPeripheral;
     }
   }
   return peripheral;
