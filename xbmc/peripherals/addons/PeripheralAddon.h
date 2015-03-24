@@ -40,8 +40,8 @@ namespace PERIPHERALS
   typedef std::shared_ptr<CPeripheralAddon> PeripheralAddonPtr;
   typedef std::vector<PeripheralAddonPtr>   PeripheralAddonVector;
 
-  typedef std::shared_ptr<ADDON::JoystickFeature>         JoystickFeaturePtr;
-  typedef std::map<JoystickFeatureID, JoystickFeaturePtr> JoystickFeatureMap;
+  typedef std::shared_ptr<ADDON::JoystickFeature>    JoystickFeaturePtr;
+  typedef std::map<unsigned int, JoystickFeaturePtr> JoystickFeatureMap; // feature index -> feature
 
   class CPeripheralAddon : public ADDON::CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>
   {
@@ -81,7 +81,7 @@ namespace PERIPHERALS
 
     /** @name Joystick methods */
     //@{
-    bool GetJoystickFeatures(unsigned int index, JoystickFeatureMap& features);
+    bool GetJoystickFeatures(CPeripheral* device, const std::string& strDeviceId, JoystickFeatureMap& features);
     int  GetRequestedPort(unsigned int index);
     //@}
 

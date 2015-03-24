@@ -448,15 +448,17 @@ bool CPeripheralAddon::ProcessEvents(void)
   return false;
 }
 
-bool CPeripheralAddon::GetJoystickFeatures(unsigned int index, JoystickFeatureMap& features)
+bool CPeripheralAddon::GetJoystickFeatures(CPeripheral* device, const std::string& strDeviceId, JoystickFeatureMap& features)
 {
   PERIPHERAL_ERROR retVal;
 
-
   JOYSTICK_INFO joystickStruct;
 
+  /* TODO
   try { LogError(retVal = m_pStruct->GetJoystickInfo(index, &joystickStruct), "GetJoystickInfo()"); }
   catch (std::exception &e) { LogException(e, "GetJoystickInfo()"); return false;  }
+  */
+  retVal = PERIPHERAL_ERROR_FAILED;
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {

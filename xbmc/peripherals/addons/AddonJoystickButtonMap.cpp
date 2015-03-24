@@ -19,77 +19,107 @@
  */
 
 #include "AddonJoystickButtonMap.h"
+#include "peripherals/Peripherals.h"
+#include "peripherals/bus/PeripheralBusAddon.h"
 
+using namespace ADDON;
 using namespace PERIPHERALS;
 
-CAddonJoystickButtonMap::CAddonJoystickButtonMap(const PERIPHERALS::PeripheralAddonPtr& addon, unsigned int index)
- : m_addon(addon),
-   m_index(index)
+CAddonJoystickButtonMap::CAddonJoystickButtonMap(CPeripheral* device, const std::string& strDeviceId)
+  : m_device(device),
+    m_strDeviceId(strDeviceId)
 {
 }
 
 bool CAddonJoystickButtonMap::Load(void)
 {
-  if (!m_addon->GetJoystickFeatures(m_index, m_features))
-    return false;
+  m_addon = GetAddon(m_device);
 
-  std::map<CJoystickDriverPrimitive, JoystickFeatureID> actionMap = GetActionMap(m_features);
-  m_actions.swap(actionMap);
+  if (m_addon && m_addon->GetJoystickFeatures(m_device, m_strDeviceId, m_features))
+  {
+    m_driverMap = GetDriverMap(m_features);
+    return true;
+  }
 
-  return true;
+  return false;
 }
 
-std::map<CJoystickDriverPrimitive, JoystickFeatureID> CAddonJoystickButtonMap::GetActionMap(const JoystickFeatureMap& features)
+PeripheralAddonPtr CAddonJoystickButtonMap::GetAddon(CPeripheral* device)
 {
-  std::map<CJoystickDriverPrimitive, JoystickFeatureID> actionMap;
+  PeripheralAddonPtr addon;
+
+  CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
+
+  if (device && addonBus)
+  {
+    PeripheralBusType busType = device->GetBusType();
+
+    if (busType == PERIPHERAL_BUS_ADDON)
+    {
+      // If device is from an add-on, use that add-on
+      unsigned int index;
+      addonBus->SplitLocation(device->Location(), addon, index);
+    }
+    else
+    {
+      // Otherwise, have the add-on bus find a suitable add-on
+      //addon = addonBus->GetAddonButtonMap(device); // TODO
+    }
+  }
+  return addon;
+}
+
+std::map<CJoystickDriverPrimitive, unsigned int> CAddonJoystickButtonMap::GetDriverMap(const JoystickFeatureMap& features)
+{
+  std::map<CJoystickDriverPrimitive, unsigned int> driverMap;
 
   for (JoystickFeatureMap::const_iterator it = features.begin(); it != features.end(); ++it)
   {
-    const JoystickFeatureID              id      = it->first;
-    const ADDON::JoystickFeature* const feature = it->second.get();
+    const unsigned int index = it->first;
+    const JoystickFeaturePtr& feature = it->second;
 
     switch (feature->Type())
     {
     case JOYSTICK_DRIVER_TYPE_BUTTON:
     {
-      const ADDON::DriverButton* button = static_cast<const ADDON::DriverButton*>(feature);
-      actionMap[CJoystickDriverPrimitive(button->Index())] = id;
+      const ADDON::DriverButton* button = static_cast<const ADDON::DriverButton*>(feature.get());
+      driverMap[CJoystickDriverPrimitive(button->Index())] = index;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_HAT_DIRECTION:
     {
-      const ADDON::DriverHat* hat = static_cast<const ADDON::DriverHat*>(feature);
-      actionMap[CJoystickDriverPrimitive(hat->Index(), ToHatDirection(hat->Direction()))] = id;
+      const ADDON::DriverHat* hat = static_cast<const ADDON::DriverHat*>(feature.get());
+      driverMap[CJoystickDriverPrimitive(hat->Index(), ToHatDirection(hat->Direction()))] = index;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
     {
-      const ADDON::DriverSemiAxis* semiaxis = static_cast<const ADDON::DriverSemiAxis*>(feature);
-      actionMap[CJoystickDriverPrimitive(semiaxis->Index(), ToSemiAxisDirection(semiaxis->Direction()))] = id;
+      const ADDON::DriverSemiAxis* semiaxis = static_cast<const ADDON::DriverSemiAxis*>(feature.get());
+      driverMap[CJoystickDriverPrimitive(semiaxis->Index(), ToSemiAxisDirection(semiaxis->Direction()))] = index;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:
     {
-      const ADDON::DriverAnalogStick* analogStick = static_cast<const ADDON::DriverAnalogStick*>(feature);
-      actionMap[CJoystickDriverPrimitive(analogStick->XIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CJoystickDriverPrimitive(analogStick->XIndex(), SemiAxisDirectionNegative)] = id;
-      actionMap[CJoystickDriverPrimitive(analogStick->YIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CJoystickDriverPrimitive(analogStick->YIndex(), SemiAxisDirectionNegative)] = id;
+      const ADDON::DriverAnalogStick* analogStick = static_cast<const ADDON::DriverAnalogStick*>(feature.get());
+      driverMap[CJoystickDriverPrimitive(analogStick->XIndex(), SemiAxisDirectionPositive)] = index;
+      driverMap[CJoystickDriverPrimitive(analogStick->XIndex(), SemiAxisDirectionNegative)] = index;
+      driverMap[CJoystickDriverPrimitive(analogStick->YIndex(), SemiAxisDirectionPositive)] = index;
+      driverMap[CJoystickDriverPrimitive(analogStick->YIndex(), SemiAxisDirectionNegative)] = index;
       break;
     }
 
     case JOYSTICK_DRIVER_TYPE_ACCELEROMETER:
     {
-      const ADDON::DriverAccelerometer* accelerometer = static_cast<const ADDON::DriverAccelerometer*>(feature);
-      actionMap[CJoystickDriverPrimitive(accelerometer->XIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CJoystickDriverPrimitive(accelerometer->XIndex(), SemiAxisDirectionNegative)] = id;
-      actionMap[CJoystickDriverPrimitive(accelerometer->YIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CJoystickDriverPrimitive(accelerometer->YIndex(), SemiAxisDirectionNegative)] = id;
-      actionMap[CJoystickDriverPrimitive(accelerometer->ZIndex(), SemiAxisDirectionPositive)] = id;
-      actionMap[CJoystickDriverPrimitive(accelerometer->ZIndex(), SemiAxisDirectionNegative)] = id;
+      const ADDON::DriverAccelerometer* accelerometer = static_cast<const ADDON::DriverAccelerometer*>(feature.get());
+      driverMap[CJoystickDriverPrimitive(accelerometer->XIndex(), SemiAxisDirectionPositive)] = index;
+      driverMap[CJoystickDriverPrimitive(accelerometer->XIndex(), SemiAxisDirectionNegative)] = index;
+      driverMap[CJoystickDriverPrimitive(accelerometer->YIndex(), SemiAxisDirectionPositive)] = index;
+      driverMap[CJoystickDriverPrimitive(accelerometer->YIndex(), SemiAxisDirectionNegative)] = index;
+      driverMap[CJoystickDriverPrimitive(accelerometer->ZIndex(), SemiAxisDirectionPositive)] = index;
+      driverMap[CJoystickDriverPrimitive(accelerometer->ZIndex(), SemiAxisDirectionNegative)] = index;
       break;
     }
 
@@ -98,25 +128,26 @@ std::map<CJoystickDriverPrimitive, JoystickFeatureID> CAddonJoystickButtonMap::G
     }
   }
 
-  return actionMap;
+  return driverMap;
 }
 
-JoystickFeatureID CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& source)
+bool CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& source, unsigned int& featureIndex)
 {
-  JoystickFeatureID id = JoystickIDButtonUnknown;
+  std::map<CJoystickDriverPrimitive, unsigned int>::const_iterator it = m_driverMap.find(source);
+  if (it != m_driverMap.end())
+  {
+    featureIndex = it->second;
+    return true;
+  }
 
-  std::map<CJoystickDriverPrimitive, JoystickFeatureID>::const_iterator it = m_actions.find(source);
-  if (it != m_actions.end())
-    id = it->second;
-
-  return id;
+  return false;
 }
 
-bool CAddonJoystickButtonMap::GetDriverPrimitive(JoystickFeatureID id, CJoystickDriverPrimitive& button)
+bool CAddonJoystickButtonMap::GetDriverPrimitive(unsigned int featureIndex, CJoystickDriverPrimitive& button)
 {
   bool retVal(false);
 
-  JoystickFeatureMap::const_iterator it = m_features.find(id);
+  JoystickFeatureMap::const_iterator it = m_features.find(featureIndex);
   if (it != m_features.end())
   {
     const ADDON::JoystickFeature* feature = it->second.get();
@@ -157,20 +188,18 @@ bool CAddonJoystickButtonMap::GetDriverPrimitive(JoystickFeatureID id, CJoystick
   return retVal;
 }
 
-bool CAddonJoystickButtonMap::GetAnalogStick(JoystickFeatureID id, 
-    int& horizIndex, bool& horizInverted,
-    int& vertIndex,  bool& vertInverted)
+bool CAddonJoystickButtonMap::GetAnalogStick(unsigned int featureIndex,
+                                             int& horizIndex, bool& horizInverted,
+                                             int& vertIndex,  bool& vertInverted)
 {
   bool retVal(false);
 
-  JoystickFeatureMap::const_iterator it = m_features.find(id);
+  JoystickFeatureMap::const_iterator it = m_features.find(featureIndex);
   if (it != m_features.end())
   {
     const ADDON::JoystickFeature* feature = it->second.get();
 
-    switch (feature->Type())
-    {
-    case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:
+    if (feature->Type() == JOYSTICK_DRIVER_TYPE_ANALOG_STICK)
     {
       const ADDON::DriverAnalogStick* driverAnalogStick = static_cast<const ADDON::DriverAnalogStick*>(feature);
       horizIndex    = driverAnalogStick->XIndex();
@@ -178,32 +207,25 @@ bool CAddonJoystickButtonMap::GetAnalogStick(JoystickFeatureID id,
       vertIndex     = driverAnalogStick->YIndex();
       vertInverted  = driverAnalogStick->YInverted();
       retVal        = true;
-      break;
-    }
-
-    default:
-      break;
     }
   }
 
   return retVal;
 }
 
-bool CAddonJoystickButtonMap::GetAccelerometer(JoystickFeatureID id,
-    int& xIndex, bool& xInverted,
-    int& yIndex, bool& yInverted,
-    int& zIndex, bool& zInverted)
+bool CAddonJoystickButtonMap::GetAccelerometer(unsigned int featureIndex,
+                                               int& xIndex, bool& xInverted,
+                                               int& yIndex, bool& yInverted,
+                                               int& zIndex, bool& zInverted)
 {
   bool retVal(false);
 
-  JoystickFeatureMap::const_iterator it = m_features.find(id);
+  JoystickFeatureMap::const_iterator it = m_features.find(featureIndex);
   if (it != m_features.end())
   {
     const ADDON::JoystickFeature* feature = it->second.get();
 
-    switch (feature->Type())
-    {
-    case JOYSTICK_DRIVER_TYPE_ACCELEROMETER:
+    if (feature->Type() == JOYSTICK_DRIVER_TYPE_ACCELEROMETER)
     {
       const ADDON::DriverAccelerometer* driverAccelerometer = static_cast<const ADDON::DriverAccelerometer*>(feature);
       xIndex    = driverAccelerometer->XIndex();
@@ -213,11 +235,6 @@ bool CAddonJoystickButtonMap::GetAccelerometer(JoystickFeatureID id,
       zIndex    = driverAccelerometer->ZIndex();
       zInverted = driverAccelerometer->ZInverted();
       retVal    = true;
-      break;
-    }
-
-    default:
-      break;
     }
   }
 

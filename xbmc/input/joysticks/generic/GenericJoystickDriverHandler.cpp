@@ -48,10 +48,8 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, boo
 
   char& oldState = m_buttonStates[buttonIndex];
 
-  CJoystickDriverPrimitive button(buttonIndex);
-  JoystickFeatureID feature = m_buttonMap->GetFeature(button);
-
-  if (feature != JoystickIDButtonUnknown)
+  unsigned int feature;
+  if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(buttonIndex), feature))
   {
     CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d %s",
               feature, bPressed ? "pressed" : "released");
@@ -91,9 +89,8 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
   if ((oldDir & targetDir) == HatDirectionNone &&
       (newDir & targetDir) != HatDirectionNone)
   {
-    CJoystickDriverPrimitive left(index, HatDirectionLeft);
-    JoystickFeatureID feature = m_buttonMap->GetFeature(left);
-    if (feature != JoystickIDButtonUnknown)
+    unsigned int feature;
+    if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d activated",
                 feature);
@@ -108,9 +105,8 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
   else if ((oldDir & targetDir) != HatDirectionNone &&
            (newDir & targetDir) == HatDirectionNone)
   {
-    CJoystickDriverPrimitive left(index, HatDirectionLeft);
-    JoystickFeatureID feature = m_buttonMap->GetFeature(left);
-    if (feature != JoystickIDButtonUnknown)
+    unsigned int feature;
+    if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: Feature %d deactivated",
                 feature);
@@ -133,89 +129,79 @@ void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float n
   CJoystickDriverPrimitive positiveAxis(axisIndex, SemiAxisDirectionPositive);
   CJoystickDriverPrimitive negativeAxis(axisIndex, SemiAxisDirectionNegative);
 
-  JoystickFeatureID positiveFeature = m_buttonMap->GetFeature(positiveAxis);
-  JoystickFeatureID negativeFeature = m_buttonMap->GetFeature(negativeAxis);
+  unsigned int positiveFeature;
+  unsigned int negativeFeature;
 
-  if (!positiveFeature && !negativeFeature)
-  {
-    // No features to send to callback
-  }
-  else if (positiveFeature == negativeFeature)
-  {
-    // Feature uses multiple axes, add to OnAxisMotions() batch process
-    if (std::find(m_featuresWithMotion.begin(), m_featuresWithMotion.end(), positiveFeature) == m_featuresWithMotion.end())
-      m_featuresWithMotion.push_back(positiveFeature);
-  }
-  else // positiveFeature != negativeFeature
-  {
-    // Positive and negative directions are mapped to different features, so we
-    // must be dealing with a button or trigger
+  bool bHasFeaturePositive = m_buttonMap->GetFeature(positiveAxis, positiveFeature);
+  bool bHasFeatureNegative = m_buttonMap->GetFeature(negativeAxis, negativeFeature);
 
-    if (positiveFeature)
+  if (bHasFeaturePositive || bHasFeatureNegative)
+  {
+    // If the positive and negative semiaxis correspond to the same feature,
+    // then we must be dealing with an analog stick or accelerometer. These both
+    // require multiple axes, so record the axis and batch-process later during
+    // ProcessAxisMotions()
+
+    bool bNeedsMoreAxes = (positiveFeature == negativeFeature);
+
+    if (bNeedsMoreAxes)
     {
-      // If new position passes through zero, 0.0f is sent exactly once until
-      // the position becomes positive again
-      if (newPosition > 0)
-        m_handler->OnButtonMotion(positiveFeature, newPosition);
-      else if (oldPosition > 0)
-        m_handler->OnButtonMotion(positiveFeature, 0.0f);
+      if (std::find(m_featuresWithMotion.begin(), m_featuresWithMotion.end(), positiveFeature) == m_featuresWithMotion.end())
+        m_featuresWithMotion.push_back(positiveFeature);
     }
-
-    if (negativeFeature)
+    else
     {
-      // If new position passes through zero, 0.0f is sent exactly once until
-      // the position becomes negative again
-      if (newPosition < 0)
-        m_handler->OnButtonMotion(negativeFeature, -1.0f * newPosition); // magnitude is >= 0
-      else if (oldPosition < 0)
-        m_handler->OnButtonMotion(negativeFeature, 0.0f);
+      if (bHasFeaturePositive)
+      {
+        // If new position passes through the origin, 0.0f is sent exactly once
+        // until the position becomes positive again
+        if (newPosition > 0)
+          m_handler->OnButtonMotion(positiveFeature, newPosition);
+        else if (oldPosition > 0)
+          m_handler->OnButtonMotion(positiveFeature, 0.0f);
+      }
+
+      if (bHasFeatureNegative)
+      {
+        // If new position passes through the origin, 0.0f is sent exactly once
+        // until the position becomes negative again
+        if (newPosition < 0)
+          m_handler->OnButtonMotion(negativeFeature, -1.0f * newPosition); // magnitude is >= 0
+        else if (oldPosition < 0)
+          m_handler->OnButtonMotion(negativeFeature, 0.0f);
+      }
     }
   }
 }
 
-void CGenericJoystickDriverHandler::ProcessAxisMotions()
+void CGenericJoystickDriverHandler::ProcessAxisMotions(void)
 {
-  std::vector<JoystickFeatureID> featuresToProcess;
+  std::vector<unsigned int> featuresToProcess;
   featuresToProcess.swap(m_featuresWithMotion);
 
-  for (std::vector<JoystickFeatureID>::const_iterator it = featuresToProcess.begin(); it != featuresToProcess.end(); ++it)
+  for (std::vector<unsigned int>::const_iterator it = featuresToProcess.begin(); it != featuresToProcess.end(); ++it)
   {
-    const JoystickFeatureID feature = *it;
-    if (CJoystickTranslator::GetInputType(feature) == JoystickAnalogStick)
-    {
-      int  horizIndex;
-      bool horizInverted;
-      int  vertIndex;
-      bool vertInverted;
+    const unsigned int feature = *it;
 
-      if (m_buttonMap->GetAnalogStick(feature,
-                                      horizIndex, horizInverted,
-                                      vertIndex,  vertInverted))
-      {
-        const float horizPos = GetAxisState(horizIndex) * (horizInverted ? -1.0f : 1.0f);
-        const float vertPos  = GetAxisState(vertIndex)  * (vertInverted  ? -1.0f : 1.0f);
-        m_handler->OnAnalogStickMotion(feature, horizPos, vertPos);
-      }
+    int  xIndex;
+    bool xInverted;
+    int  yIndex;
+    bool yInverted;
+    int  zIndex;
+    bool zInverted;
+
+    if (m_buttonMap->GetAnalogStick(feature, xIndex, xInverted, yIndex,  yInverted))
+    {
+      const float horizPos = GetAxisState(xIndex) * (xInverted ? -1.0f : 1.0f);
+      const float vertPos  = GetAxisState(yIndex)  * (yInverted  ? -1.0f : 1.0f);
+      m_handler->OnAnalogStickMotion(feature, horizPos, vertPos);
     }
-    else if (CJoystickTranslator::GetInputType(feature) == JoystickAccelerometer)
+    else if (m_buttonMap->GetAccelerometer(feature, xIndex, xInverted, yIndex, yInverted, zIndex, zInverted))
     {
-      int  xIndex;
-      bool xInverted;
-      int  yIndex;
-      bool yInverted;
-      int  zIndex;
-      bool zInverted;
-
-      if (m_buttonMap->GetAccelerometer(feature,
-                                        xIndex, xInverted,
-                                        yIndex, yInverted,
-                                        zIndex, zInverted))
-      {
-        const float xPos = GetAxisState(xIndex) * (xInverted ? -1.0f : 1.0f);
-        const float yPos = GetAxisState(yIndex) * (yInverted ? -1.0f : 1.0f);
-        const float zPos = GetAxisState(zIndex) * (zInverted ? -1.0f : 1.0f);
-        m_handler->OnAccelerometerMotion(feature, xPos, yPos, zPos);
-      }
+      const float xPos = GetAxisState(xIndex) * (xInverted ? -1.0f : 1.0f);
+      const float yPos = GetAxisState(yIndex) * (yInverted ? -1.0f : 1.0f);
+      const float zPos = GetAxisState(zIndex) * (zInverted ? -1.0f : 1.0f);
+      m_handler->OnAccelerometerMotion(feature, xPos, yPos, zPos);
     }
   }
 }

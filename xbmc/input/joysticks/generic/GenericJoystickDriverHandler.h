@@ -54,5 +54,5 @@ private:
   std::vector<char>           m_buttonStates; // std::vector is specialized for <bool>
   std::vector<HatDirection>   m_hatStates;
   std::vector<float>          m_axisStates;
-  std::vector<JoystickFeatureID> m_featuresWithMotion;
+  std::vector<unsigned int>   m_featuresWithMotion;
 };

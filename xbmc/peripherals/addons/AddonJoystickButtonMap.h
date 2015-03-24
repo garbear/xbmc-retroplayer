@@ -29,28 +29,31 @@ namespace PERIPHERALS
   class CAddonJoystickButtonMap : public IJoystickButtonMap
   {
   public:
-    CAddonJoystickButtonMap(const PeripheralAddonPtr& addon, unsigned int index);
+    CAddonJoystickButtonMap(CPeripheral* device, const std::string& strDeviceId);
 
     virtual ~CAddonJoystickButtonMap(void) { }
 
     // Implementation of IJoystickButtonMap
     virtual bool Load(void);
-    JoystickFeatureID GetFeature(const CJoystickDriverPrimitive& button);
-    bool GetDriverPrimitive(JoystickFeatureID id, CJoystickDriverPrimitive& button);
-    bool GetAnalogStick(JoystickFeatureID id, int& horizIndex, bool& horizInverted,
-                                              int& vertIndex,  bool& vertInverted);
-    bool GetAccelerometer(JoystickFeatureID id, int& xIndex, bool& xInverted,
-                                                int& yIndex, bool& yInverted,
-                                                int& zIndex, bool& zInverted);
+    virtual bool GetFeature(const CJoystickDriverPrimitive& button, unsigned int& featureIndex);
+    virtual bool GetDriverPrimitive(unsigned int featureIndex, CJoystickDriverPrimitive& button);
+    virtual bool GetAnalogStick(unsigned int featureIndex, int& horizIndex, bool& horizInverted,
+                                                           int& vertIndex,  bool& vertInverted);
+    virtual bool GetAccelerometer(unsigned int featureIndex, int& xIndex, bool& xInverted,
+                                                             int& yIndex, bool& yInverted,
+                                                             int& zIndex, bool& zInverted);
 
   private:
-    static std::map<CJoystickDriverPrimitive, JoystickFeatureID> GetActionMap(const JoystickFeatureMap& features);
-    static HatDirection      ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
-    static SemiAxisDirection ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
+    // Utility functions
+    static PeripheralAddonPtr GetAddon(CPeripheral* device);
+    static HatDirection       ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
+    static SemiAxisDirection  ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
+    static std::map<CJoystickDriverPrimitive, unsigned int> GetDriverMap(const JoystickFeatureMap& features);
 
-    const PeripheralAddonPtr m_addon;
-    const unsigned int       m_index;
-    std::map<CJoystickDriverPrimitive, JoystickFeatureID> m_actions;
+    CPeripheral* const       m_device;
+    const std::string        m_strDeviceId;
+    PeripheralAddonPtr       m_addon;
     JoystickFeatureMap       m_features;
+    std::map<CJoystickDriverPrimitive, unsigned int> m_driverMap;
   };
 }

@@ -66,7 +66,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
         {
           m_requestedPort = addon->GetRequestedPort(index);
 
-          m_buttonMap = new CAddonJoystickButtonMap(addon, index);
+          m_buttonMap = new CAddonJoystickButtonMap(this, DEFAULT_GAME_CONTROLLER);
           if (m_buttonMap->Load())
             m_driverHandler = new CGenericJoystickDriverHandler(this, m_buttonMap);
           else
