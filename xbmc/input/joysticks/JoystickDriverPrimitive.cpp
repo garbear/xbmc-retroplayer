@@ -22,7 +22,7 @@
 
 CJoystickDriverPrimitive::CJoystickDriverPrimitive(void)
   : m_type(),
-    m_index(0),
+    m_driverIndex(0),
     m_hatDirection(),
     m_semiAxisDirection()
 {
@@ -30,7 +30,7 @@ CJoystickDriverPrimitive::CJoystickDriverPrimitive(void)
 
 CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int buttonIndex)
   : m_type(DriverPrimitiveTypeButton),
-    m_index(buttonIndex),
+    m_driverIndex(buttonIndex),
     m_hatDirection(),
     m_semiAxisDirection()
 {
@@ -38,7 +38,7 @@ CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int buttonIndex)
 
 CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int hatIndex, HatDirection direction)
   : m_type(DriverPrimitiveTypeHatDirection),
-    m_index(hatIndex),
+    m_driverIndex(hatIndex),
     m_hatDirection(direction),
     m_semiAxisDirection()
 {
@@ -46,7 +46,7 @@ CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int hatIndex, HatDir
 
 CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int axisIndex, SemiAxisDirection direction)
   : m_type(DriverPrimitiveTypeSemiAxis),
-    m_index(axisIndex),
+    m_driverIndex(axisIndex),
     m_hatDirection(),
     m_semiAxisDirection(direction)
 {
@@ -59,11 +59,11 @@ bool CJoystickDriverPrimitive::operator==(const CJoystickDriverPrimitive& rhs) c
     switch (m_type)
     {
     case DriverPrimitiveTypeButton:
-      return m_index == rhs.m_index;
+      return m_driverIndex == rhs.m_driverIndex;
     case DriverPrimitiveTypeHatDirection:
-      return m_index == rhs.m_index && m_hatDirection == rhs.m_hatDirection;
+      return m_driverIndex == rhs.m_driverIndex && m_hatDirection == rhs.m_hatDirection;
     case DriverPrimitiveTypeSemiAxis:
-      return m_index == rhs.m_index && m_semiAxisDirection == rhs.m_semiAxisDirection;
+      return m_driverIndex == rhs.m_driverIndex && m_semiAxisDirection == rhs.m_semiAxisDirection;
     default:
       return true;
     }
@@ -76,10 +76,10 @@ bool CJoystickDriverPrimitive::operator<(const CJoystickDriverPrimitive& rhs) co
   if (m_type < rhs.m_type) return true;
   if (m_type > rhs.m_type) return false;
 
-  if (m_type)
+  if (m_type != DriverPrimitiveTypeUnknown)
   {
-    if (m_index < rhs.m_index) return true;
-    if (m_index > rhs.m_index) return false;
+    if (m_driverIndex < rhs.m_driverIndex) return true;
+    if (m_driverIndex > rhs.m_driverIndex) return false;
   }
 
   if (m_type == DriverPrimitiveTypeHatDirection)

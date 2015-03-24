@@ -32,31 +32,32 @@ enum DriverPrimitiveType
 };
 
 /*!
- * A driver input primitive is a basic element that emits input events. This can
- * be a button, one of the four direction arrows on a dpad, or the positive or
- * negative half of an axis.
+ * \brief Basic driver element associated with input events
+ *
+ * A driver primitive can be a button, one of the four direction arrows on a
+ * dpad, or the positive or negative half of an axis.
  */
 class CJoystickDriverPrimitive
 {
 public:
   /*!
-   * \brief Construct an invalid input primitive
+   * \brief Construct an invalid driver primitive
    */
   CJoystickDriverPrimitive(void);
 
   /*!
-   * \brief Construct an input primitive representing a button press
+   * \brief Construct a driver primitive representing a button
    */
   CJoystickDriverPrimitive(unsigned int buttonIndex);
 
   /*!
-   * \brief Construct an input primitive representing one of the four direction
+   * \brief Construct a driver primitive representing one of the four direction
    *        arrows on a dpad
    */
   CJoystickDriverPrimitive(unsigned int hatIndex, HatDirection direction);
 
   /*!
-   * \brief Construct an input primitive representing the positive or negative
+   * \brief Construct a driver primitive representing the positive or negative
    *        half of an axis
    */
   CJoystickDriverPrimitive(unsigned int axisIndex, SemiAxisDirection direction);
@@ -70,7 +71,7 @@ public:
   bool operator>=(const CJoystickDriverPrimitive& rhs) const { return  !operator<(rhs); }
 
   DriverPrimitiveType Type(void) const        { return m_type; }
-  unsigned int        Index(void) const       { return m_index; }
+  unsigned int        Index(void) const       { return m_driverIndex; }
   HatDirection        HatDir(void) const      { return m_hatDirection; }
   SemiAxisDirection   SemiAxisDir(void) const { return m_semiAxisDirection; }
 
@@ -83,7 +84,7 @@ public:
 
 private:
   DriverPrimitiveType m_type;
-  unsigned int        m_index;
+  unsigned int        m_driverIndex;
   HatDirection        m_hatDirection;
   SemiAxisDirection   m_semiAxisDirection;
 };
