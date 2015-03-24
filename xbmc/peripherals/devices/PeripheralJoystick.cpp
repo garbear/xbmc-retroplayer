@@ -125,17 +125,29 @@ void CPeripheralJoystick::RegisterDriverHandler(IJoystickDriverHandler* handler)
 
 void CPeripheralJoystick::UnregisterDriverHandler(IJoystickDriverHandler* handler)
 {
-  std::vector<IJoystickDriverHandler*>::iterator it = std::find(m_driverHandlers.begin(), m_driverHandlers.end(), handler);
-  if (it != m_driverHandlers.end())
-    m_driverHandlers.erase(it);
+  m_driverHandlers.erase(std::find(m_driverHandlers.begin(), m_driverHandlers.end(), handler), m_driverHandlers.end());
 }
 
 void CPeripheralJoystick::RegisterInputHandler(IJoystickInputHandler* handler)
 {
-  // TODO
+  IJoystickButtonMap* buttonMap = new CAddonJoystickButtonMap(this, handler->DeviceID()); // TODO: leaks
+  if (buttonMap->Load())
+    m_driverHandlers.push_back(new CGenericJoystickDriverHandler(handler, buttonMap)); // TODO: leaks
+  else
+    SAFE_DELETE(buttonMap);
 }
 
 void CPeripheralJoystick::UnregisterInputHandler(IJoystickInputHandler* handler)
 {
-  // TODO
+  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  {
+    // TODO
+    // if ((*it)->InputHandler() == handler)
+    // {
+    //   delete (*it)->ButtonMap();
+    //   delete (*it);
+    //   m_driverHandlers.erase(it);
+    //   break;
+    // }
+  }
 }
