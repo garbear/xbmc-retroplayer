@@ -43,9 +43,9 @@ public:
   virtual ~CGUIJoystickDriverHandler(void);
 
   // Implementation of IJoystickDriverHandler
-  virtual void OnButtonMotion(unsigned int index, bool bPressed);
-  virtual void OnHatMotion(unsigned int index, HatDirection direction);
-  virtual void OnAxisMotion(unsigned int index, float position);
+  virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
+  virtual void OnHatMotion(unsigned int hatIndex, HatDirection direction);
+  virtual void OnAxisMotion(unsigned int axisIndex, float position);
   virtual void ProcessAxisMotions(void);
 
 private:
@@ -64,9 +64,9 @@ public:
 
   virtual void OnDeinitWindow(int nextWindowID);
 
-  void OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, bool bPressed);
-  void OnHatMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, HatDirection direction);
-  void OnAxisMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, float position);
+  void OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int buttonIndex, bool bPressed);
+  void OnHatMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int hatIndex, HatDirection direction);
+  void OnAxisMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int axisIndex, float position);
   void ProcessAxisMotions(PERIPHERALS::CPeripheralJoystick* joystick);
 
 protected:

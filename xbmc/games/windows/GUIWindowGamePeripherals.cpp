@@ -61,19 +61,19 @@ CGUIJoystickDriverHandler::~CGUIJoystickDriverHandler(void)
   m_joystick->UnregisterDriverHandler(this);
 }
 
-void CGUIJoystickDriverHandler::OnButtonMotion(unsigned int index, bool bPressed)
+void CGUIJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
-  m_window->OnButtonMotion(m_joystick, index, bPressed);
+  m_window->OnButtonMotion(m_joystick, buttonIndex, bPressed);
 }
 
-void CGUIJoystickDriverHandler::OnHatMotion(unsigned int index, HatDirection direction)
+void CGUIJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
-  m_window->OnHatMotion(m_joystick, index, direction);
+  m_window->OnHatMotion(m_joystick, hatIndex, direction);
 }
 
-void CGUIJoystickDriverHandler::OnAxisMotion(unsigned int index, float position)
+void CGUIJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float position)
 {
-  m_window->OnAxisMotion(m_joystick, index, position);
+  m_window->OnAxisMotion(m_joystick, axisIndex, position);
 }
 
 void CGUIJoystickDriverHandler::ProcessAxisMotions(void)
@@ -226,17 +226,17 @@ bool CGUIWindowGamePeripherals::OnAction(const CAction& action)
   return false;
 }
 
-void CGUIWindowGamePeripherals::OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, bool bPressed)
+void CGUIWindowGamePeripherals::OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int buttonIndex, bool bPressed)
 {
   // TODO
 }
 
-void CGUIWindowGamePeripherals::OnHatMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, HatDirection direction)
+void CGUIWindowGamePeripherals::OnHatMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int hatIndex, HatDirection direction)
 {
   // TODO
 }
 
-void CGUIWindowGamePeripherals::OnAxisMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int index, float position)
+void CGUIWindowGamePeripherals::OnAxisMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int axisIndex, float position)
 {
   // TODO
 }

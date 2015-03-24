@@ -45,9 +45,9 @@ namespace PERIPHERALS
     virtual bool InitialiseFeature(const PeripheralFeature feature);
 
     // implementation of IJoystickDriverHandler
-    virtual void OnButtonMotion(unsigned int index, bool bPressed);
-    virtual void OnHatMotion(unsigned int index, HatDirection direction);
-    virtual void OnAxisMotion(unsigned int index, float position);
+    virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
+    virtual void OnHatMotion(unsigned int hatIndex, HatDirection direction);
+    virtual void OnAxisMotion(unsigned int axisIndex, float position);
     virtual void ProcessAxisMotions(void);
 
     // implementation of IJoystickInputHandler

@@ -36,19 +36,19 @@ CGenericJoystickDriverHandler::CGenericJoystickDriverHandler(IJoystickInputHandl
 {
 }
 
-void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int index, bool bPressed)
+void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   const char pressed = bPressed ? 1 : 0;
 
-  if (m_buttonStates.size() <= index)
-    m_buttonStates.resize(index + 1);
+  if (m_buttonStates.size() <= buttonIndex)
+    m_buttonStates.resize(buttonIndex + 1);
 
-  if (m_buttonStates[index] == pressed)
+  if (m_buttonStates[buttonIndex] == pressed)
     return;
 
-  char& oldState = m_buttonStates[index];
+  char& oldState = m_buttonStates[buttonIndex];
 
-  CJoystickDriverPrimitive button(index);
+  CJoystickDriverPrimitive button(buttonIndex);
   JoystickFeatureID feature = m_buttonMap->GetFeature(button);
 
   if (feature != JoystickIDButtonUnknown)
@@ -64,23 +64,23 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int index, bool bPre
   else if (bPressed)
   {
     CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: No feature for button %u",
-              index);
+              buttonIndex);
   }
 
   oldState = pressed;
 }
 
-void CGenericJoystickDriverHandler::OnHatMotion(unsigned int index, HatDirection newDirection)
+void CGenericJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection newDirection)
 {
-  if (m_hatStates.size() <= index)
-    m_hatStates.resize(index + 1);
+  if (m_hatStates.size() <= hatIndex)
+    m_hatStates.resize(hatIndex + 1);
 
-  HatDirection& oldDirection = m_hatStates[index];
+  HatDirection& oldDirection = m_hatStates[hatIndex];
 
-  ProcessHatDirection(index, oldDirection, newDirection, HatDirectionUp);
-  ProcessHatDirection(index, oldDirection, newDirection, HatDirectionRight);
-  ProcessHatDirection(index, oldDirection, newDirection, HatDirectionDown);
-  ProcessHatDirection(index, oldDirection, newDirection, HatDirectionLeft);
+  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionUp);
+  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionRight);
+  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionDown);
+  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionLeft);
 
   oldDirection = newDirection;
 }
@@ -119,19 +119,19 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
   }
 }
 
-void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int index, float newPosition)
+void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float newPosition)
 {
-  if (m_axisStates.size() <= index)
-    m_axisStates.resize(index + 1);
+  if (m_axisStates.size() <= axisIndex)
+    m_axisStates.resize(axisIndex + 1);
 
-  if (m_axisStates[index] == 0.0f && newPosition == 0.0f)
+  if (m_axisStates[axisIndex] == 0.0f && newPosition == 0.0f)
     return;
 
-  float oldPosition = m_axisStates[index];
-  m_axisStates[index] = newPosition;
+  float oldPosition = m_axisStates[axisIndex];
+  m_axisStates[axisIndex] = newPosition;
 
-  CJoystickDriverPrimitive positiveAxis(index, SemiAxisDirectionPositive);
-  CJoystickDriverPrimitive negativeAxis(index, SemiAxisDirectionNegative);
+  CJoystickDriverPrimitive positiveAxis(axisIndex, SemiAxisDirectionPositive);
+  CJoystickDriverPrimitive negativeAxis(axisIndex, SemiAxisDirectionNegative);
 
   JoystickFeatureID positiveFeature = m_buttonMap->GetFeature(positiveAxis);
   JoystickFeatureID negativeFeature = m_buttonMap->GetFeature(negativeAxis);
