@@ -19,21 +19,24 @@
  */
 
 #include "GenericJoystickDriverHandler.h"
+#include "DigitalAnalogButtonConverter.h"
 #include "input/joysticks/IJoystickButtonMap.h"
 #include "input/joysticks/IJoystickInputHandler.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
 #include "input/joysticks/JoystickTranslator.h"
-#include "input/joysticks/JoystickTypes.h"
 #include "utils/log.h"
 
 #include <algorithm>
 
-#define ANALOG_DIGITAL_THRESHOLD  0.5f
-
 CGenericJoystickDriverHandler::CGenericJoystickDriverHandler(IJoystickInputHandler* handler, IJoystickButtonMap* buttonMap)
- : m_handler(handler),
+ : m_handler(new CDigitalAnalogButtonConverter(handler)),
    m_buttonMap(buttonMap)
 {
+}
+
+CGenericJoystickDriverHandler::~CGenericJoystickDriverHandler(void)
+{
+  delete m_handler;
 }
 
 void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)

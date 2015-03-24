@@ -36,13 +36,13 @@ class CGenericJoystickDriverHandler : public IJoystickDriverHandler
 public:
   CGenericJoystickDriverHandler(IJoystickInputHandler* handler, IJoystickButtonMap* buttonMap);
 
-  virtual ~CGenericJoystickDriverHandler() { }
+  virtual ~CGenericJoystickDriverHandler(void);
 
   // implementation of IJoystickDriverHandler
   virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
   virtual void OnHatMotion(unsigned int hatIndex, HatDirection direction);
   virtual void OnAxisMotion(unsigned int axisIndex, float position);
-  virtual void ProcessAxisMotions();
+  virtual void ProcessAxisMotions(void);
 
 private:
   void ProcessHatDirection(int index, HatDirection oldDir, HatDirection newDir, HatDirection targetDir);
