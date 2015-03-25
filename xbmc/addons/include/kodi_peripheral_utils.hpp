@@ -544,7 +544,7 @@ namespace ADDON
     Joystick(JOYSTICK_INFO& info)
     : Peripheral(info.peripheral_info),
       m_provider(info.provider ? info.provider : ""),
-      m_requestedPort(info.requested_port_num),
+      m_requestedPort(info.requested_port),
       m_buttonCount(info.driver.button_count),
       m_hatCount(info.driver.hat_count),
       m_axisCount(info.driver.axis_count)
@@ -582,14 +582,14 @@ namespace ADDON
     }
 
     const std::string& Provider(void) const      { return m_provider; }
-    unsigned int       RequestedPort(void) const { return m_requestedPort; }
+    int                RequestedPort(void) const { return m_requestedPort; }
     unsigned int       ButtonCount(void) const   { return m_buttonCount; }
     unsigned int       HatCount(void) const      { return m_hatCount; }
     unsigned int       AxisCount(void) const     { return m_axisCount; }
     const std::vector<JoystickFeature*>& Features(void) const { return m_features; }
 
     void SetProvider(const std::string& provider)     { m_provider      = provider; }
-    void SetRequestedPort(unsigned int requestedPort) { m_requestedPort = requestedPort; }
+    void SetRequestedPort(int requestedPort)          { m_requestedPort = requestedPort; }
     void SetButtonCount(unsigned int buttonCount)     { m_buttonCount   = buttonCount; }
     void SetHatCount(unsigned int hatCount)           { m_hatCount      = hatCount; }
     void SetAxisCount(unsigned int axisCount)         { m_axisCount     = axisCount; }
@@ -600,7 +600,7 @@ namespace ADDON
       Peripheral::ToStruct(info.peripheral_info);
 
       info.provider            = new char[m_provider.size() + 1];
-      info.requested_port_num  = m_requestedPort;
+      info.requested_port      = m_requestedPort;
       info.driver.button_count = m_buttonCount;
       info.driver.hat_count    = m_hatCount;
       info.driver.axis_count   = m_axisCount;
@@ -619,7 +619,7 @@ namespace ADDON
 
   private:
     std::string                   m_provider;
-    unsigned int                  m_requestedPort;
+    int                           m_requestedPort;
     unsigned int                  m_buttonCount;
     unsigned int                  m_hatCount;
     unsigned int                  m_axisCount;

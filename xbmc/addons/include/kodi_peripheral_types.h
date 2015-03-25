@@ -52,16 +52,16 @@
 //#define PERIPHERAL_NAME_STRING_LENGTH   1024
 
 /* current Peripheral API version */
-#define PERIPHERAL_API_VERSION "1.0.0"
+#define PERIPHERAL_API_VERSION "1.0.1"
 
 /* min. Peripheral API version */
 #define PERIPHERAL_MIN_API_VERSION "1.0.0"
 
 /* indicates a joystick has no preference for port number */
-#define NO_PORT_REQUESTED 0
+#define NO_PORT_REQUESTED     (-1)
 
 /* joystick's driver button/hat/axis index is unknown */
-#define DRIVER_INDEX_UNKNOWN -1
+#define DRIVER_INDEX_UNKNOWN  (-1)
 
 #ifdef __cplusplus
 extern "C"
@@ -235,7 +235,7 @@ extern "C"
   {
     PERIPHERAL_INFO          peripheral_info;    /*!< @brief inherited info */
     char*                    provider;           /*!< @brief name of the interface providing the joystick */
-    unsigned int             requested_port_num; /*!< @brief requested port number (such as for 360 controllers), or NO_PORT_REQUESTED */
+    int                      requested_port;     /*!< @brief requested port number (such as for 360 controllers), or NO_PORT_REQUESTED */
     JOYSTICK_DRIVER_INFO     driver;             /*!< @brief joystick information provided by the driver */
     unsigned int             feature_count;      /*!< @brief number of features associated with this joystick */
     struct JOYSTICK_FEATURE* features;           /*!< @brief allocated features */
