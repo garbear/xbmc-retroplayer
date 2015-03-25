@@ -492,7 +492,7 @@ int CPeripheralAddon::GetRequestedPort(unsigned int index)
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {
-    requestedPort = joystickStruct.requested_port_num;
+    requestedPort = joystickStruct.requested_port;
 
     try { m_pStruct->FreeJoystickInfo(&joystickStruct); }
     catch (std::exception &e) { LogException(e, "FreeJoystickInfo()"); }
