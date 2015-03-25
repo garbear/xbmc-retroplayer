@@ -528,7 +528,7 @@ namespace ADDON
     Joystick(const std::string& provider = "", const std::string& strName = "")
     : Peripheral(PERIPHERAL_TYPE_JOYSTICK, strName),
       m_provider(provider),
-      m_requestedPort(0),
+      m_requestedPort(NO_PORT_REQUESTED),
       m_buttonCount(0),
       m_hatCount(0),
       m_axisCount(0)
