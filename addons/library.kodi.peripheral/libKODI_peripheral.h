@@ -102,7 +102,7 @@ public:
     }
 
     if (!PERIPHERAL_REGISTER_SYMBOL(m_libKODI_peripheral, PERIPHERAL_register_me)) return false;
-    if (!PERIPHERAL_REGISTER_SYMBOL(m_libXKODI_peripheral, PERIPHERAL_unregister_me)) return false;
+    if (!PERIPHERAL_REGISTER_SYMBOL(m_libKODI_peripheral, PERIPHERAL_unregister_me)) return false;
     if (!PERIPHERAL_REGISTER_SYMBOL(m_libKODI_peripheral, PERIPHERAL_trigger_scan)) return false;
 
     m_callbacks = PERIPHERAL_register_me(m_handle);
