@@ -31,11 +31,11 @@ CPortManager& CPortManager::Get(void)
   return instance;
 }
 
-void CPortManager::OpenPort(IJoystickInputHandler* handler)
+void CPortManager::OpenPort(IJoystickInputHandler* handler, unsigned int port)
 {
   CSingleLock lock(m_mutex);
 
-  SPort newPort = { handler, 0 };
+  SPort newPort = { handler, port, 0 };
   m_ports.push_back(newPort);
 
   SetChanged();
@@ -71,7 +71,7 @@ void CPortManager::MapDevices(const std::vector<PERIPHERALS::CPeripheral*>& devi
       {
         CPeripheralJoystick* joystick = static_cast<CPeripheralJoystick*>(*it);
         if (joystick->RequestedPort() != JOYSTICK_PORT_UNKNOWN && joystick->RequestedPort() <= (int)m_ports.size())
-          requestedPort = joystick->RequestedPort() - 1;
+          requestedPort = joystick->RequestedPort();
       }
 
       unsigned int targetPort = GetNextOpenPort(ports, requestedPort);
@@ -82,15 +82,25 @@ void CPortManager::MapDevices(const std::vector<PERIPHERALS::CPeripheral*>& devi
   }
 }
 
-unsigned int CPortManager::GetNextOpenPort(const std::vector<SPort>& ports, unsigned int startPort /* = 0 */)
+unsigned int CPortManager::GetNextOpenPort(const std::vector<SPort>& ports, int requestedPort)
 {
   const unsigned int minDeviceCount = GetMinDeviceCount(ports);
 
-  for (unsigned int i = 0, port = startPort; i < ports.size(); i++, port = (port + 1) % ports.size())
+  // Look for requested port first, if provided
+  if (requestedPort != JOYSTICK_PORT_UNKNOWN)
   {
-    // Will match at least one port
-    if (ports[port].deviceCount == minDeviceCount)
-      return port;
+    for (unsigned int i = 0; i < ports.size(); i++)
+    {
+      if ((int)ports[i].port == requestedPort && ports[i].deviceCount == minDeviceCount)
+        return i;
+    }
+  }
+
+  // Fall back to next open port round-robin style
+  for (unsigned int i = 0; i < ports.size(); i++)
+  {
+    if (ports[i].deviceCount == minDeviceCount)
+      return i;
   }
 
   return 0;

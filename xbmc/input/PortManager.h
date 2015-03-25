@@ -47,8 +47,9 @@ public:
    *        specified handler.
    *
    * \param handler  The instance accepting all input delivered to the port
+   * \param port     The port number belonging to the game client
    */
-  void OpenPort(IJoystickInputHandler* handler);
+  void OpenPort(IJoystickInputHandler* handler, unsigned int port);
 
   /*!
    * \brief Close an opened port
@@ -74,6 +75,7 @@ private:
   struct SPort
   {
     IJoystickInputHandler* handler;     // Input handler for this port
+    unsigned int           port;        // Port number belonging to the game client
     unsigned int           deviceCount; // Number of devices attached to this port
   };
 
@@ -96,7 +98,7 @@ private:
    * A port is considered open if no other ports have a fewer number of devices
    * connected.
    */
-  static unsigned int GetNextOpenPort(const std::vector<SPort>& ports, unsigned int startPort = 0);
+  static unsigned int GetNextOpenPort(const std::vector<SPort>& ports, int requestedPort);
 
   /*!
    * \brief Helper function to return the number of devices attached to the

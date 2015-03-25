@@ -153,9 +153,10 @@ public:
   size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
   size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }
 
-  bool OpenPort(int port, const std::string& strDeviceId);
-  void ClosePort(int port);
-  void UpdatePort(int port, bool bConnected);
+  bool OpenPort(unsigned int port, const std::string& strDeviceId);
+  void ClosePort(unsigned int port);
+  void ClearPorts(void);
+  void UpdatePort(unsigned int port, bool bConnected);
 
   bool OnButtonPress(int port, JoystickFeatureID id, bool bPressed);
   bool OnButtonMotion(int port, JoystickFeatureID id, float magnitude);
@@ -203,7 +204,7 @@ private:
   CSerialState          m_serialState;
 
   // Input
-  std::map<int, CDeviceInput*>  m_devices; // port -> controller
+  std::vector<CDeviceInput*>  m_devices; // port -> controller
 
   CCriticalSection      m_critSection;
 };

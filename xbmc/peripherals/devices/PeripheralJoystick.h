@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#define JOYSTICK_PORT_UNKNOWN  0
+#define JOYSTICK_PORT_UNKNOWN  (-1)
 
 class IJoystickButtonMap;
 
@@ -49,6 +49,15 @@ namespace PERIPHERALS
     virtual void OnAxisMotion(unsigned int axisIndex, float position);
     virtual void ProcessAxisMotions(void);
 
+    /*!
+     * \brief Joystick is requesting a specific port number
+     *
+     * This could indicate that the joystick is connected to a hardware port
+     * with a number label. Some controllers, such as the Xbox 360 controller,
+     * also have LEDs that indicate the controller is on a specific port.
+     *
+     * \return The 0-indexed port number, or JOYSTICK_PORT_UNKNOWN if no port is requested
+     */
     int RequestedPort(void) const { return m_requestedPort; }
 
     // TODO: Move to CPeripheral

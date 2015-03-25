@@ -381,6 +381,8 @@ void CGameClient::CloseFile()
     catch (...) { LogException("UnloadGame()"); }
   }
 
+  ClearPorts();
+
   m_bIsPlaying = false;
   m_filePath.clear();
   m_player = NULL;
@@ -436,33 +438,39 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
   return rewound;
 }
 
-bool CGameClient::OpenPort(int port, const std::string& strDeviceId)
+bool CGameClient::OpenPort(unsigned int port, const std::string& strDeviceId)
 {
-  std::map<int, CDeviceInput*>::const_iterator it = m_devices.find(port);
-  if (it == m_devices.end())
-  {
-    CDeviceInput* deviceInput = new CDeviceInput(this, port, strDeviceId);
-    CPortManager::Get().OpenPort(deviceInput);
-    m_devices[port] = deviceInput;
+  if (port >= m_devices.size())
+    m_devices.resize(port + 1);
 
-    return true;
-  }
+  if (m_devices[port])
+    ClosePort(port);
 
-  return false;
+  CDeviceInput* deviceInput = new CDeviceInput(this, port, strDeviceId);
+  CPortManager::Get().OpenPort(deviceInput, port);
+  m_devices[port] = deviceInput;
+
+  return true;
 }
 
-void CGameClient::ClosePort(int port)
+void CGameClient::ClosePort(unsigned int port)
 {
-  std::map<int, CDeviceInput*>::const_iterator it = m_devices.find(port);
-  if (it != m_devices.end())
-  {
-    CPortManager::Get().ClosePort(it->second);
-    delete it->second;
-    m_devices.erase(it);
-  }
+  if (port >= m_devices.size())
+    return;
+
+  delete m_devices[port];
+  m_devices[port] = NULL;
 }
 
-void CGameClient::UpdatePort(int port, bool bConnected)
+void CGameClient::ClearPorts(void)
+{
+  for (std::vector<CDeviceInput*>::iterator it = m_devices.begin(); it != m_devices.end(); ++it)
+    delete *it;
+
+  m_devices.clear();
+}
+
+void CGameClient::UpdatePort(unsigned int port, bool bConnected)
 {
   try { m_pStruct->UpdatePort(port, bConnected); }
   catch (...) { LogException("UpdatePort()"); }
