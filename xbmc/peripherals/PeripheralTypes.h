@@ -181,6 +181,8 @@ namespace PERIPHERALS
         return PERIPHERAL_BUS_RPI;
       else if (strTypeLowerCase == "cec")
         return PERIPHERAL_BUS_CEC;
+      else if (strTypeLowerCase == "addon")
+        return PERIPHERAL_BUS_ADDON;
 
       return PERIPHERAL_BUS_UNKNOWN;
     };
