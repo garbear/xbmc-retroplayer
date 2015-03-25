@@ -33,19 +33,50 @@ using namespace PERIPHERALS;
 #define SATE_DELETE(x)  do { delete (x); (x) = NULL; } while (0)
 #endif
 
+// --- CPeripheralJoystickInput ------------------------------------------------
+
+CPeripheralJoystickInput::CPeripheralJoystickInput(IJoystickDriverHandler* handler)
+  : m_driverHandler(handler),
+    m_buttonMap(NULL),
+    m_inputHandler(NULL),
+    m_bOwnsDriverHandler(false)
+{
+}
+
+CPeripheralJoystickInput::CPeripheralJoystickInput(CPeripheralJoystick* joystick, IJoystickInputHandler* handler)
+  : m_driverHandler(NULL),
+    m_inputHandler(handler),
+    m_bOwnsDriverHandler(true)
+{
+  m_buttonMap = new CAddonJoystickButtonMap(joystick, handler->DeviceID());
+  if (m_buttonMap->Load())
+    m_driverHandler = new CGenericJoystickDriverHandler(handler, m_buttonMap);
+  else
+    SAFE_DELETE(m_buttonMap);
+}
+
+CPeripheralJoystickInput::~CPeripheralJoystickInput(void)
+{
+  if (m_bOwnsDriverHandler)
+  {
+    delete m_driverHandler;
+    delete m_buttonMap;
+  }
+}
+
+// --- CPeripheralJoystick -----------------------------------------------------
+
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :
   CPeripheral(scanResult),
-  m_requestedPort(JOYSTICK_PORT_UNKNOWN),
-  m_buttonMap(NULL),
-  m_defaultDriverHandler(NULL)
+  m_requestedPort(JOYSTICK_PORT_UNKNOWN)
 {
   m_features.push_back(FEATURE_JOYSTICK);
 }
 
 CPeripheralJoystick::~CPeripheralJoystick(void)
 {
-  delete m_buttonMap;
-  delete m_defaultDriverHandler;
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+    delete *it;
 }
 
 bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
@@ -66,11 +97,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
         {
           m_requestedPort = addon->GetRequestedPort(index);
 
-          m_buttonMap = new CAddonJoystickButtonMap(this, DEFAULT_GAME_CONTROLLER);
-          if (m_buttonMap->Load())
-            m_defaultDriverHandler = new CGenericJoystickDriverHandler(&m_defaultInputHandler, m_buttonMap);
-          else
-            SAFE_DELETE(m_buttonMap);
+          m_input.push_back(new CPeripheralJoystickInput(this, &m_defaultInputHandler));
         }
         else
           CLog::Log(LOGERROR, "CPeripheralJoystick: Invalid location (%s)", m_strLocation.c_str());
@@ -78,76 +105,89 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
     }
   }
 
-  return m_defaultDriverHandler != NULL;
+  return !m_input.empty();
 }
 
 void CPeripheralJoystick::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
-  if (std::find(m_driverHandlers.begin(), m_driverHandlers.end(), handler) == m_driverHandlers.end())
-    m_driverHandlers.push_back(handler);
+  bool bFound = false;
+
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+  {
+    if ((*it)->GetDriverHandler() == handler)
+    {
+      bFound = true;
+      break;
+    }
+  }
+
+  if (!bFound)
+    m_input.push_back(new CPeripheralJoystickInput(handler));
 }
 
 void CPeripheralJoystick::UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
-  m_driverHandlers.erase(std::find(m_driverHandlers.begin(), m_driverHandlers.end(), handler), m_driverHandlers.end());
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+  {
+    if ((*it)->GetDriverHandler() == handler)
+    {
+      delete *it;
+      m_input.erase(it);
+      break;
+    }
+  }
 }
 
 void CPeripheralJoystick::RegisterJoystickInputHandler(IJoystickInputHandler* handler)
 {
-  IJoystickButtonMap* buttonMap = new CAddonJoystickButtonMap(this, handler->DeviceID()); // TODO: leaks
-  if (buttonMap->Load())
-    m_driverHandlers.push_back(new CGenericJoystickDriverHandler(handler, buttonMap)); // TODO: leaks
-  else
-    SAFE_DELETE(buttonMap);
+  bool bFound = false;
+
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+  {
+    if ((*it)->GetInputHandler() == handler)
+    {
+      bFound = true;
+      break;
+    }
+  }
+
+  if (!bFound)
+    m_input.push_back(new CPeripheralJoystickInput(this, handler));
 }
 
 void CPeripheralJoystick::UnregisterJoystickInputHandler(IJoystickInputHandler* handler)
 {
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
   {
-    // TODO
-    // if ((*it)->InputHandler() == handler)
-    // {
-    //   delete (*it)->ButtonMap();
-    //   delete (*it);
-    //   m_driverHandlers.erase(it);
-    //   break;
-    // }
+    if ((*it)->GetInputHandler() == handler)
+    {
+      delete *it;
+      m_input.erase(it);
+      break;
+    }
   }
 }
 
 void CPeripheralJoystick::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->OnButtonMotion(buttonIndex, bPressed);
-
-  if (m_defaultDriverHandler)
-    m_defaultDriverHandler->OnButtonMotion(buttonIndex, bPressed);
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+    (*it)->GetDriverHandler()->OnButtonMotion(buttonIndex, bPressed);
 }
 
 void CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->OnHatMotion(hatIndex, direction);
-
-  if (m_defaultDriverHandler)
-    m_defaultDriverHandler->OnHatMotion(hatIndex, direction);
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+    (*it)->GetDriverHandler()->OnHatMotion(hatIndex, direction);
 }
 
 void CPeripheralJoystick::OnAxisMotion(unsigned int axisIndex, float position)
 {
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->OnAxisMotion(axisIndex, position);
-
-  if (m_defaultDriverHandler)
-    m_defaultDriverHandler->OnAxisMotion(axisIndex, position);
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+    (*it)->GetDriverHandler()->OnAxisMotion(axisIndex, position);
 }
 
 void CPeripheralJoystick::ProcessAxisMotions(void)
 {
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->ProcessAxisMotions();
-
-  if (m_defaultDriverHandler)
-    m_defaultDriverHandler->ProcessAxisMotions();
+  for (std::vector<CPeripheralJoystickInput*>::iterator it = m_input.begin(); it != m_input.end(); ++it)
+    (*it)->GetDriverHandler()->ProcessAxisMotions();
 }

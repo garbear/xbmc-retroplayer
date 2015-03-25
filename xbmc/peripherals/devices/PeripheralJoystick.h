@@ -33,6 +33,26 @@ class IJoystickButtonMap;
 
 namespace PERIPHERALS
 {
+  class CPeripheralJoystick;
+
+  class CPeripheralJoystickInput
+  {
+  public:
+    CPeripheralJoystickInput(IJoystickDriverHandler* handler);
+    CPeripheralJoystickInput(CPeripheralJoystick* joystick, IJoystickInputHandler* handler);
+    ~CPeripheralJoystickInput(void);
+
+    IJoystickDriverHandler* GetDriverHandler(void) { return m_driverHandler; }
+    IJoystickInputHandler*  GetInputHandler(void)  { return m_inputHandler; }
+
+  private:
+    IJoystickDriverHandler* m_driverHandler;
+    IJoystickButtonMap*     m_buttonMap;
+    IJoystickInputHandler*  m_inputHandler;
+    bool                    m_bOwnsDriverHandler; // true if the handler and button map
+                                                  // should be deleted on deconstruction
+  };
+
   class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
                               public IJoystickDriverHandler
   {
@@ -68,10 +88,8 @@ namespace PERIPHERALS
     void SetDeviceName(const std::string& strName) { m_strDeviceName = strName; } // Override value in peripherals.xml
 
   protected:
-    int                                  m_requestedPort;
-    IJoystickButtonMap*                  m_buttonMap;
-    IJoystickDriverHandler*              m_defaultDriverHandler;
-    std::vector<IJoystickDriverHandler*> m_driverHandlers;
-    CDefaultJoystickInputHandler         m_defaultInputHandler;
+    int                                    m_requestedPort;
+    CDefaultJoystickInputHandler           m_defaultInputHandler;
+    std::vector<CPeripheralJoystickInput*> m_input;
   };
 }
