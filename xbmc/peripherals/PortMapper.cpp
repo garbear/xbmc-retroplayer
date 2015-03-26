@@ -19,7 +19,7 @@
 
 #include "PortMapper.h"
 #include "input/PortManager.h"
-#include "peripherals/devices/PeripheralJoystick.h"
+#include "peripherals/devices/Peripheral.h"
 #include "peripherals/Peripherals.h"
 
 using namespace PERIPHERALS;
@@ -73,16 +73,17 @@ void CPortMapper::ProcessChanges(const std::map<CPeripheral*, IJoystickInputHand
     IJoystickInputHandler* oldHandler = itOld != oldPortMap.end() ? itOld->second : NULL;
     IJoystickInputHandler* newHandler = itNew->second;
 
-    if (oldHandler != newHandler && itNew->first->Type() == PERIPHERAL_JOYSTICK)
+    if (oldHandler != newHandler)
     {
-      CPeripheralJoystick* joystick = static_cast<CPeripheralJoystick*>(itNew->first);
+      CPeripheral* device = itNew->first;
 
       // Unregister old handler
       if (oldHandler != NULL)
-        joystick->UnregisterJoystickInputHandler(oldHandler);
+        device->UnregisterJoystickInputHandler(oldHandler);
 
       // Register new handler
-      joystick->RegisterJoystickInputHandler(newHandler);
+      if (newHandler != NULL)
+        device->RegisterJoystickInputHandler(newHandler);
     }
   }
 }
