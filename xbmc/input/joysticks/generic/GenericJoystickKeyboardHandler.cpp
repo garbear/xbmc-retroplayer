@@ -20,6 +20,7 @@
 
 #include "GenericJoystickKeyboardHandler.h"
 #include "input/joysticks/IJoystickDriverHandler.h"
+#include "input/Key.h"
 
 #include <assert.h>
 
@@ -42,14 +43,5 @@ void CGenericJoystickKeyboardHandler::OnKeyRelease(const CKey& key)
 
 unsigned int CGenericJoystickKeyboardHandler::GetButtonIndex(const CKey& key)
 {
-  // TODO
-
-  /*
-  key.GetButtonCode();
-  key.GetVKey();
-  key.GetUnicode();
-  key.GetAscii();
-  */
-
-  return 0;
+  return key.GetVKey();
 }
