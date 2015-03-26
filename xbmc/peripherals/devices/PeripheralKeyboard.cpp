@@ -69,10 +69,12 @@ void CPeripheralKeyboard::UnregisterJoystickDriverHandler(IJoystickDriverHandler
 
 bool CPeripheralKeyboard::OnKeyPress(const CKey& key)
 {
-  for (std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
-    it->second->OnKeyPress(key);
+  bool bHandled = false;
 
-  return true; // TODO
+  for (std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
+    bHandled |= it->second->OnKeyPress(key);
+
+  return bHandled;
 }
 
 void CPeripheralKeyboard::OnKeyRelease(const CKey& key)
