@@ -19,8 +19,6 @@
  */
 #pragma once
 
-#include "JoystickTypes.h"
-
 #include <string>
 
 /*!
