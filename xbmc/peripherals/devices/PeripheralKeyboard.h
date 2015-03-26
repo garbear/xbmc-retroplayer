@@ -22,6 +22,8 @@
 #include "Peripheral.h"
 #include "input/IKeyboardHandler.h"
 
+#include <map>
+
 namespace PERIPHERALS
 {
   class CPeripheralKeyboard : public CPeripheral, // TODO: extend CPeripheralHID
@@ -36,14 +38,12 @@ namespace PERIPHERALS
     virtual bool InitialiseFeature(const PeripheralFeature feature);
     virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler);
     virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler);
-    virtual void RegisterJoystickInputHandler(IJoystickInputHandler* handler);
-    virtual void UnregisterJoystickInputHandler(IJoystickInputHandler* handler);
 
     // implementation of IKeyboardHandler
     virtual bool OnKeyPress(const CKey& key);
     virtual void OnKeyRelease(const CKey& key);
 
-  protected:
-    std::vector<IKeyboardHandler*>  m_keyboardHandlers;
+  private:
+    std::map<IJoystickDriverHandler*, IKeyboardHandler*> m_keyboardHandlers;
   };
 }

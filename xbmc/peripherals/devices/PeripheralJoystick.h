@@ -29,43 +29,20 @@
 
 #define JOYSTICK_PORT_UNKNOWN  (-1)
 
-class IJoystickButtonMap;
-
 namespace PERIPHERALS
 {
-  class CPeripheralJoystick;
-
-  class CPeripheralJoystickInput
-  {
-  public:
-    CPeripheralJoystickInput(IJoystickDriverHandler* handler);
-    CPeripheralJoystickInput(CPeripheralJoystick* joystick, IJoystickInputHandler* handler);
-    ~CPeripheralJoystickInput(void);
-
-    IJoystickDriverHandler* GetDriverHandler(void) { return m_driverHandler; }
-    IJoystickInputHandler*  GetInputHandler(void)  { return m_inputHandler; }
-
-  private:
-    IJoystickDriverHandler* m_driverHandler;
-    IJoystickButtonMap*     m_buttonMap;
-    IJoystickInputHandler*  m_inputHandler;
-    bool                    m_bOwnsDriverHandler; // true if the handler and button map
-                                                  // should be deleted on deconstruction
-  };
-
   class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
                               public IJoystickDriverHandler
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
-    virtual ~CPeripheralJoystick(void);
+
+    virtual ~CPeripheralJoystick(void) { }
 
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
     virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler);
     virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler);
-    virtual void RegisterJoystickInputHandler(IJoystickInputHandler* handler);
-    virtual void UnregisterJoystickInputHandler(IJoystickInputHandler* handler);
 
     // implementation of IJoystickDriverHandler
     virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
@@ -88,8 +65,8 @@ namespace PERIPHERALS
     void SetDeviceName(const std::string& strName) { m_strDeviceName = strName; } // Override value in peripherals.xml
 
   protected:
-    int                                    m_requestedPort;
-    CDefaultJoystickInputHandler           m_defaultInputHandler;
-    std::vector<CPeripheralJoystickInput*> m_input;
+    int                                  m_requestedPort;
+    CDefaultJoystickInputHandler         m_defaultInputHandler;
+    std::vector<IJoystickDriverHandler*> m_driverHandlers;
   };
 }

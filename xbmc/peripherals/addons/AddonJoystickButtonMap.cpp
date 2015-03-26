@@ -63,9 +63,10 @@ PeripheralAddonPtr CAddonJoystickButtonMap::GetAddon(CPeripheral* device)
     else
     {
       // Otherwise, have the add-on bus find a suitable add-on
-      //addon = addonBus->GetAddonButtonMap(device); // TODO
+      addonBus->GetAddonWithButtonMap(addon);
     }
   }
+
   return addon;
 }
 

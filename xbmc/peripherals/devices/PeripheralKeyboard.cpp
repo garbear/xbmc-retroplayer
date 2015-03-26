@@ -20,13 +20,8 @@
 
 #include "PeripheralKeyboard.h"
 #include "input/InputManager.h"
-#include "input/joysticks/generic/GenericJoystickDriverHandler.h"
 #include "input/joysticks/generic/GenericJoystickKeyboardHandler.h"
-#include "input/joysticks/IJoystickInputHandler.h"
 #include "input/Key.h"
-#include "peripherals/addons/AddonJoystickButtonMap.h"
-
-#include <algorithm>
 
 using namespace PERIPHERALS;
 
@@ -39,6 +34,9 @@ CPeripheralKeyboard::CPeripheralKeyboard(const PeripheralScanResult& scanResult)
 CPeripheralKeyboard::~CPeripheralKeyboard(void)
 {
   CInputManager::Get().UnregisterKeyboardHandler(this);
+
+  while (!m_keyboardHandlers.empty())
+    UnregisterJoystickDriverHandler(m_keyboardHandlers.begin()->first);
 }
 
 bool CPeripheralKeyboard::InitialiseFeature(const PeripheralFeature feature)
@@ -54,50 +52,31 @@ bool CPeripheralKeyboard::InitialiseFeature(const PeripheralFeature feature)
 
 void CPeripheralKeyboard::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
-  m_keyboardHandlers.push_back(new CGenericJoystickKeyboardHandler(handler)); // TODO: leaks
+  std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.find(handler);
+  if (handler && it == m_keyboardHandlers.end())
+    m_keyboardHandlers[handler] = new CGenericJoystickKeyboardHandler(handler);
 }
 
 void CPeripheralKeyboard::UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
-  // TODO
-}
-
-void CPeripheralKeyboard::RegisterJoystickInputHandler(IJoystickInputHandler* handler)
-{
-  IJoystickButtonMap* buttonMap = new CAddonJoystickButtonMap(this, handler->DeviceID()); // TODO: leaks
-  if (buttonMap->Load())
-    RegisterJoystickDriverHandler(new CGenericJoystickDriverHandler(handler, buttonMap)); // TODO: leaks
-  else
-    SAFE_DELETE(buttonMap);
-}
-
-void CPeripheralKeyboard::UnregisterJoystickInputHandler(IJoystickInputHandler* handler)
-{
-  for (std::vector<IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
+  std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.find(handler);
+  if (it != m_keyboardHandlers.end())
   {
-    // TODO
-    // if ((*it)->InputHandler() == handler)
-    // {
-    //   delete (*it)->ButtonMap();
-    //   delete (*it);
-    //   m_driverHandlers.erase(it);
-    //   break;
-    // }
+    delete it->second;
+    m_keyboardHandlers.erase(it);
   }
 }
 
 bool CPeripheralKeyboard::OnKeyPress(const CKey& key)
 {
-  bool bHandled = false;
+  for (std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
+    it->second->OnKeyPress(key);
 
-  for (std::vector<IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
-    bHandled |= (*it)->OnKeyPress(key);
-
-  return bHandled;
+  return true; // TODO
 }
 
 void CPeripheralKeyboard::OnKeyRelease(const CKey& key)
 {
-  for (std::vector<IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
-    (*it)->OnKeyRelease(key);
+  for (std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
+    it->second->OnKeyRelease(key);
 }

@@ -33,6 +33,7 @@ namespace PERIPHERALS
     virtual ~CPeripheralBusAddon(void);
 
     bool GetAddon(const std::string &strId, ADDON::AddonPtr &addon) const;
+    bool GetAddonWithButtonMap(PeripheralAddonPtr &addon) const;
 
     void ProcessEvents(void);
 

@@ -54,6 +54,20 @@ bool CPeripheralBusAddon::GetAddon(const std::string &strId, AddonPtr &addon) co
   return false;
 }
 
+bool CPeripheralBusAddon::GetAddonWithButtonMap(PeripheralAddonPtr &addon) const
+{
+  CSingleLock lock(m_critSection);
+  for (PeripheralAddonVector::const_iterator it = m_addons.begin(); it != m_addons.end(); ++it)
+  {
+    if ((*it)->HasFeature(FEATURE_JOYSTICK)) // TODO: Check for button map support
+    {
+      addon = *it;
+      return true;
+    }
+  }
+  return false;
+}
+
 bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
 {
   VECADDONS addons;
