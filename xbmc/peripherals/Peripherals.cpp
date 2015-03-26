@@ -293,7 +293,7 @@ CPeripheral *CPeripherals::CreatePeripheral(CPeripheralBus &bus, const Periphera
 
   case PERIPHERAL_IMON:
     peripheral = new CPeripheralImon(mappedResult);
-      break;
+    break;
 
   case PERIPHERAL_JOYSTICK:
     peripheral = new CPeripheralJoystick(mappedResult);
