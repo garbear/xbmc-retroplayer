@@ -35,6 +35,9 @@ public:
   /*!
    * \brief The add-on ID of the game peripheral associated with this input handler
    *
+   * The device ID provided by the implementation serves as the context for the
+   * feature indices below.
+   *
    * \return The ID of the add-on extending kodi.game.peripheral
    */
   virtual std::string DeviceID(void) const = 0;
