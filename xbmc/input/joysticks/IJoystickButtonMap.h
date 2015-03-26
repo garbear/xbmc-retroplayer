@@ -61,7 +61,7 @@ public:
    * \return True if the index resolved to a driver primitive, false if the feature
    *         didn't resolve or isn't a digital or analog button
    */
-  virtual bool GetDriverPrimitive(unsigned int featureIndex, CJoystickDriverPrimitive& button) = 0;
+  virtual bool GetButton(unsigned int featureIndex, CJoystickDriverPrimitive& button) = 0;
 
   /*!
    * \brief Get the raw axis indices and polarity for the given analog stick

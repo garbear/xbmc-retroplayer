@@ -36,7 +36,7 @@ namespace PERIPHERALS
     // Implementation of IJoystickButtonMap
     virtual bool Load(void);
     virtual bool GetFeature(const CJoystickDriverPrimitive& button, unsigned int& featureIndex);
-    virtual bool GetDriverPrimitive(unsigned int featureIndex, CJoystickDriverPrimitive& button);
+    virtual bool GetButton(unsigned int featureIndex, CJoystickDriverPrimitive& button);
     virtual bool GetAnalogStick(unsigned int featureIndex, int& horizIndex, bool& horizInverted,
                                                            int& vertIndex,  bool& vertInverted);
     virtual bool GetAccelerometer(unsigned int featureIndex, int& xIndex, bool& xInverted,

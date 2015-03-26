@@ -144,7 +144,7 @@ bool CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& source,
   return false;
 }
 
-bool CAddonJoystickButtonMap::GetDriverPrimitive(unsigned int featureIndex, CJoystickDriverPrimitive& button)
+bool CAddonJoystickButtonMap::GetButton(unsigned int featureIndex, CJoystickDriverPrimitive& button)
 {
   bool retVal(false);
 
