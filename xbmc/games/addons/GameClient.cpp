@@ -69,24 +69,24 @@ CDeviceInput::CDeviceInput(CGameClient* addon, int port, const std::string& strD
   assert(m_addon);
 }
 
-bool CDeviceInput::OnButtonPress(JoystickFeatureID id, bool bPressed)
+bool CDeviceInput::OnButtonPress(unsigned int featureIndex, bool bPressed)
 {
-  return m_addon->OnButtonPress(m_port, id, bPressed);
+  return m_addon->OnButtonPress(m_port, featureIndex, bPressed);
 }
 
-bool CDeviceInput::OnButtonMotion(JoystickFeatureID id, float magnitude)
+bool CDeviceInput::OnButtonMotion(unsigned int featureIndex, float magnitude)
 {
-  return m_addon->OnButtonMotion(m_port, id, magnitude);
+  return m_addon->OnButtonMotion(m_port, featureIndex, magnitude);
 }
 
-bool CDeviceInput::OnAnalogStickMotion(JoystickFeatureID id, float x, float y)
+bool CDeviceInput::OnAnalogStickMotion(unsigned int featureIndex, float x, float y)
 {
-  return m_addon->OnAnalogStickMotion(m_port, id, x, y);
+  return m_addon->OnAnalogStickMotion(m_port, featureIndex, x, y);
 }
 
-bool CDeviceInput::OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z)
+bool CDeviceInput::OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z)
 {
-  return m_addon->OnAccelerometerMotion(m_port, id, x, y, z);
+  return m_addon->OnAccelerometerMotion(m_port, featureIndex, x, y, z);
 }
 
 // --- CGameClient -------------------------------------------------------------
@@ -476,13 +476,13 @@ void CGameClient::UpdatePort(unsigned int port, bool bConnected)
   catch (...) { LogException("UpdatePort()"); }
 }
 
-bool CGameClient::OnButtonPress(int port, JoystickFeatureID id, bool bPressed)
+bool CGameClient::OnButtonPress(int port, unsigned int featureIndex, bool bPressed)
 {
   game_input_event event;
 
   event.type = GAME_INPUT_EVENT_DIGITAL_BUTTON;
   event.port = port;
-  event.source_index = id;
+  event.source_index = featureIndex;
   event.digital_button.pressed = bPressed;
 
   try { m_pStruct->InputEvent(port, &event); }
@@ -491,13 +491,13 @@ bool CGameClient::OnButtonPress(int port, JoystickFeatureID id, bool bPressed)
   return true;
 }
 
-bool CGameClient::OnButtonMotion(int port, JoystickFeatureID id, float magnitude)
+bool CGameClient::OnButtonMotion(int port, unsigned int featureIndex, float magnitude)
 {
   game_input_event event;
 
   event.type = GAME_INPUT_EVENT_ANALOG_BUTTON;
   event.port = port;
-  event.source_index = id;
+  event.source_index = featureIndex;
   event.analog_button.magnitude = magnitude;
 
   try { m_pStruct->InputEvent(port, &event); }
@@ -506,13 +506,13 @@ bool CGameClient::OnButtonMotion(int port, JoystickFeatureID id, float magnitude
   return true;
 }
 
-bool CGameClient::OnAnalogStickMotion(int port, JoystickFeatureID id, float x, float y)
+bool CGameClient::OnAnalogStickMotion(int port, unsigned int featureIndex, float x, float y)
 {
   game_input_event event;
 
   event.type = GAME_INPUT_EVENT_ANALOG_STICK;
   event.port = port;
-  event.source_index = id;
+  event.source_index = featureIndex;
   event.analog_stick.x = x;
   event.analog_stick.y = y;
 
@@ -522,13 +522,13 @@ bool CGameClient::OnAnalogStickMotion(int port, JoystickFeatureID id, float x, f
   return true;
 }
 
-bool CGameClient::OnAccelerometerMotion(int port, JoystickFeatureID id, float x, float y, float z)
+bool CGameClient::OnAccelerometerMotion(int port, unsigned int featureIndex, float x, float y, float z)
 {
   game_input_event event;
 
   event.type = GAME_INPUT_EVENT_ACCELEROMETER;
   event.port = port;
-  event.source_index = id;
+  event.source_index = featureIndex;
   event.accelerometer.x = x;
   event.accelerometer.y = y;
   event.accelerometer.z = z;

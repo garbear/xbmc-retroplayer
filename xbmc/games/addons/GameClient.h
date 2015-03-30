@@ -89,10 +89,10 @@ public:
 
   // Implementation of IJoystickInputHandler
   virtual std::string DeviceID(void) const { return m_strDeviceId; }
-  virtual bool OnButtonPress(JoystickFeatureID id, bool bPressed);
-  virtual bool OnButtonMotion(JoystickFeatureID id, float magnitude);
-  virtual bool OnAnalogStickMotion(JoystickFeatureID id, float x, float y);
-  virtual bool OnAccelerometerMotion(JoystickFeatureID id, float x, float y, float z);
+  virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
+  virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
+  virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);
+  virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z);
 
 private:
   CGameClient* const m_addon;
@@ -158,10 +158,10 @@ public:
   void ClearPorts(void);
   void UpdatePort(unsigned int port, bool bConnected);
 
-  bool OnButtonPress(int port, JoystickFeatureID id, bool bPressed);
-  bool OnButtonMotion(int port, JoystickFeatureID id, float magnitude);
-  bool OnAnalogStickMotion(int port, JoystickFeatureID id, float x, float y);
-  bool OnAccelerometerMotion(int port, JoystickFeatureID id, float x, float y, float z);
+  bool OnButtonPress(int port, unsigned int featureIndex, bool bPressed);
+  bool OnButtonMotion(int port, unsigned int featureIndex, float magnitude);
+  bool OnAnalogStickMotion(int port, unsigned int featureIndex, float x, float y);
+  bool OnAccelerometerMotion(int port, unsigned int featureIndex, float x, float y, float z);
 
 private:
   // Called by the constructors
