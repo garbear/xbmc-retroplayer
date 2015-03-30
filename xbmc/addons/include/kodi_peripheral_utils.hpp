@@ -101,7 +101,7 @@ namespace ADDON
     {
     }
 
-    Peripheral(PERIPHERAL_INFO& info)
+    Peripheral(const PERIPHERAL_INFO& info)
     : m_type(info.type),
       m_strName(info.name ? info.name : ""),
       m_vendorId(info.vendor_id),
@@ -248,7 +248,7 @@ namespace ADDON
       *this = other;
     }
 
-    Joystick(JOYSTICK_INFO& info)
+    Joystick(const JOYSTICK_INFO& info)
     : m_provider(info.provider ? info.provider : ""),
     m_requestedPort(info.requested_port),
     m_buttonCount(info.button_count),
