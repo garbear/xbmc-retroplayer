@@ -89,31 +89,24 @@ void CGenericJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirect
 void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
     HatDirection oldDir, HatDirection newDir, HatDirection targetDir)
 {
-  if ((oldDir & targetDir) == HatDirectionNone &&
-      (newDir & targetDir) != HatDirectionNone)
+  if ((oldDir & targetDir) != (newDir & targetDir))
   {
+    const bool bActivated = (newDir & targetDir) != HatDirectionNone;
+
     unsigned int feature;
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u activated",
-                m_handler->DeviceID().c_str(), feature);
-      m_handler->OnButtonPress(feature, true);
+      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u %s",
+                m_handler->DeviceID().c_str(), feature, bActivated ? "activated" : "deactivated");
+      m_handler->OnButtonPress(feature, bActivated);
     }
     else
     {
-      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s has no feature for hat %u %s",
-                m_handler->DeviceID().c_str(), index, CJoystickTranslator::HatDirectionToString(targetDir));
-    }
-  }
-  else if ((oldDir & targetDir) != HatDirectionNone &&
-           (newDir & targetDir) == HatDirectionNone)
-  {
-    unsigned int feature;
-    if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
-    {
-      CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u deactivated",
-                m_handler->DeviceID().c_str(), feature);
-      m_handler->OnButtonPress(feature, false);
+      if (bActivated)
+      {
+        CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s has no feature for hat %u %s",
+                  m_handler->DeviceID().c_str(), index, CJoystickTranslator::HatDirectionToString(targetDir));
+      }
     }
   }
 }

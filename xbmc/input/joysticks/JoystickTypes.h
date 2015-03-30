@@ -19,19 +19,7 @@
  */
 #pragma once
 
-#define DEFAULT_GAME_CONTROLLER   "game.controller.default"
-
-/*!
- * \ingroup joysticks
- * \brief Types of physical elements on a joystick that emit input events
- */
-enum JoystickInputType
-{
-  JoystickDigitalButton,   /*!< @brief Button with two states, pressed and released */
-  JoystickAnalogButton,    /*!< @brief Trigger or pressure-sensitive button */
-  JoystickAnalogStick,     /*!< @brief Control stick capable of motion in two directions */
-  JoystickAccelerometer,   /*!< @brief Accelerometer with x, y and z axes */
-};
+#define DEFAULT_GAME_CONTROLLER   "game.controller.default" // TODO: Move me
 
 /*!
  * \ingroup joysticks
@@ -39,7 +27,6 @@ enum JoystickInputType
  */
 enum JoystickFeatureID
 {
-  JoystickIDButtonUnknown = 0,
   JoystickIDButtonA,
   JoystickIDButtonB,
   JoystickIDButtonX,
@@ -60,6 +47,18 @@ enum JoystickFeatureID
   JoystickIDAnalogStickLeft,
   JoystickIDAnalogStickRight,
   JoystickIDAccelerometer,
+};
+
+/*!
+ * \ingroup joysticks
+ * \brief Types of features that emit input events
+ */
+enum JoystickFeatureType
+{
+  JoystickDigitalButton,   /*!< @brief Button with two states, pressed and released */
+  JoystickAnalogButton,    /*!< @brief Trigger or pressure-sensitive button */
+  JoystickAnalogStick,     /*!< @brief Control stick capable of motion in two directions */
+  JoystickAccelerometer,   /*!< @brief Accelerometer with x, y and z axes */
 };
 
 /*!

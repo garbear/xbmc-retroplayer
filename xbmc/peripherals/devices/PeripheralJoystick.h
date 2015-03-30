@@ -51,21 +51,43 @@ namespace PERIPHERALS
     virtual void ProcessAxisMotions(void);
 
     /*!
-     * \brief Joystick is requesting a specific port number
+     * \brief Get the name of the driver or API providing this joystick
+     */
+    const std::string& Provider(void) const { return m_strProvider; }
+
+    /*!
+     * \brief Get the specific port number requested by this joystick
      *
      * This could indicate that the joystick is connected to a hardware port
-     * with a number label. Some controllers, such as the Xbox 360 controller,
+     * with a number label; some controllers, such as the Xbox 360 controller,
      * also have LEDs that indicate the controller is on a specific port.
      *
      * \return The 0-indexed port number, or JOYSTICK_PORT_UNKNOWN if no port is requested
      */
     int RequestedPort(void) const { return m_requestedPort; }
 
+    /*!
+     * \brief Get the number of elements reported by the driver
+     */
+    unsigned int ButtonCount(void) const { return m_buttonCount; }
+    unsigned int HatCount(void) const    { return m_hatCount; }
+    unsigned int AxisCount(void) const   { return m_axisCount; }
+
     // TODO: Move to CPeripheral
     void SetDeviceName(const std::string& strName) { m_strDeviceName = strName; } // Override value in peripherals.xml
 
+    void SetProvider(const std::string& provider) { m_strProvider   = provider; }
+    void SetRequestedPort(int port)               { m_requestedPort = port; }
+    void SetButtonCount(unsigned int buttonCount) { m_buttonCount   = buttonCount; }
+    void SetHatCount(unsigned int hatCount)       { m_hatCount      = hatCount; }
+    void SetAxisCount(unsigned int axisCount)     { m_axisCount     = axisCount; }
+
   protected:
+    std::string                          m_strProvider;
     int                                  m_requestedPort;
+    unsigned int                         m_buttonCount;
+    unsigned int                         m_hatCount;
+    unsigned int                         m_axisCount;
     CDefaultJoystickInputHandler         m_defaultInputHandler;
     std::vector<IJoystickDriverHandler*> m_driverHandlers;
   };

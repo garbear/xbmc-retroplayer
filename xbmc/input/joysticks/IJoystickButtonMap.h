@@ -21,9 +21,6 @@
 
 #include "JoystickDriverPrimitive.h"
 
-#include <stdint.h>
-#include <string>
-
 /*!
  * \ingroup joysticks
  *
@@ -50,7 +47,7 @@ public:
    *
    * \return True if the driver primitive is associated with a feature, false otherwise
    */
-   virtual bool GetFeature(const CJoystickDriverPrimitive& button, unsigned int& featureIndex) = 0;
+   virtual bool GetFeature(const CJoystickDriverPrimitive& primitive, unsigned int& featureIndex) = 0;
 
   /*!
    * \brief Get the driver primitive associated with a digital or analog button

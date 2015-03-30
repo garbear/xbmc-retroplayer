@@ -36,31 +36,32 @@ CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult)
 
 bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 {
-  if (!CPeripheral::InitialiseFeature(feature))
-    return false;
+  bool bSuccess = false;
 
-  if (feature == FEATURE_JOYSTICK)
+  if (CPeripheral::InitialiseFeature(feature))
   {
-    if (m_mappedBusType == PERIPHERAL_BUS_ADDON)
+    if (feature == FEATURE_JOYSTICK)
     {
-      CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
-      if (addonBus)
+      if (m_mappedBusType == PERIPHERAL_BUS_ADDON)
       {
-        PeripheralAddonPtr addon;
-        unsigned int index;
-        if (addonBus->SplitLocation(m_strLocation, addon, index))
+        CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
+        if (addonBus)
         {
-          m_requestedPort = addon->GetRequestedPort(index);
-
-          RegisterJoystickInputHandler(&m_defaultInputHandler);
+          PeripheralAddonPtr addon;
+          unsigned int index;
+          if (addonBus->SplitLocation(m_strLocation, addon, index))
+            bSuccess = addon->SetJoystickProperties(index, *this);
+          else
+            CLog::Log(LOGERROR, "CPeripheralJoystick: Invalid location (%s)", m_strLocation.c_str());
         }
-        else
-          CLog::Log(LOGERROR, "CPeripheralJoystick: Invalid location (%s)", m_strLocation.c_str());
       }
     }
   }
 
-  return !m_driverHandlers.empty();
+  if (bSuccess)
+    RegisterJoystickInputHandler(&m_defaultInputHandler);
+
+  return bSuccess;
 }
 
 void CPeripheralJoystick::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)

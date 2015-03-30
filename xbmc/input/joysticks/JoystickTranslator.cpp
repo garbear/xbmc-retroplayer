@@ -19,7 +19,6 @@
  */
 
 #include "JoystickTranslator.h"
-#include "input/Key.h"
 
 const char* CJoystickTranslator::HatDirectionToString(HatDirection dir)
 {
@@ -40,7 +39,7 @@ const char* CJoystickTranslator::HatDirectionToString(HatDirection dir)
   return "RELEASED";
 }
 
-JoystickInputType CJoystickTranslator::GetInputType(JoystickFeatureID featureId)
+JoystickFeatureType CJoystickTranslator::GetFeatureType(JoystickFeatureID featureId)
 {
   switch (featureId)
   {
@@ -64,53 +63,8 @@ JoystickInputType CJoystickTranslator::GetInputType(JoystickFeatureID featureId)
     case JoystickIDAnalogStickLeft:   return JoystickAnalogStick;
     case JoystickIDAnalogStickRight:  return JoystickAnalogStick;
     case JoystickIDAccelerometer:     return JoystickAccelerometer;
-    case JoystickIDButtonUnknown:
     default:
       break;
   }
   return JoystickDigitalButton;
-}
-
-unsigned int CJoystickTranslator::GetButtonKeyID(JoystickFeatureID featureId, float x /* = 0.0f */,
-                                                                              float y /* = 0.0f */,
-                                                                              float z /* = 0.0f */)
-{
-  switch (featureId)
-  {
-    case JoystickIDButtonA:           return KEY_BUTTON_A;
-    case JoystickIDButtonB:           return KEY_BUTTON_B;
-    case JoystickIDButtonX:           return KEY_BUTTON_X;
-    case JoystickIDButtonY:           return KEY_BUTTON_Y;
-    case JoystickIDButtonStart:       return KEY_BUTTON_START;
-    case JoystickIDButtonBack:        return KEY_BUTTON_BACK;
-    case JoystickIDButtonGuide:       return KEY_BUTTON_GUIDE;
-    case JoystickIDButtonLeftBumper:  return KEY_BUTTON_LEFT_SHOULDER;
-    case JoystickIDButtonRightBumper: return KEY_BUTTON_RIGHT_SHOULDER;
-    case JoystickIDButtonLeftStick:   return KEY_BUTTON_LEFT_THUMB_BUTTON;
-    case JoystickIDButtonRightStick:  return KEY_BUTTON_RIGHT_THUMB_BUTTON;
-    case JoystickIDButtonUp:          return KEY_BUTTON_DPAD_UP;
-    case JoystickIDButtonRight:       return KEY_BUTTON_DPAD_RIGHT;
-    case JoystickIDButtonDown:        return KEY_BUTTON_DPAD_DOWN;
-    case JoystickIDButtonLeft:        return KEY_BUTTON_DPAD_LEFT;
-    case JoystickIDTriggerLeft:       return KEY_BUTTON_LEFT_TRIGGER;
-    case JoystickIDTriggerRight:      return KEY_BUTTON_RIGHT_TRIGGER;
-    case JoystickIDAnalogStickLeft:
-           if (y >= x && y >  -x)       return KEY_BUTTON_LEFT_THUMB_STICK_UP;
-      else if (y <  x && y >= -x)       return KEY_BUTTON_LEFT_THUMB_STICK_RIGHT;
-      else if (y <= x && y <  -x)       return KEY_BUTTON_LEFT_THUMB_STICK_DOWN;
-      else if (y >  x && y <= -x)       return KEY_BUTTON_LEFT_THUMB_STICK_LEFT;
-      break;
-    case JoystickIDAnalogStickRight:
-           if (y >= x && y >  -x)       return KEY_BUTTON_RIGHT_THUMB_STICK_UP;
-      else if (y <  x && y >= -x)       return KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT;
-      else if (y <= x && y <  -x)       return KEY_BUTTON_RIGHT_THUMB_STICK_DOWN;
-      else if (y >  x && y <= -x)       return KEY_BUTTON_RIGHT_THUMB_STICK_LEFT;
-      break;
-    case JoystickIDAccelerometer:
-      return 0; // TODO
-    case JoystickIDButtonUnknown:
-    default:
-      break;
-  }
-  return 0;
 }

@@ -35,13 +35,14 @@ class IJoystickDriverHandler;
 namespace PERIPHERALS
 {
   class CPeripheral;
+  class CPeripheralJoystick;
 
   class CPeripheralAddon;
   typedef std::shared_ptr<CPeripheralAddon> PeripheralAddonPtr;
   typedef std::vector<PeripheralAddonPtr>   PeripheralAddonVector;
 
-  typedef std::shared_ptr<ADDON::JoystickFeature>    JoystickFeaturePtr;
-  typedef std::map<unsigned int, JoystickFeaturePtr> JoystickFeatureMap; // feature index -> feature
+  typedef std::shared_ptr<ADDON::JoystickFeature> JoystickFeaturePtr;
+  typedef std::vector<JoystickFeaturePtr>         JoystickFeatureVector;
 
   class CPeripheralAddon : public ADDON::CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>
   {
@@ -81,11 +82,12 @@ namespace PERIPHERALS
 
     /** @name Joystick methods */
     //@{
-    bool GetJoystickFeatures(CPeripheral* device, const std::string& strDeviceId, JoystickFeatureMap& features);
-    int  GetRequestedPort(unsigned int index);
+    bool SetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick);
+    bool GetButtonMap(const CPeripheral* device, const std::string& strDeviceId, JoystickFeatureVector& features);
+    bool MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId, const JoystickFeaturePtr& feature);
     //@}
 
-    static const char          *ToString(PERIPHERAL_ERROR error);
+    static const char* ToString(PERIPHERAL_ERROR error);
 
   protected:
     /*!
@@ -95,9 +97,8 @@ namespace PERIPHERALS
     virtual bool CheckAPIVersion(void);
 
   private:
-    static JoystickFeatureID    ToJoystickID(JOYSTICK_FEATURE_ID id);
-    static JOYSTICK_FEATURE_ID ToFeatureID(JoystickFeatureID id);
-    static HatDirection        ToHatDirection(JOYSTICK_STATE_HAT state);
+    static void         GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
+    static HatDirection ToHatDirection(JOYSTICK_STATE_HAT state);
 
     /*!
      * @brief Resets all class members to their defaults. Called by the constructors

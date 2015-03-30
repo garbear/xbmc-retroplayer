@@ -79,7 +79,7 @@ extern "C"
    *
    * Must be called if PerformDeviceScan() returns PERIPHERAL_NO_ERROR.
    *
-   * @param peripheral_count  The number of peripherals pointed to by scan_results
+   * @param peripheral_count  The number of events allocated for the events array
    * @param scan_results      The array of allocated peripherals
    */
   void FreeScanResults(unsigned int peripheral_count, PERIPHERAL_INFO* scan_results);
@@ -96,7 +96,7 @@ extern "C"
    *
    * Must be called if GetEvents() returns PERIPHERAL_NO_ERROR.
    *
-   * @param event_count  The number of events pointed to by events
+   * @param event_count  The number of events allocated for the events array
    * @param events       The array of allocated events
    */
   void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events);
@@ -114,8 +114,8 @@ extern "C"
    * @brief Get extended info about an attached joystick
    * @param index  The joystick's driver index
    * @param info   The container for the allocated joystick info
-   * @return PERIPHERAL_NO_ERROR if successful; structs must be freed using
-   * FreeJoystickInfo() in this case
+   * @return PERIPHERAL_NO_ERROR if successful; array must be freed using
+   *         FreeJoystickInfo() in this case
    */
   PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info);
 
@@ -125,12 +125,36 @@ extern "C"
   void FreeJoystickInfo(JOYSTICK_INFO* info);
 
   /*!
+   * @brief Get the features that allow translation from the joystick to the given device
+   * @param joystick      The joystick's properties; unknown values may be left at their default
+   * @param device        The device profile being requested
+   * @param feature_count The number of features allocated for the features array
+   * @param features      The array of allocated features
+   * @return PERIPHERAL_NO_ERROR if successful; array must be freed using
+   *         FreeButtonMap() in this case
+   */
+  PERIPHERAL_ERROR GetButtonMap(const JOYSTICK_INFO* joystick, const char* device,
+                                unsigned int* feature_count, JOYSTICK_FEATURE** features);
+
+  /*!
+   * @brief Free the memory allocated in GetButtonMap()
+   *
+   * Must be called if GetButtonMap() returns PERIPHERAL_NO_ERROR.
+   *
+   * @param feature_count  The number of features allocated for the features array
+   * @param features       The array of allocated features
+   */
+  void FreeButtonMap(unsigned int feature_count, JOYSTICK_FEATURE* features);
+
+  /*!
    * @brief Update joystick feature
-   * @param index    The joystick's driver index
-   * @param feature  The updated properties of the feature
+   * @param joystick    The joystick's properties; unknown values may be left at their default
+   * @param device      The device profile being updated
+   * @param feature     The feature's new driver value
    * @return PERIPHERAL_NO_ERROR if successful
    */
-  PERIPHERAL_ERROR UpdateJoystickFeature(unsigned int index, JOYSTICK_FEATURE* feature);
+  PERIPHERAL_ERROR MapJoystickFeature(const JOYSTICK_INFO* joystick, const char* device,
+                                      JOYSTICK_FEATURE* feature);
 #endif
   ///}
 
@@ -146,13 +170,15 @@ extern "C"
     pClient->GetAddonCapabilities           = GetAddonCapabilities;
     pClient->PerformDeviceScan              = PerformDeviceScan;
     pClient->FreeScanResults                = FreeScanResults;
+    pClient->GetEvents                      = GetEvents;
+    pClient->FreeEvents                     = FreeEvents;
 
 #ifdef PERIPHERAL_ADDON_JOYSTICKS
     pClient->GetJoystickInfo                = GetJoystickInfo;
     pClient->FreeJoystickInfo               = FreeJoystickInfo;
-    pClient->GetEvents                      = GetEvents;
-    pClient->FreeEvents                     = FreeEvents;
-    pClient->UpdateJoystickFeature          = UpdateJoystickFeature;
+    pClient->GetButtonMap                   = GetButtonMap;
+    pClient->FreeButtonMap                  = FreeButtonMap;
+    pClient->MapJoystickFeature          = MapJoystickFeature;
 #endif
   };
 

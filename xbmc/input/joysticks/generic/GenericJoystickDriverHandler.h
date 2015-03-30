@@ -20,8 +20,8 @@
 #pragma once
 
 #include "input/joysticks/IJoystickDriverHandler.h"
+#include "input/joysticks/JoystickTypes.h"
 
-#include <set>
 #include <vector>
 
 class IJoystickInputHandler;

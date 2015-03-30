@@ -36,6 +36,8 @@
 
 using namespace PERIPHERALS;
 
+#define JOYSTICK_KEYBOARD_PROVIDER  "keyboard"
+
 #ifndef SAFE_DELETE
   #define SAFE_DELETE(p)  do { delete (p); (p) = NULL; } while (0)
 #endif
@@ -448,27 +450,25 @@ bool CPeripheralAddon::ProcessEvents(void)
   return false;
 }
 
-bool CPeripheralAddon::GetJoystickFeatures(CPeripheral* device, const std::string& strDeviceId, JoystickFeatureMap& features)
+bool CPeripheralAddon::SetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick)
 {
+  if (!HasFeature(FEATURE_JOYSTICK))
+    return false;
+
   PERIPHERAL_ERROR retVal;
 
   JOYSTICK_INFO joystickStruct;
 
-  /* TODO
   try { LogError(retVal = m_pStruct->GetJoystickInfo(index, &joystickStruct), "GetJoystickInfo()"); }
   catch (std::exception &e) { LogException(e, "GetJoystickInfo()"); return false;  }
-  */
-  retVal = PERIPHERAL_ERROR_FAILED;
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {
-    ADDON::Joystick joystick(joystickStruct);
-
-    for (std::vector<ADDON::JoystickFeature*>::const_iterator it = joystick.Features().begin(); it != joystick.Features().end(); ++it)
-    {
-      if (*it && ToJoystickID((*it)->ID()) && (*it)->Type())
-        features[ToJoystickID((*it)->ID())] = JoystickFeaturePtr((*it)->Clone());
-    }
+    joystick.SetProvider(joystickStruct.provider);
+    joystick.SetRequestedPort(joystickStruct.requested_port);
+    joystick.SetButtonCount(joystickStruct.button_count);
+    joystick.SetHatCount(joystickStruct.hat_count);
+    joystick.SetAxisCount(joystickStruct.axis_count);
 
     try { m_pStruct->FreeJoystickInfo(&joystickStruct); }
     catch (std::exception &e) { LogException(e, "FreeJoystickInfo()"); }
@@ -479,29 +479,86 @@ bool CPeripheralAddon::GetJoystickFeatures(CPeripheral* device, const std::strin
   return false;
 }
 
-int CPeripheralAddon::GetRequestedPort(unsigned int index)
+bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string& strDeviceId,
+                                    JoystickFeatureVector& features)
 {
-  int requestedPort = JOYSTICK_PORT_UNKNOWN;
+  if (!HasFeature(FEATURE_JOYSTICK))
+    return false;
 
   PERIPHERAL_ERROR retVal;
 
-  JOYSTICK_INFO joystickStruct;
+  ADDON::Joystick joystickInfo;
+  GetJoystickInfo(device, joystickInfo);
 
-  try { LogError(retVal = m_pStruct->GetJoystickInfo(index, &joystickStruct), "GetJoystickInfo()"); }
-  catch (std::exception &e) { LogException(e, "GetJoystickInfo()"); return false;  }
+  JOYSTICK_INFO joystickStruct;
+  joystickInfo.ToStruct(joystickStruct);
+
+  unsigned int      featureCount = 0;
+  JOYSTICK_FEATURE* pFeatures = NULL;
+
+  try { LogError(retVal = m_pStruct->GetButtonMap(&joystickStruct, strDeviceId.c_str(),
+                                                  &featureCount, &pFeatures), "GetButtonMap()"); }
+  catch (std::exception &e) { LogException(e, "GetButtonMap()"); return false;  }
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {
-    requestedPort = joystickStruct.requested_port;
+    for (unsigned int i = 0; i < featureCount; i++)
+    {
+      JoystickFeaturePtr feature(ADDON::JoystickFeatureFactory::Create(pFeatures[i]));
+      if (feature)
+        features.push_back(feature);
+    }
 
-    try { m_pStruct->FreeJoystickInfo(&joystickStruct); }
-    catch (std::exception &e) { LogException(e, "FreeJoystickInfo()"); }
+    try { m_pStruct->FreeButtonMap(featureCount, pFeatures); }
+    catch (std::exception &e) { LogException(e, "FreeButtonMap()"); }
+
+    return true;
   }
 
-  return requestedPort;
+  return false;
 }
 
-const char *CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
+bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId,
+                                          const JoystickFeaturePtr& feature)
+{
+  if (!HasFeature(FEATURE_JOYSTICK))
+    return false;
+
+  PERIPHERAL_ERROR retVal;
+
+  ADDON::Joystick joystickInfo;
+  GetJoystickInfo(device, joystickInfo);
+
+  JOYSTICK_INFO joystickStruct;
+  joystickInfo.ToStruct(joystickStruct);
+
+  JOYSTICK_FEATURE featureStruct;
+  feature->ToStruct(featureStruct);
+
+  try { LogError(retVal = m_pStruct->MapJoystickFeature(&joystickStruct, strDeviceId.c_str(),
+                                                        &featureStruct), "MapJoystickFeature()"); }
+  catch (std::exception &e) { LogException(e, "MapJoystickFeature()"); return false;  }
+
+  return retVal == PERIPHERAL_NO_ERROR;
+}
+
+void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo)
+{
+  if (device->Type() == PERIPHERAL_JOYSTICK)
+  {
+    const CPeripheralJoystick* joystick = static_cast<const CPeripheralJoystick*>(device);
+    joystickInfo.SetProvider(joystick->Provider());
+    joystickInfo.SetButtonCount(joystick->ButtonCount());
+    joystickInfo.SetHatCount(joystick->HatCount());
+    joystickInfo.SetAxisCount(joystick->AxisCount());
+  }
+  else if (device->Type() == PERIPHERAL_KEYBOARD)
+  {
+    joystickInfo.SetProvider(JOYSTICK_KEYBOARD_PROVIDER);
+  }
+}
+
+const char* CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
 {
   switch (error)
   {
@@ -521,68 +578,6 @@ const char *CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
   default:
     return "unknown error";
   }
-}
-
-JoystickFeatureID CPeripheralAddon::ToJoystickID(JOYSTICK_FEATURE_ID id)
-{
-  switch (id)
-  {
-  case JOYSTICK_FEATURE_BUTTON_A:        return JoystickIDButtonA;
-  case JOYSTICK_FEATURE_BUTTON_B:        return JoystickIDButtonB;
-  case JOYSTICK_FEATURE_BUTTON_X:        return JoystickIDButtonX;
-  case JOYSTICK_FEATURE_BUTTON_Y:        return JoystickIDButtonY;
-  case JOYSTICK_FEATURE_BUTTON_START:    return JoystickIDButtonStart;
-  case JOYSTICK_FEATURE_BUTTON_SELECT:   return JoystickIDButtonBack;
-  case JOYSTICK_FEATURE_BUTTON_HOME:     return JoystickIDButtonGuide;
-  case JOYSTICK_FEATURE_BUTTON_UP:       return JoystickIDButtonUp;
-  case JOYSTICK_FEATURE_BUTTON_DOWN:     return JoystickIDButtonDown;
-  case JOYSTICK_FEATURE_BUTTON_LEFT:     return JoystickIDButtonLeft;
-  case JOYSTICK_FEATURE_BUTTON_RIGHT:    return JoystickIDButtonRight;
-  case JOYSTICK_FEATURE_BUTTON_L:        return JoystickIDButtonLeftBumper;
-  case JOYSTICK_FEATURE_BUTTON_R:        return JoystickIDButtonRightBumper;
-  case JOYSTICK_FEATURE_BUTTON_L_STICK:  return JoystickIDButtonLeftStick;
-  case JOYSTICK_FEATURE_BUTTON_R_STICK:  return JoystickIDButtonRightStick;
-  case JOYSTICK_FEATURE_TRIGGER_L:       return JoystickIDTriggerLeft;
-  case JOYSTICK_FEATURE_TRIGGER_R:       return JoystickIDTriggerRight;
-  case JOYSTICK_FEATURE_ANALOG_STICK_L:  return JoystickIDAnalogStickLeft;
-  case JOYSTICK_FEATURE_ANALOG_STICK_R:  return JoystickIDAnalogStickRight;
-  case JOYSTICK_FEATURE_ACCELEROMETER:   return JoystickIDAccelerometer;
-  case JOYSTICK_FEATURE_UNKNOWN:
-  default:
-      break;
-  }
-  return JoystickIDButtonUnknown;
-}
-
-JOYSTICK_FEATURE_ID CPeripheralAddon::ToFeatureID(JoystickFeatureID id)
-{
-  switch (id)
-  {
-  case JoystickIDButtonA:           return JOYSTICK_FEATURE_BUTTON_A;
-  case JoystickIDButtonB:           return JOYSTICK_FEATURE_BUTTON_B;
-  case JoystickIDButtonX:           return JOYSTICK_FEATURE_BUTTON_X;
-  case JoystickIDButtonY:           return JOYSTICK_FEATURE_BUTTON_Y;
-  case JoystickIDButtonStart:       return JOYSTICK_FEATURE_BUTTON_START;
-  case JoystickIDButtonBack:        return JOYSTICK_FEATURE_BUTTON_SELECT;
-  case JoystickIDButtonGuide:       return JOYSTICK_FEATURE_BUTTON_HOME;
-  case JoystickIDButtonUp:          return JOYSTICK_FEATURE_BUTTON_UP;
-  case JoystickIDButtonDown:        return JOYSTICK_FEATURE_BUTTON_DOWN;
-  case JoystickIDButtonLeft:        return JOYSTICK_FEATURE_BUTTON_LEFT;
-  case JoystickIDButtonRight:       return JOYSTICK_FEATURE_BUTTON_RIGHT;
-  case JoystickIDButtonLeftBumper:  return JOYSTICK_FEATURE_BUTTON_L;
-  case JoystickIDButtonRightBumper: return JOYSTICK_FEATURE_BUTTON_R;
-  case JoystickIDButtonLeftStick:   return JOYSTICK_FEATURE_BUTTON_L_STICK;
-  case JoystickIDButtonRightStick:  return JOYSTICK_FEATURE_BUTTON_R_STICK;
-  case JoystickIDTriggerLeft:       return JOYSTICK_FEATURE_TRIGGER_L;
-  case JoystickIDTriggerRight:      return JOYSTICK_FEATURE_TRIGGER_R;
-  case JoystickIDAnalogStickLeft:   return JOYSTICK_FEATURE_ANALOG_STICK_L;
-  case JoystickIDAnalogStickRight:  return JOYSTICK_FEATURE_ANALOG_STICK_R;
-  case JoystickIDAccelerometer:     return JOYSTICK_FEATURE_ACCELEROMETER;
-  case JoystickIDButtonUnknown:
-  default:
-      break;
-  }
-  return JOYSTICK_FEATURE_UNKNOWN;
 }
 
 HatDirection CPeripheralAddon::ToHatDirection(JOYSTICK_STATE_HAT state)

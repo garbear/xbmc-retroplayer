@@ -151,6 +151,164 @@ namespace ADDON
   typedef PeripheralVector<Peripheral, PERIPHERAL_INFO> Peripherals;
 
   /*!
+   * ADDON::PeripheralEvent
+   *
+   * Wrapper class for peripheral events.
+   */
+  class PeripheralEvent
+  {
+  public:
+    PeripheralEvent(void)
+    : m_event()
+    {
+    }
+
+    PeripheralEvent(unsigned int peripheralIndex, unsigned int buttonIndex, JOYSTICK_STATE_BUTTON state)
+    : m_event()
+    {
+      SetType(PERIPHERAL_EVENT_TYPE_DRIVER_BUTTON);
+      SetPeripheralIndex(peripheralIndex);
+      SetDriverIndex(buttonIndex);
+      SetButtonState(state);
+    }
+
+    PeripheralEvent(unsigned int peripheralIndex, unsigned int hatIndex, JOYSTICK_STATE_HAT state)
+    : m_event()
+    {
+      SetType(PERIPHERAL_EVENT_TYPE_DRIVER_HAT);
+      SetPeripheralIndex(peripheralIndex);
+      SetDriverIndex(hatIndex);
+      SetHatState(state);
+    }
+
+    PeripheralEvent(unsigned int peripheralIndex, unsigned int axisIndex, JOYSTICK_STATE_AXIS state)
+    : m_event()
+    {
+      SetType(PERIPHERAL_EVENT_TYPE_DRIVER_AXIS);
+      SetPeripheralIndex(peripheralIndex);
+      SetDriverIndex(axisIndex);
+      SetAxisState(state);
+    }
+
+    PeripheralEvent(const PERIPHERAL_EVENT& event)
+    : m_event(event)
+    {
+    }
+
+    PERIPHERAL_EVENT_TYPE Type(void) const            { return m_event.type; }
+    unsigned int          PeripheralIndex(void) const { return m_event.peripheral_index; }
+    unsigned int          DriverIndex(void) const     { return m_event.driver_index; }
+    JOYSTICK_STATE_BUTTON ButtonState(void) const     { return m_event.driver_button_state; }
+    JOYSTICK_STATE_HAT    HatState(void) const        { return m_event.driver_hat_state; }
+    JOYSTICK_STATE_AXIS   AxisState(void) const       { return m_event.driver_axis_state; }
+
+    void SetType(PERIPHERAL_EVENT_TYPE type)         { m_event.type                = type; }
+    void SetPeripheralIndex(unsigned int index)      { m_event.peripheral_index    = index; }
+    void SetDriverIndex(unsigned int index)          { m_event.driver_index        = index; }
+    void SetButtonState(JOYSTICK_STATE_BUTTON state) { m_event.driver_button_state = state; }
+    void SetHatState(JOYSTICK_STATE_HAT state)       { m_event.driver_hat_state    = state; }
+    void SetAxisState(JOYSTICK_STATE_AXIS state)     { m_event.driver_axis_state   = state; }
+
+    void ToStruct(PERIPHERAL_EVENT& event) const
+    {
+      event = m_event;
+    }
+
+    static void FreeStruct(PERIPHERAL_EVENT& event)
+    {
+      (void)event;
+    }
+
+  private:
+    PERIPHERAL_EVENT m_event;
+  };
+
+  typedef PeripheralVector<PeripheralEvent, PERIPHERAL_EVENT> PeripheralEvents;
+
+  /*!
+   * ADDON::Joystick
+   *
+   * Wrapper class providing additional joystick information not provided by
+   * ADDON::Peripheral.
+   */
+  class Joystick
+  {
+  public:
+    Joystick(const std::string& provider = "", const std::string& strName = "")
+    : m_provider(provider),
+    m_requestedPort(NO_PORT_REQUESTED),
+    m_buttonCount(0),
+    m_hatCount(0),
+    m_axisCount(0)
+    {
+    }
+
+    Joystick(const Joystick& other)
+    {
+      *this = other;
+    }
+
+    Joystick(JOYSTICK_INFO& info)
+    : m_provider(info.provider ? info.provider : ""),
+    m_requestedPort(info.requested_port),
+    m_buttonCount(info.button_count),
+    m_hatCount(info.hat_count),
+    m_axisCount(info.axis_count)
+    {
+    }
+
+    Joystick& operator=(const Joystick& rhs)
+    {
+      if (this != &rhs)
+      {
+        m_provider      = rhs.m_provider;
+        m_requestedPort = rhs.m_requestedPort;
+        m_buttonCount   = rhs.m_buttonCount;
+        m_hatCount      = rhs.m_hatCount;
+        m_axisCount     = rhs.m_axisCount;
+      }
+      return *this;
+    }
+
+    const std::string& Provider(void) const      { return m_provider; }
+    int                RequestedPort(void) const { return m_requestedPort; }
+    unsigned int       ButtonCount(void) const   { return m_buttonCount; }
+    unsigned int       HatCount(void) const      { return m_hatCount; }
+    unsigned int       AxisCount(void) const     { return m_axisCount; }
+
+    void SetProvider(const std::string& provider)     { m_provider      = provider; }
+    void SetRequestedPort(int requestedPort)          { m_requestedPort = requestedPort; }
+    void SetButtonCount(unsigned int buttonCount)     { m_buttonCount   = buttonCount; }
+    void SetHatCount(unsigned int hatCount)           { m_hatCount      = hatCount; }
+    void SetAxisCount(unsigned int axisCount)         { m_axisCount     = axisCount; }
+
+    void ToStruct(JOYSTICK_INFO& info) const
+    {
+      info.provider       = new char[m_provider.size() + 1];
+      info.requested_port = m_requestedPort;
+      info.button_count   = m_buttonCount;
+      info.hat_count      = m_hatCount;
+      info.axis_count     = m_axisCount;
+
+      std::strcpy(info.provider, m_provider.c_str());
+    }
+
+    static void FreeStruct(JOYSTICK_INFO& info)
+    {
+      PERIPHERAL_SAFE_DELETE_ARRAY(info.provider);
+    }
+
+  private:
+    std::string                   m_provider;
+    int                           m_requestedPort;
+    unsigned int                  m_buttonCount;
+    unsigned int                  m_hatCount;
+    unsigned int                  m_axisCount;
+  };
+
+  typedef PeripheralVector<Joystick, JOYSTICK_INFO> Joysticks;
+
+  /*!
    * ADDON::JoystickFeature
    *
    * Base class for joystick features. In kodi_peripheral_types.h, the various
@@ -161,11 +319,11 @@ namespace ADDON
   {
   public:
     JoystickFeature(void)
-    : m_id()
+    : m_id(0)
     {
     }
 
-    JoystickFeature(JOYSTICK_FEATURE_ID id)
+    JoystickFeature(unsigned int id)
     : m_id(id)
     {
     }
@@ -180,9 +338,9 @@ namespace ADDON
     virtual JoystickFeature* Clone(void) const { return new JoystickFeature(*this); }
 
     virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_UNKNOWN; }
-    JOYSTICK_FEATURE_ID          ID(void) const   { return m_id; }
+    unsigned int                 ID(void) const   { return m_id; }
 
-    void SetID(JOYSTICK_FEATURE_ID id) { m_id = id; }
+    void SetID(unsigned int id) { m_id = id; }
 
     virtual void ToStruct(JOYSTICK_FEATURE& feature) const
     {
@@ -192,10 +350,11 @@ namespace ADDON
 
     static void FreeStruct(JOYSTICK_FEATURE& feature)
     {
+      (void)feature;
     }
 
   private:
-    JOYSTICK_FEATURE_ID m_id;
+    unsigned int m_id;
   };
 
   typedef PeripheralVector<JoystickFeature, JOYSTICK_FEATURE> JoystickFeatures;
@@ -213,7 +372,7 @@ namespace ADDON
     {
     }
 
-    DriverButton(JOYSTICK_FEATURE_ID id, int index) :
+    DriverButton(unsigned int id, int index) :
       JoystickFeature(id),
       m_index(index)
     {
@@ -258,7 +417,7 @@ namespace ADDON
     {
     }
 
-    DriverHat(JOYSTICK_FEATURE_ID id, int index, JOYSTICK_DRIVER_HAT_DIRECTION direction) :
+    DriverHat(unsigned int id, int index, JOYSTICK_DRIVER_HAT_DIRECTION direction) :
       JoystickFeature(id),
       m_index(index),
       m_direction(direction)
@@ -309,7 +468,7 @@ namespace ADDON
     {
     }
 
-    DriverSemiAxis(JOYSTICK_FEATURE_ID id, int index, JOYSTICK_DRIVER_SEMIAXIS_DIRECTION direction) :
+    DriverSemiAxis(unsigned int id, int index, JOYSTICK_DRIVER_SEMIAXIS_DIRECTION direction) :
       JoystickFeature(id),
       m_index(index),
       m_direction(direction)
@@ -362,7 +521,7 @@ namespace ADDON
     {
     }
 
-    DriverAnalogStick(JOYSTICK_FEATURE_ID id, int xIndex, bool xInverted, int yIndex, bool yInverted) :
+    DriverAnalogStick(unsigned int id, int xIndex, bool xInverted, int yIndex, bool yInverted) :
       JoystickFeature(id),
       m_xIndex(xIndex),
       m_xInverted(xInverted),
@@ -430,7 +589,7 @@ namespace ADDON
     {
     }
 
-    DriverAccelerometer(JOYSTICK_FEATURE_ID id, int xIndex, bool xInverted, int yIndex, bool yInverted, int zIndex, bool zInverted) :
+    DriverAccelerometer(unsigned int id, int xIndex, bool xInverted, int yIndex, bool yInverted, int zIndex, bool zInverted) :
       JoystickFeature(id),
       m_xIndex(xIndex),
       m_xInverted(xInverted),
@@ -524,192 +683,4 @@ namespace ADDON
       return NULL;
     }
   };
-
-  /*!
-   * ADDON::Joystick
-   *
-   * Wrapper class providing additional joystick information not provided by
-   * ADDON::Peripheral. Classes can extend Joystick to inherit peripheral and
-   * joystick properties.
-   */
-  class Joystick : public Peripheral
-  {
-  public:
-    Joystick(const std::string& provider = "", const std::string& strName = "")
-    : Peripheral(PERIPHERAL_TYPE_JOYSTICK, strName),
-      m_provider(provider),
-      m_requestedPort(NO_PORT_REQUESTED),
-      m_buttonCount(0),
-      m_hatCount(0),
-      m_axisCount(0)
-    {
-    }
-
-    Joystick(const Joystick& other)
-    : Peripheral(other)
-    {
-      *this = other;
-    }
-
-    Joystick(JOYSTICK_INFO& info)
-    : Peripheral(info.peripheral_info),
-      m_provider(info.provider ? info.provider : ""),
-      m_requestedPort(info.requested_port),
-      m_buttonCount(info.driver.button_count),
-      m_hatCount(info.driver.hat_count),
-      m_axisCount(info.driver.axis_count)
-    {
-      if (info.features)
-      {
-        m_features.reserve(info.feature_count);
-        for (unsigned int i = 0; i < info.feature_count; i++)
-          m_features.push_back(JoystickFeatureFactory::Create(info.features[i]));
-      }
-    }
-
-    virtual ~Joystick(void)
-    {
-      for (std::vector<JoystickFeature*>::iterator it = m_features.begin(); it != m_features.end(); ++it)
-        delete *it;
-    }
-
-    Joystick& operator=(const Joystick& rhs)
-    {
-      if (this != &rhs)
-      {
-        Peripheral::operator=(rhs);
-        m_provider      = rhs.m_provider;
-        m_requestedPort = rhs.m_requestedPort;
-        m_buttonCount   = rhs.m_buttonCount;
-        m_hatCount      = rhs.m_hatCount;
-        m_axisCount     = rhs.m_axisCount;
-
-        m_features.reserve(rhs.m_features.size());
-        for (std::vector<JoystickFeature*>::const_iterator it = rhs.m_features.begin(); it != rhs.m_features.end(); ++it)
-          m_features.push_back((*it)->Clone());
-      }
-      return *this;
-    }
-
-    const std::string& Provider(void) const      { return m_provider; }
-    int                RequestedPort(void) const { return m_requestedPort; }
-    unsigned int       ButtonCount(void) const   { return m_buttonCount; }
-    unsigned int       HatCount(void) const      { return m_hatCount; }
-    unsigned int       AxisCount(void) const     { return m_axisCount; }
-    const std::vector<JoystickFeature*>& Features(void) const { return m_features; }
-
-    void SetProvider(const std::string& provider)     { m_provider      = provider; }
-    void SetRequestedPort(int requestedPort)          { m_requestedPort = requestedPort; }
-    void SetButtonCount(unsigned int buttonCount)     { m_buttonCount   = buttonCount; }
-    void SetHatCount(unsigned int hatCount)           { m_hatCount      = hatCount; }
-    void SetAxisCount(unsigned int axisCount)         { m_axisCount     = axisCount; }
-    std::vector<JoystickFeature*>& Features(void)     { return m_features; }
-
-    void ToStruct(JOYSTICK_INFO& info) const
-    {
-      Peripheral::ToStruct(info.peripheral_info);
-
-      info.provider            = new char[m_provider.size() + 1];
-      info.requested_port      = m_requestedPort;
-      info.driver.button_count = m_buttonCount;
-      info.driver.hat_count    = m_hatCount;
-      info.driver.axis_count   = m_axisCount;
-      info.feature_count       = m_features.size();
-      JoystickFeatures::ToStructs(m_features, &info.features);
-
-      std::strcpy(info.provider, m_provider.c_str());
-    }
-
-    static void FreeStruct(JOYSTICK_INFO& info)
-    {
-      Peripheral::FreeStruct(info.peripheral_info);
-      JoystickFeatures::FreeStructs(info.feature_count, info.features);
-      info.features = NULL;
-    }
-
-  private:
-    std::string                   m_provider;
-    int                           m_requestedPort;
-    unsigned int                  m_buttonCount;
-    unsigned int                  m_hatCount;
-    unsigned int                  m_axisCount;
-    std::vector<JoystickFeature*> m_features;
-  };
-
-  typedef PeripheralVector<Joystick, JOYSTICK_INFO> Joysticks;
-
-  /*!
-   * ADDON::PeripheralEvent
-   *
-   * Wrapper class for peripheral events.
-   */
-  class PeripheralEvent
-  {
-  public:
-    PeripheralEvent(void)
-    : m_event()
-    {
-    }
-
-    PeripheralEvent(unsigned int peripheralIndex, unsigned int buttonIndex, JOYSTICK_STATE_BUTTON state)
-    : m_event()
-    {
-      SetType(PERIPHERAL_EVENT_TYPE_DRIVER_BUTTON);
-      SetPeripheralIndex(peripheralIndex);
-      SetDriverIndex(buttonIndex);
-      SetButtonState(state);
-    }
-
-    PeripheralEvent(unsigned int peripheralIndex, unsigned int hatIndex, JOYSTICK_STATE_HAT state)
-    : m_event()
-    {
-      SetType(PERIPHERAL_EVENT_TYPE_DRIVER_HAT);
-      SetPeripheralIndex(peripheralIndex);
-      SetDriverIndex(hatIndex);
-      SetHatState(state);
-    }
-
-    PeripheralEvent(unsigned int peripheralIndex, unsigned int axisIndex, JOYSTICK_STATE_AXIS state)
-    : m_event()
-    {
-      SetType(PERIPHERAL_EVENT_TYPE_DRIVER_AXIS);
-      SetPeripheralIndex(peripheralIndex);
-      SetDriverIndex(axisIndex);
-      SetAxisState(state);
-    }
-
-    PeripheralEvent(const PERIPHERAL_EVENT& event)
-    : m_event(event)
-    {
-    }
-
-    PERIPHERAL_EVENT_TYPE Type(void) const            { return m_event.type; }
-    unsigned int          PeripheralIndex(void) const { return m_event.peripheral_index; }
-    unsigned int          DriverIndex(void) const     { return m_event.driver_index; }
-    JOYSTICK_STATE_BUTTON ButtonState(void) const     { return m_event.driver_button_state; }
-    JOYSTICK_STATE_HAT    HatState(void) const        { return m_event.driver_hat_state; }
-    JOYSTICK_STATE_AXIS   AxisState(void) const       { return m_event.driver_axis_state; }
-
-    void SetType(PERIPHERAL_EVENT_TYPE type)         { m_event.type                = type; }
-    void SetPeripheralIndex(unsigned int index)      { m_event.peripheral_index    = index; }
-    void SetDriverIndex(unsigned int index)          { m_event.driver_index        = index; }
-    void SetButtonState(JOYSTICK_STATE_BUTTON state) { m_event.driver_button_state = state; }
-    void SetHatState(JOYSTICK_STATE_HAT state)       { m_event.driver_hat_state    = state; }
-    void SetAxisState(JOYSTICK_STATE_AXIS state)     { m_event.driver_axis_state   = state; }
-
-    void ToStruct(PERIPHERAL_EVENT& event) const
-    {
-      event = m_event;
-    }
-
-    static void FreeStruct(PERIPHERAL_EVENT& event)
-    {
-      (void)event;
-    }
-
-  private:
-    PERIPHERAL_EVENT m_event;
-  };
-
-  typedef PeripheralVector<PeripheralEvent, PERIPHERAL_EVENT> PeripheralEvents;
 }

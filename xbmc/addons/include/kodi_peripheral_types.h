@@ -116,34 +116,61 @@ extern "C"
   } ATTRIBUTE_PACKED PERIPHERAL_CAPABILITIES;
   ///}
 
+  /// @name Event types
+  ///{
+  typedef enum PERIPHERAL_EVENT_TYPE
+  {
+    PERIPHERAL_EVENT_TYPE_NONE = 0,       /*!< @brief unknown event */
+    PERIPHERAL_EVENT_TYPE_DRIVER_BUTTON,  /*!< @brief state changed for joystick driver button */
+    PERIPHERAL_EVENT_TYPE_DRIVER_HAT,     /*!< @brief state changed for joystick driver hat */
+    PERIPHERAL_EVENT_TYPE_DRIVER_AXIS,    /*!< @brief state changed for joystick driver axis */
+  } PERIPHERAL_EVENT_TYPE;
+
+  typedef enum JOYSTICK_STATE_BUTTON
+  {
+    JOYSTICK_STATE_BUTTON_UNPRESSED = 0x0,    /*!< @brief button is released */
+    JOYSTICK_STATE_BUTTON_PRESSED   = 0x1,    /*!< @brief button is pressed */
+  } JOYSTICK_STATE_BUTTON;
+
+  typedef enum JOYSTICK_STATE_HAT
+  {
+    JOYSTICK_STATE_HAT_UNPRESSED  = 0x0,    /*!< @brief no directions are pressed */
+    JOYSTICK_STATE_HAT_LEFT       = 0x1,    /*!< @brief only left is pressed */
+    JOYSTICK_STATE_HAT_RIGHT      = 0x2,    /*!< @brief only right is pressed */
+    JOYSTICK_STATE_HAT_UP         = 0x4,    /*!< @brief only up is pressed */
+    JOYSTICK_STATE_HAT_DOWN       = 0x8,    /*!< @brief only down is pressed */
+    JOYSTICK_STATE_HAT_LEFT_UP    = JOYSTICK_STATE_HAT_LEFT  | JOYSTICK_STATE_HAT_UP,
+    JOYSTICK_STATE_HAT_LEFT_DOWN  = JOYSTICK_STATE_HAT_LEFT  | JOYSTICK_STATE_HAT_DOWN,
+    JOYSTICK_STATE_HAT_RIGHT_UP   = JOYSTICK_STATE_HAT_RIGHT | JOYSTICK_STATE_HAT_UP,
+    JOYSTICK_STATE_HAT_RIGHT_DOWN = JOYSTICK_STATE_HAT_RIGHT | JOYSTICK_STATE_HAT_DOWN,
+  } JOYSTICK_STATE_HAT;
+
+  /*!
+   * @brief value in the closed interval [-1, 1]
+   */
+  typedef float JOYSTICK_STATE_AXIS;
+
+  typedef struct PERIPHERAL_EVENT
+  {
+    unsigned int             peripheral_index;
+    PERIPHERAL_EVENT_TYPE    type;
+    unsigned int             driver_index;
+    JOYSTICK_STATE_BUTTON    driver_button_state;
+    JOYSTICK_STATE_HAT       driver_hat_state;
+    JOYSTICK_STATE_AXIS      driver_axis_state;
+  } ATTRIBUTE_PACKED PERIPHERAL_EVENT;
+  ///}
+
   /// @name Joystick types
   ///{
-  typedef enum JOYSTICK_FEATURE_ID
+  typedef struct JOYSTICK_INFO
   {
-    JOYSTICK_FEATURE_UNKNOWN = 0,             /*!< @brief no data exists to associate button with ID */
-    JOYSTICK_FEATURE_BUTTON_A,                /*!< @brief corresponds to A (generic) or Cross (Sony) */
-    JOYSTICK_FEATURE_BUTTON_B,                /*!< @brief corresponds to B (generic) or Circle (Sony) */
-    JOYSTICK_FEATURE_BUTTON_X,                /*!< @brief corresponds to C or X (generic), Square (Sony), C-down (N64) or One (Wii)*/
-    JOYSTICK_FEATURE_BUTTON_Y,                /*!< @brief corresponds to Y (generic), Triangle (Sony), C-left (N64) or Two (Wii) */
-    JOYSTICK_FEATURE_BUTTON_C,                /*!< @brief corresponds to Black (Xbox) or C-right (N64) */
-    JOYSTICK_FEATURE_BUTTON_Z,                /*!< @brief corresponds to White (Xbox) or C-up (N64) */
-    JOYSTICK_FEATURE_BUTTON_START,            /*!< @brief corresponds to Start (generic) */
-    JOYSTICK_FEATURE_BUTTON_SELECT,           /*!< @brief corresponds to Select (generic) or Back (Xbox) */
-    JOYSTICK_FEATURE_BUTTON_HOME,             /*!< @brief corresponds to Guide (Xbox) or Analog (Sony) */
-    JOYSTICK_FEATURE_BUTTON_UP,               /*!< @brief corresponds to Up on the directional pad */
-    JOYSTICK_FEATURE_BUTTON_DOWN,             /*!< @brief corresponds to Down on the directional pad */
-    JOYSTICK_FEATURE_BUTTON_LEFT,             /*!< @brief corresponds to Left on the directional pad */
-    JOYSTICK_FEATURE_BUTTON_RIGHT,            /*!< @brief corresponds to Right on the directional pad */
-    JOYSTICK_FEATURE_BUTTON_L,                /*!< @brief corresponds to Left shoulder button (generic) */
-    JOYSTICK_FEATURE_BUTTON_R,                /*!< @brief corresponds to Right shoulder button (generic) */
-    JOYSTICK_FEATURE_BUTTON_L_STICK,          /*!< @brief corresponds to Left stick (Xbox, Sony) */
-    JOYSTICK_FEATURE_BUTTON_R_STICK,          /*!< @brief corresponds to Right stick (Xbox, Sony) */
-    JOYSTICK_FEATURE_TRIGGER_L,               /*!< @brief corresponds to Left trigger (generic) or L2 (Sony) */
-    JOYSTICK_FEATURE_TRIGGER_R,               /*!< @brief corresponds to Right trigger (generic) or R2 (Sony) */
-    JOYSTICK_FEATURE_ANALOG_STICK_L,          /*!< @brief corresponds to Left analog stick */
-    JOYSTICK_FEATURE_ANALOG_STICK_R,          /*!< @brief corresponds to Right analog stick */
-    JOYSTICK_FEATURE_ACCELEROMETER,           /*!< @brief corresponds to Accelerometer (Wii/Sixaxis) */
-  } JOYSTICK_FEATURE_ID;
+    char*         provider;           /*!< @brief name of the driver or interface providing the joystick */
+    int           requested_port;     /*!< @brief requested port number (such as for 360 controllers), or NO_PORT_REQUESTED */
+    unsigned int  button_count;       /*!< @brief number of buttons reported by the driver */
+    unsigned int  hat_count;          /*!< @brief number of hats reported by the driver */
+    unsigned int  axis_count;         /*!< @brief number of axes reported by the driver */
+  } ATTRIBUTE_PACKED JOYSTICK_INFO;
 
   typedef enum JOYSTICK_DRIVER_TYPE
   {
@@ -208,7 +235,7 @@ extern "C"
 
   typedef struct JOYSTICK_FEATURE
   {
-    JOYSTICK_FEATURE_ID                    id;
+    unsigned int                           id;
     JOYSTICK_DRIVER_TYPE                   driver_type;
     union
     {
@@ -218,73 +245,7 @@ extern "C"
       struct JOYSTICK_DRIVER_ANALOG_STICK  driver_analog_stick;
       struct JOYSTICK_DRIVER_ACCELEROMETER driver_accelerometer;
     };
-    char*                                  name;
-    char*                                  symbol_color;
-    char*                                  color;
-    char*                                  icon;
   } ATTRIBUTE_PACKED JOYSTICK_FEATURE;
-
-  typedef struct JOYSTICK_DRIVER_INFO
-  {
-    unsigned int    button_count;       /*!< @brief number of buttons reported by the driver */
-    unsigned int    hat_count;          /*!< @brief number of hats reported by the driver */
-    unsigned int    axis_count;         /*!< @brief number of axes reported by the driver */
-  } ATTRIBUTE_PACKED JOYSTICK_DRIVER_INFO;
-
-  typedef struct JOYSTICK_INFO
-  {
-    PERIPHERAL_INFO          peripheral_info;    /*!< @brief inherited info */
-    char*                    provider;           /*!< @brief name of the interface providing the joystick */
-    int                      requested_port;     /*!< @brief requested port number (such as for 360 controllers), or NO_PORT_REQUESTED */
-    JOYSTICK_DRIVER_INFO     driver;             /*!< @brief joystick information provided by the driver */
-    unsigned int             feature_count;      /*!< @brief number of features associated with this joystick */
-    struct JOYSTICK_FEATURE* features;           /*!< @brief allocated features */
-  } ATTRIBUTE_PACKED JOYSTICK_INFO;
-  ///}
-
-  /// @name Event types
-  ///{
-  typedef enum PERIPHERAL_EVENT_TYPE
-  {
-    PERIPHERAL_EVENT_TYPE_NONE = 0,       /*!< @brief unknown event */
-    PERIPHERAL_EVENT_TYPE_DRIVER_BUTTON,  /*!< @brief state changed for joystick driver button */
-    PERIPHERAL_EVENT_TYPE_DRIVER_HAT,     /*!< @brief state changed for joystick driver hat */
-    PERIPHERAL_EVENT_TYPE_DRIVER_AXIS,    /*!< @brief state changed for joystick driver axis */
-  } PERIPHERAL_EVENT_TYPE;
-
-  typedef enum JOYSTICK_STATE_BUTTON
-  {
-    JOYSTICK_STATE_BUTTON_UNPRESSED = 0x0,    /*!< @brief button is released */
-    JOYSTICK_STATE_BUTTON_PRESSED   = 0x1,    /*!< @brief button is pressed */
-  } JOYSTICK_STATE_BUTTON;
-
-  typedef enum JOYSTICK_STATE_HAT
-  {
-    JOYSTICK_STATE_HAT_UNPRESSED  = 0x0,    /*!< @brief no directions are pressed */
-    JOYSTICK_STATE_HAT_LEFT       = 0x1,    /*!< @brief only left is pressed */
-    JOYSTICK_STATE_HAT_RIGHT      = 0x2,    /*!< @brief only right is pressed */
-    JOYSTICK_STATE_HAT_UP         = 0x4,    /*!< @brief only up is pressed */
-    JOYSTICK_STATE_HAT_DOWN       = 0x8,    /*!< @brief only down is pressed */
-    JOYSTICK_STATE_HAT_LEFT_UP    = JOYSTICK_STATE_HAT_LEFT  | JOYSTICK_STATE_HAT_UP,
-    JOYSTICK_STATE_HAT_LEFT_DOWN  = JOYSTICK_STATE_HAT_LEFT  | JOYSTICK_STATE_HAT_DOWN,
-    JOYSTICK_STATE_HAT_RIGHT_UP   = JOYSTICK_STATE_HAT_RIGHT | JOYSTICK_STATE_HAT_UP,
-    JOYSTICK_STATE_HAT_RIGHT_DOWN = JOYSTICK_STATE_HAT_RIGHT | JOYSTICK_STATE_HAT_DOWN,
-  } JOYSTICK_STATE_HAT;
-
-  /*!
-   * @brief value in the closed interval [-1, 1]
-   */
-  typedef float JOYSTICK_STATE_AXIS;
-
-  typedef struct PERIPHERAL_EVENT
-  {
-    unsigned int             peripheral_index;
-    PERIPHERAL_EVENT_TYPE    type;
-    unsigned int             driver_index;
-    JOYSTICK_STATE_BUTTON    driver_button_state;
-    JOYSTICK_STATE_HAT       driver_hat_state;
-    JOYSTICK_STATE_AXIS      driver_axis_state;
-  } ATTRIBUTE_PACKED PERIPHERAL_EVENT;
   ///}
 
   // TODO: Mouse, light gun, multitouch
@@ -299,14 +260,16 @@ extern "C"
     PERIPHERAL_ERROR (__cdecl* GetAddonCapabilities)(PERIPHERAL_CAPABILITIES*);
     PERIPHERAL_ERROR (__cdecl* PerformDeviceScan)(unsigned int*, PERIPHERAL_INFO**);
     void             (__cdecl* FreeScanResults)(unsigned int, PERIPHERAL_INFO*);
+    PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, PERIPHERAL_EVENT**);
+    void             (__cdecl* FreeEvents)(unsigned int, PERIPHERAL_EVENT*);
 
     /// @name Joystick operations
     ///{
     PERIPHERAL_ERROR (__cdecl* GetJoystickInfo)(unsigned int, JOYSTICK_INFO*);
     void             (__cdecl* FreeJoystickInfo)(JOYSTICK_INFO*);
-    PERIPHERAL_ERROR (__cdecl* GetEvents)(unsigned int*, PERIPHERAL_EVENT**);
-    void             (__cdecl* FreeEvents)(unsigned int, PERIPHERAL_EVENT*);
-    PERIPHERAL_ERROR (__cdecl* UpdateJoystickFeature)(unsigned int, JOYSTICK_FEATURE*);
+    PERIPHERAL_ERROR (__cdecl* GetButtonMap)(const JOYSTICK_INFO*, const char*, unsigned int*, JOYSTICK_FEATURE**);
+    void             (__cdecl* FreeButtonMap)(unsigned int, JOYSTICK_FEATURE*);
+    PERIPHERAL_ERROR (__cdecl* MapJoystickFeature)(const JOYSTICK_INFO*, const char*, JOYSTICK_FEATURE*);
     ///}
   } PeripheralAddon;
 

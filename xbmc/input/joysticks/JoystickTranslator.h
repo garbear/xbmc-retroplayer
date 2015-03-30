@@ -24,28 +24,7 @@
 class CJoystickTranslator
 {
 public:
-  static const char*  HatDirectionToString(HatDirection dir);
+  static const char* HatDirectionToString(HatDirection dir);
 
-  static JoystickInputType GetInputType(JoystickFeatureID featureId);
-
-  /*!
-   * \brief Get the button key, as defined in guilib/Key.h, for the specified
-   *        joystick feature/direction
-   *
-   * A direction vector of the feature's position can be used to obtain keys
-   * for analog stick directions (e.g. "rightthumbstickup").
-   *
-   * Ties are resolved in the clockwise direction. A right thumb stick at (0.5, 0.5)
-   * will resolve to "rightthumbstickright".
-   *
-   * \param id        The joystick feature ID
-   * \param x         The x component of the direction vector being queried
-   * \param y         The y component of the direction vector being queried
-   * \param z         The z component of the direction vector being queried
-   *
-   * \return True if the event was handled otherwise false
-   */
-  static unsigned int GetButtonKeyID(JoystickFeatureID id, float x = 0.0f,
-                                                           float y = 0.0f,
-                                                           float z = 0.0f);
+  static JoystickFeatureType GetFeatureType(JoystickFeatureID featureId);
 };
