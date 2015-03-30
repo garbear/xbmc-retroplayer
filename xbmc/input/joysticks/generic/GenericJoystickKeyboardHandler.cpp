@@ -32,13 +32,20 @@ CGenericJoystickKeyboardHandler::CGenericJoystickKeyboardHandler(IJoystickDriver
 
 bool CGenericJoystickKeyboardHandler::OnKeyPress(const CKey& key)
 {
-  m_handler->OnButtonMotion(GetButtonIndex(key), true);
-  return true; // TODO
+  unsigned int buttonIndex = GetButtonIndex(key);
+  if (buttonIndex != 0)
+  {
+    m_handler->OnButtonMotion(buttonIndex, true);
+    return true; // TODO
+  }
+  return false;
 }
 
 void CGenericJoystickKeyboardHandler::OnKeyRelease(const CKey& key)
 {
-  m_handler->OnButtonMotion(GetButtonIndex(key), false);
+  unsigned int buttonIndex = GetButtonIndex(key);
+  if (buttonIndex != 0)
+    m_handler->OnButtonMotion(buttonIndex, false);
 }
 
 unsigned int CGenericJoystickKeyboardHandler::GetButtonIndex(const CKey& key)
