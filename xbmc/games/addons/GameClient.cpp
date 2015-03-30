@@ -443,11 +443,12 @@ bool CGameClient::OpenPort(unsigned int port, const std::string& strDeviceId)
   if (port >= m_devices.size())
     m_devices.resize(port + 1);
 
-  if (m_devices[port])
-    ClosePort(port);
+  ClosePort(port);
 
   CDeviceInput* deviceInput = new CDeviceInput(this, port, strDeviceId);
+
   CPortManager::Get().OpenPort(deviceInput, port);
+
   m_devices[port] = deviceInput;
 
   return true;
@@ -458,16 +459,19 @@ void CGameClient::ClosePort(unsigned int port)
   if (port >= m_devices.size())
     return;
 
-  delete m_devices[port];
-  m_devices[port] = NULL;
+  if (m_devices[port] != NULL)
+  {
+    CPortManager::Get().ClosePort(m_devices[port]);
+
+    delete m_devices[port];
+    m_devices[port] = NULL;
+  }
 }
 
 void CGameClient::ClearPorts(void)
 {
-  for (std::vector<CDeviceInput*>::iterator it = m_devices.begin(); it != m_devices.end(); ++it)
-    delete *it;
-
-  m_devices.clear();
+  for (unsigned int i = 0; i < m_devices.size(); i++)
+    ClosePort(i);
 }
 
 void CGameClient::UpdatePort(unsigned int port, bool bConnected)
