@@ -34,6 +34,11 @@ CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult)
   m_features.push_back(FEATURE_JOYSTICK);
 }
 
+CPeripheralJoystick::~CPeripheralJoystick(void)
+{
+  UnregisterJoystickInputHandler(&m_defaultInputHandler);
+}
+
 bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 {
   bool bSuccess = false;

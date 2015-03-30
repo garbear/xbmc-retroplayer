@@ -37,7 +37,7 @@ namespace PERIPHERALS
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
 
-    virtual ~CPeripheralJoystick(void) { }
+    virtual ~CPeripheralJoystick(void);
 
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
