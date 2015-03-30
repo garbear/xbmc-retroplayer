@@ -49,34 +49,25 @@ void CPortMapper::Notify(const Observable &obs, const ObservableMessage msg)
 
 void CPortMapper::ProcessPeripherals(void)
 {
-  std::vector<CPeripheral*> devices;
-  g_peripherals.GetPeripheralsWithFeature(devices, FEATURE_JOYSTICK);
+  std::map<CPeripheral*, IJoystickInputHandler*>& oldPortMap = m_portMap;
 
-  std::vector<CPeripheral*> keyboards;
-  g_peripherals.GetPeripheralsWithFeature(keyboards, FEATURE_KEYBOARD);
-  devices.insert(devices.end(), keyboards.begin(), keyboards.end());
+  std::vector<CPeripheral*> devices = GetDevices();
 
   std::map<CPeripheral*, IJoystickInputHandler*> newPortMap;
   CPortManager::Get().MapDevices(devices, newPortMap);
 
-  ProcessChanges(m_portMap, newPortMap);
-  m_portMap.swap(newPortMap);
-}
-
-void CPortMapper::ProcessChanges(const std::map<CPeripheral*, IJoystickInputHandler*>& oldPortMap,
-                                 const std::map<CPeripheral*, IJoystickInputHandler*>& newPortMap)
-{
-  for (std::map<CPeripheral*, IJoystickInputHandler*>::const_iterator itNew = newPortMap.begin(); itNew != newPortMap.end(); ++itNew)
+  for (std::vector<CPeripheral*>::iterator it = devices.begin(); it != devices.end(); ++it)
   {
-    std::map<CPeripheral*, IJoystickInputHandler*>::const_iterator itOld = oldPortMap.find(itNew->first);
+    CPeripheral* device = *it;
+
+    std::map<CPeripheral*, IJoystickInputHandler*>::const_iterator itOld = oldPortMap.find(device);
+    std::map<CPeripheral*, IJoystickInputHandler*>::const_iterator itNew = newPortMap.find(device);
 
     IJoystickInputHandler* oldHandler = itOld != oldPortMap.end() ? itOld->second : NULL;
-    IJoystickInputHandler* newHandler = itNew->second;
+    IJoystickInputHandler* newHandler = itNew != newPortMap.end() ? itNew->second : NULL;
 
     if (oldHandler != newHandler)
     {
-      CPeripheral* device = itNew->first;
-
       // Unregister old handler
       if (oldHandler != NULL)
         device->UnregisterJoystickInputHandler(oldHandler);
@@ -86,4 +77,18 @@ void CPortMapper::ProcessChanges(const std::map<CPeripheral*, IJoystickInputHand
         device->RegisterJoystickInputHandler(newHandler);
     }
   }
+
+  oldPortMap.swap(newPortMap);
+}
+
+std::vector<CPeripheral*> CPortMapper::GetDevices(void)
+{
+  std::vector<CPeripheral*> devices;
+  g_peripherals.GetPeripheralsWithFeature(devices, FEATURE_JOYSTICK);
+
+  std::vector<CPeripheral*> keyboards;
+  g_peripherals.GetPeripheralsWithFeature(keyboards, FEATURE_KEYBOARD);
+  devices.insert(devices.end(), keyboards.begin(), keyboards.end());
+
+  return devices;
 }
