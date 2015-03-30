@@ -57,6 +57,7 @@ namespace PERIPHERALS
 
   private:
     PeripheralAddonVector m_addons;
+    PeripheralAddonVector m_failedAddons;
     CCriticalSection      m_critSection;
   };
 }

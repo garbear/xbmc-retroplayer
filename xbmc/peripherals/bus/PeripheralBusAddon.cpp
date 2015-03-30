@@ -19,7 +19,6 @@
  */
 
 #include "PeripheralBusAddon.h"
-#include "addons/AddonDatabase.h"
 #include "addons/AddonManager.h"
 #include "peripherals/Peripherals.h"
 #include "threads/SingleLock.h"
@@ -44,6 +43,14 @@ bool CPeripheralBusAddon::GetAddon(const std::string &strId, AddonPtr &addon) co
 {
   CSingleLock lock(m_critSection);
   for (PeripheralAddonVector::const_iterator it = m_addons.begin(); it != m_addons.end(); ++it)
+  {
+    if ((*it)->ID() == strId)
+    {
+      addon = *it;
+      return true;
+    }
+  }
+  for (PeripheralAddonVector::const_iterator it = m_failedAddons.begin(); it != m_failedAddons.end(); ++it)
   {
     if ((*it)->ID() == strId)
     {
@@ -77,7 +84,7 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
     CSingleLock lock(m_critSection);
 
     PeripheralAddonVector createdAddons;
-    createdAddons.swap(m_addons);
+    m_addons.swap(createdAddons);
 
     for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
     {
@@ -85,14 +92,16 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
       if (!addon)
         continue;
 
+      // If add-on failed to load, skip it
+      if (std::find(m_failedAddons.begin(), m_failedAddons.end(), addon) != m_failedAddons.end())
+        continue;
+
       // If add-on hasn't been created, try to create it now
       if (std::find(createdAddons.begin(), createdAddons.end(), addon) == createdAddons.end())
       {
         if (addon->Create() != ADDON_STATUS_OK)
         {
-          CAddonDatabase addonDb;
-          if (addonDb.Open())
-            addonDb.DisableAddon(addon->ID());
+          m_failedAddons.push_back(addon);
           continue;
         }
       }
