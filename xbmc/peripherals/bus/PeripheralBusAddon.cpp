@@ -54,7 +54,7 @@ bool CPeripheralBusAddon::GetAddon(const std::string &strId, AddonPtr &addon) co
   return false;
 }
 
-bool CPeripheralBusAddon::GetAddonWithButtonMap(PeripheralAddonPtr &addon) const
+bool CPeripheralBusAddon::GetAddonWithButtonMap(const CPeripheral* device, PeripheralAddonPtr &addon) const
 {
   CSingleLock lock(m_critSection);
   for (PeripheralAddonVector::const_iterator it = m_addons.begin(); it != m_addons.end(); ++it)

@@ -44,7 +44,7 @@ bool CAddonJoystickButtonMap::Load(void)
   return false;
 }
 
-PeripheralAddonPtr CAddonJoystickButtonMap::GetAddon(CPeripheral* device)
+PeripheralAddonPtr CAddonJoystickButtonMap::GetAddon(const CPeripheral* device)
 {
   PeripheralAddonPtr addon;
 
@@ -63,7 +63,7 @@ PeripheralAddonPtr CAddonJoystickButtonMap::GetAddon(CPeripheral* device)
     else
     {
       // Otherwise, have the add-on bus find a suitable add-on
-      addonBus->GetAddonWithButtonMap(addon);
+      addonBus->GetAddonWithButtonMap(device, addon);
     }
   }
 
