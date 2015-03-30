@@ -225,6 +225,8 @@ namespace ADDON
     {
     }
 
+    virtual ~DriverButton(void) { }
+
     virtual JoystickFeature* Clone(void) const { return new DriverButton(*this); }
 
     virtual JOYSTICK_DRIVER_TYPE Type(void) const  { return JOYSTICK_DRIVER_TYPE_BUTTON; }
@@ -269,6 +271,8 @@ namespace ADDON
       m_direction(feature.driver_hat.direction)
     {
     }
+
+    virtual ~DriverHat(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverHat(*this); }
 
@@ -318,6 +322,8 @@ namespace ADDON
       m_direction(feature.driver_semiaxis.direction)
     {
     }
+
+    virtual ~DriverSemiAxis(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverSemiAxis(*this); }
 
@@ -373,6 +379,8 @@ namespace ADDON
       m_yInverted(feature.driver_analog_stick.y_inverted)
     {
     }
+
+    virtual ~DriverAnalogStick(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverAnalogStick(*this); }
 
@@ -443,6 +451,8 @@ namespace ADDON
       m_zInverted(feature.driver_accelerometer.z_inverted)
     {
     }
+
+    virtual ~DriverAccelerometer(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverAccelerometer(*this); }
 
