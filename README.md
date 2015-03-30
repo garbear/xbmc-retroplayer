@@ -23,6 +23,7 @@ RetroPlayer is a new player core for Kodi Entertainment Center. It is similar to
 Many of these features are still works-in-progress, so fork the code and help out!
 
 # Building Kodi and games
+Make sure to have all Kodi's dependencies installed, look here for instructions for various operating systems: [Compiling Kodi](http://kodi.wiki/view/Compiling), then :
 
 `./bootstrap`, `./configure` and `make -j8` as per usual
 
