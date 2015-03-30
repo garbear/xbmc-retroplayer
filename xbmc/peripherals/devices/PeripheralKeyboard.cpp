@@ -52,18 +52,29 @@ bool CPeripheralKeyboard::InitialiseFeature(const PeripheralFeature feature)
 
 void CPeripheralKeyboard::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
-  std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.find(handler);
-  if (handler && it == m_keyboardHandlers.end())
-    m_keyboardHandlers[handler] = new CGenericJoystickKeyboardHandler(handler);
+  bool bFound = false;
+
+  for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); !bFound && it != m_keyboardHandlers.end(); ++it)
+  {
+    if (it->first == handler)
+      bFound = true;
+  }
+
+  if (!bFound)
+    m_keyboardHandlers.insert(m_keyboardHandlers.begin(),
+                              std::make_pair(handler, new CGenericJoystickKeyboardHandler(handler)));
 }
 
 void CPeripheralKeyboard::UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
-  std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.find(handler);
-  if (it != m_keyboardHandlers.end())
+  for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
   {
-    delete it->second;
-    m_keyboardHandlers.erase(it);
+    if (it->first == handler)
+    {
+      delete it->second;
+      m_keyboardHandlers.erase(it);
+      break;
+    }
   }
 }
 
@@ -71,7 +82,7 @@ bool CPeripheralKeyboard::OnKeyPress(const CKey& key)
 {
   bool bHandled = false;
 
-  for (std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
+  for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
     bHandled |= it->second->OnKeyPress(key);
 
   return bHandled;
@@ -79,6 +90,6 @@ bool CPeripheralKeyboard::OnKeyPress(const CKey& key)
 
 void CPeripheralKeyboard::OnKeyRelease(const CKey& key)
 {
-  for (std::map<IJoystickDriverHandler*, IKeyboardHandler*>::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
+  for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
     it->second->OnKeyRelease(key);
 }

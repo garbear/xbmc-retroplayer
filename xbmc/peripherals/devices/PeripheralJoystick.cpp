@@ -72,7 +72,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 void CPeripheralJoystick::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
   if (handler && std::find(m_driverHandlers.begin(), m_driverHandlers.end(), handler) == m_driverHandlers.end())
-    m_driverHandlers.push_back(handler);
+    m_driverHandlers.insert(m_driverHandlers.begin(), handler);
 }
 
 void CPeripheralJoystick::UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler)

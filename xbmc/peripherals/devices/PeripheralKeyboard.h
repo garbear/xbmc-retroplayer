@@ -22,7 +22,8 @@
 #include "Peripheral.h"
 #include "input/IKeyboardHandler.h"
 
-#include <map>
+#include <utility>
+#include <vector>
 
 namespace PERIPHERALS
 {
@@ -44,6 +45,8 @@ namespace PERIPHERALS
     virtual void OnKeyRelease(const CKey& key);
 
   private:
-    std::map<IJoystickDriverHandler*, IKeyboardHandler*> m_keyboardHandlers;
+    typedef std::vector<std::pair<IJoystickDriverHandler*, IKeyboardHandler*> > KeyboardHandlerVector;
+
+    KeyboardHandlerVector m_keyboardHandlers;
   };
 }
