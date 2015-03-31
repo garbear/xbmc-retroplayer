@@ -36,29 +36,31 @@ public:
   CGUIDialogControllerInput(void);
   virtual ~CGUIDialogControllerInput(void) { }
 
-  void DoModal(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
-
+  // implementation of CGUIControl
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction& action);
 
+  void DoModal(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
+
 protected:
-  CGUIButtonControl* GetButtonTemplate(void);
-  CGUIButtonControl* MakeButton(const std::string& strLabel, unsigned int id, CGUIButtonControl* pButtonTemplate);
+  // implementation of CGUIWindow
+  virtual void OnInitWindow(void);
+  virtual void OnDeinitWindow(int nextWindowID);
 
   bool OnMove(void);
   bool OnClick(int iSelected);
 
-  virtual void OnInitWindow(void);
-  virtual void OnDeinitWindow(int nextWindowID);
-
 private:
   void PromptForInput(unsigned int buttonIndex);
+
+  int GetSelectedControl(int iControl);
+  void SetSelectedControl(int iControl, int iSelectedControl);
 
   bool SetupButtons(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
   void CleanupButtons(void);
 
-  int GetSelectedControl(int iControl);
-  void SetSelectedControl(int iControl, int iSelectedControl);
+  CGUIButtonControl* GetButtonTemplate(void);
+  CGUIButtonControl* MakeButton(const std::string& strLabel, unsigned int id, CGUIButtonControl* pButtonTemplate);
 
   GAME::GamePeripheralPtr m_peripheral;
   CGUIFocusPlane*         m_focusControl;

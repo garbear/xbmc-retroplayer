@@ -45,140 +45,6 @@ CGUIDialogControllerInput::CGUIDialogControllerInput(void)
   m_loadType = KEEP_IN_MEMORY;
 }
 
-void CGUIDialogControllerInput::DoModal(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
-{
-  if (IsDialogRunning())
-    return;
-
-  Initialize();
-
-  if (SetupButtons(peripheral, focusControl))
-    CGUIDialog::DoModal();
-
-  CleanupButtons();
-}
-
-void CGUIDialogControllerInput::PromptForInput(unsigned int buttonIndex)
-{
-  const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
-  if (buttonIndex < buttons.size())
-  {
-    const GAME::Button& buton = buttons[buttonIndex];
-
-    // TODO: Change label
-    const std::string& strLabel = buton.strLabel;
-
-    // TODO: Wait for input
-    // input = GetInput();
-
-    // TODO: Record input
-    // buttonMap->SetInput(button, input);
-
-    // TODO: Change label back
-  }
-}
-
-bool CGUIDialogControllerInput::SetupButtons(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
-{
-  if (!peripheral || !focusControl)
-    return false;
-
-  CGUIButtonControl* pButtonTemplate = GetButtonTemplate();
-  CGUIControlGroupList* pGroupList = dynamic_cast<CGUIControlGroupList*>(GetControl(GROUP_LIST));
-
-  if (!pButtonTemplate || !pGroupList)
-    return false;
-
-  const std::vector<GAME::Button>& buttons = peripheral->Buttons();
-
-  unsigned int buttonId = BUTTON_START;
-  for (std::vector<GAME::Button>::const_iterator it = buttons.begin(); it != buttons.end(); ++it)
-  {
-    CGUIButtonControl* pButton = MakeButton(it->strLabel, buttonId++, pButtonTemplate);
-
-    // try inserting context buttons at position specified by template
-    // button, if template button is not in grouplist fallback to adding
-    // new buttons at the end of grouplist
-    if (!pGroupList->InsertControl(pButton, pButtonTemplate))
-      pGroupList->AddControl(pButton);
-  }
-
-  // update our default control
-  m_defaultControl = GROUP_LIST;
-  m_lastControlID = BUTTON_START;
-
-  m_peripheral = peripheral;
-  m_focusControl = focusControl;
-
-  // restore last selected control
-  std::map<GAME::GamePeripheralPtr, unsigned int>::const_iterator it = m_lastControlIds.find(m_peripheral);
-  if (it != m_lastControlIds.end())
-    m_lastControlID = it->second;
-
-  return true;
-}
-
-void CGUIDialogControllerInput::CleanupButtons(void)
-{
-  CGUIControlGroupList* pGroupList = dynamic_cast<CGUIControlGroupList*>(GetControl(GROUP_LIST));
-  if (pGroupList)
-    pGroupList->ClearAll();
-
-  m_peripheral = NULL;
-  m_focusControl = NULL;
-}
-
-CGUIButtonControl* CGUIDialogControllerInput::GetButtonTemplate(void)
-{
-  CGUIButtonControl* pButtonTemplate = dynamic_cast<CGUIButtonControl*>(GetFirstFocusableControl(BUTTON_TEMPLATE));
-  if (!pButtonTemplate)
-    pButtonTemplate = dynamic_cast<CGUIButtonControl*>(GetControl(BUTTON_TEMPLATE));
-  return pButtonTemplate;
-}
-
-CGUIButtonControl* CGUIDialogControllerInput::MakeButton(const std::string& strLabel,
-                                                            unsigned int       id,
-                                                            CGUIButtonControl* pButtonTemplate)
-{
-  CGUIButtonControl* pButton = new CGUIButtonControl(*pButtonTemplate);
-
-  // set the button's ID and position
-  pButton->SetID(id);
-  pButton->SetVisible(true);
-  pButton->SetLabel(strLabel);
-  pButton->SetPosition(pButtonTemplate->GetXPosition(), pButtonTemplate->GetYPosition());
-
-  return pButton;
-}
-
-bool CGUIDialogControllerInput::OnMove(void)
-{
-  if (m_peripheral && m_focusControl)
-  {
-    const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
-
-    int iSelectedIndex = GetSelectedControl(GROUP_LIST) - BUTTON_START;
-    if (0 <= iSelectedIndex && iSelectedIndex < (int)buttons.size())
-    {
-      m_focusControl->SetFocus(buttons[iSelectedIndex].focusArea);
-      return true;
-    }
-  }
-
-  return false;
-}
-
-bool CGUIDialogControllerInput::OnClick(int iSelectedControl)
-{
-  if (m_peripheral && m_focusControl && iSelectedControl >= BUTTON_START)
-  {
-    PromptForInput(iSelectedControl - BUTTON_START);
-    return true;
-  }
-
-  return false;
-}
-
 bool CGUIDialogControllerInput::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
@@ -248,6 +114,67 @@ void CGUIDialogControllerInput::OnDeinitWindow(int nextWindowID)
   CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
+void CGUIDialogControllerInput::DoModal(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
+{
+  if (IsDialogRunning())
+    return;
+
+  Initialize();
+
+  if (SetupButtons(peripheral, focusControl))
+    CGUIDialog::DoModal();
+
+  CleanupButtons();
+}
+
+bool CGUIDialogControllerInput::OnMove(void)
+{
+  if (m_peripheral && m_focusControl)
+  {
+    const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
+
+    int iSelectedIndex = GetSelectedControl(GROUP_LIST) - BUTTON_START;
+    if (0 <= iSelectedIndex && iSelectedIndex < (int)buttons.size())
+    {
+      m_focusControl->SetFocus(buttons[iSelectedIndex].focusArea);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool CGUIDialogControllerInput::OnClick(int iSelectedControl)
+{
+  if (m_peripheral && m_focusControl && iSelectedControl >= BUTTON_START)
+  {
+    PromptForInput(iSelectedControl - BUTTON_START);
+    return true;
+  }
+
+  return false;
+}
+
+void CGUIDialogControllerInput::PromptForInput(unsigned int buttonIndex)
+{
+  const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
+  if (buttonIndex < buttons.size())
+  {
+    const GAME::Button& buton = buttons[buttonIndex];
+
+    // TODO: Change label
+    const std::string& strLabel = buton.strLabel;
+
+    // TODO: Wait for input
+    // input = GetInput();
+
+    // TODO: Record input
+    // buttonMap->SetInput(button, input);
+
+    // TODO: Change label back
+  }
+}
+
 int CGUIDialogControllerInput::GetSelectedControl(int iControl)
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
@@ -262,4 +189,77 @@ void CGUIDialogControllerInput::SetSelectedControl(int iControl, int iSelectedCo
 {
   CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), iControl, iSelectedControl);
   OnMessage(msg);
+}
+
+bool CGUIDialogControllerInput::SetupButtons(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
+{
+  if (!peripheral || !focusControl)
+    return false;
+
+  CGUIButtonControl* pButtonTemplate = GetButtonTemplate();
+  CGUIControlGroupList* pGroupList = dynamic_cast<CGUIControlGroupList*>(GetControl(GROUP_LIST));
+
+  if (!pButtonTemplate || !pGroupList)
+    return false;
+
+  const std::vector<GAME::Button>& buttons = peripheral->Buttons();
+
+  unsigned int buttonId = BUTTON_START;
+  for (std::vector<GAME::Button>::const_iterator it = buttons.begin(); it != buttons.end(); ++it)
+  {
+    CGUIButtonControl* pButton = MakeButton(it->strLabel, buttonId++, pButtonTemplate);
+
+    // try inserting context buttons at position specified by template
+    // button, if template button is not in grouplist fallback to adding
+    // new buttons at the end of grouplist
+    if (!pGroupList->InsertControl(pButton, pButtonTemplate))
+      pGroupList->AddControl(pButton);
+  }
+
+  // update our default control
+  m_defaultControl = GROUP_LIST;
+  m_lastControlID = BUTTON_START;
+
+  m_peripheral = peripheral;
+  m_focusControl = focusControl;
+
+  // restore last selected control
+  std::map<GAME::GamePeripheralPtr, unsigned int>::const_iterator it = m_lastControlIds.find(m_peripheral);
+  if (it != m_lastControlIds.end())
+    m_lastControlID = it->second;
+
+  return true;
+}
+
+void CGUIDialogControllerInput::CleanupButtons(void)
+{
+  CGUIControlGroupList* pGroupList = dynamic_cast<CGUIControlGroupList*>(GetControl(GROUP_LIST));
+  if (pGroupList)
+    pGroupList->ClearAll();
+
+  m_peripheral = NULL;
+  m_focusControl = NULL;
+}
+
+CGUIButtonControl* CGUIDialogControllerInput::GetButtonTemplate(void)
+{
+  CGUIButtonControl* pButtonTemplate = dynamic_cast<CGUIButtonControl*>(GetFirstFocusableControl(BUTTON_TEMPLATE));
+  if (!pButtonTemplate)
+    pButtonTemplate = dynamic_cast<CGUIButtonControl*>(GetControl(BUTTON_TEMPLATE));
+  return pButtonTemplate;
+}
+
+CGUIButtonControl* CGUIDialogControllerInput::MakeButton(const std::string& strLabel,
+                                                         unsigned int       id,
+                                                         CGUIButtonControl* pButtonTemplate)
+{
+  CGUIButtonControl* pButton = new CGUIButtonControl(*pButtonTemplate);
+
+  // set the button's ID and position
+  pButton->SetID(id);
+  pButton->SetVisible(true);
+  pButton->SetLabel(strLabel);
+  pButton->SetPosition(pButtonTemplate->GetXPosition(), pButtonTemplate->GetYPosition());
+
+  return pButton;
 }
