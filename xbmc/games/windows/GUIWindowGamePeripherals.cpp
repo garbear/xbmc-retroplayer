@@ -99,7 +99,7 @@ bool CGUIWindowGamePeripherals::OnMessage(CGUIMessage& message)
 
       if (iControl == CONTROL_PERIPHERAL_LIST)
       {
-        int iItem = GetSelectedItem(CONTROL_PERIPHERAL_LIST);
+        int iItem = GetSelectedItem();
         return OnClick(iItem);
       }
       break;
@@ -108,7 +108,7 @@ bool CGUIWindowGamePeripherals::OnMessage(CGUIMessage& message)
 
   const bool bHandled = CGUIWindow::OnMessage(message);
 
-  OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
+  OnSelect(GetSelectedItem());
 
   return bHandled;
 }
@@ -117,7 +117,7 @@ bool CGUIWindowGamePeripherals::OnAction(const CAction& action)
 {
   if (CGUIWindow::OnAction(action))
   {
-    OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
+    OnSelect(GetSelectedItem());
     return true;
   }
   return false;
@@ -244,11 +244,11 @@ bool CGUIWindowGamePeripherals::OnSelect(int iItem)
   return false;
 }
 
-int CGUIWindowGamePeripherals::GetSelectedItem(int iControl)
+int CGUIWindowGamePeripherals::GetSelectedItem(void)
 {
   if (!m_items.IsEmpty())
   {
-    CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
+    CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_PERIPHERAL_LIST);
     if (CGUIWindow::OnMessage(msg))
       return (int)msg.GetParam1();
   }

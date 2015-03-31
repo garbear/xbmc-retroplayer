@@ -83,7 +83,7 @@ private:
   bool OnClick(int iItem);
   bool OnSelect(int iItem);
 
-  int GetSelectedItem(int iControl);
+  int GetSelectedItem(void);
 
   std::vector<CGUIJoystickDriverHandler*> m_driverHandlers;
   GAME::GamePeripheralVector m_peripherals;
