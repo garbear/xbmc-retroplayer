@@ -47,38 +47,38 @@ using namespace PERIPHERALS;
 
 // --- CGUIJoystickDriverHandler -----------------------------------------------
 
-CGUIJoystickDriverHandler::CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* window, CPeripheralJoystick* joystick)
-  : m_window(window), m_joystick(joystick)
+CGUIJoystickDriverHandler::CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* window, CPeripheral* device)
+  : m_window(window), m_device(device)
 {
   assert(m_window);
-  assert(m_joystick);
+  assert(m_device);
 
-  m_joystick->RegisterJoystickDriverHandler(this);
+  m_device->RegisterJoystickDriverHandler(this);
 }
 
 CGUIJoystickDriverHandler::~CGUIJoystickDriverHandler(void)
 {
-  m_joystick->UnregisterJoystickDriverHandler(this);
+  m_device->UnregisterJoystickDriverHandler(this);
 }
 
 void CGUIJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
-  m_window->OnButtonMotion(m_joystick, buttonIndex, bPressed);
+  m_window->OnButtonMotion(m_device, buttonIndex, bPressed);
 }
 
 void CGUIJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
-  m_window->OnHatMotion(m_joystick, hatIndex, direction);
+  m_window->OnHatMotion(m_device, hatIndex, direction);
 }
 
 void CGUIJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float position)
 {
-  m_window->OnAxisMotion(m_joystick, axisIndex, position);
+  m_window->OnAxisMotion(m_device, axisIndex, position);
 }
 
 void CGUIJoystickDriverHandler::ProcessAxisMotions(void)
 {
-  m_window->ProcessAxisMotions(m_joystick);
+  m_window->ProcessAxisMotions(m_device);
 }
 
 // --- CGUIWindowGamePeripherals -----------------------------------------------
@@ -127,12 +127,9 @@ void CGUIWindowGamePeripherals::OnInitWindow()
 {
   CGUIWindow::OnInitWindow();
 
-  std::vector<CPeripheral*> joysticks = ScanPeripherals();
-  for (std::vector<CPeripheral*>::iterator it = joysticks.begin(); it != joysticks.end(); ++it)
-  {
-    if ((*it)->Type() == PERIPHERAL_JOYSTICK)
-      m_driverHandlers.push_back(new CGUIJoystickDriverHandler(this, static_cast<CPeripheralJoystick*>(*it)));
-  }
+  std::vector<CPeripheral*> devices = ScanPeripherals();
+  for (std::vector<CPeripheral*>::iterator it = devices.begin(); it != devices.end(); ++it)
+    m_driverHandlers.push_back(new CGUIJoystickDriverHandler(this, *it));
 
   m_items.Clear();
 
@@ -163,22 +160,22 @@ void CGUIWindowGamePeripherals::OnDeinitWindow(int nextWindowID)
   CGUIWindow::OnDeinitWindow(nextWindowID);
 }
 
-void CGUIWindowGamePeripherals::OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int buttonIndex, bool bPressed)
+void CGUIWindowGamePeripherals::OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex, bool bPressed)
 {
   // TODO
 }
 
-void CGUIWindowGamePeripherals::OnHatMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int hatIndex, HatDirection direction)
+void CGUIWindowGamePeripherals::OnHatMotion(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction)
 {
   // TODO
 }
 
-void CGUIWindowGamePeripherals::OnAxisMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int axisIndex, float position)
+void CGUIWindowGamePeripherals::OnAxisMotion(PERIPHERALS::CPeripheral* device, unsigned int axisIndex, float position)
 {
   // TODO
 }
 
-void CGUIWindowGamePeripherals::ProcessAxisMotions(PERIPHERALS::CPeripheralJoystick* joystick)
+void CGUIWindowGamePeripherals::ProcessAxisMotions(PERIPHERALS::CPeripheral* device)
 {
   // TODO
 }
@@ -214,6 +211,7 @@ std::vector<CPeripheral*> CGUIWindowGamePeripherals::ScanPeripherals(void)
   std::vector<CPeripheral*> peripherals;
 
   g_peripherals.GetPeripheralsWithFeature(peripherals, FEATURE_JOYSTICK);
+  g_peripherals.GetPeripheralsWithFeature(peripherals, FEATURE_KEYBOARD);
 
   return peripherals;
 }

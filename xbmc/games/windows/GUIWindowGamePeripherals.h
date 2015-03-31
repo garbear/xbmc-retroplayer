@@ -30,7 +30,6 @@
 namespace PERIPHERALS
 {
   class CPeripheral;
-  class CPeripheralJoystick;
 }
 
 class CGUIWindowGamePeripherals;
@@ -38,7 +37,7 @@ class CGUIWindowGamePeripherals;
 class CGUIJoystickDriverHandler : public IJoystickDriverHandler
 {
 public:
-  CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* window, PERIPHERALS::CPeripheralJoystick* joystick);
+  CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* window, PERIPHERALS::CPeripheral* device);
 
   virtual ~CGUIJoystickDriverHandler(void);
 
@@ -49,8 +48,8 @@ public:
   virtual void ProcessAxisMotions(void);
 
 private:
-  CGUIWindowGamePeripherals* const        m_window;
-  PERIPHERALS::CPeripheralJoystick* const m_joystick;
+  CGUIWindowGamePeripherals* const m_window;
+  PERIPHERALS::CPeripheral* const  m_device;
 };
 
 class CGUIWindowGamePeripherals : public CGUIWindow
@@ -66,10 +65,10 @@ public:
   // implementation of CGUIWindow
   virtual void OnDeinitWindow(int nextWindowID);
 
-  void OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int buttonIndex, bool bPressed);
-  void OnHatMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int hatIndex, HatDirection direction);
-  void OnAxisMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int axisIndex, float position);
-  void ProcessAxisMotions(PERIPHERALS::CPeripheralJoystick* joystick);
+  void OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex, bool bPressed);
+  void OnHatMotion(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction);
+  void OnAxisMotion(PERIPHERALS::CPeripheral* device, unsigned int axisIndex, float position);
+  void ProcessAxisMotions(PERIPHERALS::CPeripheral* device);
 
 protected:
   GAME::GamePeripheralPtr GetPeripheral(const ADDON::AddonPtr& addon) const;
