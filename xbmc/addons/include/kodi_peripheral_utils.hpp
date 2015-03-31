@@ -662,21 +662,11 @@ namespace ADDON
     {
       switch (feature.driver_type)
       {
-      case JOYSTICK_DRIVER_TYPE_BUTTON:
-        return new DriverButton(feature);
-        break;
-      case JOYSTICK_DRIVER_TYPE_HAT_DIRECTION:
-        return new DriverHat(feature);
-        break;
-      case JOYSTICK_DRIVER_TYPE_SEMIAXIS:
-        return new DriverSemiAxis(feature);
-        break;
-      case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:
-        return new DriverAnalogStick(feature);
-        break;
-      case JOYSTICK_DRIVER_TYPE_ACCELEROMETER:
-        return new DriverAccelerometer(feature);
-        break;
+      case JOYSTICK_DRIVER_TYPE_BUTTON:        return new DriverButton(feature);
+      case JOYSTICK_DRIVER_TYPE_HAT_DIRECTION: return new DriverHat(feature);
+      case JOYSTICK_DRIVER_TYPE_SEMIAXIS:      return new DriverSemiAxis(feature);
+      case JOYSTICK_DRIVER_TYPE_ANALOG_STICK:  return new DriverAnalogStick(feature);
+      case JOYSTICK_DRIVER_TYPE_ACCELEROMETER: return new DriverAccelerometer(feature);
       default:
         break;
       }
