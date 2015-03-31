@@ -89,65 +89,36 @@ CGUIWindowGamePeripherals::CGUIWindowGamePeripherals(void) :
 {
 }
 
-std::vector<CPeripheral*> CGUIWindowGamePeripherals::ScanPeripherals(void)
+bool CGUIWindowGamePeripherals::OnMessage(CGUIMessage& message)
 {
-  std::vector<CPeripheral*> peripherals;
-
-  g_peripherals.GetPeripheralsWithFeature(peripherals, FEATURE_JOYSTICK);
-
-  return peripherals;
-}
-
-GamePeripheralPtr CGUIWindowGamePeripherals::GetPeripheral(const AddonPtr& addon) const
-{
-  for (GamePeripheralVector::const_iterator it = m_peripherals.begin(); it != m_peripherals.end(); ++it)
+  switch (message.GetMessage())
   {
-    if ((*it)->Addon()->ID() == addon->ID())
-      return *it;
-  }
-  return CGamePeripheral::EmptyPtr;
-}
-
-GamePeripheralPtr CGUIWindowGamePeripherals::LoadPeripheral(const AddonPtr& addon)
-{
-  const GamePeripheralPtr& peripheral = GetPeripheral(addon);
-  if (!peripheral)
-  {
-    CGUIControl* control = GetControl(CONTROL_GAME_PERIPHERAL);
-    GamePeripheralPtr newPeripheral = GamePeripheralPtr(new CGamePeripheral(addon, control));
-    if (newPeripheral->Load())
+    case GUI_MSG_CLICKED:
     {
-      m_peripherals.push_back(newPeripheral);
-      return newPeripheral;
+      int iControl = message.GetSenderId();
+
+      if (iControl == CONTROL_PERIPHERAL_LIST)
+      {
+        int iItem = GetSelectedItem(CONTROL_PERIPHERAL_LIST);
+        return OnClick(iItem);
+      }
+      break;
     }
   }
-  return peripheral;
+
+  const bool bHandled = CGUIWindow::OnMessage(message);
+
+  OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
+
+  return bHandled;
 }
 
-bool CGUIWindowGamePeripherals::OnClick(int iItem)
+bool CGUIWindowGamePeripherals::OnAction(const CAction& action)
 {
-  if (0 <= iItem && iItem < (int)m_peripherals.size())
+  if (CGUIWindow::OnAction(action))
   {
-    CGUIDialogControllerInput* pMenu = dynamic_cast<CGUIDialogControllerInput*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTROLLER_INPUT));
-    if (pMenu)
-      pMenu->DoModal(m_peripherals[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
+    OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
     return true;
-  }
-  return false;
-}
-
-bool CGUIWindowGamePeripherals::OnSelect(int iItem)
-{
-  if (0 <= iItem && iItem < (int)m_peripherals.size() && iItem != m_selectedItem)
-  {
-    m_selectedItem = iItem;
-
-    CGUIGamePeripheral* pPeripheral = dynamic_cast<CGUIGamePeripheral*>(GetControl(CONTROL_GAME_PERIPHERAL));
-    if (pPeripheral)
-    {
-      pPeripheral->ActivatePeripheral(m_peripherals[iItem]);
-      return true;
-    }
   }
   return false;
 }
@@ -192,40 +163,6 @@ void CGUIWindowGamePeripherals::OnDeinitWindow(int nextWindowID)
   CGUIWindow::OnDeinitWindow(nextWindowID);
 }
 
-bool CGUIWindowGamePeripherals::OnMessage(CGUIMessage& message)
-{
-  switch (message.GetMessage())
-  {
-    case GUI_MSG_CLICKED:
-    {
-      int iControl = message.GetSenderId();
-
-      if (iControl == CONTROL_PERIPHERAL_LIST)
-      {
-        int iItem = GetSelectedItem(CONTROL_PERIPHERAL_LIST);
-        return OnClick(iItem);
-      }
-      break;
-    }
-  }
-
-  const bool bHandled = CGUIWindow::OnMessage(message);
-
-  OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
-
-  return bHandled;
-}
-
-bool CGUIWindowGamePeripherals::OnAction(const CAction& action)
-{
-  if (CGUIWindow::OnAction(action))
-  {
-    OnSelect(GetSelectedItem(CONTROL_PERIPHERAL_LIST));
-    return true;
-  }
-  return false;
-}
-
 void CGUIWindowGamePeripherals::OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int buttonIndex, bool bPressed)
 {
   // TODO
@@ -244,6 +181,69 @@ void CGUIWindowGamePeripherals::OnAxisMotion(PERIPHERALS::CPeripheralJoystick* j
 void CGUIWindowGamePeripherals::ProcessAxisMotions(PERIPHERALS::CPeripheralJoystick* joystick)
 {
   // TODO
+}
+
+GamePeripheralPtr CGUIWindowGamePeripherals::GetPeripheral(const AddonPtr& addon) const
+{
+  for (GamePeripheralVector::const_iterator it = m_peripherals.begin(); it != m_peripherals.end(); ++it)
+  {
+    if ((*it)->Addon()->ID() == addon->ID())
+      return *it;
+  }
+  return CGamePeripheral::EmptyPtr;
+}
+
+GamePeripheralPtr CGUIWindowGamePeripherals::LoadPeripheral(const AddonPtr& addon)
+{
+  const GamePeripheralPtr& peripheral = GetPeripheral(addon);
+  if (!peripheral)
+  {
+    CGUIControl* control = GetControl(CONTROL_GAME_PERIPHERAL);
+    GamePeripheralPtr newPeripheral = GamePeripheralPtr(new CGamePeripheral(addon, control));
+    if (newPeripheral->Load())
+    {
+      m_peripherals.push_back(newPeripheral);
+      return newPeripheral;
+    }
+  }
+  return peripheral;
+}
+
+std::vector<CPeripheral*> CGUIWindowGamePeripherals::ScanPeripherals(void)
+{
+  std::vector<CPeripheral*> peripherals;
+
+  g_peripherals.GetPeripheralsWithFeature(peripherals, FEATURE_JOYSTICK);
+
+  return peripherals;
+}
+
+bool CGUIWindowGamePeripherals::OnClick(int iItem)
+{
+  if (0 <= iItem && iItem < (int)m_peripherals.size())
+  {
+    CGUIDialogControllerInput* pMenu = dynamic_cast<CGUIDialogControllerInput*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTROLLER_INPUT));
+    if (pMenu)
+      pMenu->DoModal(m_peripherals[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
+    return true;
+  }
+  return false;
+}
+
+bool CGUIWindowGamePeripherals::OnSelect(int iItem)
+{
+  if (0 <= iItem && iItem < (int)m_peripherals.size() && iItem != m_selectedItem)
+  {
+    m_selectedItem = iItem;
+
+    CGUIGamePeripheral* pPeripheral = dynamic_cast<CGUIGamePeripheral*>(GetControl(CONTROL_GAME_PERIPHERAL));
+    if (pPeripheral)
+    {
+      pPeripheral->ActivatePeripheral(m_peripherals[iItem]);
+      return true;
+    }
+  }
+  return false;
 }
 
 int CGUIWindowGamePeripherals::GetSelectedItem(int iControl)

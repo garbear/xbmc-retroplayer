@@ -59,9 +59,11 @@ public:
   CGUIWindowGamePeripherals(void);
   virtual ~CGUIWindowGamePeripherals(void) { }
 
+  // implementation of CGUIControl
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction& action);
 
+  // implementation of CGUIWindow
   virtual void OnDeinitWindow(int nextWindowID);
 
   void OnButtonMotion(PERIPHERALS::CPeripheralJoystick* joystick, unsigned int buttonIndex, bool bPressed);
@@ -73,6 +75,7 @@ protected:
   GAME::GamePeripheralPtr GetPeripheral(const ADDON::AddonPtr& addon) const;
   GAME::GamePeripheralPtr LoadPeripheral(const ADDON::AddonPtr& addon);
 
+  // implementation of CGUIWindow
   virtual void OnInitWindow(void);
 
 private:
