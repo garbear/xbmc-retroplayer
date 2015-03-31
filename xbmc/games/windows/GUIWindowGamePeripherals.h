@@ -22,7 +22,7 @@
 #include "addons/Addon.h"
 #include "games/GameTypes.h"
 #include "guilib/GUIWindow.h"
-#include "input/joysticks/IJoystickDriverHandler.h"
+#include "input/joysticks/IJoystickInputHandler.h"
 #include "FileItem.h"
 
 #include <map>
@@ -34,22 +34,24 @@ namespace PERIPHERALS
 
 class CGUIWindowGamePeripherals;
 
-class CGUIJoystickDriverHandler : public IJoystickDriverHandler
+class CGUIJoystickInputHandler : public IJoystickInputHandler
 {
 public:
-  CGUIJoystickDriverHandler(CGUIWindowGamePeripherals* window, PERIPHERALS::CPeripheral* device);
+  CGUIJoystickInputHandler(CGUIWindowGamePeripherals* window, PERIPHERALS::CPeripheral* device, const std::string& strDeviceId);
 
-  virtual ~CGUIJoystickDriverHandler(void);
+  virtual ~CGUIJoystickInputHandler(void);
 
-  // Implementation of IJoystickDriverHandler
-  virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-  virtual void OnHatMotion(unsigned int hatIndex, HatDirection direction);
-  virtual void OnAxisMotion(unsigned int axisIndex, float position);
-  virtual void ProcessAxisMotions(void);
+  // Implementation of IJoystickInputHandler
+  virtual std::string DeviceID(void) const { return m_strDeviceId; }
+  virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
+  virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
+  virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);
+  virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z);
 
 private:
   CGUIWindowGamePeripherals* const m_window;
   PERIPHERALS::CPeripheral* const  m_device;
+  std::string                      m_strDeviceId;
 };
 
 class CGUIWindowGamePeripherals : public CGUIWindow
@@ -65,10 +67,10 @@ public:
   // implementation of CGUIWindow
   virtual void OnDeinitWindow(int nextWindowID);
 
-  void OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex, bool bPressed);
-  void OnHatMotion(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction);
-  void OnAxisMotion(PERIPHERALS::CPeripheral* device, unsigned int axisIndex, float position);
-  void ProcessAxisMotions(PERIPHERALS::CPeripheral* device);
+  bool OnButtonPress(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, bool bPressed);
+  bool OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float magnitude);
+  bool OnAnalogStickMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y);
+  bool OnAccelerometerMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y, float z);
 
 protected:
   GAME::GamePeripheralPtr GetPeripheral(const ADDON::AddonPtr& addon) const;
@@ -85,7 +87,7 @@ private:
 
   int GetSelectedItem(void);
 
-  std::vector<CGUIJoystickDriverHandler*> m_driverHandlers;
+  std::vector<CGUIJoystickInputHandler*> m_inputHandlers;
   GAME::GamePeripheralVector m_peripherals;
   CFileItemList              m_items;
   int                        m_selectedItem;
