@@ -49,13 +49,11 @@
   #define PRAGMA_PACK 1
 #endif
 
-//#define PERIPHERAL_NAME_STRING_LENGTH   1024
-
 /* current Peripheral API version */
-#define PERIPHERAL_API_VERSION "1.0.1"
+#define PERIPHERAL_API_VERSION "1.0.2"
 
 /* min. Peripheral API version */
-#define PERIPHERAL_MIN_API_VERSION "1.0.0"
+#define PERIPHERAL_MIN_API_VERSION "1.0.2"
 
 /* indicates a joystick has no preference for port number */
 #define NO_PORT_REQUESTED     (-1)
