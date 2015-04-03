@@ -27,6 +27,7 @@
 #include "peripherals/PeripheralTypes.h"
 #include "threads/Thread.h"
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -41,8 +42,8 @@ namespace PERIPHERALS
   typedef std::shared_ptr<CPeripheralAddon> PeripheralAddonPtr;
   typedef std::vector<PeripheralAddonPtr>   PeripheralAddonVector;
 
-  typedef std::shared_ptr<ADDON::JoystickFeature> JoystickFeaturePtr;
-  typedef std::vector<JoystickFeaturePtr>         JoystickFeatureVector;
+  typedef std::shared_ptr<ADDON::JoystickFeature>    JoystickFeaturePtr;
+  typedef std::map<unsigned int, JoystickFeaturePtr> JoystickFeatureMap; // Feature ID -> feature
 
   class CPeripheralAddon : public ADDON::CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>
   {
@@ -78,7 +79,7 @@ namespace PERIPHERALS
     /** @name Joystick methods */
     //@{
     bool SetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick);
-    bool GetButtonMap(const CPeripheral* device, const std::string& strDeviceId, JoystickFeatureVector& features);
+    bool GetButtonMap(const CPeripheral* device, const std::string& strDeviceId, JoystickFeatureMap& features);
     bool MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId, const JoystickFeaturePtr& feature);
     //@}
 

@@ -465,7 +465,7 @@ bool CPeripheralAddon::SetJoystickProperties(unsigned int index, CPeripheralJoys
 }
 
 bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string& strDeviceId,
-                                    JoystickFeatureVector& features)
+                                    JoystickFeatureMap& features)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
@@ -491,7 +491,7 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
     {
       JoystickFeaturePtr feature(ADDON::JoystickFeatureFactory::Create(pFeatures[i]));
       if (feature)
-        features.push_back(feature);
+        features[feature->ID()] = feature;
     }
 
     try { m_pStruct->FreeButtonMap(featureCount, pFeatures); }

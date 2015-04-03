@@ -50,12 +50,12 @@ namespace PERIPHERALS
     static PeripheralAddonPtr GetAddon(const CPeripheral* device);
     static HatDirection       ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
     static SemiAxisDirection  ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
-    static DriverMap          GetDriverMap(const JoystickFeatureVector& features);
+    static DriverMap          GetDriverMap(const JoystickFeatureMap& features);
 
     CPeripheral* const       m_device;
     const std::string        m_strDeviceId;
     PeripheralAddonPtr       m_addon;
-    JoystickFeatureVector    m_features;
+    JoystickFeatureMap       m_features;
     DriverMap                m_driverMap;
   };
 }
