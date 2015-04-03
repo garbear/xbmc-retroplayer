@@ -53,7 +53,6 @@ private:
 
 class CGUIButtonControl;
 class CGUIFocusPlane;
-namespace GAME { class CGamePeripheral; }
 
 class CGUIDialogControllerInput : public CGUIDialog, protected CThread
 {

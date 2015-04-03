@@ -27,8 +27,10 @@
 #include "guilib/GUIFocusPlane.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
+#include "input/joysticks/JoystickDriverPrimitive.h"
 #include "input/Key.h"
 #include "peripherals/Peripherals.h"
+#include "peripherals/addons/AddonJoystickButtonMapper.h" // TODO
 #include "peripherals/devices/Peripheral.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
@@ -183,14 +185,28 @@ void CGUIDialogControllerInput::DoModal(const GamePeripheralPtr& peripheral, CGU
 
 void CGUIDialogControllerInput::OnButton(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex)
 {
-  // TODO
-  CancelPrompt();
+  if (IsPrompting())
+  {
+    CAddonJoystickButtonMapper mapper(device, m_peripheral->Addon()->ID()); // TODO
+
+    if (mapper.Load())
+      mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(buttonIndex));
+
+    CancelPrompt();
+  }
 }
 
 void CGUIDialogControllerInput::OnHat(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction)
 {
-  // TODO
-  CancelPrompt();
+  if (IsPrompting())
+  {
+    CAddonJoystickButtonMapper mapper(device, m_peripheral->Addon()->ID()); // TODO
+
+    if (mapper.Load())
+      mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(hatIndex, direction));
+
+    CancelPrompt();
+  }
 }
 
 void CGUIDialogControllerInput::OnAxis(PERIPHERALS::CPeripheral* device, unsigned int axisIndex)
