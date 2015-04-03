@@ -93,7 +93,9 @@ namespace PERIPHERALS
     virtual bool CheckAPIVersion(void);
 
   private:
-    static void         GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
+    static void GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
+    static void GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo);
+
     static HatDirection ToHatDirection(JOYSTICK_STATE_HAT state);
 
     /*!

@@ -126,14 +126,16 @@ extern "C"
 
   /*!
    * @brief Get the features that allow translation from the joystick to the given device
-   * @param joystick      The joystick's properties; unknown values may be left at their default
+   * @param peripheral    The device's peripheral properties; unknown values may be left at their default
+   * @param joystick      The device's joystick properties; unknown values may be left at their default
    * @param device        The device profile being requested
    * @param feature_count The number of features allocated for the features array
    * @param features      The array of allocated features
    * @return PERIPHERAL_NO_ERROR if successful; array must be freed using
    *         FreeButtonMap() in this case
    */
-  PERIPHERAL_ERROR GetButtonMap(const JOYSTICK_INFO* joystick, const char* device,
+  PERIPHERAL_ERROR GetButtonMap(const PERIPHERAL_INFO* peripheral, const JOYSTICK_INFO* joystick,
+                                const char* device,
                                 unsigned int* feature_count, JOYSTICK_FEATURE** features);
 
   /*!
@@ -148,12 +150,14 @@ extern "C"
 
   /*!
    * @brief Update joystick feature
-   * @param joystick    The joystick's properties; unknown values may be left at their default
+   * @param peripheral  The device's peripheral properties; unknown values may be left at their default
+   * @param joystick    The device's joystick properties; unknown values may be left at their default
    * @param device      The device profile being updated
    * @param feature     The feature's new driver value
    * @return PERIPHERAL_NO_ERROR if successful
    */
-  PERIPHERAL_ERROR MapJoystickFeature(const JOYSTICK_INFO* joystick, const char* device,
+  PERIPHERAL_ERROR MapJoystickFeature(const PERIPHERAL_INFO* peripheral, const JOYSTICK_INFO* joystick,
+                                      const char* device,
                                       JOYSTICK_FEATURE* feature);
 #endif
   ///}

@@ -472,6 +472,12 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
 
   PERIPHERAL_ERROR retVal;
 
+  ADDON::Peripheral peripheralInfo;
+  GetPeripheralInfo(device, peripheralInfo);
+
+  PERIPHERAL_INFO peripheralStruct;
+  peripheralInfo.ToStruct(peripheralStruct);
+
   ADDON::Joystick joystickInfo;
   GetJoystickInfo(device, joystickInfo);
 
@@ -481,7 +487,8 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
   unsigned int      featureCount = 0;
   JOYSTICK_FEATURE* pFeatures = NULL;
 
-  try { LogError(retVal = m_pStruct->GetButtonMap(&joystickStruct, strDeviceId.c_str(),
+  try { LogError(retVal = m_pStruct->GetButtonMap(&peripheralStruct, &joystickStruct,
+                                                  strDeviceId.c_str(),
                                                   &featureCount, &pFeatures), "GetButtonMap()"); }
   catch (std::exception &e) { LogException(e, "GetButtonMap()"); return false;  }
 
@@ -511,6 +518,12 @@ bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::
 
   PERIPHERAL_ERROR retVal;
 
+  ADDON::Peripheral peripheralInfo;
+  GetPeripheralInfo(device, peripheralInfo);
+
+  PERIPHERAL_INFO peripheralStruct;
+  peripheralInfo.ToStruct(peripheralStruct);
+
   ADDON::Joystick joystickInfo;
   GetJoystickInfo(device, joystickInfo);
 
@@ -520,11 +533,19 @@ bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::
   JOYSTICK_FEATURE featureStruct;
   feature->ToStruct(featureStruct);
 
-  try { LogError(retVal = m_pStruct->MapJoystickFeature(&joystickStruct, strDeviceId.c_str(),
+  try { LogError(retVal = m_pStruct->MapJoystickFeature(&peripheralStruct, &joystickStruct,
+                                                        strDeviceId.c_str(),
                                                         &featureStruct), "MapJoystickFeature()"); }
   catch (std::exception &e) { LogException(e, "MapJoystickFeature()"); return false;  }
 
   return retVal == PERIPHERAL_NO_ERROR;
+}
+
+void CPeripheralAddon::GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo)
+{
+  peripheralInfo.SetName(device->DeviceName());
+  peripheralInfo.SetVendorID(device->VendorId());
+  peripheralInfo.SetProductID(device->ProductId());
 }
 
 void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo)
