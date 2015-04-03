@@ -22,6 +22,7 @@
 #include "input/InputManager.h"
 #include "input/joysticks/generic/GenericJoystickKeyboardHandler.h"
 #include "input/Key.h"
+#include "threads/SingleLock.h"
 
 using namespace PERIPHERALS;
 
@@ -52,6 +53,8 @@ bool CPeripheralKeyboard::InitialiseFeature(const PeripheralFeature feature)
 
 void CPeripheralKeyboard::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
+  CSingleLock lock(m_handlerMutex);
+
   bool bFound = false;
 
   for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); !bFound && it != m_keyboardHandlers.end(); ++it)
@@ -67,6 +70,8 @@ void CPeripheralKeyboard::RegisterJoystickDriverHandler(IJoystickDriverHandler* 
 
 void CPeripheralKeyboard::UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
+  CSingleLock lock(m_handlerMutex);
+
   for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
   {
     if (it->first == handler)
@@ -80,6 +85,8 @@ void CPeripheralKeyboard::UnregisterJoystickDriverHandler(IJoystickDriverHandler
 
 bool CPeripheralKeyboard::OnKeyPress(const CKey& key)
 {
+  CSingleLock lock(m_handlerMutex);
+
   bool bHandled = false;
 
   for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
@@ -90,6 +97,8 @@ bool CPeripheralKeyboard::OnKeyPress(const CKey& key)
 
 void CPeripheralKeyboard::OnKeyRelease(const CKey& key)
 {
+  CSingleLock lock(m_handlerMutex);
+
   for (KeyboardHandlerVector::iterator it = m_keyboardHandlers.begin(); it != m_keyboardHandlers.end(); ++it)
     it->second->OnKeyRelease(key);
 }

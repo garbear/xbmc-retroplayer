@@ -21,6 +21,7 @@
 
 #include "Peripheral.h"
 #include "input/IKeyboardHandler.h"
+#include "threads/CriticalSection.h"
 
 #include <utility>
 #include <vector>
@@ -48,5 +49,6 @@ namespace PERIPHERALS
     typedef std::vector<std::pair<IJoystickDriverHandler*, IKeyboardHandler*> > KeyboardHandlerVector;
 
     KeyboardHandlerVector m_keyboardHandlers;
+    CCriticalSection      m_handlerMutex;
   };
 }

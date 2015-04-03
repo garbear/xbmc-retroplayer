@@ -21,6 +21,7 @@
 #include "PeripheralJoystick.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/PeripheralBusAddon.h"
+#include "threads/SingleLock.h"
 #include "utils/log.h"
 
 #include <algorithm>
@@ -71,35 +72,47 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
 
 void CPeripheralJoystick::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
+  CSingleLock lock(m_handlerMutex);
+
   if (handler && std::find(m_driverHandlers.begin(), m_driverHandlers.end(), handler) == m_driverHandlers.end())
     m_driverHandlers.insert(m_driverHandlers.begin(), handler);
 }
 
 void CPeripheralJoystick::UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
+  CSingleLock lock(m_handlerMutex);
+
   m_driverHandlers.erase(std::remove(m_driverHandlers.begin(), m_driverHandlers.end(), handler), m_driverHandlers.end());
 }
 
 void CPeripheralJoystick::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
+  CSingleLock lock(m_handlerMutex);
+
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
     (*it)->OnButtonMotion(buttonIndex, bPressed);
 }
 
 void CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
+  CSingleLock lock(m_handlerMutex);
+
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
     (*it)->OnHatMotion(hatIndex, direction);
 }
 
 void CPeripheralJoystick::OnAxisMotion(unsigned int axisIndex, float position)
 {
+  CSingleLock lock(m_handlerMutex);
+
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
     (*it)->OnAxisMotion(axisIndex, position);
 }
 
 void CPeripheralJoystick::ProcessAxisMotions(void)
 {
+  CSingleLock lock(m_handlerMutex);
+
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
     (*it)->ProcessAxisMotions();
 }
