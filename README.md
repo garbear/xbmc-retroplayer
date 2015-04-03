@@ -23,26 +23,10 @@ RetroPlayer is a new player core for Kodi Entertainment Center. It is similar to
 Many of these features are still works-in-progress, so fork the code and help out!
 
 # Building Kodi and games
-Make sure to have all Kodi's dependencies installed, look here for instructions for various operating systems: [Compiling Kodi](http://kodi.wiki/view/Compiling), then :
+Make sure to have all Kodi's dependencies installed, look here for instructions for various operating systems: [Compiling Kodi](http://kodi.wiki/view/Compiling), then:
 
 `./bootstrap`, `./configure` and `make -j8` as per usual
 
 `make install DESTDIR=$HOME/kodi` whenever one of these headers changes: [xbmc/addons/addon-bindings.mk](https://github.com/garbear/xbmc/blob/retroplayer-15alpha1/xbmc/addons/addon-bindings.mk)
 
-`make -C tools/depends/target/xbmc-game-addons PREFIX=$HOME/kodi` to build game add-ons
-
-`make -C tools/depends/target/xbmc-peripheral-addons PREFIX=$HOME/kodi` to build peripheral add-ons
-
-You'll also need to copy the add-on packages by hand. This might have been automated, check out https://github.com/xbmc/xbmc/pull/6429 for clues.
-
-```shell
-ADDON_ID=peripheral.joystick
-mkdir -p addons/$ADDON_ID
-cp $HOME/kodi/lib/kodi/addons/$ADDON_ID/$ADDON_ID.so addons/$ADDON_ID/
-cp $HOME/kodi/share/kodi/addons/$ADDON_ID/addon.xml  addons/$ADDON_ID/
-
-ADDON_ID=game.library.libretro
-mkdir -p addons/$ADDON_ID
-cp $HOME/kodi/lib/kodi/addons/$ADDON_ID/$ADDON_ID.so addons/$ADDON_ID/
-cp $HOME/kodi/share/kodi/addons/$ADDON_ID/addon.xml  addons/$ADDON_ID/
-```
+To build game add-ons, follow the "Building in-tree" instructions from the [game.libretro readme](https://github.com/kodi-game/game.libretro). If you omit `ADDONS="game.libretro"` then all add-ons will be built in one go.
