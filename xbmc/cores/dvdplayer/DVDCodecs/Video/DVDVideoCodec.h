@@ -50,6 +50,7 @@ struct DVDCodecAvailableType
 namespace DXVA { class CRenderPicture; }
 namespace VAAPI { class CVaapiRenderPicture; }
 namespace VDPAU { class CVdpauRenderPicture; }
+class CRetroGlRenderPicture;
 class COpenMax;
 class COpenMaxVideo;
 struct OpenMaxVideoBufferHolder;
@@ -107,9 +108,12 @@ struct DVDVideoPicture
     struct {
       CMMALVideoBuffer *MMALBuffer;
     };
-
   };
-
+ 
+  struct {
+    CRetroGlRenderPicture *retro;
+  };
+ 
   unsigned int iFlags;
 
   double       iRepeatPicture;
