@@ -92,12 +92,9 @@ ADDON::AddonPtr CPeripheralAddon::GetRunningInstance(void) const
   return CAddon::GetRunningInstance();
 }
 
-ADDON_STATUS CPeripheralAddon::Create(void)
+ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 {
   ADDON_STATUS status(ADDON_STATUS_UNKNOWN);
-
-  /* ensure that a previous instance is destroyed */
-  Destroy();
 
   /* reset all properties to defaults */
   ResetProperties();
@@ -117,18 +114,6 @@ ADDON_STATUS CPeripheralAddon::Create(void)
   }
 
   return status;
-}
-
-void CPeripheralAddon::Destroy(void)
-{
-  /* reset 'ready to use' to false */
-  CLog::Log(LOGDEBUG, "PERIPHERAL - %s - destroying peripheral add-on '%s'", __FUNCTION__, Name().c_str());
-
-  /* destroy the add-on */
-  CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::Destroy();
-
-  /* reset all properties to defaults */
-  ResetProperties();
 }
 
 bool CPeripheralAddon::GetAddonProperties(void)

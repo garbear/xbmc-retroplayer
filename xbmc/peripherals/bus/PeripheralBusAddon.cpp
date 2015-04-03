@@ -99,7 +99,7 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
       // If add-on hasn't been created, try to create it now
       if (std::find(createdAddons.begin(), createdAddons.end(), addon) == createdAddons.end())
       {
-        if (addon->Create() != ADDON_STATUS_OK)
+        if (addon->CreateAddon() != ADDON_STATUS_OK)
         {
           m_failedAddons.push_back(addon);
           continue;

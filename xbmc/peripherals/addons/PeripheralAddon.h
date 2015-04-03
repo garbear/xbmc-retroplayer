@@ -56,12 +56,7 @@ namespace PERIPHERALS
     /*!
      * @brief Initialise the instance of this add-on
      */
-    ADDON_STATUS Create(void);
-
-    /*!
-     * @brief Destroy the instance of this add-on
-     */
-    void Destroy(void);
+    ADDON_STATUS CreateAddon(void);
 
     bool         Register(unsigned int peripheralIndex, CPeripheral* peripheral);
     void         UnregisterRemovedDevices(const PeripheralScanResults &results, std::vector<CPeripheral*>& removedPeripherals);
