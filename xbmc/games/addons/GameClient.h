@@ -134,6 +134,8 @@ public:
   int                GetRegion() const     { return m_region; }
   double             GetFrameRate() const  { return m_frameRate * m_frameRateCorrection; }
   double             GetSampleRate() const { return m_sampleRate; }
+  unsigned int       GetBaseWidth() const  { return m_baseWidth; }
+  unsigned int       GetBaseHeight() const { return m_baseHeight; }
 
   // Modify the value returned by GetFrameRate(), used to sync gameplay to audio
   // TODO: Remove me
@@ -163,6 +165,7 @@ public:
   bool OnButtonMotion(int port, const std::string& feature, float magnitude);
   bool OnAnalogStickMotion(int port, const std::string& feature, float x, float y);
   bool OnAccelerometerMotion(int port, const std::string& feature, float x, float y, float z);
+  void HwContextReset();
 
   // implementation of IKeyboardHandler
   virtual bool OnKeyPress(const CKey& key);
@@ -209,6 +212,8 @@ private:
   double                m_frameRate;           // Video framerate
   double                m_frameRateCorrection; // Framerate correction factor (to sync to audio)
   double                m_sampleRate;          // Audio frequency
+  unsigned int          m_baseHeight;
+  unsigned int          m_baseWidth;
 
   // Save/rewind functionality
   unsigned int          m_serializeSize;

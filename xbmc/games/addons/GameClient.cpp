@@ -520,6 +520,8 @@ bool CGameClient::LoadGameInfo()
   m_frameRate  = av_info.timing.fps;
   m_sampleRate = av_info.timing.sample_rate;
   m_region     = region;
+  m_baseWidth  = av_info.geometry.base_width;
+  m_baseHeight = av_info.geometry.base_height;
 
   return true;
 }
@@ -1001,3 +1003,13 @@ const char* CGameClient::ToString(GAME_ERROR error)
       return "unknown error";
   }
 }
+
+void CGameClient::HwContextReset()
+{
+    try { LogError(m_pStruct->HwContextReset(), "HwContextReset()"); }
+    catch (...) { LogException("HwContextReset()"); }
+}
+
+#ifdef TARGET_WINDOWS
+  #pragma warning (pop)
+#endif

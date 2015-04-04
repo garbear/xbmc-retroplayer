@@ -204,4 +204,22 @@ void CAddonCallbacksGame::RumbleSetState(void* addonData, unsigned int port, GAM
   // TODO
 }
 
+uintptr_t CAddonCallbacksGame::HwGetCurrentFramebuffer(void* addonData)
+{
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return 0;
+
+  return retroPlayer->GetCurrentFramebuffer();
+}
+
+game_proc_address_t CAddonCallbacksGame::HwGetProcAddress(void* addonData, const char *sym)
+{
+  CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
+  if (!retroPlayer)
+    return NULL;
+
+  return retroPlayer->GetProcAddress(sym);
+}
+
 }; /* namespace ADDON */
