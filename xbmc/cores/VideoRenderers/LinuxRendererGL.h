@@ -42,6 +42,7 @@ namespace Shaders { class BaseYUV2RGBShader; }
 namespace Shaders { class BaseVideoFilterShader; }
 namespace VAAPI   { class CVaapiRenderPicture; }
 namespace VDPAU   { class CVdpauRenderPicture; }
+class CRetroGlRenderPicture;
 
 #undef ALIGN
 #define ALIGN(value, alignment) (((value)+((alignment)-1))&~((alignment)-1))
@@ -87,6 +88,7 @@ enum RenderMethod
   RENDER_POT=0x10,
   RENDER_VAAPI=0x20,
   RENDER_CVREF = 0x40,
+  RENDER_RETROGL = 0x80
 };
 
 enum RenderQuality
@@ -145,6 +147,8 @@ public:
   virtual void         AddProcessor(struct __CVBuffer *cvBufferRef, int index);
 #endif
 
+  virtual void         AddProcessor(CRetroGlRenderPicture *retro, int index);
+
   virtual void RenderUpdate(bool clear, DWORD flags = 0, DWORD alpha = 255);
 
   // Feature support
@@ -195,6 +199,10 @@ protected:
   void DeleteVAAPITexture(int index);
   bool CreateVAAPITexture(int index);
 
+  bool UploadRetroTexture(int index);
+  void DeleteRetroTexture(int index);
+  bool CreateRetroTexture(int index);
+
   bool UploadCVRefTexture(int index);
   void DeleteCVRefTexture(int index);
   bool CreateCVRefTexture(int index);
@@ -217,6 +225,8 @@ protected:
   void RenderSoftware(int renderBuffer, int field);   // single pass s/w yuv2rgb renderer
   void RenderRGB(int renderBuffer, int field);      // render using vdpau/vaapi hardware
   void RenderProgressiveWeave(int renderBuffer, int field); // render using vdpau hardware
+  void RenderVAAPI(int renderBuffer, int field);      // render using vdpau hardware
+  void RenderRetro(int renderBuffer, int field);      // render using retro textures
 
   struct
   {
@@ -283,6 +293,7 @@ protected:
 #ifdef TARGET_DARWIN_OSX
     struct __CVBuffer *cvBufferRef;
 #endif
+    CRetroGlRenderPicture *retro;
   };
 
   typedef YUVBUFFER          YUVBUFFERS[NUM_BUFFERS];

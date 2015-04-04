@@ -70,6 +70,12 @@ extern "C" {
   #endif
 #endif
 
+#include "cores/RetroPlayer/RetroGl.h"
+
+#ifdef HAS_GLX
+#include <GL/glx.h>
+#endif
+
 //due to a bug on osx nvidia, using gltexsubimage2d with a pbo bound and a null pointer
 //screws up the alpha, an offset fixes this, there might still be a problem if stride + PBO_OFFSET
 //is a multiple of 128 and deinterlacing is on
@@ -923,6 +929,16 @@ void CLinuxRendererGL::LoadShaders(int field)
     CLog::Log(LOGNOTICE, "GL: Using VAAPI render method");
     m_renderMethod = RENDER_VAAPI;
   }
+  else if (m_format == RENDER_FMT_CVBREF)
+  {
+    CLog::Log(LOGNOTICE, "GL: Using CVBREF render method");
+    m_renderMethod = RENDER_CVREF;
+  }
+  else if (m_format == RENDER_FMT_RETROGL)
+  {
+    CLog::Log(LOGNOTICE, "GL: Using RETROGL render method");
+    m_renderMethod = RENDER_RETROGL;
+  }
   else
   {
     int requestedMethod = CSettings::Get().GetInt("videoplayer.rendermethod");
@@ -1079,6 +1095,12 @@ void CLinuxRendererGL::LoadShaders(int field)
     m_textureCreate = &CLinuxRendererGL::CreateCVRefTexture;
     m_textureDelete = &CLinuxRendererGL::DeleteCVRefTexture;
   }
+  else if (m_format == RENDER_FMT_RETROGL)
+  {
+    m_textureUpload = &CLinuxRendererGL::UploadRetroTexture;
+    m_textureCreate = &CLinuxRendererGL::CreateRetroTexture;
+    m_textureDelete = &CLinuxRendererGL::DeleteRetroTexture;
+  }
   else
   {
     // setup default YV12 texture handlers
@@ -1192,6 +1214,11 @@ void CLinuxRendererGL::Render(DWORD flags, int renderBuffer)
     RenderRGB(renderBuffer, m_currentField);
   }
 #endif
+  else if (m_renderMethod & RENDER_RETROGL)
+  {
+      UpdateVideoFilter();
+      RenderRetro(renderBuffer, m_currentField);
+  }
   else
   {
     RenderSoftware(renderBuffer, m_currentField);
@@ -1627,6 +1654,69 @@ void CLinuxRendererGL::RenderRGB(int index, int field)
   glBindTexture (m_textureTarget, 0);
   glDisable(m_textureTarget);
 #endif
+}
+
+void CLinuxRendererGL::RenderRetro(int index, int field)
+{
+  YUVPLANE &plane = m_buffers[index].fields[FIELD_FULL][0];
+
+  glEnable(m_textureTarget);
+  glActiveTextureARB(GL_TEXTURE0);
+
+  glBindTexture(m_textureTarget, plane.id);
+
+  // make sure we know the correct texture size
+  GetPlaneTextureSize(plane);
+
+  // Try some clamping or wrapping
+  glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(m_textureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  if (m_pVideoFilterShader)
+  {
+    GLint filter;
+    if (!m_pVideoFilterShader->GetTextureFilter(filter))
+      filter = m_scalingMethod == VS_SCALINGMETHOD_NEAREST ? GL_NEAREST : GL_LINEAR;
+
+    glTexParameteri(m_textureTarget, GL_TEXTURE_MAG_FILTER, filter);
+    glTexParameteri(m_textureTarget, GL_TEXTURE_MIN_FILTER, filter);
+    m_pVideoFilterShader->SetSourceTexture(0);
+    m_pVideoFilterShader->SetWidth(m_sourceWidth);
+    m_pVideoFilterShader->SetHeight(m_sourceHeight);
+
+    //disable non-linear stretch when a dvd menu is shown, parts of the menu are rendered through the overlay renderer
+    //having non-linear stretch on breaks the alignment
+    if (g_application.m_pPlayer->IsInMenu())
+      m_pVideoFilterShader->SetNonLinStretch(1.0);
+    else
+      m_pVideoFilterShader->SetNonLinStretch(pow(CDisplaySettings::Get().GetPixelRatio(), g_advancedSettings.m_videoNonLinStretchRatio));
+
+    m_pVideoFilterShader->Enable();
+  }
+  else
+  {
+    GLint filter = m_scalingMethod == VS_SCALINGMETHOD_NEAREST ? GL_NEAREST : GL_LINEAR;
+    glTexParameteri(m_textureTarget, GL_TEXTURE_MAG_FILTER, filter);
+    glTexParameteri(m_textureTarget, GL_TEXTURE_MIN_FILTER, filter);
+  }
+
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  VerifyGLState();
+  glBegin(GL_QUADS);
+
+  glTexCoord2f(plane.rect.x1, plane.rect.y1);  glVertex2f(m_rotatedDestCoords[3].x, m_rotatedDestCoords[3].y);
+  glTexCoord2f(plane.rect.x2, plane.rect.y1);  glVertex2f(m_rotatedDestCoords[2].x, m_rotatedDestCoords[2].y);
+  glTexCoord2f(plane.rect.x2, plane.rect.y2);  glVertex2f(m_rotatedDestCoords[1].x, m_rotatedDestCoords[1].y);
+  glTexCoord2f(plane.rect.x1, plane.rect.y2);  glVertex2f(m_rotatedDestCoords[0].x, m_rotatedDestCoords[0].y);
+
+  glEnd();
+  VerifyGLState();
+
+  if (m_pVideoFilterShader)
+    m_pVideoFilterShader->Disable();
+
+  glBindTexture (m_textureTarget, 0);
+  glDisable(m_textureTarget);
 }
 
 void CLinuxRendererGL::RenderSoftware(int index, int field)
@@ -2572,6 +2662,82 @@ bool CLinuxRendererGL::UploadVAAPITexture(int index)
   return true;
 }
 
+void CLinuxRendererGL::DeleteRetroTexture(int index)
+{
+  YUVPLANE &plane = m_buffers[index].fields[FIELD_FULL][0];
+  //SAFE_RELEASE(m_buffers[index].retro);
+  plane.id = 0;
+}
+
+bool CLinuxRendererGL::CreateRetroTexture(int index)
+{
+  YV12Image &im     = m_buffers[index].image;
+  YUVFIELDS &fields = m_buffers[index].fields;
+  YUVPLANE  &plane  = fields[FIELD_FULL][0];
+
+  DeleteRetroTexture(index);
+
+  memset(&im    , 0, sizeof(im));
+  memset(&fields, 0, sizeof(fields));
+  im.height = m_sourceHeight;
+  im.width  = m_sourceWidth;
+
+  plane.texwidth  = im.width;
+  plane.texheight = im.height;
+
+  plane.pixpertex_x = 1;
+  plane.pixpertex_y = 1;
+
+  plane.id = 1;
+
+  return true;
+}
+
+bool CLinuxRendererGL::UploadRetroTexture(int index)
+{
+  CRetroGlRenderPicture *retro = m_buffers[index].retro;
+
+  YV12Image &im     = m_buffers[index].image;
+  YUVFIELDS &fields = m_buffers[index].fields;
+  YUVPLANE &plane = fields[FIELD_FULL][0];
+
+  if (!retro /*|| !retro->valid*/)
+  {
+    return false;
+  }
+
+  plane.id = retro->texture[0];
+
+  // in stereoscopic mode sourceRect may only
+  // be a part of the source video surface
+  plane.rect = m_sourceRect;
+
+  // clip rect
+  /*
+  if (retro->crop.x1 > plane.rect.x1)
+    plane.rect.x1 = retro->crop.x1;
+  if (retro->crop.x2 < plane.rect.x2)
+    plane.rect.x2 = retro->crop.x2;
+  if (retro->crop.y1 > plane.rect.y1)
+    plane.rect.y1 = retro->crop.y1;
+  if (retro->crop.y2 < plane.rect.y2)
+    plane.rect.y2 = retro->crop.y2;
+  */
+
+  plane.texheight = retro->texHeight;
+  plane.texwidth  = retro->texWidth;
+
+  if (m_textureTarget == GL_TEXTURE_2D)
+  {
+    plane.rect.y1 /= plane.texheight;
+    plane.rect.y2 /= plane.texheight;
+    plane.rect.x1 /= plane.texwidth;
+    plane.rect.x2 /= plane.texwidth;
+  }
+
+  return true;
+}
+
 //********************************************************************************************************
 // CoreVideoRef Texture creation, deletion, copying + clearing
 //********************************************************************************************************
@@ -3504,5 +3670,12 @@ void CLinuxRendererGL::AddProcessor(struct __CVBuffer *cvBufferRef, int index)
   CVBufferRetain(buf.cvBufferRef);
 }
 #endif
+
+void CLinuxRendererGL::AddProcessor(CRetroGlRenderPicture *retro, int index)
+{
+  YUVBUFFER &buf = m_buffers[index];
+  buf.retro = retro;
+}
+
 
 #endif
