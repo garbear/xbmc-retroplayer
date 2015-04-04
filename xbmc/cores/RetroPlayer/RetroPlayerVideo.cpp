@@ -27,6 +27,8 @@
 #include "cores/FFmpeg.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
+#include "system_gl.h"
+#include "cores/RetroPlayer/RetroGl.h"
 
 #include "libswscale/swscale.h"
 
@@ -39,7 +41,8 @@ CRetroPlayerVideo::CRetroPlayerVideo(void)
     m_format(AV_PIX_FMT_NONE),
     m_picture(NULL),
     m_swsContext(NULL),
-    m_bFrameReady(false)
+    m_bFrameReady(false),
+    m_renderpic(NULL)
 {
 }
 
@@ -80,6 +83,29 @@ bool CRetroPlayerVideo::VideoFrame(const uint8_t* data, unsigned int size, unsig
     if (Configure(width, height, format))
     {
       ColorspaceConversion(data, size, width, height, *m_picture);
+      SetFrameReady(true);
+      return true;
+    }
+    else
+    {
+      Stop();
+    }
+  }
+
+  return false;
+}
+
+bool CRetroPlayerVideo::VideoFrame(AVPixelFormat format, unsigned int size, unsigned int width, unsigned int height, CRetroGlRenderPicture* picture)
+{
+  if (!m_bStop && !IsFrameReady())
+  {
+    m_renderpic = picture;
+    m_renderpic->texWidth = width;
+    m_renderpic->texHeight = height;
+
+    if (Configure(width, height, format))
+    {
+      ColorspaceConversion(0, size, width, height, *m_picture);
       SetFrameReady(true);
       return true;
     }
@@ -144,8 +170,15 @@ bool CRetroPlayerVideo::Configure(unsigned int width, unsigned int height, AVPix
 
     int orientation = 0; // (90 = 5, 180 = 2, 270 = 7), if we ever want to use RETRO_ENVIRONMENT_SET_ROTATION
 
+    ERenderFormat render_format;
+    if (m_renderpic)
+      render_format         = RENDER_FMT_RETROGL;
+    else
+      render_format         = RENDER_FMT_YUV420P; // PIX_FMT_YUV420P
+
+
     if (!g_renderManager.Configure(width, height, width, height, (float)m_framerate,
-                                   flags, RENDER_FMT_YUV420P, 0, orientation))
+                                   flags, render_format, 0, orientation))
     {
       CLog::Log(LOGERROR, "RetroPlayerVideo: Failed to configure renderer");
       return false;
@@ -158,38 +191,44 @@ bool CRetroPlayerVideo::Configure(unsigned int width, unsigned int height, AVPix
                                   SWS_FAST_BILINEAR | SwScaleCPUFlags(),
                                   NULL, NULL, NULL);
 
+
     m_picture = CDVDCodecUtils::AllocatePicture(width, height);
 
     m_picture->dts            = DVD_NOPTS_VALUE;
     m_picture->pts            = DVD_NOPTS_VALUE;
-    m_picture->format         = RENDER_FMT_YUV420P; // PIX_FMT_YUV420P
+    m_picture->format         = render_format;
     m_picture->color_range    = 0; // *not* CONF_FLAGS_YUV_FULLRANGE
     m_picture->color_matrix   = 4; // CONF_FLAGS_YUVCOEF_BT601
     m_picture->iFlags         = DVP_FLAG_ALLOCATED;
     m_picture->iDisplayWidth  = width;
     m_picture->iDisplayHeight = height;
     m_picture->iDuration      = 1.0 / m_framerate;
-
     m_format = format;
   }
+
+  if (m_renderpic)
+      m_picture->retro = m_renderpic;
 
   return true;
 }
 
 void CRetroPlayerVideo::ColorspaceConversion(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, DVDVideoPicture &output)
 {
-  const unsigned int stride = size / height;
-
-  if (stride != 0)
+  if (!m_renderpic && data)
   {
-    uint8_t* dataMutable = const_cast<uint8_t*>(data);
+    const unsigned int stride = size / height;
 
-    uint8_t* src[] =       { dataMutable,         0,                   0,                   0 };
-    int      srcStride[] = { (int)stride,         0,                   0,                   0 };
-    uint8_t* dst[] =       { output.data[0],      output.data[1],      output.data[2],      0 };
-    int      dstStride[] = { output.iLineSize[0], output.iLineSize[1], output.iLineSize[2], 0 };
+    if (stride != 0)
+    {
+      uint8_t* dataMutable = const_cast<uint8_t*>(data);
 
-    sws_scale(m_swsContext, src, srcStride, 0, height, dst, dstStride);
+      uint8_t* src[] =       { dataMutable,         0,                   0,                   0 };
+      int      srcStride[] = { (int)stride,         0,                   0,                   0 };
+      uint8_t* dst[] =       { output.data[0],      output.data[1],      output.data[2],      0 };
+      int      dstStride[] = { output.iLineSize[0], output.iLineSize[1], output.iLineSize[2], 0 };
+
+      sws_scale(m_swsContext, src, srcStride, 0, height, dst, dstStride);
+    }
   }
 }
 

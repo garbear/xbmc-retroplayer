@@ -27,6 +27,7 @@
 
 struct DVDVideoPicture;
 struct SwsContext;
+struct CRetroGlRenderPicture;
 
 class CRetroPlayerVideo : protected CThread
 {
@@ -38,6 +39,7 @@ public:
   void Stop(void);
 
   bool VideoFrame(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, AVPixelFormat format);
+  bool VideoFrame(AVPixelFormat format, unsigned int size, unsigned int width, unsigned int height, CRetroGlRenderPicture* picture);
 
 protected:
   virtual void Process(void);
@@ -59,4 +61,6 @@ private:
   bool              m_bFrameReady;
   CCriticalSection  m_frameReadyMutex;
   CEvent            m_frameReadyEvent;
+
+  CRetroGlRenderPicture  *m_renderpic;
 };

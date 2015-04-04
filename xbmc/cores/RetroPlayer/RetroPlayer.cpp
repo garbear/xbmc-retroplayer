@@ -18,6 +18,7 @@
  *
  */
 
+#include "windowing/WindowingFactory.h"
 #include "RetroPlayer.h"
 #include "ApplicationMessenger.h"
 #include "cores/dvdplayer/DVDClock.h"
@@ -112,6 +113,7 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   // Must be called from main thread
   g_renderManager.PreInit();
 
+
   Create();
   CLog::Log(LOGDEBUG, "RetroPlayer: File opened successfully");
   return true;
@@ -195,8 +197,14 @@ void CRetroPlayer::Process()
     CLog::Log(LOGDEBUG, "RetroPlayer: Frame rate changed from %f to %f",
       (float)(newFramerate / m_audioSpeedFactor), (float)newFramerate);
 
+  CreateGlxContext();
+  CreateTexture();
+  if (!CreateFramebuffer())
+    CLog::Log(LOGINFO, "Could not create framebuffer object");
+  
   m_video.Start(newFramerate);
 
+  m_gameClient->HwContextReset();
   const double frametime = 1000 * 1000 / newFramerate; // microseconds
 
   CLog::Log(LOGDEBUG, "RetroPlayer: Beginning loop de loop");
@@ -368,4 +376,132 @@ int64_t CRetroPlayer::GetTotalTime()
 
   int max_buffer = m_gameClient->GetMaxFrames();
   return 1000 * max_buffer / m_gameClient->GetFrameRate(); // Millisecs
+}
+
+game_proc_address_t CRetroPlayer::GetProcAddress(const char* sym)
+{
+  return glXGetProcAddress((const GLubyte*) sym);
+}
+
+bool CRetroPlayer::CreateGlxContext()
+{
+  GLXContext   glContext;
+
+  m_Display = g_Windowing.GetDisplay();
+  glContext = g_Windowing.GetGlxContext();
+  m_Window = g_Windowing.GetWindow();
+
+  // Get our window attribs.
+  XWindowAttributes wndattribs;
+  XGetWindowAttributes(m_Display, m_Window, &wndattribs);
+
+  // Get visual Info
+  XVisualInfo visInfo;
+  visInfo.visualid = wndattribs.visual->visualid;
+  int nvisuals = 0;
+  XVisualInfo* visuals = XGetVisualInfo(m_Display, VisualIDMask, &visInfo, &nvisuals);
+  if (nvisuals != 1)
+  {
+    CLog::Log(LOGERROR, "RetroPlayer::CreateGlxContext - could not find visual");
+    return false;
+  }
+  visInfo = visuals[0];
+  XFree(visuals);
+
+  m_pixmap = XCreatePixmap(m_Display,
+                           m_Window,
+                           192,
+                           108,
+                           visInfo.depth);
+  if (!m_pixmap)
+  {
+    CLog::Log(LOGERROR, "RetroPlayer::CreateGlxContext - Unable to create XPixmap");
+    return false;
+  }
+
+  // create gl pixmap
+  m_glPixmap = glXCreateGLXPixmap(m_Display, &visInfo, m_pixmap);
+
+  if (!m_glPixmap)
+  {
+    CLog::Log(LOGINFO, "RetroPlayer::CreateGlxContext - Could not create glPixmap");
+    return false;
+  }
+
+  m_glContext = glXCreateContext(m_Display, &visInfo, glContext, True);
+
+  if (!glXMakeCurrent(m_Display, m_glPixmap, m_glContext))
+  {
+    CLog::Log(LOGINFO, "RetroPlayer::CreateGlxContext - Could not make Pixmap current");
+    return false;
+  }
+
+  CLog::Log(LOGNOTICE, "RetroPlayer::CreateGlxContext - created context");
+  return true;
+}
+
+GLuint CRetroPlayer::GetCurrentFramebuffer()
+{
+  return (GLuint)m_fboId;
+}
+
+bool CRetroPlayer::CreateFramebuffer()
+{
+  glGenFramebuffers(1, &m_fboId);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_fboId);
+
+  // attach the texture to FBO color attachment point
+  glFramebufferTexture2D(GL_FRAMEBUFFER,          // 1. fbo target: GL_FRAMEBUFFER
+                       GL_COLOR_ATTACHMENT0,      // 2. attachment point
+                       GL_TEXTURE_2D,             // 3. tex target: GL_TEXTURE_2D
+                       m_retroglpic.texture[0],   // 4. tex ID
+                       0);                        // 5. mipmap level: 0(base){
+
+  CreateDepthbuffer();
+
+  CreateDepthbuffer();
+
+  // check FBO status
+  GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+  if(status != GL_FRAMEBUFFER_COMPLETE)
+    return false;
+
+  return true;
+}
+
+bool CRetroPlayer::CreateTexture()
+{
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glGenTextures(1, &m_retroglpic.texture[0]);
+
+  glBindTexture(GL_TEXTURE_2D, m_retroglpic.texture[0]);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_gameClient->GetBaseWidth(), m_gameClient->GetBaseHeight(), 0,
+               GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+  return true;
+}
+
+bool CRetroPlayer::CreateDepthbuffer()
+{
+  glGenRenderbuffers(1, &m_retroglpic.depth[0]);
+  glBindRenderbuffer(GL_RENDERBUFFER, m_retroglpic.depth[0]);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_gameClient->GetBaseWidth(), m_gameClient->GetBaseHeight());
+  glBindRenderbuffer(GL_RENDERBUFFER, 0);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                            GL_RENDERBUFFER, m_retroglpic.depth[0]);
+  return true;
+}
+
+bool CRetroPlayer::VideoFrame(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, AVPixelFormat format)
+{
+  if (data == (void*)-1)
+    return m_video.VideoFrame(format, size, width, height, &m_retroglpic);
+  else
+    return m_video.VideoFrame(data, size, width, height, format);
+  return false;
 }

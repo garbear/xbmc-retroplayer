@@ -19,6 +19,13 @@
  */
 #pragma once
 
+#include "system_gl.h"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#define GLX_GLXEXT_PROTOTYPES
+#include <GL/glx.h>
+
+
 #include "RetroPlayerAudio.h"
 #include "RetroPlayerVideo.h"
 #include "cores/IPlayer.h"
@@ -26,6 +33,8 @@
 #include "games/GameTypes.h"
 #include "threads/Thread.h"
 #include "threads/Event.h"
+#include "RetroGl.h"
+#include "addons/include/kodi_game_types.h"
 
 #include <stdint.h>
 #include <string>
@@ -127,8 +136,11 @@ public:
   virtual void GetSubtitleCapabilities(std::vector<int> &subCaps) { subCaps.assign(1, IPC_SUBS_ALL); }
 
   // Game API
-  void VideoFrame(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, AVPixelFormat format) { m_video.VideoFrame(data, size, width, height, format); }
+  bool VideoFrame(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, AVPixelFormat format);
   void AudioFrames(const uint8_t* data, unsigned int size, unsigned int frames, AEDataFormat format) { m_audio.AudioFrames(data, size, frames, format); }
+
+  GLuint GetCurrentFramebuffer();
+  game_proc_address_t GetProcAddress(const char* sym);
 
 protected:
   virtual void Process();
@@ -149,6 +161,11 @@ private:
    */
   void CreateAudio(double samplerate);
 
+  bool CreateGlxContext();
+  bool CreateFramebuffer();
+  bool CreateTexture();
+  bool CreateDepthbuffer();
+
   CRetroPlayerVideo    m_video;
   CRetroPlayerAudio    m_audio;
 
@@ -162,4 +179,14 @@ private:
   CCriticalSection     m_critSection; // For synchronization of Open() and Close() calls
 
   unsigned int m_samplerate;
+  Display *m_Display;
+  Window m_Window;
+  GLXContext m_glContext;
+  GLXWindow m_glWindow;
+  Pixmap    m_pixmap;
+  GLXPixmap m_glPixmap;
+  GLuint m_fboId;
+  GLuint m_textureId;
+
+  CRetroGlRenderPicture m_retroglpic;
 };
