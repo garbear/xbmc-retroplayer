@@ -31,7 +31,7 @@ namespace PERIPHERALS
   public:
     CAddonJoystickButtonMap(CPeripheral* device, const std::string& strDeviceId);
 
-    virtual ~CAddonJoystickButtonMap(void) { }
+    virtual ~CAddonJoystickButtonMap(void);
 
     // Implementation of IJoystickButtonMap
     virtual std::string DeviceID(void) const { return m_strDeviceId; }

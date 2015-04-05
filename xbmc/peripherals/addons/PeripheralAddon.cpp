@@ -22,6 +22,7 @@
 #include "AddonJoystickButtonMap.h"
 #include "addons/AddonManager.h"
 #include "filesystem/SpecialProtocol.h"
+#include "input/joysticks/IJoystickButtonMap.h"
 #include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
 #include "input/joysticks/JoystickTranslator.h"
@@ -33,6 +34,7 @@
 
 #include <algorithm>
 #include <string.h>
+#include <utility>
 
 using namespace PERIPHERALS;
 
@@ -538,7 +540,36 @@ bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::
                                                         &featureStruct), "MapJoystickFeature()"); }
   catch (std::exception &e) { LogException(e, "MapJoystickFeature()"); return false;  }
 
+  if (retVal == PERIPHERAL_NO_ERROR)
+  {
+    // Notify observing button maps
+    for (auto it = m_buttonMaps.begin(); it != m_buttonMaps.end(); ++it)
+    {
+      // TODO: Compare device properties, not just pointer
+      if (device == it->first && strDeviceId == it->second->DeviceID())
+        it->second->Load();
+    }
+  }
+
   return retVal == PERIPHERAL_NO_ERROR;
+}
+
+void CPeripheralAddon::RegisterButtonMap(CPeripheral* device, IJoystickButtonMap* buttonMap)
+{
+  UnregisterButtonMap(buttonMap);
+  m_buttonMaps.push_back(std::make_pair(device, buttonMap));
+}
+
+void CPeripheralAddon::UnregisterButtonMap(IJoystickButtonMap* buttonMap)
+{
+  for (auto it = m_buttonMaps.begin(); it != m_buttonMaps.end(); ++it)
+  {
+    if (it->second == buttonMap)
+    {
+      m_buttonMaps.erase(it);
+      break;
+    }
+  }
 }
 
 void CPeripheralAddon::GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo)

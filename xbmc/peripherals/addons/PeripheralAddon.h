@@ -31,6 +31,7 @@
 #include <memory>
 #include <vector>
 
+class IJoystickButtonMap;
 class IJoystickDriverHandler;
 
 namespace PERIPHERALS
@@ -83,6 +84,9 @@ namespace PERIPHERALS
     bool MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
     //@}
 
+    void RegisterButtonMap(CPeripheral* device, IJoystickButtonMap* buttonMap);
+    void UnregisterButtonMap(IJoystickButtonMap* buttonMap);
+
     static const char* ToString(PERIPHERAL_ERROR error);
 
   protected:
@@ -126,6 +130,8 @@ namespace PERIPHERALS
 
     /* peripherals */
     std::map<unsigned int, CPeripheral*>  m_peripherals;
+
+    std::vector<std::pair<CPeripheral*, IJoystickButtonMap*> > m_buttonMaps; // Button map observers
 
     /* synchronization */
     CCriticalSection    m_critSection;

@@ -29,10 +29,21 @@ CAddonJoystickButtonMap::CAddonJoystickButtonMap(CPeripheral* device, const std:
     m_addon(g_peripherals.GetAddon(device)),
     m_strDeviceId(strDeviceId)
 {
+  if (m_addon)
+    m_addon->RegisterButtonMap(m_device, this);
+}
+
+CAddonJoystickButtonMap::~CAddonJoystickButtonMap(void)
+{
+  if (m_addon)
+    m_addon->UnregisterButtonMap(this);
 }
 
 bool CAddonJoystickButtonMap::Load(void)
 {
+  m_features.clear();
+  m_driverMap.clear();
+
   if (m_addon && m_addon->GetButtonMap(m_device, m_strDeviceId, m_features))
   {
     m_driverMap = GetDriverMap(m_features);
