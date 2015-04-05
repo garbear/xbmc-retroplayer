@@ -157,6 +157,8 @@ CGameClient::CGameClient(const cp_extension_t* ext)
 
 void CGameClient::InitializeProperties(void)
 {
+  m_bSupportsVFS = false;
+  m_bSupportsNoGame = false;
   m_bIsPlaying = false;
   m_player = NULL;
   m_region = GAME_REGION_NTSC;
