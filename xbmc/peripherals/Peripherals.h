@@ -20,6 +20,7 @@
  */
 
 #include "system.h"
+#include "addons/PeripheralAddon.h"
 #include "bus/PeripheralBus.h"
 #include "devices/Peripheral.h"
 #include "PortMapper.h"
@@ -207,7 +208,9 @@ namespace PERIPHERALS
       return false;
 #endif
     }
-    
+
+    virtual PeripheralAddonPtr GetAddon(const CPeripheral* device);
+
     virtual void OnSettingChanged(const CSetting *setting);
     virtual void OnSettingAction(const CSetting *setting);
 

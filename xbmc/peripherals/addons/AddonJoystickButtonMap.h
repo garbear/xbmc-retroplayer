@@ -47,14 +47,13 @@ namespace PERIPHERALS
     typedef std::map<CJoystickDriverPrimitive, unsigned int> DriverMap;
 
     // Utility functions
-    static PeripheralAddonPtr GetAddon(const CPeripheral* device);
     static HatDirection       ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
     static SemiAxisDirection  ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
     static DriverMap          GetDriverMap(const JoystickFeatureMap& features);
 
     CPeripheral* const       m_device;
+    const PeripheralAddonPtr m_addon;
     const std::string        m_strDeviceId;
-    PeripheralAddonPtr       m_addon;
     JoystickFeatureMap       m_features;
     DriverMap                m_driverMap;
   };

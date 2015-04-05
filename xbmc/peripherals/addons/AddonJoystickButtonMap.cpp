@@ -20,21 +20,19 @@
 
 #include "AddonJoystickButtonMap.h"
 #include "peripherals/Peripherals.h"
-#include "peripherals/bus/PeripheralBusAddon.h"
 
 using namespace ADDON;
 using namespace PERIPHERALS;
 
 CAddonJoystickButtonMap::CAddonJoystickButtonMap(CPeripheral* device, const std::string& strDeviceId)
   : m_device(device),
+    m_addon(g_peripherals.GetAddon(device)),
     m_strDeviceId(strDeviceId)
 {
 }
 
 bool CAddonJoystickButtonMap::Load(void)
 {
-  m_addon = GetAddon(m_device);
-
   if (m_addon && m_addon->GetButtonMap(m_device, m_strDeviceId, m_features))
   {
     m_driverMap = GetDriverMap(m_features);
@@ -42,32 +40,6 @@ bool CAddonJoystickButtonMap::Load(void)
   }
 
   return false;
-}
-
-PeripheralAddonPtr CAddonJoystickButtonMap::GetAddon(const CPeripheral* device)
-{
-  PeripheralAddonPtr addon;
-
-  CPeripheralBusAddon* addonBus = static_cast<CPeripheralBusAddon*>(g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON));
-
-  if (device && addonBus)
-  {
-    PeripheralBusType busType = device->GetBusType();
-
-    if (busType == PERIPHERAL_BUS_ADDON)
-    {
-      // If device is from an add-on, use that add-on
-      unsigned int index;
-      addonBus->SplitLocation(device->Location(), addon, index);
-    }
-    else
-    {
-      // Otherwise, have the add-on bus find a suitable add-on
-      addonBus->GetAddonWithButtonMap(device, addon);
-    }
-  }
-
-  return addon;
 }
 
 CAddonJoystickButtonMap::DriverMap CAddonJoystickButtonMap::GetDriverMap(const JoystickFeatureMap& features)
