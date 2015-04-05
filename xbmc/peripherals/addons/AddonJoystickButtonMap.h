@@ -34,6 +34,7 @@ namespace PERIPHERALS
     virtual ~CAddonJoystickButtonMap(void) { }
 
     // Implementation of IJoystickButtonMap
+    virtual std::string DeviceID(void) const { return m_strDeviceId; }
     virtual bool Load(void);
     virtual bool GetFeature(const CJoystickDriverPrimitive& primitive, unsigned int& featureIndex);
     virtual bool GetButton(unsigned int featureIndex, CJoystickDriverPrimitive& button);

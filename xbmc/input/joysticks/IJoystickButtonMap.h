@@ -21,6 +21,8 @@
 
 #include "JoystickDriverPrimitive.h"
 
+#include <string>
+
 /*!
  * \ingroup joysticks
  *
@@ -31,6 +33,16 @@ class IJoystickButtonMap
 {
 public:
   virtual ~IJoystickButtonMap(void) { }
+
+  /*!
+   * \brief The add-on ID of the game peripheral associated with this button map
+   *
+   * The device ID provided by the implementation serves as the context for the
+   * feature indices below.
+   *
+   * \return The ID of this button map's game peripheral add-on
+   */
+  virtual std::string DeviceID(void) const = 0;
 
   /*!
    * \brief Load the button map into memory
