@@ -281,7 +281,7 @@ int CGUIMultiSelectTextControl::GetItemFromPoint(const CPoint &point) const
     if (string.m_selectable)
     {
       CRect rect(posX, m_posY, posX + string.m_length, m_posY + m_height);
-      if (rect.PtInRect(point))
+      if (rect.ContainsPt(point))
         return selectable;
       selectable++;
     }

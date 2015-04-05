@@ -528,7 +528,7 @@ void CGUIControl::SetVisible(bool bVisible, bool setVisState)
 
 bool CGUIControl::HitTest(const CPoint &point) const
 {
-  return m_hitRect.PtInRect(point);
+  return m_hitRect.ContainsPt(point);
 }
 
 EVENT_RESULT CGUIControl::SendMouseEvent(const CPoint &point, const CMouseEvent &event)

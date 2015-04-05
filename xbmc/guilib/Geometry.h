@@ -86,7 +86,20 @@ public:
   T x, y;
 };
 
-template <typename T> class CCircleGen
+template <typename T> class CShapeGen
+{
+public:
+  virtual ~CShapeGen() { }
+  virtual CShapeGen<T>* Clone() const = 0;
+  virtual bool ContainsPt(const CPointGen<T> &point) const = 0;
+  virtual bool IsEmpty() const = 0;
+  virtual CPointGen<T> Center() const = 0;
+  virtual T Area() const = 0;
+  virtual T MinRadius() const = 0;
+  virtual T MaxRadius() const = 0;
+};
+
+template <typename T> class CCircleGen : public CShapeGen<T>
 {
 public:
   typedef CCircleGen<T> this_type;
@@ -107,6 +120,11 @@ public:
     r = rhs.r;
   }
 
+  virtual CShapeGen<T>* Clone() const
+  {
+    return new this_type(*this);
+  }
+
   void SetCircle(T x, T y, T r) { this->x = x; this->y = y; this->r = r; }
 
   bool operator ==(const this_type &circle) const
@@ -118,7 +136,7 @@ public:
 
   bool operator !=(const this_type &circle) const { return !operator==(circle); }
 
-  bool PtInCircle(const CPointGen<T> &point) const
+  bool ContainsPt(const CPointGen<T> &point) const
   {
     return std::sqrt((x - point.x) * (x - point.x) + (y - point.y) * (y - point.y)) <= r;
   }
@@ -138,6 +156,16 @@ public:
     return r;
   }
 
+  inline T MinRadius() const XBMC_FORCE_INLINE
+  {
+    return r;
+  }
+
+  inline T MaxRadius() const XBMC_FORCE_INLINE
+  {
+    return r;
+  }
+
   inline T Area() const XBMC_FORCE_INLINE
   {
     return M_PI * r * r;
@@ -146,7 +174,7 @@ public:
   T x, y, r;
 };
 
-template <typename T> class CRectGen
+template <typename T> class CRectGen : public CShapeGen<T>
 {
 public:
   typedef CRectGen<T> this_type;
@@ -169,9 +197,14 @@ public:
     y2 = rhs.y2;
   }
 
+  virtual CShapeGen<T>* Clone() const
+  {
+    return new this_type(*this);
+  }
+
   void SetRect(T left, T top, T right, T bottom) { x1 = left; y1 = top; x2 = right; y2 = bottom; };
 
-  bool PtInRect(const CPointGen<T> &point) const
+  bool ContainsPt(const CPointGen<T> &point) const
   {
     if (x1 <= point.x && point.x <= x2 && y1 <= point.y && point.y <= y2)
       return true;
@@ -256,14 +289,24 @@ public:
     return CPointGen<T>((x1 + x2) / 2, (y1 + y2) / 2);
   }
 
+  inline T MinRadius() const XBMC_FORCE_INLINE
+  {
+    return std::min(Width(), Height()) / 2;
+  }
+
+  inline T MaxRadius() const XBMC_FORCE_INLINE
+  {
+    return std::sqrt(Width() * Width() + Height() * Height()) / 2;
+  }
+
   inline CCircleGen<T> InscribedCircle() const XBMC_FORCE_INLINE
   {
-    return CCircleGen<T>(Center(), std::min(Width(), Height()) / 2);
+    return CCircleGen<T>(Center(), MinRadius());
   }
 
   inline CCircleGen<T> Circumcircle() const XBMC_FORCE_INLINE
   {
-    return CCircleGen<T>(Center(), std::sqrt(Width() * Width() + Height() * Height()) / 2);
+    return CCircleGen<T>(Center(), MaxRadius());
   }
 
   std::vector<this_type> SubtractRect(this_type splitterRect)
@@ -344,6 +387,9 @@ private:
 
 typedef CPointGen<float> CPoint;
 typedef CPointGen<int>   CPointInt;
+
+typedef CShapeGen<float> CShape;
+typedef CShapeGen<int>   CShapeInt;
 
 typedef CCircleGen<float> CCircle;
 typedef CCircleGen<int>   CCircleInt;

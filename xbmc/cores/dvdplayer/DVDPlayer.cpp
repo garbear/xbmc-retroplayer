@@ -3924,7 +3924,7 @@ bool CDVDPlayer::OnAction(const CAction &action)
           CRect rs, rd;
           m_dvdPlayerVideo->GetVideoRect(rs, rd);
           CPoint pt(action.GetAmount(), action.GetAmount(1));
-          if (!rd.PtInRect(pt))
+          if (!rd.ContainsPt(pt))
             return false; // out of bounds
           THREAD_ACTION(action);
           // convert to video coords...
