@@ -62,11 +62,11 @@ DLLEXPORT void GAME_close_game(AddonCB* frontend, CB_GameLib* cb)
   return cb->CloseGame(frontend->addonData);
 }
 
-DLLEXPORT bool GAME_open_port(AddonCB* frontend, CB_GameLib* cb, unsigned int port, const char* addon_id, game_input_device_caps* device_caps)
+DLLEXPORT bool GAME_open_port(AddonCB* frontend, CB_GameLib* cb, unsigned int port)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->OpenPort(frontend->addonData, port, addon_id, device_caps);
+  return cb->OpenPort(frontend->addonData, port);
 }
 
 DLLEXPORT void GAME_close_port(AddonCB* frontend, CB_GameLib* cb, unsigned int port)

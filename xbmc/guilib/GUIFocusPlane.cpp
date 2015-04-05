@@ -239,16 +239,13 @@ CGUIFocusPlane::~CGUIFocusPlane(void)
   delete m_renderer;
 }
 
-void CGUIFocusPlane::SetFocus(const CCircle& focusArea)
+void CGUIFocusPlane::SetFocus(const CShape* focusArea)
 {
-  m_bFocused = true;
-  m_focusArea = focusArea;
-}
-
-void CGUIFocusPlane::SetFocus(const CRect& focusArea)
-{
-  m_bFocused = true;
-  m_focusArea = focusArea.Circumcircle();
+  if (focusArea)
+  {
+    m_bFocused = true;
+    m_focusArea = CCircle(focusArea->Center().x, focusArea->Center().y, focusArea->MaxRadius());
+  }
 }
 
 void CGUIFocusPlane::Unfocus(void)

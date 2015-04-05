@@ -187,7 +187,7 @@ void CGUIDialogControllerInput::OnButton(PERIPHERALS::CPeripheral* device, unsig
 {
   if (IsPrompting())
   {
-    CAddonJoystickButtonMapper mapper(device, m_peripheral->Addon()->ID()); // TODO
+    CAddonJoystickButtonMapper mapper(device, m_peripheral->ID()); // TODO
 
     if (mapper.Load())
       mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(buttonIndex));
@@ -200,7 +200,7 @@ void CGUIDialogControllerInput::OnHat(PERIPHERALS::CPeripheral* device, unsigned
 {
   if (IsPrompting())
   {
-    CAddonJoystickButtonMapper mapper(device, m_peripheral->Addon()->ID()); // TODO
+    CAddonJoystickButtonMapper mapper(device, m_peripheral->ID()); // TODO
 
     if (mapper.Load())
       mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(hatIndex, direction));
@@ -219,15 +219,15 @@ void CGUIDialogControllerInput::OnFocus(int iFocusedControl)
 {
   if (m_peripheral && m_focusControl)
   {
-    const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
+    const std::vector<GAME::CGamePeripheralFeature>& features = m_peripheral->Layout().Features();
 
     int iFocusedIndex = iFocusedControl - BUTTON_START;
 
     if (IsPrompting() && iFocusedIndex != m_promptIndex)
       CancelPrompt();
 
-    if (0 <= iFocusedIndex && iFocusedIndex < (int)buttons.size())
-      m_focusControl->SetFocus(buttons[iFocusedIndex].focusArea);
+    if (0 <= iFocusedIndex && iFocusedIndex < (int)features.size())
+      m_focusControl->SetFocus(features[iFocusedIndex].Geometry());
     else
       m_focusControl->Unfocus();
   }
@@ -249,14 +249,14 @@ void CGUIDialogControllerInput::PromptForInput(unsigned int buttonIndex)
   if (IsPrompting())
     return;
 
-  const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
-  if (buttonIndex < buttons.size())
+  const std::vector<GAME::CGamePeripheralFeature>& features = m_peripheral->Layout().Features();
+  if (buttonIndex < features.size())
   {
-    const GAME::Button& button = buttons[buttonIndex];
+    const GAME::CGamePeripheralFeature& feature = features[buttonIndex];
 
     // Update label
     std::string promptMsg = g_localizeStrings.Get(35051); // "Press %s"
-    std::string prompt = StringUtils::Format(promptMsg.c_str(), button.strLabel.c_str());
+    std::string prompt = StringUtils::Format(promptMsg.c_str(), m_peripheral->GetString(feature.Label()).c_str());
     SET_CONTROL_LABEL(BUTTON_START + buttonIndex, prompt);
 
     m_promptIndex = buttonIndex;
@@ -273,13 +273,13 @@ void CGUIDialogControllerInput::CancelPrompt(void)
   if (!IsPrompting())
     return;
 
-  const std::vector<GAME::Button>& buttons = m_peripheral->Buttons();
-  if (m_promptIndex < (int)buttons.size())
+  const std::vector<GAME::CGamePeripheralFeature>& features = m_peripheral->Layout().Features();
+  if (m_promptIndex < (int)features.size())
   {
-    const GAME::Button& button = buttons[m_promptIndex];
+    const GAME::CGamePeripheralFeature& feature = features[m_promptIndex];
 
     // Change label back
-    SET_CONTROL_LABEL(BUTTON_START + m_promptIndex, button.strLabel);
+    SET_CONTROL_LABEL(BUTTON_START + m_promptIndex, m_peripheral->GetString(feature.Label()));
 
     m_promptIndex = -1;
   }
@@ -312,12 +312,12 @@ bool CGUIDialogControllerInput::SetupButtons(const GamePeripheralPtr& peripheral
   if (!pButtonTemplate || !pGroupList)
     return false;
 
-  const std::vector<GAME::Button>& buttons = peripheral->Buttons();
+  const std::vector<GAME::CGamePeripheralFeature>& features = peripheral->Layout().Features();
 
   unsigned int buttonId = BUTTON_START;
-  for (std::vector<GAME::Button>::const_iterator it = buttons.begin(); it != buttons.end(); ++it)
+  for (std::vector<GAME::CGamePeripheralFeature>::const_iterator it = features.begin(); it != features.end(); ++it)
   {
-    CGUIButtonControl* pButton = MakeButton(it->strLabel, buttonId++, pButtonTemplate);
+    CGUIButtonControl* pButton = MakeButton(peripheral->GetString(it->Label()), buttonId++, pButtonTemplate);
 
     // Try inserting context buttons at position specified by template button,
     // if template button is not in grouplist fallback to adding new buttons at

@@ -19,55 +19,33 @@
  */
 #pragma once
 
-#include "games/GameTypes.h"
+#include "GamePeripheralLayout.h"
 #include "addons/Addon.h"
-#include "guilib/Geometry.h"
 
 #include <string>
-#include <vector>
-
-class CGUIControl;
 
 namespace GAME
 {
 
-struct Button
-{
-  std::string strLabel;
-  CCircle     focusArea;
-};
-
-class CGamePeripheral
+class CGamePeripheral : public ADDON::CAddon
 {
 public:
-  CGamePeripheral(const ADDON::AddonPtr& addon, CGUIControl* control);
-  CGamePeripheral(void) {  }
+  CGamePeripheral(const ADDON::AddonProps &addonprops);
+  CGamePeripheral(const cp_extension_t *ext);
+  virtual ~CGamePeripheral(void) { }
 
   static const GamePeripheralPtr EmptyPtr;
 
-  bool Load(void);
+  std::string Label(void);
+  std::string ImagePath(void) const;
+  std::string OverlayPath(void) const;
 
-  ADDON::AddonPtr            Addon(void) const     { return m_addon; }
-  const std::string&         Label(void) const     { return m_strControllerLabel; }
-  const std::string&         ImagePath(void) const { return m_strImagePath; }
-  const std::vector<Button>& Buttons(void) const   { return m_buttons; }
+  bool LoadLayout(void);
+
+  const CGamePeripheralLayout& Layout(void) const { return m_layout; }
 
 private:
-  bool IsValid(void) const;
-  void LogInvalid(void) const;
-
-  CCircle Scale(const CCircle& focusArea, float layoutWidth, float layoutHeight) const;
-
-  std::string TranslateLabel(const std::string& strLabel);
-  static int TranslateInt(const std::string& strInt);
-
-  ADDON::AddonPtr     m_addon;
-  CRect               m_controlRegion;
-  std::string         m_strControllerLabel;
-  std::string         m_strImagePath;
-  int                 m_width;
-  int                 m_height;
-  std::vector<Button> m_buttons;
+  CGamePeripheralLayout m_layout;
 };
 
 }

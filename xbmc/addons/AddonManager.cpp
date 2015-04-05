@@ -43,7 +43,7 @@
 #include "pvr/addons/PVRClient.h"
 #endif
 #include "games/addons/GameClient.h"
-#include "games/GameManager.h"
+#include "games/addons/GamePeripheral.h"
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
 //#endif
@@ -94,7 +94,6 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
     case ADDON_SCRIPT_LYRICS:
     case ADDON_SCRIPT_MODULE:
     case ADDON_SUBTITLE_MODULE:
-    case ADDON_GAME_PERIPHERAL:
       return AddonPtr(new CAddon(props));
     case ADDON_WEB_INTERFACE:
       return AddonPtr(new CWebinterface(props));
@@ -198,6 +197,8 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
       return AddonPtr(new CRepository(props));
     case ADDON_CONTEXT_ITEM:
       return AddonPtr(new CContextItemAddon(props));
+    case ADDON_GAME_PERIPHERAL:
+      return AddonPtr(new GAME::CGamePeripheral(props));
     default:
       break;
   }
@@ -794,7 +795,6 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
     case ADDON_SCRIPT_WEATHER:
     case ADDON_SCRIPT_MODULE:
     case ADDON_SUBTITLE_MODULE:
-    case ADDON_GAME_PERIPHERAL:
       return AddonPtr(new CAddon(addonProps));
     case ADDON_WEB_INTERFACE:
       return AddonPtr(new CWebinterface(addonProps));
@@ -829,6 +829,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new PERIPHERALS::CPeripheralAddon(addonProps));
     case ADDON_GAMEDLL:
       return AddonPtr(new CGameClient(addonProps));
+    case ADDON_GAME_PERIPHERAL:
+      return AddonPtr(new GAME::CGamePeripheral(addonProps));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(addonProps));
     case ADDON_CONTEXT_ITEM:

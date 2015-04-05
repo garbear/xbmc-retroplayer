@@ -36,7 +36,7 @@ typedef struct CB_GameLib
   /*!
    * Request a port that can provide player input.
    */
-  bool (*OpenPort)(void* addonData, unsigned int port, const char* addonId, game_input_device_caps* device_caps);
+  bool (*OpenPort)(void* addonData, unsigned int port);
 
   /*!
    * Close an opened port.

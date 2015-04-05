@@ -184,30 +184,22 @@ bool CGUIWindowGamePeripherals::OnAccelerometerMotion(PERIPHERALS::CPeripheral* 
   return false; // TODO
 }
 
-GamePeripheralPtr CGUIWindowGamePeripherals::GetPeripheral(const AddonPtr& addon) const
+bool CGUIWindowGamePeripherals::LoadPeripheral(const AddonPtr& addon)
 {
   for (GamePeripheralVector::const_iterator it = m_peripherals.begin(); it != m_peripherals.end(); ++it)
   {
-    if ((*it)->Addon()->ID() == addon->ID())
-      return *it;
+    if ((*it)->ID() == addon->ID())
+      return true; // Already loaded
   }
-  return CGamePeripheral::EmptyPtr;
-}
 
-GamePeripheralPtr CGUIWindowGamePeripherals::LoadPeripheral(const AddonPtr& addon)
-{
-  const GamePeripheralPtr& peripheral = GetPeripheral(addon);
-  if (!peripheral)
+  GamePeripheralPtr peripheral = std::dynamic_pointer_cast<CGamePeripheral>(addon);
+  if (peripheral && peripheral->LoadLayout())
   {
-    CGUIControl* control = GetControl(CONTROL_GAME_PERIPHERAL);
-    GamePeripheralPtr newPeripheral = GamePeripheralPtr(new CGamePeripheral(addon, control));
-    if (newPeripheral->Load())
-    {
-      m_peripherals.push_back(newPeripheral);
-      return newPeripheral;
-    }
+    m_peripherals.push_back(peripheral);
+    return true;
   }
-  return peripheral;
+
+  return false;
 }
 
 std::vector<CPeripheral*> CGUIWindowGamePeripherals::ScanPeripherals(void)

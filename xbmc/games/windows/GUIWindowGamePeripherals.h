@@ -73,8 +73,7 @@ public:
   bool OnAccelerometerMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y, float z);
 
 protected:
-  GAME::GamePeripheralPtr GetPeripheral(const ADDON::AddonPtr& addon) const;
-  GAME::GamePeripheralPtr LoadPeripheral(const ADDON::AddonPtr& addon);
+  bool LoadPeripheral(const ADDON::AddonPtr& addon);
 
   // implementation of CGUIWindow
   virtual void OnInitWindow(void);

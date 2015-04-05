@@ -19,46 +19,24 @@
  */
 #pragma once
 
-#include <memory>
-#include <vector>
+#include "GameTypes.h"
+
+#include <string>
 
 namespace GAME
 {
 
-class CGamePeripheral;
-typedef std::shared_ptr<CGamePeripheral> GamePeripheralPtr;
-typedef std::vector<GamePeripheralPtr>   GamePeripheralVector;
-
-class CGameClient;
-typedef std::shared_ptr<CGameClient> GameClientPtr;
-typedef std::vector<GameClientPtr>   GameClientVector;
-
-/*!
- * \brief Types of features used in the game peripheral abstraction
- */
-enum FeatureType
+class CGameTranslator
 {
-  FEATURE_UNKNOWN,
-  FEATURE_BUTTON,
-  FEATURE_ANALOG_STICK,
-  FEATURE_ACCELEROMETER,
-  FEATURE_KEY,
-  FEATURE_RELATIVE_POINTER,
-  FEATURE_ABSOLUTE_POINTER,
-};
+public:
+  static const char* TranslateFeatureType(FeatureType type);
+  static FeatureType TranslateFeatureType(const std::string& strType);
 
-enum ButtonType
-{
-  BUTTON_UNKNOWN,
-  BUTTON_DIGITAL,
-  BUTTON_ANALOG,
-};
+  static const char* TranslateButtonType(ButtonType type);
+  static ButtonType TranslateButtonType(const std::string& strType);
 
-enum FeatureGeometryType
-{
-  GEOMETRY_NONE,
-  GEOMETRY_RECTANGLE,
-  GEOMETRY_CIRCLE,
+  static const char* TranslateGeometry(FeatureGeometryType geometry);
+  static FeatureGeometryType TranslateGeometry(const std::string& strGeometry);
 };
 
 }

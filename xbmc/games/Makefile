@@ -1,6 +1,7 @@
 SRCS=GameFileAutoLauncher.cpp \
      GameManager.cpp \
      GameSettings.cpp \
+     GameTranslator.cpp \
      SerialState.cpp
 
 LIB=games.a

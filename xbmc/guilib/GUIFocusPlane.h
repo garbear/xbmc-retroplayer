@@ -46,8 +46,7 @@ public:
   bool           IsFocused(void) const      { return m_bFocused; }
   const CCircle& GetFocusedArea(void) const { return m_focusArea; }
 
-  void SetFocus(const CCircle& focusArea);
-  void SetFocus(const CRect& focusArea);
+  void SetFocus(const CShape* focusArea);
   void Unfocus(void);
 
   // implementation of CGUIControl

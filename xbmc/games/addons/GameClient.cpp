@@ -63,10 +63,13 @@ struct NormalizeExtension
 
 // --- CDeviceInput ------------------------------------------------------------
 
-CDeviceInput::CDeviceInput(CGameClient* addon, int port, const std::string& strDeviceId)
-  : m_addon(addon), m_port(port), m_strDeviceId(strDeviceId)
+CDeviceInput::CDeviceInput(CGameClient* addon, int port, const GamePeripheralPtr& peripheral)
+  : m_addon(addon),
+    m_port(port),
+    m_peripheral(peripheral)
 {
   assert(m_addon);
+  assert(peripheral.get());
 }
 
 bool CDeviceInput::OnButtonPress(unsigned int featureIndex, bool bPressed)
@@ -268,8 +271,6 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 
     InitSerialization();
 
-    UpdatePort(0, true); // TODO
-
     return true;
   }
 
@@ -440,20 +441,26 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
   return rewound;
 }
 
-bool CGameClient::OpenPort(unsigned int port, const std::string& strDeviceId)
+bool CGameClient::OpenPort(unsigned int port)
 {
-  if (port >= m_devices.size())
-    m_devices.resize(port + 1);
+  std::vector<GamePeripheralPtr> peripherals = GetPeripherals();
+  if (!peripherals.empty()) // TODO: Choose peripheral
+  {
+    if (port >= m_devices.size())
+      m_devices.resize(port + 1);
 
-  ClosePort(port);
+    ClosePort(port);
 
-  CDeviceInput* deviceInput = new CDeviceInput(this, port, strDeviceId);
+    m_devices[port] = new CDeviceInput(this, port, peripherals[0]);
 
-  CPortManager::Get().OpenPort(deviceInput, port);
+    CPortManager::Get().OpenPort(m_devices[port], port);
 
-  m_devices[port] = deviceInput;
+    UpdatePort(port, peripherals[0]);
 
-  return true;
+    return true;
+  }
+
+  return false;
 }
 
 void CGameClient::ClosePort(unsigned int port)
@@ -467,6 +474,8 @@ void CGameClient::ClosePort(unsigned int port)
 
     delete m_devices[port];
     m_devices[port] = NULL;
+
+    UpdatePort(port, CGamePeripheral::EmptyPtr);
   }
 }
 
@@ -476,73 +485,144 @@ void CGameClient::ClearPorts(void)
     ClosePort(i);
 }
 
-void CGameClient::UpdatePort(unsigned int port, bool bConnected)
+void CGameClient::UpdatePort(unsigned int port, const GamePeripheralPtr& peripheral)
 {
-  try { m_pStruct->UpdatePort(port, bConnected); }
-  catch (...) { LogException("UpdatePort()"); }
+  if (peripheral != CGamePeripheral::EmptyPtr)
+  {
+    game_input_device device;
+
+    const std::string strId = peripheral->ID();
+    device.device_name          = strId.c_str();
+    device.digital_button_count = peripheral->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_DIGITAL);
+    device.analog_button_count  = peripheral->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_ANALOG);
+    device.analog_stick_count   = peripheral->Layout().FeatureCount(FEATURE_ANALOG_STICK);
+    device.accelerometer_count  = peripheral->Layout().FeatureCount(FEATURE_ACCELEROMETER);
+    device.key_count            = peripheral->Layout().FeatureCount(FEATURE_KEY);
+    device.rel_pointer_count    = peripheral->Layout().FeatureCount(FEATURE_RELATIVE_POINTER);
+    device.abs_pointer_count    = peripheral->Layout().FeatureCount(FEATURE_ABSOLUTE_POINTER);
+
+    try { m_pStruct->DeviceConnected(port, true, &device); }
+    catch (...) { LogException("UpdatePort()"); }
+  }
+  else
+  {
+    try { m_pStruct->DeviceConnected(port, false, NULL); }
+    catch (...) { LogException("UpdatePort()"); }
+  }
+}
+
+std::vector<GamePeripheralPtr> CGameClient::GetPeripherals(void) const
+{
+  std::vector<GamePeripheralPtr> peripherals;
+
+  const ADDONDEPS& dependencies = GetDeps();
+  for (ADDONDEPS::const_iterator it = dependencies.begin(); it != dependencies.end(); ++it)
+  {
+    AddonPtr addon;
+    if (CAddonMgr::Get().GetAddon(it->first, addon, ADDON_GAME_PERIPHERAL))
+      peripherals.push_back(std::dynamic_pointer_cast<CGamePeripheral>(addon));
+  }
+
+  return peripherals;
 }
 
 bool CGameClient::OnButtonPress(int port, unsigned int featureIndex, bool bPressed)
 {
-  game_input_event event;
+  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
 
-  event.type = GAME_INPUT_EVENT_DIGITAL_BUTTON;
-  event.port = port;
-  event.source_index = featureIndex;
-  event.digital_button.pressed = bPressed;
+  if (featureIndex < device->Layout().Features().size())
+  {
+    game_input_event event;
 
-  try { m_pStruct->InputEvent(port, &event); }
-  catch (...) { LogException("InputEvent()"); }
+    event.type                   = GAME_INPUT_EVENT_DIGITAL_BUTTON;
+    event.port                   = port;
+    event.device_id              = device->ID().c_str();
+    event.feature_index          = featureIndex;
+    event.feature_name           = device->Layout().Features()[featureIndex].Name().c_str();
+    event.digital_button.pressed = bPressed;
 
-  return true;
+    try { m_pStruct->InputEvent(port, &event); }
+    catch (...) { LogException("InputEvent()"); }
+
+    return true;
+  }
+
+  return false;
 }
 
 bool CGameClient::OnButtonMotion(int port, unsigned int featureIndex, float magnitude)
 {
-  game_input_event event;
+  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
 
-  event.type = GAME_INPUT_EVENT_ANALOG_BUTTON;
-  event.port = port;
-  event.source_index = featureIndex;
-  event.analog_button.magnitude = magnitude;
+  if (featureIndex < device->Layout().Features().size())
+  {
+    game_input_event event;
 
-  try { m_pStruct->InputEvent(port, &event); }
-  catch (...) { LogException("InputEvent()"); }
+    event.type                    = GAME_INPUT_EVENT_ANALOG_BUTTON;
+    event.port                    = port;
+    event.device_id               = device->ID().c_str();
+    event.feature_index           = featureIndex;
+    event.feature_name            = device->Layout().Features()[featureIndex].Name().c_str();
+    event.analog_button.magnitude = magnitude;
 
-  return true;
+    try { m_pStruct->InputEvent(port, &event); }
+    catch (...) { LogException("InputEvent()"); }
+
+    return true;
+  }
+
+  return false;
 }
 
 bool CGameClient::OnAnalogStickMotion(int port, unsigned int featureIndex, float x, float y)
 {
-  game_input_event event;
+  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
 
-  event.type = GAME_INPUT_EVENT_ANALOG_STICK;
-  event.port = port;
-  event.source_index = featureIndex;
-  event.analog_stick.x = x;
-  event.analog_stick.y = y;
+  if (featureIndex < device->Layout().Features().size())
+  {
+    game_input_event event;
 
-  try { m_pStruct->InputEvent(port, &event); }
-  catch (...) { LogException("InputEvent()"); }
+    event.type           = GAME_INPUT_EVENT_ANALOG_STICK;
+    event.port           = port;
+    event.device_id      = device->ID().c_str();
+    event.feature_index  = featureIndex;
+    event.feature_name   = device->Layout().Features()[featureIndex].Name().c_str();
+    event.analog_stick.x = x;
+    event.analog_stick.y = y;
 
-  return true;
+    try { m_pStruct->InputEvent(port, &event); }
+    catch (...) { LogException("InputEvent()"); }
+
+    return true;
+  }
+
+  return false;
 }
 
 bool CGameClient::OnAccelerometerMotion(int port, unsigned int featureIndex, float x, float y, float z)
 {
-  game_input_event event;
+  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
 
-  event.type = GAME_INPUT_EVENT_ACCELEROMETER;
-  event.port = port;
-  event.source_index = featureIndex;
-  event.accelerometer.x = x;
-  event.accelerometer.y = y;
-  event.accelerometer.z = z;
+  if (featureIndex < device->Layout().Features().size())
+  {
+    game_input_event event;
 
-  try { m_pStruct->InputEvent(port, &event); }
-  catch (...) { LogException("InputEvent()"); }
+    event.type            = GAME_INPUT_EVENT_ACCELEROMETER;
+    event.port            = port;
+    event.device_id       = device->ID().c_str();
+    event.feature_index   = featureIndex;
+    event.feature_name    = device->Layout().Features()[featureIndex].Name().c_str();
+    event.accelerometer.x = x;
+    event.accelerometer.y = y;
+    event.accelerometer.z = z;
 
-  return true;
+    try { m_pStruct->InputEvent(port, &event); }
+    catch (...) { LogException("InputEvent()"); }
+
+    return true;
+  }
+
+  return false;
 }
 
 void CGameClient::SetFrameRateCorrection(double correctionFactor)

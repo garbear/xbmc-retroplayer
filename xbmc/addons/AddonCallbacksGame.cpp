@@ -21,18 +21,11 @@
 #include "AddonCallbacksGame.h"
 #include "cores/RetroPlayer/RetroPlayer.h"
 #include "games/addons/GameClient.h"
-#include "threads/SystemClock.h"
 #include "utils/log.h"
-
-//#include "Application.h"
-//#include "settings/AdvancedSettings.h"
-//#include "dialogs/GUIDialogKaiToast.h"
 
 #include <string>
 
 using namespace GAME;
-using namespace std;
-using namespace XbmcThreads;
 
 namespace ADDON
 {
@@ -127,23 +120,13 @@ void CAddonCallbacksGame::CloseGame(void* addonData)
   retroPlayer->CloseFile();
 }
 
-bool CAddonCallbacksGame::OpenPort(void* addonData, unsigned int port, const char* addon_id, game_input_device_caps* device_caps)
+bool CAddonCallbacksGame::OpenPort(void* addonData, unsigned int port)
 {
   CGameClient* gameClient = GetGameClient(addonData, __FUNCTION__);
-  if (!gameClient || !addon_id)
+  if (!gameClient)
     return false;
 
-  if (gameClient->OpenPort(port, addon_id))
-  {
-    if (device_caps)
-    {
-      memset(device_caps, 0, sizeof(*device_caps));
-      device_caps->digital_button_count = 8; // TODO
-    }
-    return true;
-  }
-
-  return false;
+  return gameClient->OpenPort(port);
 }
 
 void CAddonCallbacksGame::ClosePort(void* addonData, unsigned int port)

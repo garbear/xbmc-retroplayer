@@ -143,9 +143,9 @@ public:
     return GAME_close_game(m_handle, m_callbacks);
   }
 
-  bool OpenPort(unsigned int port, const char* addon_id, game_input_device_caps* device_caps)
+  bool OpenPort(unsigned int port)
   {
-    return GAME_open_port(m_handle, m_callbacks, port, addon_id, device_caps);
+    return GAME_open_port(m_handle, m_callbacks, port);
   }
 
   void ClosePort(unsigned int port)
@@ -292,7 +292,7 @@ protected:
     CB_GameLib* (*GAME_register_me)(void* handle);
     void (*GAME_unregister_me)(void* handle, CB_GameLib* cb);
     void (*GAME_close_game)(void* handle, CB_GameLib* cb);
-    bool (*GAME_open_port)(void* handle, CB_GameLib* cb, unsigned int port, const char* addon_id, game_input_device_caps* device_caps);
+    bool (*GAME_open_port)(void* handle, CB_GameLib* cb, unsigned int port);
     void (*GAME_close_port)(void* handle, CB_GameLib* cb, unsigned int port);
     void (*GAME_environment_set_rotation)(void* handle, CB_GameLib* cb, enum GAME_ROTATION rotation);
     bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
