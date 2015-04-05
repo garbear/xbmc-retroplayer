@@ -45,7 +45,7 @@ namespace PERIPHERALS
                                                              int& zIndex, bool& zInverted);
 
   private:
-    typedef std::map<CJoystickDriverPrimitive, unsigned int> DriverMap;
+    typedef std::map<CJoystickDriverPrimitive, unsigned int> DriverMap; // driver primitive -> feature ID
 
     // Utility functions
     static HatDirection       ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);

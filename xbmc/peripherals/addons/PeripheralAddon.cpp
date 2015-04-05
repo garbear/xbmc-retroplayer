@@ -511,7 +511,7 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
 }
 
 bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId,
-                                          const JoystickFeaturePtr& feature)
+                                          const ADDON::JoystickFeature* feature)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;

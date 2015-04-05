@@ -80,7 +80,7 @@ namespace PERIPHERALS
     //@{
     bool SetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick);
     bool GetButtonMap(const CPeripheral* device, const std::string& strDeviceId, JoystickFeatureMap& features);
-    bool MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId, const JoystickFeaturePtr& feature);
+    bool MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
     //@}
 
     static const char* ToString(PERIPHERAL_ERROR error);

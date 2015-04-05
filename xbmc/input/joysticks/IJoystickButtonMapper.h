@@ -26,56 +26,45 @@
 /*!
  * \ingroup joysticks
  *
- * \brief Button map interface to translate between the driver's raw
- *        button/hat/axis elements and physical joystick features.
+ * \brief Button mapper interface to assign the driver's raw button/hat/axis
+ *        elements to physical joystick features.
  *
- * \sa IJoystickButtonMapper
+ * \sa IJoystickButtonMap
  */
-class IJoystickButtonMap
+class IJoystickButtonMapper
 {
 public:
-  virtual ~IJoystickButtonMap(void) { }
+  virtual ~IJoystickButtonMapper(void) { }
 
   /*!
-   * \brief The add-on ID of the game peripheral associated with this button map
+   * \brief The add-on ID of the game peripheral associated with this button mapper
    *
    * The device ID provided by the implementation serves as the context for the
    * feature indices below.
    *
-   * \return The ID of this button map's game peripheral add-on
+   * \return The ID of this button mapper's game peripheral add-on
    */
   virtual std::string DeviceID(void) const = 0;
 
   /*!
-   * \brief Load the button map into memory
+   * \brief Load the button mapper into memory
    *
-   * \return True if button map is ready to start translating buttons, false otherwise
+   * \return True if button mapper is ready to start mapping buttons, false otherwise
    */
   virtual bool Load(void) = 0;
 
   /*!
-   * \brief Get the feature associated with a driver primitive
-   *
-   * \param button       The driver primitive (a button, hat direction or semi-axis)
-   * \param featureIndex The resolved feature index, or unmodified if GetFeature() returns false
-   *
-   * \return True if the driver primitive is associated with a feature, false otherwise
-   */
-   virtual bool GetFeature(const CJoystickDriverPrimitive& primitive, unsigned int& featureIndex) = 0;
-
-  /*!
-   * \brief Get the driver primitive associated with a digital or analog button
+   * \brief Map a digital or analog button to a driver primitive
    *
    * \param featureIndex   The feature's index from the game peripheral's layout
-   * \param button         The resolved driver primitive
+   * \param primitive      The driver primitive
    *
-   * \return True if the index resolved to a driver primitive, false if the feature
-   *         didn't resolve or isn't a digital or analog button
+   * \return True if the button was updated, false otherwise
    */
-  virtual bool GetButton(unsigned int featureIndex, CJoystickDriverPrimitive& button) = 0;
+  virtual bool MapButton(unsigned int featureIndex, const CJoystickDriverPrimitive& primitive) = 0;
 
   /*!
-   * \brief Get the raw axis indices and polarity for the given analog stick
+   * \brief Map an analog stick to horizontal and vertical axes
    *
    * \param featureIndex   The feature's index from the game peripheral's layout
    * \param horizIndex     The index of the axis corresponding to the analog
@@ -85,13 +74,13 @@ public:
    *                           stick's vertical motion, or -1 if unknown
    * \param vertInverted   False if up is positive, true if up is negative
    *
-   * \return True if the feature resolved to an analog stick with at least 1 known axis
+   * \return True if the analog stick was updated, false otherwise
    */
-  virtual bool GetAnalogStick(unsigned int featureIndex, int& horizIndex, bool& horizInverted,
-                                                         int& vertIndex,  bool& vertInverted) = 0;
+  virtual bool MapAnalogStick(unsigned int featureIndex, int horizIndex, bool horizInverted,
+                                                         int vertIndex,  bool vertInverted) = 0;
 
   /*!
-   * \brief Get the raw axis indices and polarity for the given accelerometer
+   * \brief Map an accelerometer to x, y and z axes
    *
    * \param featureIndex  The feature's index from the game peripheral's layout
    * \param xIndex        The index of the axis corresponding to the accelerometer's
@@ -104,9 +93,9 @@ public:
    *                          Z-axis, or -1 if unknown
    * \param zInverted     False if positive X is positive, true if positive Z is negative
    *
-   * \return True if the feature resolved to an accelerometer with at least 1 known axis
+   * \return True if the accelerometer was updated, false otherwise
    */
-  virtual bool GetAccelerometer(unsigned int featureIndex, int& xIndex, bool& xInverted,
-                                                           int& yIndex, bool& yInverted,
-                                                           int& zIndex, bool& zInverted) = 0;
+  virtual bool MapAccelerometer(unsigned int featureIndex, int xIndex, bool xInverted,
+                                                           int yIndex, bool yInverted,
+                                                           int zIndex, bool zInverted) = 0;
 };
