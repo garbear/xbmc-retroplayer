@@ -21,7 +21,7 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.0"
+#define GAME_API_VERSION                "1.0.1"
 
 /* min. game API version */
 #define GAME_MIN_API_VERSION            "1.0.0"
@@ -249,6 +249,42 @@ typedef struct game_input_device_caps
   unsigned int mouse_count;
 } ATTRIBUTE_PACKED game_input_device_caps;
 
+typedef struct game_digital_button_event
+{
+  bool         pressed;
+} ATTRIBUTE_PACKED game_digital_button_event;
+
+typedef struct game_analog_button_event
+{
+  float        magnitude;
+} ATTRIBUTE_PACKED game_analog_button_event;
+
+typedef struct game_analog_stick_event
+{
+  float        x;
+  float        y;
+} ATTRIBUTE_PACKED game_analog_stick_event;
+
+typedef struct game_accelerometer_event
+{
+  float        x;
+  float        y;
+  float        z;
+} ATTRIBUTE_PACKED game_accelerometer_event;
+
+typedef struct game_key_event
+{
+  bool         pressed;
+  uint32_t     character; // text character of the pressed key (UTF-32)
+  GAME_KEY_MOD modifiers;
+} ATTRIBUTE_PACKED game_key_event;
+
+typedef struct game_mouse_event
+{
+  int          x;
+  int          y;
+} ATTRIBUTE_PACKED game_mouse_event;
+
 typedef struct game_input_event
 {
   GAME_INPUT_EVENT_SOURCE type;
@@ -256,41 +292,12 @@ typedef struct game_input_event
   unsigned int            source_index;
   union
   {
-    struct
-    {
-      bool         pressed;
-    } digital_button;
-
-    struct
-    {
-      float        magnitude;
-    } analog_button;
-
-    struct
-    {
-      float        x;
-      float        y;
-    } analog_stick;
-
-    struct
-    {
-      float        x;
-      float        y;
-      float        z;
-    } accelerometer;
-
-    struct
-    {
-      bool         pressed;
-      uint32_t     character; // text character of the pressed key (UTF-32)
-      GAME_KEY_MOD modifiers;
-    } key;
-
-    struct
-    {
-      int          x;
-      int          y;
-    } mouse;
+    struct game_digital_button_event digital_button;
+    struct game_analog_button_event  analog_button;
+    struct game_analog_stick_event   analog_stick;
+    struct game_accelerometer_event  accelerometer;
+    struct game_key_event            key;
+    struct game_mouse_event          mouse;
   };
 } ATTRIBUTE_PACKED game_input_event;
 
