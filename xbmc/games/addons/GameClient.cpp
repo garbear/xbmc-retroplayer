@@ -444,7 +444,7 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
 bool CGameClient::OpenPort(unsigned int port)
 {
   std::vector<GamePeripheralPtr> peripherals = GetPeripherals();
-  if (!peripherals.empty()) // TODO: Choose peripheral
+  if (!peripherals.empty() && peripherals[0]->LoadLayout()) // TODO: Choose peripheral
   {
     if (port >= m_devices.size())
       m_devices.resize(port + 1);
