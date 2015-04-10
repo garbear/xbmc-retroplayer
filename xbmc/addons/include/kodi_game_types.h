@@ -242,7 +242,7 @@ typedef enum GAME_EJECT_STATE
 
 typedef struct game_input_device
 {
-  const char*  device_name;
+  const char*  device_id;
   unsigned int digital_button_count;
   unsigned int analog_button_count;
   unsigned int analog_stick_count;

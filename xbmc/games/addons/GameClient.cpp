@@ -492,7 +492,7 @@ void CGameClient::UpdatePort(unsigned int port, const GamePeripheralPtr& periphe
     game_input_device device;
 
     const std::string strId = peripheral->ID();
-    device.device_name          = strId.c_str();
+    device.device_id            = strId.c_str();
     device.digital_button_count = peripheral->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_DIGITAL);
     device.analog_button_count  = peripheral->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_ANALOG);
     device.analog_stick_count   = peripheral->Layout().FeatureCount(FEATURE_ANALOG_STICK);
