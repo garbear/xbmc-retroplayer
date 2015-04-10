@@ -408,9 +408,12 @@
     <ClCompile Include="..\..\xbmc\games\addons\GamePeripheral.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameClient.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameClientProperties.cpp" />
+    <ClCompile Include="..\..\xbmc\games\addons\GamePeripheralFeature.cpp" />
+    <ClCompile Include="..\..\xbmc\games\addons\GamePeripheralLayout.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameSettings.cpp" />
+    <ClCompile Include="..\..\xbmc\games\GameTranslator.cpp" />
     <ClCompile Include="..\..\xbmc\games\SerialState.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp" />
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp" />
@@ -708,6 +711,7 @@
     <ClCompile Include="..\..\xbmc\PartyModeManager.cpp" />
     <ClCompile Include="..\..\xbmc\PasswordManager.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMap.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMapper.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickDriverHandler.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\addons\PeripheralAddon.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBus.cpp" />
@@ -932,9 +936,13 @@
     <ClInclude Include="..\..\xbmc\games\addons\GamePeripheral.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameClient.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameClientProperties.h" />
+    <ClInclude Include="..\..\xbmc\games\addons\GamePeripheralFeature.h" />
+    <ClInclude Include="..\..\xbmc\games\addons\GamePeripheralLayout.h" />
+    <ClInclude Include="..\..\xbmc\games\GameDefinitions.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h" />
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />
     <ClInclude Include="..\..\xbmc\games\GameSettings.h" />
+    <ClInclude Include="..\..\xbmc\games\GameTranslator.h" />
     <ClInclude Include="..\..\xbmc\games\GameTypes.h" />
     <ClInclude Include="..\..\xbmc\games\SerialState.h" />
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h" />
@@ -1042,6 +1050,7 @@
     <ClInclude Include="..\..\xbmc\network\httprequesthandler\python\HTTPPythonWsgiInvoker.h" />
     <ClInclude Include="..\..\xbmc\network\NetworkServices.h" />
     <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMap.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMapper.h" />
     <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickDriverHandler.h" />
     <ClInclude Include="..\..\xbmc\peripherals\addons\PeripheralAddon.h" />
     <ClInclude Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.h" />

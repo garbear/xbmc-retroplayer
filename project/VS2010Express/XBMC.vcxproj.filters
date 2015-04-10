@@ -3230,6 +3230,18 @@
     <ClCompile Include="..\..\xbmc\guilib\GUIGamePeripheral.cpp">
       <Filter>guilib</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GamePeripheralFeature.cpp">
+      <Filter>games\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\GamePeripheralLayout.cpp">
+      <Filter>games\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMapper.cpp">
+      <Filter>peripherals\addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\GameTranslator.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6248,6 +6260,21 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\guilib\GUIGamePeripheral.h">
       <Filter>guilib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GamePeripheralFeature.h">
+      <Filter>games\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\GamePeripheralLayout.h">
+      <Filter>games\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMapper.h">
+      <Filter>peripherals\addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameDefinitions.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\GameTranslator.h">
+      <Filter>games</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
