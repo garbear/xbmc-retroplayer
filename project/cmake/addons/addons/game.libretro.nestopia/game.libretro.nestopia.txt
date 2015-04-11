@@ -1,1 +1,1 @@
-game.libretro.nestopia https://github.com/kodi-game/game.libretro.nestopia a0c9f91
+game.libretro.nestopia https://github.com/kodi-game/game.libretro.nestopia 219487f
