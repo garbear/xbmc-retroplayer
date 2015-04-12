@@ -234,6 +234,7 @@ extern "C"
   typedef struct JOYSTICK_FEATURE
   {
     unsigned int                           id;
+    char*                                  feature_name;
     JOYSTICK_DRIVER_TYPE                   driver_type;
     union
     {

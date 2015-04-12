@@ -21,10 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.2"
+#define GAME_API_VERSION                "1.0.3"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.2"
+#define GAME_MIN_API_VERSION            "1.0.3"
 
 /* magic number for empty tray */
 #define GAME_NO_DISK                   ((unsigned)-1)

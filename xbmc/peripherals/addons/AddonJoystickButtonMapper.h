@@ -19,9 +19,12 @@
  */
 #pragma once
 
+#include "games/GameTypes.h"
 #include "input/joysticks/IJoystickButtonMapper.h"
 #include "peripherals/addons/AddonJoystickButtonMap.h"
 #include "peripherals/addons/PeripheralAddon.h"
+
+#include <string>
 
 namespace PERIPHERALS
 {
@@ -43,12 +46,15 @@ namespace PERIPHERALS
                                                              int zIndex, bool zInverted);
 
   private:
+    const std::string& GetFeatureName(unsigned int featureIndex) const;
+
     // Utility functions
     static JOYSTICK_DRIVER_HAT_DIRECTION      ToHatDirection(HatDirection dir);
     static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION ToSemiAxisDirection(SemiAxisDirection dir);
 
-    CPeripheral* const        m_device;
-    const PeripheralAddonPtr  m_addon;
-    const std::string         m_strDeviceId;
+    CPeripheral* const              m_device;
+    const PeripheralAddonPtr        m_addon;
+    const std::string               m_strDeviceId;
+    mutable GAME::GamePeripheralPtr m_gameDevice; // Loaded on demand
   };
 }
