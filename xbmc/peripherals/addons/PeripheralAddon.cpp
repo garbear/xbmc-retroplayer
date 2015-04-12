@@ -38,7 +38,7 @@
 
 using namespace PERIPHERALS;
 
-#define JOYSTICK_KEYBOARD_PROVIDER  "keyboard"
+#define JOYSTICK_KEYBOARD_PROVIDER  "application"
 
 #ifndef SAFE_DELETE
   #define SAFE_DELETE(p)  do { delete (p); (p) = NULL; } while (0)
