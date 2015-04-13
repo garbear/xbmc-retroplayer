@@ -34,10 +34,8 @@ bool CGenericJoystickKeyboardHandler::OnKeyPress(const CKey& key)
 {
   unsigned int buttonIndex = GetButtonIndex(key);
   if (buttonIndex != 0)
-  {
-    m_handler->OnButtonMotion(buttonIndex, true);
-    return true; // TODO
-  }
+    return m_handler->OnButtonMotion(buttonIndex, true);
+
   return false;
 }
 

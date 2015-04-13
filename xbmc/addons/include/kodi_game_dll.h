@@ -67,9 +67,10 @@ GAME_ERROR Reset(void);
 void DeviceConnected(unsigned int port, bool connected, const struct game_input_device* connected_device);
 
 /*!
- * Called in response to an input event on an open port.
+ * Called in response to an input event on an open port. Return true if the
+ * event was handled by this add-on.
  */
-void InputEvent(unsigned int port, game_input_event* event);
+bool InputEvent(unsigned int port, const game_input_event* event);
 
 /*!
  * Gets information about system audio/video timings and geometry. Can be

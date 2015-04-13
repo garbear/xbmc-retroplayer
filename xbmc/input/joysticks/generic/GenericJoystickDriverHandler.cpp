@@ -39,7 +39,7 @@ CGenericJoystickDriverHandler::~CGenericJoystickDriverHandler(void)
   delete m_handler;
 }
 
-void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
+bool CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   const char pressed = bPressed ? 1 : 0;
 
@@ -47,9 +47,11 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, boo
     m_buttonStates.resize(buttonIndex + 1);
 
   if (m_buttonStates[buttonIndex] == pressed)
-    return;
+    return false;
 
   char& oldState = m_buttonStates[buttonIndex];
+
+  bool bHandled = false;
 
   unsigned int feature;
   if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(buttonIndex), feature))
@@ -58,35 +60,36 @@ void CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, boo
               m_handler->DeviceID().c_str(), feature, bPressed ? "pressed" : "released");
 
     if (!oldState && pressed)
-      m_handler->OnButtonPress(feature, true);
+      bHandled = m_handler->OnButtonPress(feature, true);
     else if (oldState && !pressed)
       m_handler->OnButtonPress(feature, false);
   }
-  else if (bPressed)
-  {
-    CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s has no feature for button %u",
-              m_handler->DeviceID().c_str(), buttonIndex);
-  }
 
   oldState = pressed;
+
+  return bHandled;
 }
 
-void CGenericJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection newDirection)
+bool CGenericJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection newDirection)
 {
   if (m_hatStates.size() <= hatIndex)
     m_hatStates.resize(hatIndex + 1);
 
   HatDirection& oldDirection = m_hatStates[hatIndex];
 
-  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionUp);
-  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionRight);
-  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionDown);
-  ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionLeft);
+  bool bHandled = false;
+
+  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionUp);
+  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionRight);
+  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionDown);
+  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionLeft);
 
   oldDirection = newDirection;
+
+  return bHandled;
 }
 
-void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
+bool CGenericJoystickDriverHandler::ProcessHatDirection(int index,
     HatDirection oldDir, HatDirection newDir, HatDirection targetDir)
 {
   if ((oldDir & targetDir) != (newDir & targetDir))
@@ -98,7 +101,7 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u %s",
                 m_handler->DeviceID().c_str(), feature, bActivated ? "activated" : "deactivated");
-      m_handler->OnButtonPress(feature, bActivated);
+      return m_handler->OnButtonPress(feature, bActivated);
     }
     else
     {
@@ -109,15 +112,17 @@ void CGenericJoystickDriverHandler::ProcessHatDirection(int index,
       }
     }
   }
+
+  return false;
 }
 
-void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float newPosition)
+bool CGenericJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float newPosition)
 {
   if (m_axisStates.size() <= axisIndex)
     m_axisStates.resize(axisIndex + 1);
 
   if (m_axisStates[axisIndex] == 0.0f && newPosition == 0.0f)
-    return;
+    return false;
 
   float oldPosition = m_axisStates[axisIndex];
   m_axisStates[axisIndex] = newPosition;
@@ -152,9 +157,9 @@ void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float n
         // If new position passes through the origin, 0.0f is sent exactly once
         // until the position becomes positive again
         if (newPosition > 0)
-          m_handler->OnButtonMotion(positiveFeature, newPosition);
+          return m_handler->OnButtonMotion(positiveFeature, newPosition);
         else if (oldPosition > 0)
-          m_handler->OnButtonMotion(positiveFeature, 0.0f);
+          return m_handler->OnButtonMotion(positiveFeature, 0.0f);
       }
 
       if (bHasFeatureNegative)
@@ -162,12 +167,16 @@ void CGenericJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float n
         // If new position passes through the origin, 0.0f is sent exactly once
         // until the position becomes negative again
         if (newPosition < 0)
-          m_handler->OnButtonMotion(negativeFeature, -1.0f * newPosition); // magnitude is >= 0
+          return m_handler->OnButtonMotion(negativeFeature, -1.0f * newPosition); // magnitude is >= 0
         else if (oldPosition < 0)
-          m_handler->OnButtonMotion(negativeFeature, 0.0f);
+          return m_handler->OnButtonMotion(negativeFeature, 0.0f);
       }
     }
+
+    return true;
   }
+
+  return false;
 }
 
 void CGenericJoystickDriverHandler::ProcessAxisMotions(void)

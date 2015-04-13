@@ -39,13 +39,13 @@ public:
   virtual ~CGenericJoystickDriverHandler(void);
 
   // implementation of IJoystickDriverHandler
-  virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-  virtual void OnHatMotion(unsigned int hatIndex, HatDirection direction);
-  virtual void OnAxisMotion(unsigned int axisIndex, float position);
+  virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
+  virtual bool OnHatMotion(unsigned int hatIndex, HatDirection direction);
+  virtual bool OnAxisMotion(unsigned int axisIndex, float position);
   virtual void ProcessAxisMotions(void);
 
 private:
-  void ProcessHatDirection(int index, HatDirection oldDir, HatDirection newDir, HatDirection targetDir);
+  bool ProcessHatDirection(int index, HatDirection oldDir, HatDirection newDir, HatDirection targetDir);
 
   float GetAxisState(int axisIndex) const;
 

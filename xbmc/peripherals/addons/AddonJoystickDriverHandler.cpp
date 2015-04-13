@@ -45,22 +45,28 @@ CAddonJoystickDriverHandler::~CAddonJoystickDriverHandler(void)
   delete m_buttonMap;
 }
 
-void CAddonJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
+bool CAddonJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   if (m_driverHandler)
-    m_driverHandler->OnButtonMotion(buttonIndex, bPressed);
+    return m_driverHandler->OnButtonMotion(buttonIndex, bPressed);
+
+  return false;
 }
 
-void CAddonJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection direction)
+bool CAddonJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
   if (m_driverHandler)
-    m_driverHandler->OnHatMotion(hatIndex, direction);
+    return m_driverHandler->OnHatMotion(hatIndex, direction);
+
+  return false;
 }
 
-void CAddonJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float position)
+bool CAddonJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float position)
 {
   if (m_driverHandler)
-    m_driverHandler->OnAxisMotion(axisIndex, position);
+    return m_driverHandler->OnAxisMotion(axisIndex, position);
+
+  return false;
 }
 
 void CAddonJoystickDriverHandler::ProcessAxisMotions(void)

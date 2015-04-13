@@ -61,27 +61,33 @@ CGUIJoystickDriverHandler::~CGUIJoystickDriverHandler(void)
   m_device->UnregisterJoystickDriverHandler(this);
 }
 
-void CGUIJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
+bool CGUIJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   if (bPressed)
-    m_dialog->OnButton(m_device, buttonIndex);
+    return m_dialog->OnButton(m_device, buttonIndex);
+
+  return false;
 }
 
-void CGUIJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection direction)
+bool CGUIJoystickDriverHandler::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
   if (direction == HatDirectionUp    ||
       direction == HatDirectionRight ||
       direction == HatDirectionDown  ||
       direction == HatDirectionLeft)
   {
-    m_dialog->OnHat(m_device, hatIndex, direction);
+    return m_dialog->OnHat(m_device, hatIndex, direction);
   }
+
+  return false;
 }
 
-void CGUIJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float position)
+bool CGUIJoystickDriverHandler::OnAxisMotion(unsigned int axisIndex, float position)
 {
   if (position >= AXIS_THRESHOLD)
-    m_dialog->OnAxis(m_device, axisIndex);
+    return m_dialog->OnAxis(m_device, axisIndex);
+
+  return false;
 }
 
 // --- CGUIDialogControllerInput -----------------------------------------------
@@ -183,7 +189,7 @@ void CGUIDialogControllerInput::DoModal(const GamePeripheralPtr& peripheral, CGU
   CleanupButtons();
 }
 
-void CGUIDialogControllerInput::OnButton(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex)
+bool CGUIDialogControllerInput::OnButton(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex)
 {
   if (IsPrompting())
   {
@@ -193,10 +199,14 @@ void CGUIDialogControllerInput::OnButton(PERIPHERALS::CPeripheral* device, unsig
       mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(buttonIndex));
 
     CancelPrompt();
+
+    return true;
   }
+
+  return false;
 }
 
-void CGUIDialogControllerInput::OnHat(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction)
+bool CGUIDialogControllerInput::OnHat(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction)
 {
   if (IsPrompting())
   {
@@ -206,13 +216,17 @@ void CGUIDialogControllerInput::OnHat(PERIPHERALS::CPeripheral* device, unsigned
       mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(hatIndex, direction));
 
     CancelPrompt();
+
+    return true;
   }
+
+  return false;
 }
 
-void CGUIDialogControllerInput::OnAxis(PERIPHERALS::CPeripheral* device, unsigned int axisIndex)
+bool CGUIDialogControllerInput::OnAxis(PERIPHERALS::CPeripheral* device, unsigned int axisIndex)
 {
   // TODO
-  CancelPrompt();
+  return false;
 }
 
 void CGUIDialogControllerInput::OnFocus(int iFocusedControl)

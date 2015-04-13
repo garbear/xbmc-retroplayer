@@ -21,10 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.3"
+#define GAME_API_VERSION                "1.0.4"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.3"
+#define GAME_MIN_API_VERSION            "1.0.4"
 
 /* magic number for empty tray */
 #define GAME_NO_DISK                   ((unsigned)-1)
@@ -416,7 +416,7 @@ typedef struct GameClient
   GAME_ERROR  (__cdecl* Run)(void);
   GAME_ERROR  (__cdecl* Reset)(void);
   void        (__cdecl* DeviceConnected)(unsigned int, bool, const struct game_input_device*);
-  void        (__cdecl* InputEvent)(unsigned int port, game_input_event* event);
+  bool        (__cdecl* InputEvent)(unsigned int port, const game_input_event* event);
   GAME_ERROR  (__cdecl* GetSystemAVInfo)(struct game_system_av_info *info);
   size_t      (__cdecl* SerializeSize)(void);
   GAME_ERROR  (__cdecl* Serialize)(void *data, size_t size);

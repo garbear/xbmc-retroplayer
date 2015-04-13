@@ -85,28 +85,40 @@ void CPeripheralJoystick::UnregisterJoystickDriverHandler(IJoystickDriverHandler
   m_driverHandlers.erase(std::remove(m_driverHandlers.begin(), m_driverHandlers.end(), handler), m_driverHandlers.end());
 }
 
-void CPeripheralJoystick::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
+bool CPeripheralJoystick::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   CSingleLock lock(m_handlerMutex);
 
+  bool bHandled = false;
+
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->OnButtonMotion(buttonIndex, bPressed);
+    bHandled |= (*it)->OnButtonMotion(buttonIndex, bPressed);
+
+  return bHandled;
 }
 
-void CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direction)
+bool CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
   CSingleLock lock(m_handlerMutex);
 
+  bool bHandled = false;
+
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->OnHatMotion(hatIndex, direction);
+    bHandled |= (*it)->OnHatMotion(hatIndex, direction);
+
+  return bHandled;
 }
 
-void CPeripheralJoystick::OnAxisMotion(unsigned int axisIndex, float position)
+bool CPeripheralJoystick::OnAxisMotion(unsigned int axisIndex, float position)
 {
   CSingleLock lock(m_handlerMutex);
 
+  bool bHandled = false;
+
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->OnAxisMotion(axisIndex, position);
+    bHandled |= (*it)->OnAxisMotion(axisIndex, position);
+
+  return bHandled;
 }
 
 void CPeripheralJoystick::ProcessAxisMotions(void)

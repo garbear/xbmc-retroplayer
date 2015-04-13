@@ -530,6 +530,8 @@ bool CGameClient::OnButtonPress(int port, unsigned int featureIndex, bool bPress
 {
   const GamePeripheralPtr& device = m_devices[port]->Peripheral();
 
+  bool bHandled = false;
+
   if (featureIndex < device->Layout().Features().size())
   {
     game_input_event event;
@@ -541,18 +543,18 @@ bool CGameClient::OnButtonPress(int port, unsigned int featureIndex, bool bPress
     event.feature_name           = device->Layout().Features()[featureIndex].Name().c_str();
     event.digital_button.pressed = bPressed;
 
-    try { m_pStruct->InputEvent(port, &event); }
+    try { bHandled = m_pStruct->InputEvent(port, &event); }
     catch (...) { LogException("InputEvent()"); }
-
-    return true;
   }
 
-  return false;
+  return bHandled;
 }
 
 bool CGameClient::OnButtonMotion(int port, unsigned int featureIndex, float magnitude)
 {
   const GamePeripheralPtr& device = m_devices[port]->Peripheral();
+
+  bool bHandled = false;
 
   if (featureIndex < device->Layout().Features().size())
   {
@@ -565,18 +567,18 @@ bool CGameClient::OnButtonMotion(int port, unsigned int featureIndex, float magn
     event.feature_name            = device->Layout().Features()[featureIndex].Name().c_str();
     event.analog_button.magnitude = magnitude;
 
-    try { m_pStruct->InputEvent(port, &event); }
+    try { bHandled = m_pStruct->InputEvent(port, &event); }
     catch (...) { LogException("InputEvent()"); }
-
-    return true;
   }
 
-  return false;
+  return bHandled;
 }
 
 bool CGameClient::OnAnalogStickMotion(int port, unsigned int featureIndex, float x, float y)
 {
   const GamePeripheralPtr& device = m_devices[port]->Peripheral();
+
+  bool bHandled = false;
 
   if (featureIndex < device->Layout().Features().size())
   {
@@ -590,18 +592,18 @@ bool CGameClient::OnAnalogStickMotion(int port, unsigned int featureIndex, float
     event.analog_stick.x = x;
     event.analog_stick.y = y;
 
-    try { m_pStruct->InputEvent(port, &event); }
+    try { bHandled = m_pStruct->InputEvent(port, &event); }
     catch (...) { LogException("InputEvent()"); }
-
-    return true;
   }
 
-  return false;
+  return bHandled;
 }
 
 bool CGameClient::OnAccelerometerMotion(int port, unsigned int featureIndex, float x, float y, float z)
 {
   const GamePeripheralPtr& device = m_devices[port]->Peripheral();
+
+  bool bHandled = false;
 
   if (featureIndex < device->Layout().Features().size())
   {
@@ -616,13 +618,11 @@ bool CGameClient::OnAccelerometerMotion(int port, unsigned int featureIndex, flo
     event.accelerometer.y = y;
     event.accelerometer.z = z;
 
-    try { m_pStruct->InputEvent(port, &event); }
+    try { bHandled = m_pStruct->InputEvent(port, &event); }
     catch (...) { LogException("InputEvent()"); }
-
-    return true;
   }
 
-  return false;
+  return bHandled;
 }
 
 void CGameClient::SetFrameRateCorrection(double correctionFactor)

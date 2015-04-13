@@ -41,9 +41,9 @@ public:
   virtual ~CGUIJoystickDriverHandler(void);
 
   // Implementation of IJoystickDriverHandler
-  virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-  virtual void OnHatMotion(unsigned int hatIndex, HatDirection direction);
-  virtual void OnAxisMotion(unsigned int axisIndex, float position);
+  virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
+  virtual bool OnHatMotion(unsigned int hatIndex, HatDirection direction);
+  virtual bool OnAxisMotion(unsigned int axisIndex, float position);
   virtual void ProcessAxisMotions(void) { }
 
 private:
@@ -66,9 +66,9 @@ public:
 
   void DoModal(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
 
-  void OnButton(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex);
-  void OnHat(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction);
-  void OnAxis(PERIPHERALS::CPeripheral* device, unsigned int axisIndex);
+  bool OnButton(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex);
+  bool OnHat(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction);
+  bool OnAxis(PERIPHERALS::CPeripheral* device, unsigned int axisIndex);
 
 protected:
   // implementation of CThread

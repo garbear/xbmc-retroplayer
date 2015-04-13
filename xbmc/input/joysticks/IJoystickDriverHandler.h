@@ -37,7 +37,7 @@ public:
    * \param buttonIndex The index of the button as reported by the driver
    * \param bPressed    true for press motion, false for release motion
    */
-  virtual void OnButtonMotion(unsigned int buttonIndex, bool bPressed) = 0;
+  virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed) = 0;
 
   /*!
    * \brief Handle hat motion
@@ -45,7 +45,7 @@ public:
    * \param hatIndex     The index of the hat as reported by the driver
    * \param direction    The direction the hat is now being pressed
    */
-  virtual void OnHatMotion(unsigned int hatIndex, HatDirection direction) = 0;
+  virtual bool OnHatMotion(unsigned int hatIndex, HatDirection direction) = 0;
 
   /*!
    * \brief Handle axis motion
@@ -56,7 +56,7 @@ public:
    * \param axisIndex   The index of the axis as reported by the driver
    * \param position    The position of the axis in the closed interval [-1.0, 1.0]
    */
-  virtual void OnAxisMotion(unsigned int axisIndex, float position) = 0;
+  virtual bool OnAxisMotion(unsigned int axisIndex, float position) = 0;
 
   /*!
    * \brief Handle buffered axis positions for features that require multiple axes
