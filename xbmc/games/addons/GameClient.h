@@ -209,7 +209,7 @@ private:
   CSerialState          m_serialState;
 
   // Input
-  std::vector<CControllerInput*>  m_controllers; // port -> controller
+  std::vector<CControllerInput*>  m_controllers;
 
   CCriticalSection      m_critSection;
 };
