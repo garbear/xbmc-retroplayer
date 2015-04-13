@@ -1,1 +1,1 @@
-game.libretro.pcsx-rearmed https://github.com/kodi-game/game.libretro.pcsx-rearmed 1b7792b
+game.libretro.pcsx-rearmed https://github.com/kodi-game/game.libretro.pcsx-rearmed b42d98c
