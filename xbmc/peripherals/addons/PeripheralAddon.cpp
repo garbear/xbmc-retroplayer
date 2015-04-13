@@ -22,6 +22,7 @@
 #include "AddonJoystickButtonMap.h"
 #include "addons/AddonManager.h"
 #include "filesystem/SpecialProtocol.h"
+#include "games/addons/GamePeripheral.h"
 #include "input/joysticks/IJoystickButtonMap.h"
 #include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
@@ -36,6 +37,7 @@
 #include <string.h>
 #include <utility>
 
+using namespace GAME;
 using namespace PERIPHERALS;
 
 #define JOYSTICK_KEYBOARD_PROVIDER  "application"
@@ -500,7 +502,12 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
     {
       JoystickFeaturePtr feature(ADDON::JoystickFeatureFactory::Create(pFeatures[i]));
       if (feature)
+      {
+        // Correct feature indices
+        feature->SetID(GetFeatureIndex(strDeviceId, feature->Name()));
+
         features[feature->ID()] = feature;
+      }
     }
 
     try { m_pStruct->FreeButtonMap(featureCount, pFeatures); }
@@ -593,6 +600,44 @@ void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystic
   {
     joystickInfo.SetProvider(JOYSTICK_KEYBOARD_PROVIDER);
   }
+}
+
+const GamePeripheralPtr& CPeripheralAddon::GetGamePeripheral(const std::string& strDeviceId)
+{
+  std::map<DeviceID, GamePeripheralPtr>::const_iterator it = m_gamePeripherals.find(strDeviceId);
+  if (it != m_gamePeripherals.end())
+    return it->second;
+
+  ADDON::AddonPtr addon;
+  if (ADDON::CAddonMgr::Get().GetAddon(strDeviceId, addon, ADDON::ADDON_GAME_PERIPHERAL))
+  {
+    GamePeripheralPtr gamePeripheral = std::dynamic_pointer_cast<CGamePeripheral>(addon);
+    if (gamePeripheral && gamePeripheral->LoadLayout())
+    {
+      GamePeripheralPtr& gamePeripheralRef = m_gamePeripherals[strDeviceId];
+      gamePeripheralRef = gamePeripheral;
+      return gamePeripheralRef;
+    }
+  }
+
+  return CGamePeripheral::EmptyPtr;
+}
+
+int CPeripheralAddon::GetFeatureIndex(const std::string& strDeviceId, const std::string& featureName)
+{
+  const GamePeripheralPtr& gameDevice = GetGamePeripheral(strDeviceId);
+
+  if (gameDevice)
+  {
+    const std::vector<CGamePeripheralFeature>& features = gameDevice->Layout().Features();
+    for (unsigned int i = 0; i < features.size(); i++)
+    {
+      if (featureName == features[i].Name())
+        return i;
+    }
+  }
+
+  return -1;
 }
 
 const char* CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)

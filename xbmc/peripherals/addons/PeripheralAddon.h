@@ -23,6 +23,7 @@
 #include "addons/DllPeripheral.h"
 #include "addons/include/kodi_peripheral_types.h"
 #include "addons/include/kodi_peripheral_utils.hpp"
+#include "games/GameTypes.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "peripherals/PeripheralTypes.h"
 #include "threads/Thread.h"
@@ -100,6 +101,9 @@ namespace PERIPHERALS
     static void GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
     static void GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo);
 
+    const GAME::GamePeripheralPtr& GetGamePeripheral(const std::string& strDeviceId);
+    int GetFeatureIndex(const std::string& strDeviceId, const std::string& featureName);
+
     static HatDirection ToHatDirection(JOYSTICK_STATE_HAT state);
 
     /*!
@@ -132,6 +136,9 @@ namespace PERIPHERALS
     std::map<unsigned int, CPeripheral*>  m_peripherals;
 
     std::vector<std::pair<CPeripheral*, IJoystickButtonMap*> > m_buttonMaps; // Button map observers
+
+    typedef std::string DeviceID;
+    std::map<DeviceID, GAME::GamePeripheralPtr> m_gamePeripherals;
 
     /* synchronization */
     CCriticalSection    m_critSection;
