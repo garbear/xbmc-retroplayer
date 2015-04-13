@@ -18,7 +18,7 @@
  *
  */
 
-#include "GamePeripheralFeature.h"
+#include "GameControllerFeature.h"
 #include "games/GameDefinitions.h"
 #include "games/GameTranslator.h"
 #include "utils/log.h"
@@ -32,7 +32,7 @@ using namespace GAME;
 #define SAFE_DELETE(x)  do { delete (x); (x) = NULL; } while (0)
 #endif
 
-void CGamePeripheralFeature::Reset(void)
+void CGameControllerFeature::Reset(void)
 {
   m_type = FEATURE_UNKNOWN;
   m_strName.clear();
@@ -41,7 +41,7 @@ void CGamePeripheralFeature::Reset(void)
   m_buttonType = BUTTON_UNKNOWN;
 }
 
-CGamePeripheralFeature& CGamePeripheralFeature::operator=(const CGamePeripheralFeature& rhs)
+CGameControllerFeature& CGameControllerFeature::operator=(const CGameControllerFeature& rhs)
 {
   if (this != &rhs)
   {
@@ -56,7 +56,7 @@ CGamePeripheralFeature& CGamePeripheralFeature::operator=(const CGamePeripheralF
   return *this;
 }
 
-bool CGamePeripheralFeature::Deserialize(const TiXmlElement* pElement)
+bool CGameControllerFeature::Deserialize(const TiXmlElement* pElement)
 {
   Reset();
 
@@ -117,7 +117,7 @@ bool CGamePeripheralFeature::Deserialize(const TiXmlElement* pElement)
   return true;
 }
 
-FeatureGeometry CGamePeripheralFeature::CreateGeometry(const TiXmlElement* pElement)
+FeatureGeometry CGameControllerFeature::CreateGeometry(const TiXmlElement* pElement)
 {
   FeatureGeometry geometry = NULL;
 

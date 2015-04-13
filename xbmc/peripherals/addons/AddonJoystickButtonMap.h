@@ -29,12 +29,12 @@ namespace PERIPHERALS
   class CAddonJoystickButtonMap : public IJoystickButtonMap
   {
   public:
-    CAddonJoystickButtonMap(CPeripheral* device, const std::string& strDeviceId);
+    CAddonJoystickButtonMap(CPeripheral* device, const std::string& strControllerId);
 
     virtual ~CAddonJoystickButtonMap(void);
 
     // Implementation of IJoystickButtonMap
-    virtual std::string DeviceID(void) const { return m_strDeviceId; }
+    virtual std::string ControllerID(void) const { return m_strControllerId; }
     virtual bool Load(void);
     virtual bool GetFeature(const CJoystickDriverPrimitive& primitive, unsigned int& featureIndex);
     virtual bool GetButton(unsigned int featureIndex, CJoystickDriverPrimitive& button);
@@ -54,7 +54,7 @@ namespace PERIPHERALS
 
     CPeripheral* const       m_device;
     const PeripheralAddonPtr m_addon;
-    const std::string        m_strDeviceId;
+    const std::string        m_strControllerId;
     JoystickFeatureMap       m_features;
     DriverMap                m_driverMap;
   };

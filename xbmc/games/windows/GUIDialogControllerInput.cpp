@@ -19,7 +19,7 @@
  */
 
 #include "GUIDialogControllerInput.h"
-#include "games/addons/GamePeripheral.h"
+#include "games/addons/GameController.h"
 #include "guilib/Geometry.h"
 #include "guilib/GUIButtonControl.h"
 #include "guilib/GUIControl.h"
@@ -166,24 +166,24 @@ void CGUIDialogControllerInput::OnDeinitWindow(int nextWindowID)
     m_focusControl->Unfocus();
 
   // save selected item for next time
-  if (m_peripheral)
+  if (m_controller)
   {
     int iFocusedControl = GetFocusedControl(GROUP_LIST);
     if (iFocusedControl >= BUTTON_START)
-      m_lastControlIds[m_peripheral] = iFocusedControl;
+      m_lastControlIds[m_controller] = iFocusedControl;
   }
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
-void CGUIDialogControllerInput::DoModal(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
+void CGUIDialogControllerInput::DoModal(const GameControllerPtr& controller, CGUIFocusPlane* focusControl)
 {
   if (IsDialogRunning())
     return;
 
   Initialize();
 
-  if (SetupButtons(peripheral, focusControl))
+  if (SetupButtons(controller, focusControl))
     CGUIDialog::DoModal();
 
   CleanupButtons();
@@ -193,7 +193,7 @@ bool CGUIDialogControllerInput::OnButton(PERIPHERALS::CPeripheral* device, unsig
 {
   if (IsPrompting())
   {
-    CAddonJoystickButtonMapper mapper(device, m_peripheral->ID()); // TODO
+    CAddonJoystickButtonMapper mapper(device, m_controller->ID()); // TODO
 
     if (mapper.Load())
       mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(buttonIndex));
@@ -210,7 +210,7 @@ bool CGUIDialogControllerInput::OnHat(PERIPHERALS::CPeripheral* device, unsigned
 {
   if (IsPrompting())
   {
-    CAddonJoystickButtonMapper mapper(device, m_peripheral->ID()); // TODO
+    CAddonJoystickButtonMapper mapper(device, m_controller->ID()); // TODO
 
     if (mapper.Load())
       mapper.MapButton(m_promptIndex, CJoystickDriverPrimitive(hatIndex, direction));
@@ -231,9 +231,9 @@ bool CGUIDialogControllerInput::OnAxis(PERIPHERALS::CPeripheral* device, unsigne
 
 void CGUIDialogControllerInput::OnFocus(int iFocusedControl)
 {
-  if (m_peripheral && m_focusControl)
+  if (m_controller && m_focusControl)
   {
-    const std::vector<GAME::CGamePeripheralFeature>& features = m_peripheral->Layout().Features();
+    const std::vector<GAME::CGameControllerFeature>& features = m_controller->Layout().Features();
 
     int iFocusedIndex = iFocusedControl - BUTTON_START;
 
@@ -249,7 +249,7 @@ void CGUIDialogControllerInput::OnFocus(int iFocusedControl)
 
 bool CGUIDialogControllerInput::OnClick(int iSelectedControl)
 {
-  if (m_peripheral && m_focusControl && iSelectedControl >= BUTTON_START)
+  if (m_controller && m_focusControl && iSelectedControl >= BUTTON_START)
   {
     PromptForInput(iSelectedControl - BUTTON_START);
     return true;
@@ -263,14 +263,14 @@ void CGUIDialogControllerInput::PromptForInput(unsigned int buttonIndex)
   if (IsPrompting())
     return;
 
-  const std::vector<GAME::CGamePeripheralFeature>& features = m_peripheral->Layout().Features();
+  const std::vector<GAME::CGameControllerFeature>& features = m_controller->Layout().Features();
   if (buttonIndex < features.size())
   {
-    const GAME::CGamePeripheralFeature& feature = features[buttonIndex];
+    const GAME::CGameControllerFeature& feature = features[buttonIndex];
 
     // Update label
     std::string promptMsg = g_localizeStrings.Get(35051); // "Press %s"
-    std::string prompt = StringUtils::Format(promptMsg.c_str(), m_peripheral->GetString(feature.Label()).c_str());
+    std::string prompt = StringUtils::Format(promptMsg.c_str(), m_controller->GetString(feature.Label()).c_str());
     SET_CONTROL_LABEL(BUTTON_START + buttonIndex, prompt);
 
     m_promptIndex = buttonIndex;
@@ -287,13 +287,13 @@ void CGUIDialogControllerInput::CancelPrompt(void)
   if (!IsPrompting())
     return;
 
-  const std::vector<GAME::CGamePeripheralFeature>& features = m_peripheral->Layout().Features();
+  const std::vector<GAME::CGameControllerFeature>& features = m_controller->Layout().Features();
   if (m_promptIndex < (int)features.size())
   {
-    const GAME::CGamePeripheralFeature& feature = features[m_promptIndex];
+    const GAME::CGameControllerFeature& feature = features[m_promptIndex];
 
     // Change label back
-    SET_CONTROL_LABEL(BUTTON_START + m_promptIndex, m_peripheral->GetString(feature.Label()));
+    SET_CONTROL_LABEL(BUTTON_START + m_promptIndex, m_controller->GetString(feature.Label()));
 
     m_promptIndex = -1;
   }
@@ -315,9 +315,9 @@ void CGUIDialogControllerInput::SetFocusedControl(int iControl, int iFocusedCont
   OnMessage(msg);
 }
 
-bool CGUIDialogControllerInput::SetupButtons(const GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl)
+bool CGUIDialogControllerInput::SetupButtons(const GameControllerPtr& controller, CGUIFocusPlane* focusControl)
 {
-  if (!peripheral || !focusControl)
+  if (!controller || !focusControl)
     return false;
 
   CGUIButtonControl* pButtonTemplate = GetButtonTemplate();
@@ -326,12 +326,12 @@ bool CGUIDialogControllerInput::SetupButtons(const GamePeripheralPtr& peripheral
   if (!pButtonTemplate || !pGroupList)
     return false;
 
-  const std::vector<GAME::CGamePeripheralFeature>& features = peripheral->Layout().Features();
+  const std::vector<GAME::CGameControllerFeature>& features = controller->Layout().Features();
 
   unsigned int buttonId = BUTTON_START;
-  for (std::vector<GAME::CGamePeripheralFeature>::const_iterator it = features.begin(); it != features.end(); ++it)
+  for (std::vector<GAME::CGameControllerFeature>::const_iterator it = features.begin(); it != features.end(); ++it)
   {
-    CGUIButtonControl* pButton = MakeButton(peripheral->GetString(it->Label()), buttonId++, pButtonTemplate);
+    CGUIButtonControl* pButton = MakeButton(controller->GetString(it->Label()), buttonId++, pButtonTemplate);
 
     // Try inserting context buttons at position specified by template button,
     // if template button is not in grouplist fallback to adding new buttons at
@@ -344,11 +344,11 @@ bool CGUIDialogControllerInput::SetupButtons(const GamePeripheralPtr& peripheral
   m_defaultControl = GROUP_LIST;
   m_lastControlID = BUTTON_START;
 
-  m_peripheral = peripheral;
+  m_controller = controller;
   m_focusControl = focusControl;
 
   // Restore last selected control
-  std::map<GAME::GamePeripheralPtr, unsigned int>::const_iterator it = m_lastControlIds.find(m_peripheral);
+  std::map<GAME::GameControllerPtr, unsigned int>::const_iterator it = m_lastControlIds.find(m_controller);
   if (it != m_lastControlIds.end())
     m_lastControlID = it->second;
 
@@ -361,7 +361,7 @@ void CGUIDialogControllerInput::CleanupButtons(void)
   if (pGroupList)
     pGroupList->ClearAll();
 
-  m_peripheral = NULL;
+  m_controller = NULL;
   m_focusControl = NULL;
 }
 

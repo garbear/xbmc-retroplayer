@@ -31,16 +31,16 @@ namespace GAME
 
 typedef CShape* FeatureGeometry;
 
-class CGamePeripheralFeature
+class CGameControllerFeature
 {
 public:
-  CGamePeripheralFeature(void) : m_geometry(NULL) { Reset(); }
-  CGamePeripheralFeature(const CGamePeripheralFeature& other) : m_geometry(NULL) { *this = other; }
-  ~CGamePeripheralFeature(void) { Reset(); }
+  CGameControllerFeature(void) : m_geometry(NULL) { Reset(); }
+  CGameControllerFeature(const CGameControllerFeature& other) : m_geometry(NULL) { *this = other; }
+  ~CGameControllerFeature(void) { Reset(); }
 
   void Reset(void);
 
-  CGamePeripheralFeature& operator=(const CGamePeripheralFeature& rhs);
+  CGameControllerFeature& operator=(const CGameControllerFeature& rhs);
 
   FeatureType        Type(void) const       { return m_type; }
   const std::string& Name(void) const       { return m_strName; }

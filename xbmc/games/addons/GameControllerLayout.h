@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "GamePeripheralFeature.h"
+#include "GameControllerFeature.h"
 
 #include <string>
 #include <vector>
@@ -29,10 +29,10 @@ class TiXmlElement;
 namespace GAME
 {
 
-class CGamePeripheralLayout
+class CGameControllerLayout
 {
 public:
-  CGamePeripheralLayout(void) { Reset(); }
+  CGameControllerLayout(void) { Reset(); }
 
   void Reset(void);
 
@@ -42,7 +42,7 @@ public:
   unsigned int       Width(void) const   { return m_width; }
   unsigned int       Height(void) const  { return m_height; }
 
-  const std::vector<CGamePeripheralFeature>& Features(void) const { return m_features; }
+  const std::vector<CGameControllerFeature>& Features(void) const { return m_features; }
 
   unsigned int FeatureCount(FeatureType type, ButtonType buttonType = BUTTON_UNKNOWN) const;
 
@@ -54,8 +54,8 @@ private:
   std::string  m_strOverlay;
   unsigned int m_width;
   unsigned int m_height;
-  
-  std::vector<CGamePeripheralFeature> m_features;
+
+  std::vector<CGameControllerFeature> m_features;
 };
 
 }

@@ -24,10 +24,10 @@
 using namespace ADDON;
 using namespace PERIPHERALS;
 
-CAddonJoystickButtonMap::CAddonJoystickButtonMap(CPeripheral* device, const std::string& strDeviceId)
+CAddonJoystickButtonMap::CAddonJoystickButtonMap(CPeripheral* device, const std::string& strControllerId)
   : m_device(device),
     m_addon(g_peripherals.GetAddon(device)),
-    m_strDeviceId(strDeviceId)
+    m_strControllerId(strControllerId)
 {
   if (m_addon)
     m_addon->RegisterButtonMap(m_device, this);
@@ -44,7 +44,7 @@ bool CAddonJoystickButtonMap::Load(void)
   m_features.clear();
   m_driverMap.clear();
 
-  if (m_addon && m_addon->GetButtonMap(m_device, m_strDeviceId, m_features))
+  if (m_addon && m_addon->GetButtonMap(m_device, m_strControllerId, m_features))
   {
     m_driverMap = GetDriverMap(m_features);
     return true;

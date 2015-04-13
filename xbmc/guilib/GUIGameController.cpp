@@ -18,48 +18,48 @@
  *
  */
 
-#include "GUIGamePeripheral.h"
-#include "games/addons/GamePeripheral.h"
+#include "GUIGameController.h"
+#include "games/addons/GameController.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 
 using namespace GAME;
 
-CGUIGamePeripheral::CGUIGamePeripheral(int parentID, int controlID, float posX, float posY, float width, float height)
+CGUIGameController::CGUIGameController(int parentID, int controlID, float posX, float posY, float width, float height)
   : CGUIImage(parentID, controlID, posX, posY, width, height, CTextureInfo())
 {
-  ControlType = GUICONTROL_GAMEPERIPHERAL;
+  ControlType = GUICONTROL_GAMECONTROLLER;
 }
 
-CGUIGamePeripheral::CGUIGamePeripheral(const CGUIGamePeripheral &from)
+CGUIGameController::CGUIGameController(const CGUIGameController &from)
   : CGUIImage(from)
 {
-  ControlType = GUICONTROL_GAMEPERIPHERAL;
+  ControlType = GUICONTROL_GAMECONTROLLER;
 }
 
-void CGUIGamePeripheral::Render(void)
+void CGUIGameController::Render(void)
 {
   CGUIImage::Render();
 
   CSingleLock lock(m_mutex);
 
-  if (m_currentPeripheral)
+  if (m_currentController)
   {
     // TODO: Render pressed buttons
   }
 }
 
-void CGUIGamePeripheral::ActivatePeripheral(const GamePeripheralPtr& peripheral)
+void CGUIGameController::ActivateController(const GameControllerPtr& controller)
 {
   CSingleLock lock(m_mutex);
 
-  if (peripheral && peripheral != m_currentPeripheral)
+  if (controller && controller != m_currentController)
   {
-    m_currentPeripheral = peripheral;
+    m_currentController = controller;
 
     lock.Leave();
 
     // TODO: Sometimes this fails on window init
-    SetFileName(m_currentPeripheral->ImagePath());
+    SetFileName(m_currentController->ImagePath());
   }
 }

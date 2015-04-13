@@ -57,7 +57,7 @@ bool CGenericJoystickDriverHandler::OnButtonMotion(unsigned int buttonIndex, boo
   if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(buttonIndex), feature))
   {
     CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u %s",
-              m_handler->DeviceID().c_str(), feature, bPressed ? "pressed" : "released");
+              m_handler->ControllerID().c_str(), feature, bPressed ? "pressed" : "released");
 
     if (!oldState && pressed)
       bHandled = m_handler->OnButtonPress(feature, true);
@@ -100,7 +100,7 @@ bool CGenericJoystickDriverHandler::ProcessHatDirection(int index,
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
       CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s feature %u %s",
-                m_handler->DeviceID().c_str(), feature, bActivated ? "activated" : "deactivated");
+                m_handler->ControllerID().c_str(), feature, bActivated ? "activated" : "deactivated");
       return m_handler->OnButtonPress(feature, bActivated);
     }
     else
@@ -108,7 +108,7 @@ bool CGenericJoystickDriverHandler::ProcessHatDirection(int index,
       if (bActivated)
       {
         CLog::Log(LOGDEBUG, "CGenericJoystickDriverHandler: %s has no feature for hat %u %s",
-                  m_handler->DeviceID().c_str(), index, CJoystickTranslator::HatDirectionToString(targetDir));
+                  m_handler->ControllerID().c_str(), index, CJoystickTranslator::HatDirectionToString(targetDir));
       }
     }
   }

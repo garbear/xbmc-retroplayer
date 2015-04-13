@@ -49,7 +49,7 @@ CDefaultJoystickInputHandler::CDefaultJoystickInputHandler(void) :
 {
 }
 
-std::string CDefaultJoystickInputHandler::DeviceID(void) const
+std::string CDefaultJoystickInputHandler::ControllerID(void) const
 {
   return DEFAULT_GAME_CONTROLLER;
 }

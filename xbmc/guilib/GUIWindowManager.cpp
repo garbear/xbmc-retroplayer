@@ -151,8 +151,8 @@
 
 /* Game related include files */
 #include "games/windows/GUIDialogControllerInput.h"
+#include "games/windows/GUIWindowGameControllers.h"
 #include "games/windows/GUIWindowGames.h"
-#include "games/windows/GUIWindowGamePeripherals.h"
 
 using namespace std;
 using namespace PVR;
@@ -301,7 +301,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowWeather);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowGames);
-  Add(new CGUIWindowGamePeripherals);
+  Add(new CGUIWindowGameControllers);
   Add(new CGUIDialogControllerInput);
 }
 
@@ -926,7 +926,7 @@ void CGUIWindowManager::RenderPass() const
   // we render the dialogs based on their render order.
   vector<CGUIWindow *> renderList = m_activeDialogs;
   stable_sort(renderList.begin(), renderList.end(), RenderOrderSortFunction);
-  
+
   for (iDialog it = renderList.begin(); it != renderList.end(); ++it)
   {
     if ((*it)->IsDialogRunning())

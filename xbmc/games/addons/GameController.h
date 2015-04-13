@@ -19,22 +19,23 @@
  */
 #pragma once
 
-#include "GamePeripheralLayout.h"
+#include "GameControllerLayout.h"
 #include "addons/Addon.h"
+#include "games/GameTypes.h"
 
 #include <string>
 
 namespace GAME
 {
 
-class CGamePeripheral : public ADDON::CAddon
+class CGameController : public ADDON::CAddon
 {
 public:
-  CGamePeripheral(const ADDON::AddonProps &addonprops);
-  CGamePeripheral(const cp_extension_t *ext);
-  virtual ~CGamePeripheral(void) { }
+  CGameController(const ADDON::AddonProps &addonprops);
+  CGameController(const cp_extension_t *ext);
+  virtual ~CGameController(void) { }
 
-  static const GamePeripheralPtr EmptyPtr;
+  static const GameControllerPtr EmptyPtr;
 
   std::string Label(void);
   std::string ImagePath(void) const;
@@ -42,10 +43,10 @@ public:
 
   bool LoadLayout(void);
 
-  const CGamePeripheralLayout& Layout(void) const { return m_layout; }
+  const CGameControllerLayout& Layout(void) const { return m_layout; }
 
 private:
-  CGamePeripheralLayout m_layout;
+  CGameControllerLayout m_layout;
 };
 
 }

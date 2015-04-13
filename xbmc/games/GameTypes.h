@@ -25,9 +25,9 @@
 namespace GAME
 {
 
-class CGamePeripheral;
-typedef std::shared_ptr<CGamePeripheral> GamePeripheralPtr;
-typedef std::vector<GamePeripheralPtr>   GamePeripheralVector;
+class CGameController;
+typedef std::shared_ptr<CGameController> GameControllerPtr;
+typedef std::vector<GameControllerPtr>   GameControllerVector;
 
 class CGameClient;
 typedef std::shared_ptr<CGameClient> GameClientPtr;

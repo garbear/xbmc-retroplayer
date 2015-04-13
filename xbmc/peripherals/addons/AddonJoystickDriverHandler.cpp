@@ -32,7 +32,7 @@ using namespace PERIPHERALS;
 CAddonJoystickDriverHandler::CAddonJoystickDriverHandler(CPeripheral* peripheral, IJoystickInputHandler* handler)
   : m_driverHandler(NULL)
 {
-  m_buttonMap = new CAddonJoystickButtonMap(peripheral, handler->DeviceID());
+  m_buttonMap = new CAddonJoystickButtonMap(peripheral, handler->ControllerID());
   if (m_buttonMap->Load())
     m_driverHandler = new CGenericJoystickDriverHandler(handler, m_buttonMap);
   else

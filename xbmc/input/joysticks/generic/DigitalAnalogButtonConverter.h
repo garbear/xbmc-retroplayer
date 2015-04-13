@@ -40,7 +40,7 @@ public:
   CDigitalAnalogButtonConverter(IJoystickInputHandler* handler);
 
   // implementation of IJoystickInputHandler
-  virtual std::string DeviceID(void) const;
+  virtual std::string ControllerID(void) const;
   virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
   virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
   virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);

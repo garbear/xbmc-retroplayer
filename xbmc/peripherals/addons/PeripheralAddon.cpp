@@ -22,7 +22,7 @@
 #include "AddonJoystickButtonMap.h"
 #include "addons/AddonManager.h"
 #include "filesystem/SpecialProtocol.h"
-#include "games/addons/GamePeripheral.h"
+#include "games/addons/GameController.h"
 #include "input/joysticks/IJoystickButtonMap.h"
 #include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
@@ -470,7 +470,7 @@ bool CPeripheralAddon::SetJoystickProperties(unsigned int index, CPeripheralJoys
   return false;
 }
 
-bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string& strDeviceId,
+bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string& strControllerId,
                                     JoystickFeatureMap& features)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
@@ -494,7 +494,7 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
   JOYSTICK_FEATURE* pFeatures = NULL;
 
   try { LogError(retVal = m_pStruct->GetButtonMap(&peripheralStruct, &joystickStruct,
-                                                  strDeviceId.c_str(),
+                                                  strControllerId.c_str(),
                                                   &featureCount, &pFeatures), "GetButtonMap()"); }
   catch (std::exception &e) { LogException(e, "GetButtonMap()"); return false;  }
 
@@ -506,7 +506,7 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
       if (feature)
       {
         // Correct feature indices
-        feature->SetID(GetFeatureIndex(strDeviceId, feature->Name()));
+        feature->SetID(GetFeatureIndex(strControllerId, feature->Name()));
 
         features[feature->ID()] = feature;
       }
@@ -521,7 +521,7 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
   return false;
 }
 
-bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId,
+bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::string& strControllerId,
                                           const ADDON::JoystickFeature* feature)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
@@ -545,7 +545,7 @@ bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::
   feature->ToStruct(featureStruct);
 
   try { LogError(retVal = m_pStruct->MapJoystickFeature(&peripheralStruct, &joystickStruct,
-                                                        strDeviceId.c_str(),
+                                                        strControllerId.c_str(),
                                                         &featureStruct), "MapJoystickFeature()"); }
   catch (std::exception &e) { LogException(e, "MapJoystickFeature()"); return false;  }
 
@@ -555,7 +555,7 @@ bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::
     for (auto it = m_buttonMaps.begin(); it != m_buttonMaps.end(); ++it)
     {
       // TODO: Compare device properties, not just pointer
-      if (device == it->first && strDeviceId == it->second->DeviceID())
+      if (device == it->first && strControllerId == it->second->ControllerID())
         it->second->Load();
     }
   }
@@ -604,34 +604,34 @@ void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystic
   }
 }
 
-const GamePeripheralPtr& CPeripheralAddon::GetGamePeripheral(const std::string& strDeviceId)
+const GameControllerPtr& CPeripheralAddon::GetGameController(const std::string& strControllerId)
 {
-  std::map<DeviceID, GamePeripheralPtr>::const_iterator it = m_gamePeripherals.find(strDeviceId);
-  if (it != m_gamePeripherals.end())
+  std::map<ControllerID, GameControllerPtr>::const_iterator it = m_gameControllers.find(strControllerId);
+  if (it != m_gameControllers.end())
     return it->second;
 
   ADDON::AddonPtr addon;
-  if (ADDON::CAddonMgr::Get().GetAddon(strDeviceId, addon, ADDON::ADDON_GAME_PERIPHERAL))
+  if (ADDON::CAddonMgr::Get().GetAddon(strControllerId, addon, ADDON::ADDON_GAME_CONTROLLER))
   {
-    GamePeripheralPtr gamePeripheral = std::dynamic_pointer_cast<CGamePeripheral>(addon);
-    if (gamePeripheral && gamePeripheral->LoadLayout())
+    GameControllerPtr controller = std::dynamic_pointer_cast<CGameController>(addon);
+    if (controller && controller->LoadLayout())
     {
-      GamePeripheralPtr& gamePeripheralRef = m_gamePeripherals[strDeviceId];
-      gamePeripheralRef = gamePeripheral;
-      return gamePeripheralRef;
+      GameControllerPtr& controllerRef = m_gameControllers[strControllerId];
+      controllerRef = controller;
+      return controllerRef;
     }
   }
 
-  return CGamePeripheral::EmptyPtr;
+  return CGameController::EmptyPtr;
 }
 
-int CPeripheralAddon::GetFeatureIndex(const std::string& strDeviceId, const std::string& featureName)
+int CPeripheralAddon::GetFeatureIndex(const std::string& strControllerId, const std::string& featureName)
 {
-  const GamePeripheralPtr& gameDevice = GetGamePeripheral(strDeviceId);
+  const GameControllerPtr& controller = GetGameController(strControllerId);
 
-  if (gameDevice)
+  if (controller)
   {
-    const std::vector<CGamePeripheralFeature>& features = gameDevice->Layout().Features();
+    const std::vector<CGameControllerFeature>& features = controller->Layout().Features();
     for (unsigned int i = 0; i < features.size(); i++)
     {
       if (featureName == features[i].Name())

@@ -21,10 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.4"
+#define GAME_API_VERSION                "1.0.5"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.4"
+#define GAME_MIN_API_VERSION            "1.0.5"
 
 /* magic number for empty tray */
 #define GAME_NO_DISK                   ((unsigned)-1)
@@ -240,9 +240,9 @@ typedef enum GAME_EJECT_STATE
   GAME_EJECTED
 } GAME_EJECT_STATE;
 
-typedef struct game_input_device
+typedef struct game_controller
 {
-  const char*  device_id;
+  const char*  controller_id;
   unsigned int digital_button_count;
   unsigned int analog_button_count;
   unsigned int analog_stick_count;
@@ -250,7 +250,7 @@ typedef struct game_input_device
   unsigned int key_count;
   unsigned int rel_pointer_count;
   unsigned int abs_pointer_count;
-} ATTRIBUTE_PACKED game_input_device;
+} ATTRIBUTE_PACKED game_controller;
 
 typedef struct game_digital_button_event
 {
@@ -299,7 +299,7 @@ typedef struct game_input_event
 {
   GAME_INPUT_EVENT_SOURCE type;
   int                     port;
-  const char*             device_id;
+  const char*             controller_id;
   unsigned int            feature_index;
   const char*             feature_name;
   union
@@ -415,7 +415,7 @@ typedef struct GameClient
   GAME_ERROR  (__cdecl* UnloadGame)(void);
   GAME_ERROR  (__cdecl* Run)(void);
   GAME_ERROR  (__cdecl* Reset)(void);
-  void        (__cdecl* DeviceConnected)(unsigned int, bool, const struct game_input_device*);
+  void        (__cdecl* ControllerConnected)(unsigned int, bool, const struct game_controller*);
   bool        (__cdecl* InputEvent)(unsigned int port, const game_input_event* event);
   GAME_ERROR  (__cdecl* GetSystemAVInfo)(struct game_system_av_info *info);
   size_t      (__cdecl* SerializeSize)(void);

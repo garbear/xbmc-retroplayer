@@ -66,7 +66,7 @@
 #include "utils/StringUtils.h"
 #include "GUIAction.h"
 #include "GUIFocusPlane.h"
-#include "GUIGamePeripheral.h"
+#include "GUIGameController.h"
 #include "utils/RssReader.h"
 #include "Util.h"
 
@@ -112,7 +112,7 @@ static const ControlMapping controls[] =
     {"scrollbar",         CGUIControl::GUICONTROL_SCROLLBAR},
     {"multiselect",       CGUIControl::GUICONTROL_MULTISELECT},
     {"focusplane",        CGUIControl::GUICONTROL_FOCUSPLANE},
-    {"gameperipheral",    CGUIControl::GUICONTROL_GAMEPERIPHERAL},
+    {"gameperipheral",    CGUIControl::GUICONTROL_GAMECONTROLLER},
     {"list",              CGUIControl::GUICONTAINER_LIST},
     {"wraplist",          CGUIControl::GUICONTAINER_WRAPLIST},
     {"fixedlist",         CGUIControl::GUICONTAINER_FIXEDLIST},
@@ -1470,8 +1470,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   case CGUIControl::GUICONTROL_FOCUSPLANE:
     control = new CGUIFocusPlane(parentID, id, posX, posY, width, height);
     break;
-  case CGUIControl::GUICONTROL_GAMEPERIPHERAL:
-    control = new CGUIGamePeripheral(parentID, id, posX, posY, width, height);
+  case CGUIControl::GUICONTROL_GAMECONTROLLER:
+    control = new CGUIGameController(parentID, id, posX, posY, width, height);
     break;
   default:
     break;

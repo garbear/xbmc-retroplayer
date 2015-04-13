@@ -60,7 +60,7 @@
  */
 
 #include "GameClientProperties.h"
-#include "GamePeripheral.h"
+#include "GameController.h"
 #include "addons/Addon.h"
 #include "addons/AddonDll.h"
 #include "addons/DllGameClient.h"
@@ -83,24 +83,24 @@ namespace GAME
 
 class CGameClient;
 
-class CDeviceInput : public IJoystickInputHandler
+class CControllerInput : public IJoystickInputHandler
 {
 public:
-  CDeviceInput(CGameClient* addon, int port, const GamePeripheralPtr& peripheral);
+  CControllerInput(CGameClient* addon, int port, const GameControllerPtr& controller);
 
   // Implementation of IJoystickInputHandler
-  virtual std::string DeviceID(void) const { return m_peripheral->ID(); }
+  virtual std::string ControllerID(void) const { return m_controller->ID(); }
   virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
   virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
   virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);
   virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z);
 
-  const GamePeripheralPtr& Peripheral(void) const { return m_peripheral; }
+  const GameControllerPtr& Controller(void) const { return m_controller; }
 
 private:
   CGameClient* const      m_addon;
   const int               m_port;
-  const GamePeripheralPtr m_peripheral;
+  const GameControllerPtr m_controller;
 };
 
 class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
@@ -158,7 +158,7 @@ public:
 
   bool OpenPort(unsigned int port);
   void ClosePort(unsigned int port);
-  void UpdatePort(unsigned int port, const GamePeripheralPtr& peripheral);
+  void UpdatePort(unsigned int port, const GameControllerPtr& controller);
 
   bool OnButtonPress(int port, unsigned int featureIndex, bool bPressed);
   bool OnButtonMotion(int port, unsigned int featureIndex, float magnitude);
@@ -174,7 +174,7 @@ private:
   bool InitSerialization();
 
   void ClearPorts(void);
-  std::vector<GamePeripheralPtr> GetPeripherals(void) const;
+  std::vector<GameControllerPtr> GetControllers(void) const;
 
   // Helper functions
   static std::vector<std::string> ParseExtensions(const std::string& strExtensionList);
@@ -209,7 +209,7 @@ private:
   CSerialState          m_serialState;
 
   // Input
-  std::vector<CDeviceInput*>  m_devices; // port -> controller
+  std::vector<CControllerInput*>  m_controllers; // port -> controller
 
   CCriticalSection      m_critSection;
 };

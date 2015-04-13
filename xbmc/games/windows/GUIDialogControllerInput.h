@@ -64,7 +64,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction& action);
 
-  void DoModal(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
+  void DoModal(const GAME::GameControllerPtr& controller, CGUIFocusPlane* focusControl);
 
   bool OnButton(PERIPHERALS::CPeripheral* device, unsigned int buttonIndex);
   bool OnHat(PERIPHERALS::CPeripheral* device, unsigned int hatIndex, HatDirection direction);
@@ -84,12 +84,12 @@ protected:
 private:
   void PromptForInput(unsigned int buttonIndex);
   void CancelPrompt(void);
-  bool IsPrompting(void) const { return m_peripheral && m_promptIndex >= 0; }
+  bool IsPrompting(void) const { return m_controller && m_promptIndex >= 0; }
 
   int GetFocusedControl(int iControl);
   void SetFocusedControl(int iControl, int iFocusedControl);
 
-  bool SetupButtons(const GAME::GamePeripheralPtr& peripheral, CGUIFocusPlane* focusControl);
+  bool SetupButtons(const GAME::GameControllerPtr& controller, CGUIFocusPlane* focusControl);
   void CleanupButtons(void);
 
   CGUIButtonControl* GetButtonTemplate(void);
@@ -99,10 +99,10 @@ private:
   void ClearDriverHandlers(void);
   std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void);
 
-  GAME::GamePeripheralPtr m_peripheral;
+  GAME::GameControllerPtr m_controller;
   CGUIFocusPlane*         m_focusControl;
 
-  std::map<GAME::GamePeripheralPtr, unsigned int> m_lastControlIds; // peripheral add-on ID -> last selected control ID
+  std::map<GAME::GameControllerPtr, unsigned int> m_lastControlIds; // controller add-on ID -> last selected control ID
   int                                             m_promptIndex; // Index of feature being prompted for input
   std::vector<CGUIJoystickDriverHandler*>         m_driverHandlers;
   CEvent                                          m_inputEvent;

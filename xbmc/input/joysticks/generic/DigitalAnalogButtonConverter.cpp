@@ -31,9 +31,9 @@ CDigitalAnalogButtonConverter::CDigitalAnalogButtonConverter(IJoystickInputHandl
   assert(m_handler);
 }
 
-std::string CDigitalAnalogButtonConverter::DeviceID(void) const
+std::string CDigitalAnalogButtonConverter::ControllerID(void) const
 {
-  return m_handler->DeviceID();
+  return m_handler->ControllerID();
 }
 
 bool CDigitalAnalogButtonConverter::OnButtonPress(unsigned int featureIndex, bool bPressed)

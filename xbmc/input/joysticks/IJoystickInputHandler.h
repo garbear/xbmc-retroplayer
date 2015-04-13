@@ -23,7 +23,7 @@
 
 /*!
  * \ingroup joysticks
- * \brief Interface for handling input events for game peripherals
+ * \brief Interface for handling input events for game controllers
  */
 class IJoystickInputHandler
 {
@@ -31,14 +31,14 @@ public:
   virtual ~IJoystickInputHandler(void) { }
 
   /*!
-   * \brief The add-on ID of the game peripheral associated with this input handler
+   * \brief The add-on ID of the game controller associated with this input handler
    *
-   * The device ID provided by the implementation serves as the context for the
-   * feature indices below.
+   * The controller ID provided by the implementation serves as the context for
+   * the feature indices below.
    *
-   * \return The ID of the add-on extending kodi.game.peripheral
+   * \return The ID of the add-on extending kodi.game.controller
    */
-  virtual std::string DeviceID(void) const = 0;
+  virtual std::string ControllerID(void) const = 0;
 
   /*!
    * \brief A digital button has been pressed or released

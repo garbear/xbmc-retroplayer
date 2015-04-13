@@ -32,12 +32,12 @@ namespace PERIPHERALS
   class CPeripheral;
 }
 
-class CGUIWindowGamePeripherals;
+class CGUIWindowGameControllers;
 
 class CGUIJoystickInputHandler : public IJoystickInputHandler
 {
 public:
-  CGUIJoystickInputHandler(CGUIWindowGamePeripherals* window, PERIPHERALS::CPeripheral* device, const std::string& strDeviceId);
+  CGUIJoystickInputHandler(CGUIWindowGameControllers* window, PERIPHERALS::CPeripheral* device, const std::string& strDeviceId);
 
   virtual ~CGUIJoystickInputHandler(void);
 
@@ -49,16 +49,16 @@ public:
   virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z);
 
 private:
-  CGUIWindowGamePeripherals* const m_window;
+  CGUIWindowGameControllers* const m_window;
   PERIPHERALS::CPeripheral* const  m_device;
   std::string                      m_strDeviceId;
 };
 
-class CGUIWindowGamePeripherals : public CGUIWindow
+class CGUIWindowGameControllers : public CGUIWindow
 {
 public:
-  CGUIWindowGamePeripherals(void);
-  virtual ~CGUIWindowGamePeripherals(void) { }
+  CGUIWindowGameControllers(void);
+  virtual ~CGUIWindowGameControllers(void) { }
 
   // implementation of CGUIControl
   virtual bool OnMessage(CGUIMessage& message);
@@ -73,7 +73,7 @@ public:
   bool OnAccelerometerMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y, float z);
 
 protected:
-  bool LoadPeripheral(const ADDON::AddonPtr& addon);
+  bool LoadController(const GAME::GameControllerPtr& controller);
 
   // implementation of CGUIWindow
   virtual void OnInitWindow(void);
@@ -87,7 +87,7 @@ private:
   int GetSelectedItem(void);
 
   std::vector<CGUIJoystickInputHandler*> m_inputHandlers;
-  GAME::GamePeripheralVector m_peripherals;
+  GAME::GameControllerVector m_controllers;
   CFileItemList              m_items;
   int                        m_selectedItem;
 };

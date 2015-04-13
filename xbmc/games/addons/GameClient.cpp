@@ -61,33 +61,33 @@ struct NormalizeExtension
   }
 };
 
-// --- CDeviceInput ------------------------------------------------------------
+// --- CControllerInput ------------------------------------------------------------
 
-CDeviceInput::CDeviceInput(CGameClient* addon, int port, const GamePeripheralPtr& peripheral)
+CControllerInput::CControllerInput(CGameClient* addon, int port, const GameControllerPtr& controller)
   : m_addon(addon),
     m_port(port),
-    m_peripheral(peripheral)
+    m_controller(controller)
 {
   assert(m_addon);
-  assert(peripheral.get());
+  assert(controller.get());
 }
 
-bool CDeviceInput::OnButtonPress(unsigned int featureIndex, bool bPressed)
+bool CControllerInput::OnButtonPress(unsigned int featureIndex, bool bPressed)
 {
   return m_addon->OnButtonPress(m_port, featureIndex, bPressed);
 }
 
-bool CDeviceInput::OnButtonMotion(unsigned int featureIndex, float magnitude)
+bool CControllerInput::OnButtonMotion(unsigned int featureIndex, float magnitude)
 {
   return m_addon->OnButtonMotion(m_port, featureIndex, magnitude);
 }
 
-bool CDeviceInput::OnAnalogStickMotion(unsigned int featureIndex, float x, float y)
+bool CControllerInput::OnAnalogStickMotion(unsigned int featureIndex, float x, float y)
 {
   return m_addon->OnAnalogStickMotion(m_port, featureIndex, x, y);
 }
 
-bool CDeviceInput::OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z)
+bool CControllerInput::OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z)
 {
   return m_addon->OnAccelerometerMotion(m_port, featureIndex, x, y, z);
 }
@@ -443,19 +443,19 @@ unsigned int CGameClient::RewindFrames(unsigned int frames)
 
 bool CGameClient::OpenPort(unsigned int port)
 {
-  std::vector<GamePeripheralPtr> peripherals = GetPeripherals();
-  if (!peripherals.empty() && peripherals[0]->LoadLayout()) // TODO: Choose peripheral
+  std::vector<GameControllerPtr> controllers = GetControllers();
+  if (!controllers.empty() && controllers[0]->LoadLayout()) // TODO: Choose controller
   {
-    if (port >= m_devices.size())
-      m_devices.resize(port + 1);
+    if (port >= m_controllers.size())
+      m_controllers.resize(port + 1);
 
     ClosePort(port);
 
-    m_devices[port] = new CDeviceInput(this, port, peripherals[0]);
+    m_controllers[port] = new CControllerInput(this, port, controllers[0]);
 
-    CPortManager::Get().OpenPort(m_devices[port], port);
+    CPortManager::Get().OpenPort(m_controllers[port], port);
 
-    UpdatePort(port, peripherals[0]);
+    UpdatePort(port, controllers[0]);
 
     return true;
   }
@@ -465,82 +465,82 @@ bool CGameClient::OpenPort(unsigned int port)
 
 void CGameClient::ClosePort(unsigned int port)
 {
-  if (port >= m_devices.size())
+  if (port >= m_controllers.size())
     return;
 
-  if (m_devices[port] != NULL)
+  if (m_controllers[port] != NULL)
   {
-    CPortManager::Get().ClosePort(m_devices[port]);
+    CPortManager::Get().ClosePort(m_controllers[port]);
 
-    delete m_devices[port];
-    m_devices[port] = NULL;
+    delete m_controllers[port];
+    m_controllers[port] = NULL;
 
-    UpdatePort(port, CGamePeripheral::EmptyPtr);
+    UpdatePort(port, CGameController::EmptyPtr);
   }
 }
 
 void CGameClient::ClearPorts(void)
 {
-  for (unsigned int i = 0; i < m_devices.size(); i++)
+  for (unsigned int i = 0; i < m_controllers.size(); i++)
     ClosePort(i);
 }
 
-void CGameClient::UpdatePort(unsigned int port, const GamePeripheralPtr& peripheral)
+void CGameClient::UpdatePort(unsigned int port, const GameControllerPtr& controller)
 {
-  if (peripheral != CGamePeripheral::EmptyPtr)
+  if (controller != CGameController::EmptyPtr)
   {
-    game_input_device device;
+    game_controller controllerStruct;
 
-    const std::string strId = peripheral->ID();
-    device.device_id            = strId.c_str();
-    device.digital_button_count = peripheral->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_DIGITAL);
-    device.analog_button_count  = peripheral->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_ANALOG);
-    device.analog_stick_count   = peripheral->Layout().FeatureCount(FEATURE_ANALOG_STICK);
-    device.accelerometer_count  = peripheral->Layout().FeatureCount(FEATURE_ACCELEROMETER);
-    device.key_count            = peripheral->Layout().FeatureCount(FEATURE_KEY);
-    device.rel_pointer_count    = peripheral->Layout().FeatureCount(FEATURE_RELATIVE_POINTER);
-    device.abs_pointer_count    = peripheral->Layout().FeatureCount(FEATURE_ABSOLUTE_POINTER);
+    const std::string strId = controller->ID();
+    controllerStruct.controller_id        = strId.c_str();
+    controllerStruct.digital_button_count = controller->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_DIGITAL);
+    controllerStruct.analog_button_count  = controller->Layout().FeatureCount(FEATURE_BUTTON, BUTTON_ANALOG);
+    controllerStruct.analog_stick_count   = controller->Layout().FeatureCount(FEATURE_ANALOG_STICK);
+    controllerStruct.accelerometer_count  = controller->Layout().FeatureCount(FEATURE_ACCELEROMETER);
+    controllerStruct.key_count            = controller->Layout().FeatureCount(FEATURE_KEY);
+    controllerStruct.rel_pointer_count    = controller->Layout().FeatureCount(FEATURE_RELATIVE_POINTER);
+    controllerStruct.abs_pointer_count    = controller->Layout().FeatureCount(FEATURE_ABSOLUTE_POINTER);
 
-    try { m_pStruct->DeviceConnected(port, true, &device); }
-    catch (...) { LogException("UpdatePort()"); }
+    try { m_pStruct->ControllerConnected(port, true, &controllerStruct); }
+    catch (...) { LogException("ControllerConnected()"); }
   }
   else
   {
-    try { m_pStruct->DeviceConnected(port, false, NULL); }
-    catch (...) { LogException("UpdatePort()"); }
+    try { m_pStruct->ControllerConnected(port, false, NULL); }
+    catch (...) { LogException("ControllerConnected()"); }
   }
 }
 
-std::vector<GamePeripheralPtr> CGameClient::GetPeripherals(void) const
+std::vector<GameControllerPtr> CGameClient::GetControllers(void) const
 {
-  std::vector<GamePeripheralPtr> peripherals;
+  std::vector<GameControllerPtr> controllers;
 
   const ADDONDEPS& dependencies = GetDeps();
   for (ADDONDEPS::const_iterator it = dependencies.begin(); it != dependencies.end(); ++it)
   {
     AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(it->first, addon, ADDON_GAME_PERIPHERAL))
-      peripherals.push_back(std::dynamic_pointer_cast<CGamePeripheral>(addon));
+    if (CAddonMgr::Get().GetAddon(it->first, addon, ADDON_GAME_CONTROLLER))
+      controllers.push_back(std::dynamic_pointer_cast<CGameController>(addon));
   }
 
-  return peripherals;
+  return controllers;
 }
 
 bool CGameClient::OnButtonPress(int port, unsigned int featureIndex, bool bPressed)
 {
-  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
+  const GameControllerPtr& controller = m_controllers[port]->Controller();
 
   bool bHandled = false;
 
-  if (featureIndex < device->Layout().Features().size())
+  if (featureIndex < controller->Layout().Features().size())
   {
     game_input_event event;
 
     event.type                   = GAME_INPUT_EVENT_DIGITAL_BUTTON;
     event.port                   = port;
-    event.device_id              = device->ID().c_str();
+    event.controller_id          = controller->ID().c_str();
     event.feature_index          = featureIndex;
-    event.feature_name           = device->Layout().Features()[featureIndex].Name().c_str();
+    event.feature_name           = controller->Layout().Features()[featureIndex].Name().c_str();
     event.digital_button.pressed = bPressed;
 
     try { bHandled = m_pStruct->InputEvent(port, &event); }
@@ -552,19 +552,19 @@ bool CGameClient::OnButtonPress(int port, unsigned int featureIndex, bool bPress
 
 bool CGameClient::OnButtonMotion(int port, unsigned int featureIndex, float magnitude)
 {
-  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
+  const GameControllerPtr& controller = m_controllers[port]->Controller();
 
   bool bHandled = false;
 
-  if (featureIndex < device->Layout().Features().size())
+  if (featureIndex < controller->Layout().Features().size())
   {
     game_input_event event;
 
     event.type                    = GAME_INPUT_EVENT_ANALOG_BUTTON;
     event.port                    = port;
-    event.device_id               = device->ID().c_str();
+    event.controller_id           = controller->ID().c_str();
     event.feature_index           = featureIndex;
-    event.feature_name            = device->Layout().Features()[featureIndex].Name().c_str();
+    event.feature_name            = controller->Layout().Features()[featureIndex].Name().c_str();
     event.analog_button.magnitude = magnitude;
 
     try { bHandled = m_pStruct->InputEvent(port, &event); }
@@ -576,19 +576,19 @@ bool CGameClient::OnButtonMotion(int port, unsigned int featureIndex, float magn
 
 bool CGameClient::OnAnalogStickMotion(int port, unsigned int featureIndex, float x, float y)
 {
-  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
+  const GameControllerPtr& controller = m_controllers[port]->Controller();
 
   bool bHandled = false;
 
-  if (featureIndex < device->Layout().Features().size())
+  if (featureIndex < controller->Layout().Features().size())
   {
     game_input_event event;
 
     event.type           = GAME_INPUT_EVENT_ANALOG_STICK;
     event.port           = port;
-    event.device_id      = device->ID().c_str();
+    event.controller_id  = controller->ID().c_str();
     event.feature_index  = featureIndex;
-    event.feature_name   = device->Layout().Features()[featureIndex].Name().c_str();
+    event.feature_name   = controller->Layout().Features()[featureIndex].Name().c_str();
     event.analog_stick.x = x;
     event.analog_stick.y = y;
 
@@ -601,19 +601,19 @@ bool CGameClient::OnAnalogStickMotion(int port, unsigned int featureIndex, float
 
 bool CGameClient::OnAccelerometerMotion(int port, unsigned int featureIndex, float x, float y, float z)
 {
-  const GamePeripheralPtr& device = m_devices[port]->Peripheral();
+  const GameControllerPtr& controller = m_controllers[port]->Controller();
 
   bool bHandled = false;
 
-  if (featureIndex < device->Layout().Features().size())
+  if (featureIndex < controller->Layout().Features().size())
   {
     game_input_event event;
 
     event.type            = GAME_INPUT_EVENT_ACCELEROMETER;
     event.port            = port;
-    event.device_id       = device->ID().c_str();
+    event.controller_id   = controller->ID().c_str();
     event.feature_index   = featureIndex;
-    event.feature_name    = device->Layout().Features()[featureIndex].Name().c_str();
+    event.feature_name    = controller->Layout().Features()[featureIndex].Name().c_str();
     event.accelerometer.x = x;
     event.accelerometer.y = y;
     event.accelerometer.z = z;

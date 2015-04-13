@@ -18,7 +18,7 @@
  *
  */
 
-#include "GamePeripheralLayout.h"
+#include "GameControllerLayout.h"
 #include "games/GameDefinitions.h"
 #include "utils/log.h"
 #include "utils/XMLUtils.h"
@@ -34,7 +34,7 @@ struct FeatureTypeEqual
 {
   FeatureTypeEqual(FeatureType type, ButtonType buttonType) : type(type), buttonType(buttonType) { }
 
-  bool operator()(const CGamePeripheralFeature& feature) const
+  bool operator()(const CGameControllerFeature& feature) const
   {
     if (type == FEATURE_BUTTON && feature.Type() == FEATURE_BUTTON)
       return buttonType == BUTTON_UNKNOWN || buttonType == feature.ButtonType();
@@ -46,9 +46,9 @@ struct FeatureTypeEqual
   const ButtonType  buttonType;
 };
 
-// --- CGamePeripheralLayout ---------------------------------------------------
+// --- CGameControllerLayout ---------------------------------------------------
 
-void CGamePeripheralLayout::Reset(void)
+void CGameControllerLayout::Reset(void)
 {
   m_label = 0;
   m_strImage.clear();
@@ -58,12 +58,12 @@ void CGamePeripheralLayout::Reset(void)
   m_features.clear();
 }
 
-unsigned int CGamePeripheralLayout::FeatureCount(FeatureType type, ButtonType buttonType /* = BUTTON_UNKNOWN */) const
+unsigned int CGameControllerLayout::FeatureCount(FeatureType type, ButtonType buttonType /* = BUTTON_UNKNOWN */) const
 {
   return std::count_if(m_features.begin(), m_features.end(), FeatureTypeEqual(type, buttonType));
 }
 
-bool CGamePeripheralLayout::Deserialize(const TiXmlElement* pElement)
+bool CGameControllerLayout::Deserialize(const TiXmlElement* pElement)
 {
   Reset();
 
@@ -107,7 +107,7 @@ bool CGamePeripheralLayout::Deserialize(const TiXmlElement* pElement)
   const TiXmlElement* pChild = pElement->FirstChildElement();
   while (pChild != NULL)
   {
-    CGamePeripheralFeature feature;
+    CGameControllerFeature feature;
 
     if (!feature.Deserialize(pChild))
       return false;

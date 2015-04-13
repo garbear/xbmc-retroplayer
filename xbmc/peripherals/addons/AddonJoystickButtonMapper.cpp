@@ -21,17 +21,17 @@
 #include "AddonJoystickButtonMapper.h"
 #include "addons/AddonManager.h"
 #include "addons/include/kodi_peripheral_utils.hpp"
-#include "games/addons/GamePeripheral.h"
+#include "games/addons/GameController.h"
 #include "peripherals/Peripherals.h"
 
 using namespace ADDON;
 using namespace GAME;
 using namespace PERIPHERALS;
 
-CAddonJoystickButtonMapper::CAddonJoystickButtonMapper(CPeripheral* device, const std::string& strDeviceId)
+CAddonJoystickButtonMapper::CAddonJoystickButtonMapper(CPeripheral* device, const std::string& strControllerId)
   : m_device(device),
     m_addon(g_peripherals.GetAddon(device)),
-    m_strDeviceId(strDeviceId)
+    m_strControllerId(strControllerId)
 {
 }
 
@@ -53,19 +53,19 @@ bool CAddonJoystickButtonMapper::MapButton(unsigned int featureIndex, const CJoy
       case DriverPrimitiveTypeButton:
       {
         ADDON::DriverButton driverButton(featureIndex, strFeatureName, primitive.Index());
-        retVal = m_addon->MapJoystickFeature(m_device, m_strDeviceId, &driverButton);
+        retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverButton);
         break;
       }
       case DriverPrimitiveTypeHatDirection:
       {
         ADDON::DriverHat driverHat(featureIndex, strFeatureName, primitive.Index(), ToHatDirection(primitive.HatDir()));
-        retVal = m_addon->MapJoystickFeature(m_device, m_strDeviceId, &driverHat);
+        retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverHat);
         break;
       }
       case DriverPrimitiveTypeSemiAxis:
       {
         ADDON::DriverSemiAxis driverSemiAxis(featureIndex, strFeatureName, primitive.Index(), ToSemiAxisDirection(primitive.SemiAxisDir()));
-        retVal = m_addon->MapJoystickFeature(m_device, m_strDeviceId, &driverSemiAxis);
+        retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverSemiAxis);
         break;
       }
       default:
@@ -90,7 +90,7 @@ bool CAddonJoystickButtonMapper::MapAnalogStick(unsigned int featureIndex,
                                                horizIndex, horizInverted,
                                                vertIndex,  vertInverted);
 
-    retVal = retVal = m_addon->MapJoystickFeature(m_device, m_strDeviceId, &driverAnalogStick);
+    retVal = retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAnalogStick);
   }
 
   return retVal;
@@ -112,7 +112,7 @@ bool CAddonJoystickButtonMapper::MapAccelerometer(unsigned int featureIndex,
                                                    yIndex, yInverted,
                                                    zIndex, zInverted);
 
-    retVal = retVal = m_addon->MapJoystickFeature(m_device, m_strDeviceId, &driverAccelerometer);
+    retVal = retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAccelerometer);
   }
 
   return retVal;
@@ -121,12 +121,12 @@ bool CAddonJoystickButtonMapper::MapAccelerometer(unsigned int featureIndex,
 const std::string& CAddonJoystickButtonMapper::GetFeatureName(unsigned int featureIndex) const
 {
   AddonPtr addon;
-  if (!m_gameDevice && CAddonMgr::Get().GetAddon(m_strDeviceId, addon, ADDON_GAME_PERIPHERAL))
-    m_gameDevice = std::dynamic_pointer_cast<CGamePeripheral>(addon);
+  if (!m_controller && CAddonMgr::Get().GetAddon(m_strControllerId, addon, ADDON_GAME_CONTROLLER))
+    m_controller = std::dynamic_pointer_cast<CGameController>(addon);
 
-  if (m_gameDevice && m_gameDevice->LoadLayout())
+  if (m_controller && m_controller->LoadLayout())
   {
-    const std::vector<CGamePeripheralFeature>& features = m_gameDevice->Layout().Features();
+    const std::vector<CGameControllerFeature>& features = m_controller->Layout().Features();
     if (featureIndex < features.size())
       return features[featureIndex].Name();
   }

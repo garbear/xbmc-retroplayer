@@ -18,11 +18,11 @@
  *
  */
 
-#include "GUIWindowGamePeripherals.h"
+#include "GUIWindowGameControllers.h"
 #include "GUIDialogControllerInput.h"
 #include "addons/AddonManager.h"
-#include "games/addons/GamePeripheral.h"
-#include "guilib/GUIGamePeripheral.h"
+#include "games/addons/GameController.h"
+#include "guilib/GUIGameController.h"
 #include "guilib/GUIFocusPlane.h"
 #include "guilib/GUIMessage.h"
 #include "guilib/GUIWindowManager.h"
@@ -43,11 +43,11 @@ using namespace PERIPHERALS;
 
 #define CONTROL_PERIPHERAL_LIST     1
 #define CONTROL_FOCUS_PLANE         2
-#define CONTROL_GAME_PERIPHERAL     3
+#define CONTROL_GAME_CONTROLLER     3
 
 // --- CGUIJoystickInputHandler ------------------------------------------------
 
-CGUIJoystickInputHandler::CGUIJoystickInputHandler(CGUIWindowGamePeripherals* window, CPeripheral* device, const std::string& strDeviceId)
+CGUIJoystickInputHandler::CGUIJoystickInputHandler(CGUIWindowGameControllers* window, CPeripheral* device, const std::string& strDeviceId)
   : m_window(window),
     m_device(device),
     m_strDeviceId(strDeviceId)
@@ -83,15 +83,15 @@ bool CGUIJoystickInputHandler::OnAccelerometerMotion(unsigned int featureIndex, 
   return m_window->OnAccelerometerMotion(m_device, featureIndex, x, y, z);
 }
 
-// --- CGUIWindowGamePeripherals -----------------------------------------------
+// --- CGUIWindowGameControllers -----------------------------------------------
 
-CGUIWindowGamePeripherals::CGUIWindowGamePeripherals(void) :
-  CGUIWindow(WINDOW_GAME_PERIPHERALS, "GamePeripherals.xml"),
+CGUIWindowGameControllers::CGUIWindowGameControllers(void) :
+  CGUIWindow(WINDOW_GAME_PERIPHERALS, "GameControllers.xml"),
   m_selectedItem(-1)
 {
 }
 
-bool CGUIWindowGamePeripherals::OnMessage(CGUIMessage& message)
+bool CGUIWindowGameControllers::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
@@ -115,7 +115,7 @@ bool CGUIWindowGamePeripherals::OnMessage(CGUIMessage& message)
   return bHandled;
 }
 
-bool CGUIWindowGamePeripherals::OnAction(const CAction& action)
+bool CGUIWindowGameControllers::OnAction(const CAction& action)
 {
   if (CGUIWindow::OnAction(action))
   {
@@ -125,7 +125,7 @@ bool CGUIWindowGamePeripherals::OnAction(const CAction& action)
   return false;
 }
 
-void CGUIWindowGamePeripherals::OnInitWindow()
+void CGUIWindowGameControllers::OnInitWindow()
 {
   CGUIWindow::OnInitWindow();
 
@@ -137,15 +137,15 @@ void CGUIWindowGamePeripherals::OnInitWindow()
 
   m_items.Clear();
 
-  VECADDONS peripherals;
-  CAddonMgr::Get().GetAddons(ADDON_GAME_PERIPHERAL, peripherals);
-  for (VECADDONS::const_iterator it = peripherals.begin(); it != peripherals.end(); ++it)
+  VECADDONS controllers;
+  CAddonMgr::Get().GetAddons(ADDON_GAME_CONTROLLER, controllers);
+  for (VECADDONS::const_iterator it = controllers.begin(); it != controllers.end(); ++it)
   {
-    if (!LoadPeripheral(*it))
-      CLog::Log(LOGERROR, "Failed to load peripheral %s", (*it)->ID().c_str());
+    if (!LoadController(std::dynamic_pointer_cast<CGameController>(*it)))
+      CLog::Log(LOGERROR, "Failed to load controller %s", (*it)->ID().c_str());
   }
 
-  for (GamePeripheralVector::iterator it = m_peripherals.begin(); it != m_peripherals.end(); ++it)
+  for (GameControllerVector::iterator it = m_controllers.begin(); it != m_controllers.end(); ++it)
   {
     CFileItemPtr item(new CFileItem((*it)->Label()));
     m_items.Add(item);
@@ -155,7 +155,7 @@ void CGUIWindowGamePeripherals::OnInitWindow()
   g_windowManager.SendMessage(msg);
 }
 
-void CGUIWindowGamePeripherals::OnDeinitWindow(int nextWindowID)
+void CGUIWindowGameControllers::OnDeinitWindow(int nextWindowID)
 {
   for (std::vector<CGUIJoystickInputHandler*>::iterator it = m_inputHandlers.begin(); it != m_inputHandlers.end(); ++it)
     delete *it;
@@ -164,45 +164,47 @@ void CGUIWindowGamePeripherals::OnDeinitWindow(int nextWindowID)
   CGUIWindow::OnDeinitWindow(nextWindowID);
 }
 
-bool CGUIWindowGamePeripherals::OnButtonPress(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, bool bPressed)
+bool CGUIWindowGameControllers::OnButtonPress(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, bool bPressed)
 {
   return false; // TODO
 }
 
-bool CGUIWindowGamePeripherals::OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float magnitude)
+bool CGUIWindowGameControllers::OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float magnitude)
 {
   return false; // TODO
 }
 
-bool CGUIWindowGamePeripherals::OnAnalogStickMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y)
+bool CGUIWindowGameControllers::OnAnalogStickMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y)
 {
   return false; // TODO
 }
 
-bool CGUIWindowGamePeripherals::OnAccelerometerMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y, float z)
+bool CGUIWindowGameControllers::OnAccelerometerMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y, float z)
 {
   return false; // TODO
 }
 
-bool CGUIWindowGamePeripherals::LoadPeripheral(const AddonPtr& addon)
+bool CGUIWindowGameControllers::LoadController(const GameControllerPtr& controller)
 {
-  for (GamePeripheralVector::const_iterator it = m_peripherals.begin(); it != m_peripherals.end(); ++it)
+  if (controller)
   {
-    if ((*it)->ID() == addon->ID())
-      return true; // Already loaded
-  }
+    for (GameControllerVector::const_iterator it = m_controllers.begin(); it != m_controllers.end(); ++it)
+    {
+      if ((*it)->ID() == controller->ID())
+        return true; // Already loaded
+    }
 
-  GamePeripheralPtr peripheral = std::dynamic_pointer_cast<CGamePeripheral>(addon);
-  if (peripheral && peripheral->LoadLayout())
-  {
-    m_peripherals.push_back(peripheral);
-    return true;
+    if (controller->LoadLayout())
+    {
+      m_controllers.push_back(controller);
+      return true;
+    }
   }
 
   return false;
 }
 
-std::vector<CPeripheral*> CGUIWindowGamePeripherals::ScanPeripherals(void)
+std::vector<CPeripheral*> CGUIWindowGameControllers::ScanPeripherals(void)
 {
   std::vector<CPeripheral*> peripherals;
 
@@ -212,35 +214,35 @@ std::vector<CPeripheral*> CGUIWindowGamePeripherals::ScanPeripherals(void)
   return peripherals;
 }
 
-bool CGUIWindowGamePeripherals::OnClick(int iItem)
+bool CGUIWindowGameControllers::OnClick(int iItem)
 {
-  if (0 <= iItem && iItem < (int)m_peripherals.size())
+  if (0 <= iItem && iItem < (int)m_controllers.size())
   {
     CGUIDialogControllerInput* pMenu = dynamic_cast<CGUIDialogControllerInput*>(g_windowManager.GetWindow(WINDOW_DIALOG_CONTROLLER_INPUT));
     if (pMenu)
-      pMenu->DoModal(m_peripherals[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
+      pMenu->DoModal(m_controllers[iItem], dynamic_cast<CGUIFocusPlane*>(GetControl(CONTROL_FOCUS_PLANE)));
     return true;
   }
   return false;
 }
 
-bool CGUIWindowGamePeripherals::OnSelect(int iItem)
+bool CGUIWindowGameControllers::OnSelect(int iItem)
 {
-  if (0 <= iItem && iItem < (int)m_peripherals.size() && iItem != m_selectedItem)
+  if (0 <= iItem && iItem < (int)m_controllers.size() && iItem != m_selectedItem)
   {
     m_selectedItem = iItem;
 
-    CGUIGamePeripheral* pPeripheral = dynamic_cast<CGUIGamePeripheral*>(GetControl(CONTROL_GAME_PERIPHERAL));
-    if (pPeripheral)
+    CGUIGameController* pController = dynamic_cast<CGUIGameController*>(GetControl(CONTROL_GAME_CONTROLLER));
+    if (pController)
     {
-      pPeripheral->ActivatePeripheral(m_peripherals[iItem]);
+      pController->ActivateController(m_controllers[iItem]);
       return true;
     }
   }
   return false;
 }
 
-int CGUIWindowGamePeripherals::GetSelectedItem(void)
+int CGUIWindowGameControllers::GetSelectedItem(void)
 {
   if (!m_items.IsEmpty())
   {

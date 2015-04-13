@@ -18,7 +18,7 @@
  *
  */
 
-#include "GamePeripheral.h"
+#include "GameController.h"
 #include "games/GameDefinitions.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -26,10 +26,10 @@
 
 using namespace GAME;
 
-const GamePeripheralPtr CGamePeripheral::EmptyPtr;
+const GameControllerPtr CGameController::EmptyPtr;
 
 /*
-CCircle CGamePeripheral::Scale(const CCircle& focusArea, float layoutWidth, float layoutHeight) const
+CCircle CGameController::Scale(const CCircle& focusArea, float layoutWidth, float layoutHeight) const
 {
   const CPoint offset = m_controlRegion.P1();
   const float scaleX = m_controlRegion.Width() / layoutWidth;
@@ -39,38 +39,38 @@ CCircle CGamePeripheral::Scale(const CCircle& focusArea, float layoutWidth, floa
 }
 */
 
-CGamePeripheral::CGamePeripheral(const ADDON::AddonProps &addonprops)
+CGameController::CGameController(const ADDON::AddonProps &addonprops)
   : CAddon(addonprops)
 {
 }
 
-CGamePeripheral::CGamePeripheral(const cp_extension_t *ext)
+CGameController::CGameController(const cp_extension_t *ext)
   : CAddon(ext)
 {
 }
 
-std::string CGamePeripheral::Label(void)
+std::string CGameController::Label(void)
 {
   if (m_layout.Label() > 0)
     return GetString(m_layout.Label());
   return "";
 }
 
-std::string CGamePeripheral::ImagePath(void) const
+std::string CGameController::ImagePath(void) const
 {
   if (!m_layout.Image().empty())
     return URIUtils::AddFileToFolder(URIUtils::GetDirectory(LibPath()), m_layout.Image());
   return "";
 }
 
-std::string CGamePeripheral::OverlayPath(void) const
+std::string CGameController::OverlayPath(void) const
 {
   if (!m_layout.Overlay().empty())
     return URIUtils::AddFileToFolder(URIUtils::GetDirectory(LibPath()), m_layout.Overlay());
   return "";
 }
 
-bool CGamePeripheral::LoadLayout(void)
+bool CGameController::LoadLayout(void)
 {
   std::string strLayoutXmlPath = LibPath();
 

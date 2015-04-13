@@ -64,7 +64,7 @@ GAME_ERROR Reset(void);
 /*!
  * Set the status of an open port.
  */
-void DeviceConnected(unsigned int port, bool connected, const struct game_input_device* connected_device);
+void ControllerConnected(unsigned int port, bool connected, const struct game_controller* connected_controller);
 
 /*!
  * Called in response to an input event on an open port. Return true if the
@@ -280,7 +280,7 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->UnloadGame               = UnloadGame;
   pClient->Run                      = Run;
   pClient->Reset                    = Reset;
-  pClient->DeviceConnected          = DeviceConnected;
+  pClient->ControllerConnected      = ControllerConnected;
   pClient->InputEvent               = InputEvent;
   pClient->GetSystemAVInfo          = GetSystemAVInfo;
   pClient->SerializeSize            = SerializeSize;

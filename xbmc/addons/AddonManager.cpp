@@ -43,7 +43,7 @@
 #include "pvr/addons/PVRClient.h"
 #endif
 #include "games/addons/GameClient.h"
-#include "games/addons/GamePeripheral.h"
+#include "games/addons/GameController.h"
 //#ifdef HAS_SCRAPERS
 #include "Scraper.h"
 //#endif
@@ -197,8 +197,8 @@ AddonPtr CAddonMgr::Factory(const cp_extension_t *props)
       return AddonPtr(new CRepository(props));
     case ADDON_CONTEXT_ITEM:
       return AddonPtr(new CContextItemAddon(props));
-    case ADDON_GAME_PERIPHERAL:
-      return AddonPtr(new GAME::CGamePeripheral(props));
+    case ADDON_GAME_CONTROLLER:
+      return AddonPtr(new GAME::CGameController(props));
     default:
       break;
   }
@@ -406,21 +406,21 @@ void CAddonMgr::RemoveFromUpdateableAddons(AddonPtr &pAddon)
 {
   CSingleLock lock(m_critSection);
   VECADDONS::iterator it = std::find(m_updateableAddons.begin(), m_updateableAddons.end(), pAddon);
-  
+
   if(it != m_updateableAddons.end())
   {
     m_updateableAddons.erase(it);
   }
 }
 
-struct AddonIdFinder 
-{ 
+struct AddonIdFinder
+{
     AddonIdFinder(const std::string& id)
       : m_id(id)
     {}
-    
-    bool operator()(const AddonPtr& addon) 
-    { 
+
+    bool operator()(const AddonPtr& addon)
+    {
       return m_id == addon->ID();
     }
     private:
@@ -431,7 +431,7 @@ bool CAddonMgr::ReloadSettings(const std::string &id)
 {
   CSingleLock lock(m_critSection);
   VECADDONS::iterator it = std::find_if(m_updateableAddons.begin(), m_updateableAddons.end(), AddonIdFinder(id));
-  
+
   if( it != m_updateableAddons.end())
   {
     return (*it)->ReloadSettings();
@@ -829,8 +829,8 @@ AddonPtr CAddonMgr::AddonFromProps(AddonProps& addonProps)
       return AddonPtr(new PERIPHERALS::CPeripheralAddon(addonProps));
     case ADDON_GAMEDLL:
       return AddonPtr(new CGameClient(addonProps));
-    case ADDON_GAME_PERIPHERAL:
-      return AddonPtr(new GAME::CGamePeripheral(addonProps));
+    case ADDON_GAME_CONTROLLER:
+      return AddonPtr(new GAME::CGameController(addonProps));
     case ADDON_REPOSITORY:
       return AddonPtr(new CRepository(addonProps));
     case ADDON_CONTEXT_ITEM:

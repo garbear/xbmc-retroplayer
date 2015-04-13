@@ -81,8 +81,8 @@ namespace PERIPHERALS
     /** @name Joystick methods */
     //@{
     bool SetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick);
-    bool GetButtonMap(const CPeripheral* device, const std::string& strDeviceId, JoystickFeatureMap& features);
-    bool MapJoystickFeature(const CPeripheral* device, const std::string& strDeviceId, const ADDON::JoystickFeature* feature);
+    bool GetButtonMap(const CPeripheral* device, const std::string& strControllerId, JoystickFeatureMap& features);
+    bool MapJoystickFeature(const CPeripheral* device, const std::string& strControllerId, const ADDON::JoystickFeature* feature);
     //@}
 
     void RegisterButtonMap(CPeripheral* device, IJoystickButtonMap* buttonMap);
@@ -101,8 +101,8 @@ namespace PERIPHERALS
     static void GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
     static void GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo);
 
-    const GAME::GamePeripheralPtr& GetGamePeripheral(const std::string& strDeviceId);
-    int GetFeatureIndex(const std::string& strDeviceId, const std::string& featureName);
+    const GAME::GameControllerPtr& GetGameController(const std::string& strControllerId);
+    int GetFeatureIndex(const std::string& strControllerId, const std::string& featureName);
 
     static HatDirection ToHatDirection(JOYSTICK_STATE_HAT state);
 
@@ -137,8 +137,8 @@ namespace PERIPHERALS
 
     std::vector<std::pair<CPeripheral*, IJoystickButtonMap*> > m_buttonMaps; // Button map observers
 
-    typedef std::string DeviceID;
-    std::map<DeviceID, GAME::GamePeripheralPtr> m_gamePeripherals;
+    typedef std::string ControllerID;
+    std::map<ControllerID, GAME::GameControllerPtr> m_gameControllers;
 
     /* synchronization */
     CCriticalSection    m_critSection;
