@@ -90,7 +90,7 @@ bool CAddonJoystickButtonMapper::MapAnalogStick(unsigned int featureIndex,
                                                horizIndex, horizInverted,
                                                vertIndex,  vertInverted);
 
-    retVal = retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAnalogStick);
+    retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAnalogStick);
   }
 
   return retVal;
@@ -112,7 +112,7 @@ bool CAddonJoystickButtonMapper::MapAccelerometer(unsigned int featureIndex,
                                                    yIndex, yInverted,
                                                    zIndex, zInverted);
 
-    retVal = retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAccelerometer);
+    retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAccelerometer);
   }
 
   return retVal;
