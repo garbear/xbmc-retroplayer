@@ -1,6 +1,6 @@
 # XBMC Media Center language file
-# Addon Name: NES Controller
-# Addon id: game.controller.nes
+# Addon Name: NES Zapper
+# Addon id: game.controller.nes.zapper
 # Addon Provider: Team-Kodi
 msgid ""
 msgstr ""
@@ -17,37 +17,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30000"
-msgid "NES"
+msgid "NES Zapper"
 msgstr ""
 
 msgctxt "#30001"
-msgid "A"
+msgid "Trigger"
 msgstr ""
 
 msgctxt "#30002"
-msgid "B"
-msgstr ""
-
-msgctxt "#30003"
-msgid "Start"
-msgstr ""
-
-msgctxt "#30004"
-msgid "Select"
-msgstr ""
-
-msgctxt "#30005"
-msgid "Up"
-msgstr ""
-
-msgctxt "#30006"
-msgid "Down"
-msgstr ""
-
-msgctxt "#30007"
-msgid "Right"
-msgstr ""
-
-msgctxt "#30008"
-msgid "Left"
+msgid "Pointer"
 msgstr ""

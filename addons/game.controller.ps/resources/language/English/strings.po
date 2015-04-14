@@ -1,6 +1,6 @@
 # XBMC Media Center language file
-# Addon Name: Super Scope
-# Addon id: game.lightgun.super.scope
+# Addon Name: PS Controller
+# Addon id: game.controller.ps
 # Addon Provider: Team-Kodi
 msgid ""
 msgstr ""
@@ -17,23 +17,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgctxt "#30000"
-msgid "Super Scope"
+msgid "PS"
 msgstr ""
 
 msgctxt "#30001"
-msgid "Trigger"
+msgid "Cross"
 msgstr ""
 
 msgctxt "#30002"
-msgid "Cursor"
+msgid "Circle"
 msgstr ""
 
 msgctxt "#30003"
-msgid "Turbo"
+msgid "Square"
 msgstr ""
 
 msgctxt "#30004"
-msgid "Pause"
+msgid "Triangle"
 msgstr ""
 
 msgctxt "#30005"
@@ -41,5 +41,37 @@ msgid "Start"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Pointer"
+msgid "Select"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Up"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Down"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Right"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Left"
+msgstr ""
+
+msgctxt "#30011"
+msgid "L1"
+msgstr ""
+
+msgctxt "#30012"
+msgid "R1"
+msgstr ""
+
+msgctxt "#30013"
+msgid "L2"
+msgstr ""
+
+msgctxt "#30014"
+msgid "R2"
 msgstr ""
