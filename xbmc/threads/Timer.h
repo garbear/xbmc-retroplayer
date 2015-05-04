@@ -44,7 +44,10 @@ public:
 
   float GetElapsedSeconds() const;
   float GetElapsedMilliseconds() const;
-  
+
+  float GetTotalElapsedSeconds() const;
+  float GetTotalElapsedMilliseconds() const;
+
 protected:
   virtual void Process();
   
@@ -52,6 +55,7 @@ private:
   ITimerCallback *m_callback;
   uint32_t m_timeout;
   bool m_interval;
+  uint32_t m_startTime;
   uint32_t m_endTime;
   CEvent m_eventTimeout;
 };

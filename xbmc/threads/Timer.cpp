@@ -82,9 +82,22 @@ float CTimer::GetElapsedMilliseconds() const
   return (float)(XbmcThreads::SystemClockMillis() - (m_endTime - m_timeout));
 }
 
+float CTimer::GetTotalElapsedSeconds() const
+{
+  return GetTotalElapsedMilliseconds() / 1000.0f;
+}
+
+float CTimer::GetTotalElapsedMilliseconds() const
+{
+  if (!IsRunning())
+    return 0.0f;
+
+  return (float)(XbmcThreads::SystemClockMillis() - m_startTime);
+}
+
 void CTimer::Process()
 {
-  uint32_t currentTime = XbmcThreads::SystemClockMillis();
+  uint32_t currentTime = m_startTime = XbmcThreads::SystemClockMillis();
   m_endTime = currentTime + m_timeout;
 
   while (!m_bStop)
