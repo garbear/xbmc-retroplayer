@@ -14,6 +14,7 @@ set(MINGW_PATH "${CMAKE_INSTALL_PREFIX}/mingw")
 configure_file(${PROJECT_SOURCE_DIR}/Toolchain_mingw32.cmake.in ${CMAKE_INSTALL_PREFIX}/Toolchain_mingw32.cmake @ONLY)
 
 # configure the MinGW wrapper batch scripts
+generate_mingw32_wrapper("mingw32-make")
 generate_mingw32_wrapper("mingw32-gcc")
 generate_mingw32_wrapper("mingw32-g++")
 generate_mingw32_wrapper("ar")
