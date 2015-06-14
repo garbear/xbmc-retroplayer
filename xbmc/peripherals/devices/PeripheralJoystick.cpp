@@ -95,7 +95,11 @@ bool CPeripheralJoystick::OnButtonMotion(unsigned int buttonIndex, bool bPressed
   bool bHandled = false;
 
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    bHandled = bHandled || (*it)->OnButtonMotion(buttonIndex, bPressed);
+  {
+    // If button is released, notify all handlers to avoid "sticking"
+    if (!bHandled || !bPressed)
+      bHandled |= (*it)->OnButtonMotion(buttonIndex, bPressed);
+  }
 
   return bHandled;
 }
@@ -107,7 +111,11 @@ bool CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direct
   bool bHandled = false;
 
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    bHandled = bHandled || (*it)->OnHatMotion(hatIndex, direction);
+  {
+    // If hat is centered, notify all handlers to avoid "sticking"
+    if (!bHandled || direction == HatDirectionNone)
+      bHandled |= (*it)->OnHatMotion(hatIndex, direction);
+  }
 
   return bHandled;
 }
@@ -119,7 +127,11 @@ bool CPeripheralJoystick::OnAxisMotion(unsigned int axisIndex, float position)
   bool bHandled = false;
 
   for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    bHandled = bHandled || (*it)->OnAxisMotion(axisIndex, position);
+  {
+    // If axis is centered, notify all handlers to avoid "sticking"
+    if (!bHandled || position == 0.0f)
+      bHandled |= (*it)->OnAxisMotion(axisIndex, position);
+  }
 
   return bHandled;
 }
