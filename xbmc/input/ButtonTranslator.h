@@ -35,9 +35,7 @@
 class CKey;
 class CAction;
 class TiXmlNode;
-struct AxisConfig;
 class CRegExp;
-typedef std::vector<AxisConfig> AxesConfig; // [<axis, isTrigger, rest state value>]
 
 struct CButtonAction
 {
