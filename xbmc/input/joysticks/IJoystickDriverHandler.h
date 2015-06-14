@@ -68,13 +68,12 @@ public:
   /*!
    * \brief Handle buffered axis positions for features that require multiple axes
    *
-   * This allows the driver to report motion for individual axes without
-   * knowledge of how the axes map to physical features. ProcessAxisMotions() is
-   * called at the end of the frame when all axis motions have been reported.
+   * ProcessAxisMotions() is called at the end of the frame when all axis motions
+   * have been reported. This has several uses, including:
    *
-   * Analog features in motion emit events every frame, so this can also be used
-   * to dispatcg events every frame when a pressed digital button is emulating
-   * an analog features.
+   *  - Combining multiple axes into a single analog stick or accelerometer event
+   *  - Imitating an analog feature with a digital button so that events can be
+   *    dispatched every frame.
    */
   virtual void ProcessAxisMotions(void) = 0;
 };
