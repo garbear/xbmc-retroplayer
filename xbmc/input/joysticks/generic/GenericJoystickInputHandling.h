@@ -22,6 +22,7 @@
 #include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/joysticks/JoystickTypes.h"
 
+#include <string>
 #include <vector>
 
 class IJoystickInputHandler;
