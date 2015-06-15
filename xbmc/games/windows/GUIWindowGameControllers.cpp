@@ -156,6 +156,10 @@ void CGUIWindowGameControllers::OnInitWindow()
   CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_PERIPHERAL_LIST, 0, 0, &m_items);
   g_windowManager.SendMessage(msg);
 
+  // Now that the list is populated, focus the first item
+  CGUIMessage msg2(GUI_MSG_SETFOCUS, GetID(), CONTROL_PERIPHERAL_LIST);
+  g_windowManager.SendMessage(msg2);
+
   // Check for button mapping support
   CPeripheralBus* bus = g_peripherals.GetBusByType(PERIPHERAL_BUS_ADDON);
   if (bus)
