@@ -836,6 +836,7 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert("gamesgeneral.manageaddons");
+  settingSet.insert("gamesinput.controllerconfig");
   m_settingsManager->RegisterCallback(&GAME::CGameSettings::Get(), settingSet);
 
   settingSet.clear();

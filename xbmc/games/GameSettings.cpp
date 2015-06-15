@@ -46,4 +46,8 @@ void CGameSettings::OnSettingAction(const CSetting* setting)
     params.push_back("addons://all/kodi.gameclient");
     g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
   }
+  else if (settingId == "gamesinput.controllerconfig")
+  {
+    g_windowManager.ActivateWindow(WINDOW_GAME_CONTROLLERS);
+  }
 }

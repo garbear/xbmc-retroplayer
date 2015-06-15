@@ -13229,7 +13229,27 @@ msgctxt "#27018"
 msgid "Emulators"
 msgstr ""
 
-#empty strings from id 27019 to 29799
+#: system/settings/settings.xml
+msgctxt "#27019"
+msgid "Input"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#27020"
+msgid "No info available yet."
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#27021"
+msgid "Configure game controllers"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#27022"
+msgid "No info available yet."
+msgstr ""
+
+#empty strings from id 27023 to 29799
 
 #strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code
 
