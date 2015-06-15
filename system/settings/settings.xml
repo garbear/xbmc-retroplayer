@@ -1036,7 +1036,7 @@
           <level>1</level>
           <default></default>
           <constraints>
-            <allowempty>true</allowempty>		  
+            <allowempty>true</allowempty>
             <addontype>xbmc.subtitle.module</addontype>
           </constraints>
           <control type="button" format="addon">
