@@ -346,6 +346,13 @@ namespace ADDON
 
     virtual JoystickFeature* Clone(void) const { return new JoystickFeature(*this); }
 
+    virtual bool Equals(const JoystickFeature* other) const
+    {
+      return other &&
+             m_name == other->m_name &&
+             Type() == other->Type();
+    }
+
     virtual JOYSTICK_DRIVER_TYPE Type(void) const { return JOYSTICK_DRIVER_TYPE_UNKNOWN; }
     const std::string&           Name(void) const { return m_name; }
 
@@ -399,6 +406,12 @@ namespace ADDON
 
     virtual JoystickFeature* Clone(void) const { return new DriverButton(*this); }
 
+    virtual bool Equals(const JoystickFeature* other) const
+    {
+      return JoystickFeature::Equals(other) &&
+             m_index == static_cast<const DriverButton*>(other)->m_index;
+    }
+
     virtual JOYSTICK_DRIVER_TYPE Type(void) const  { return JOYSTICK_DRIVER_TYPE_BUTTON; }
     int                          Index(void) const { return m_index; }
 
@@ -445,6 +458,13 @@ namespace ADDON
     virtual ~DriverHat(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverHat(*this); }
+
+    virtual bool Equals(const JoystickFeature* other) const
+    {
+      return JoystickFeature::Equals(other) &&
+             m_index     == static_cast<const DriverHat*>(other)->m_index &&
+             m_direction == static_cast<const DriverHat*>(other)->m_direction;
+    }
 
     virtual JOYSTICK_DRIVER_TYPE  Type(void) const      { return JOYSTICK_DRIVER_TYPE_HAT_DIRECTION; }
     int                           Index(void) const     { return m_index; }
@@ -496,6 +516,13 @@ namespace ADDON
     virtual ~DriverSemiAxis(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverSemiAxis(*this); }
+
+    virtual bool Equals(const JoystickFeature* other) const
+    {
+      return JoystickFeature::Equals(other) &&
+             m_index     == static_cast<const DriverSemiAxis*>(other)->m_index &&
+             m_direction == static_cast<const DriverSemiAxis*>(other)->m_direction;
+    }
 
     virtual JOYSTICK_DRIVER_TYPE       Type(void) const      { return JOYSTICK_DRIVER_TYPE_SEMIAXIS; }
     int                                Index(void) const     { return m_index; }
@@ -553,6 +580,15 @@ namespace ADDON
     virtual ~DriverAnalogStick(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverAnalogStick(*this); }
+
+    virtual bool Equals(const JoystickFeature* other) const
+    {
+      return JoystickFeature::Equals(other) &&
+             m_xIndex    == static_cast<const DriverAnalogStick*>(other)->m_xIndex    &&
+             m_xInverted == static_cast<const DriverAnalogStick*>(other)->m_xInverted &&
+             m_yIndex    == static_cast<const DriverAnalogStick*>(other)->m_yIndex    &&
+             m_yInverted == static_cast<const DriverAnalogStick*>(other)->m_yInverted;
+    }
 
     virtual JOYSTICK_DRIVER_TYPE Type(void) const      { return JOYSTICK_DRIVER_TYPE_ANALOG_STICK; }
     int                          XIndex(void) const    { return m_xIndex; }
@@ -625,6 +661,17 @@ namespace ADDON
     virtual ~DriverAccelerometer(void) { }
 
     virtual JoystickFeature* Clone(void) const { return new DriverAccelerometer(*this); }
+
+    virtual bool Equals(const JoystickFeature* other) const
+    {
+      return JoystickFeature::Equals(other) &&
+             m_xIndex    == static_cast<const DriverAccelerometer*>(other)->m_xIndex    &&
+             m_xInverted == static_cast<const DriverAccelerometer*>(other)->m_xInverted &&
+             m_yIndex    == static_cast<const DriverAccelerometer*>(other)->m_yIndex    &&
+             m_yInverted == static_cast<const DriverAccelerometer*>(other)->m_yInverted &&
+             m_zIndex    == static_cast<const DriverAccelerometer*>(other)->m_zIndex    &&
+             m_zInverted == static_cast<const DriverAccelerometer*>(other)->m_zInverted;
+    }
 
     virtual JOYSTICK_DRIVER_TYPE Type(void) const      { return JOYSTICK_DRIVER_TYPE_ACCELEROMETER; }
     int                          XIndex(void) const    { return m_xIndex; }
