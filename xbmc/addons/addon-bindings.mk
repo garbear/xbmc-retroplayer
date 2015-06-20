@@ -14,6 +14,7 @@ BINDINGS+=xbmc/addons/include/kodi_peripheral_callbacks.h
 BINDINGS+=xbmc/addons/include/kodi_peripheral_dll.h
 BINDINGS+=xbmc/addons/include/kodi_peripheral_types.h
 BINDINGS+=xbmc/addons/include/kodi_peripheral_utils.hpp
+BINDINGS+=xbmc/addons/include/kodi_vfs_utils.hpp
 BINDINGS+=xbmc/addons/include/xbmc_pvr_dll.h
 BINDINGS+=xbmc/addons/include/xbmc_pvr_types.h
 BINDINGS+=xbmc/addons/include/xbmc_scr_dll.h
