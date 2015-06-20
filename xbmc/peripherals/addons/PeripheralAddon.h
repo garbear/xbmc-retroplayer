@@ -85,6 +85,7 @@ namespace PERIPHERALS
 
     void RegisterButtonMap(CPeripheral* device, IJoystickButtonMap* buttonMap);
     void UnregisterButtonMap(IJoystickButtonMap* buttonMap);
+    void RefreshButtonMaps(const std::string& strDeviceName = "", const std::string& strControllerId = "");
 
     static const char* ToString(PERIPHERAL_ERROR error);
 

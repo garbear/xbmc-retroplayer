@@ -533,12 +533,7 @@ bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::
   if (retVal == PERIPHERAL_NO_ERROR)
   {
     // Notify observing button maps
-    for (auto it = m_buttonMaps.begin(); it != m_buttonMaps.end(); ++it)
-    {
-      // TODO: Compare device properties, not just pointer
-      if (device == it->first && strControllerId == it->second->ControllerID())
-        it->second->Load();
-    }
+    RefreshButtonMaps(device->DeviceName(), strControllerId);
   }
 
   return retVal == PERIPHERAL_NO_ERROR;
@@ -558,6 +553,19 @@ void CPeripheralAddon::UnregisterButtonMap(IJoystickButtonMap* buttonMap)
     {
       m_buttonMaps.erase(it);
       break;
+    }
+  }
+}
+
+void CPeripheralAddon::RefreshButtonMaps(const std::string& strDeviceName /* = "" */,
+                                         const std::string& strControllerId /* = "" */)
+{
+  for (auto it = m_buttonMaps.begin(); it != m_buttonMaps.end(); ++it)
+  {
+    if ((strDeviceName.empty() || strDeviceName == it->first->DeviceName()) &&
+        (strControllerId.empty() || strControllerId == it->second->ControllerID()))
+    {
+      it->second->Load();
     }
   }
 }

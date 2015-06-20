@@ -104,6 +104,7 @@ public:
     if (!PERIPHERAL_REGISTER_SYMBOL(m_libKODI_peripheral, PERIPHERAL_register_me)) return false;
     if (!PERIPHERAL_REGISTER_SYMBOL(m_libKODI_peripheral, PERIPHERAL_unregister_me)) return false;
     if (!PERIPHERAL_REGISTER_SYMBOL(m_libKODI_peripheral, PERIPHERAL_trigger_scan)) return false;
+    if (!PERIPHERAL_REGISTER_SYMBOL(m_libKODI_peripheral, PERIPHERAL_refresh_button_maps)) return false;
 
     m_callbacks = PERIPHERAL_register_me(m_handle);
     return m_callbacks != NULL;
@@ -114,10 +115,16 @@ public:
     return PERIPHERAL_trigger_scan(m_handle, m_callbacks);
   }
 
+  void RefreshButtonMaps(const std::string& strDeviceName)
+  {
+    return PERIPHERAL_refresh_button_maps(m_handle, m_callbacks, strDeviceName.c_str());
+  }
+
 protected:
     CB_PeripheralLib* (*PERIPHERAL_register_me)(void* handle);
     void (*PERIPHERAL_unregister_me)(void* handle, CB_PeripheralLib* cb);
     void (*PERIPHERAL_trigger_scan)(void* handle, CB_PeripheralLib* cb);
+    void (*PERIPHERAL_refresh_button_maps)(void* handle, CB_PeripheralLib* cb, const char* deviceName);
 
 private:
   void*             m_handle;

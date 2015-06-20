@@ -38,6 +38,7 @@ CAddonCallbacksPeripheral::CAddonCallbacksPeripheral(CAddon* addon)
 
   /* write XBMC peripheral specific add-on function addresses to callback table */
   m_callbacks->TriggerScan               = TriggerScan;
+  m_callbacks->RefreshButtonMaps         = RefreshButtonMaps;
 }
 
 CAddonCallbacksPeripheral::~CAddonCallbacksPeripheral()
@@ -61,6 +62,15 @@ CPeripheralAddon* CAddonCallbacksPeripheral::GetPeripheralAddon(void* addonData,
 void CAddonCallbacksPeripheral::TriggerScan(void* addonData)
 {
   g_peripherals.TriggerDeviceScan(PERIPHERAL_BUS_ADDON);
+}
+
+void CAddonCallbacksPeripheral::RefreshButtonMaps(void* addonData, const char* deviceName)
+{
+  CPeripheralAddon* peripheralAddon = GetPeripheralAddon(addonData, __FUNCTION__);
+  if (!peripheralAddon)
+    return;
+
+  peripheralAddon->RefreshButtonMaps(deviceName ? deviceName : "");
 }
 
 }; /* namespace ADDON */

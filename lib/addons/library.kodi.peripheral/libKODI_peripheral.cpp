@@ -62,6 +62,13 @@ DLLEXPORT void PERIPHERAL_trigger_scan(AddonCB* frontend, CB_PeripheralLib* cb)
   return cb->TriggerScan(frontend->addonData);
 }
 
+DLLEXPORT void PERIPHERAL_refresh_button_maps(AddonCB* frontend, CB_PeripheralLib* cb, const char* deviceName)
+{
+  if (frontend == NULL || cb == NULL)
+    return;
+  return cb->RefreshButtonMaps(frontend->addonData, deviceName ? deviceName : "");
+}
+
 #ifdef __cplusplus
 }
 #endif

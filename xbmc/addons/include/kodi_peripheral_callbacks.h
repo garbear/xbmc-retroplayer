@@ -35,6 +35,15 @@ typedef struct CB_PeripheralLib
    */
   void (*TriggerScan)(void* addonData);
 
+  /*!
+   * @brief Notify the frontend that button maps have changed
+   *
+   * The add-on calls this if button maps are updated from a web server request.
+   *
+   * @param deviceName The name of the device to refresh, or empty for all devices
+   */
+  void (*RefreshButtonMaps)(void* addonData, const char* deviceName);
+
 } CB_PeripheralLib;
 
 #ifdef __cplusplus

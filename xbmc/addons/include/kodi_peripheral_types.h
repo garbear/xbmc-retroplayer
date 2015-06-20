@@ -50,10 +50,10 @@
 #endif
 
 /* current Peripheral API version */
-#define PERIPHERAL_API_VERSION "1.0.7"
+#define PERIPHERAL_API_VERSION "1.0.8"
 
 /* min. Peripheral API version */
-#define PERIPHERAL_MIN_API_VERSION "1.0.7"
+#define PERIPHERAL_MIN_API_VERSION "1.0.8"
 
 /* indicates a joystick has no preference for port number */
 #define NO_PORT_REQUESTED     (-1)
