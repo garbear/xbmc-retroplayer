@@ -31,6 +31,7 @@
 #include "settings/Settings.h"
 #include "URL.h"
 #include "Util.h"
+#include "utils/StringUtils.h"
 
 #define CONTROL_BTNVIEWASICONS      2
 #define CONTROL_BTNSORTBY           3
@@ -226,8 +227,11 @@ bool CGUIWindowGames::PlayGame(const CFileItem &item)
 
 std::string CGUIWindowGames::GetStartFolder(const std::string &dir)
 {
-  if (dir == "plugins" || dir == "addons")
+  if (StringUtils::EqualsNoCase(dir, "plugins") ||
+      StringUtils::EqualsNoCase(dir, "addons"))
+  {
     return "addons://sources/game/";
+  }
 
   SetupShares();
   VECSOURCES shares;
