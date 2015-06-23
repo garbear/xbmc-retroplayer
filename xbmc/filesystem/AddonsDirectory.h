@@ -56,6 +56,12 @@ namespace XFILE
      */
     static bool GetScriptsAndPlugins(const std::string &content, CFileItemList &items);
 
+    /*! \brief Fetch games that can be run standalone
+     \param items the list to fill with games
+     \return true if more than one standalone game is found, false otherwise.
+     */
+    static bool GetStandaloneGames(CFileItemList &items);
+
     /*! \brief return the "Get More..." link item for the current content type
      \param content the content type for the link item
      \return a CFileItemPtr to a new item for the link.
@@ -69,6 +75,7 @@ namespace XFILE
     static bool IsRepoDirectory(const CURL& path);
 
   private:
+    bool GetSources(const std::string &content, CFileItemList &items);
     bool GetSearchResults(const CURL& path, CFileItemList &items);
   };
 }

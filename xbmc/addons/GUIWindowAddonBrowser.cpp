@@ -26,6 +26,7 @@
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "dialogs/GUIDialogFileBrowser.h"
+#include "games/GameManager.h"
 #include "GUIUserMessages.h"
 #include "guilib/GUIWindowManager.h"
 #include "utils/URIUtils.h"
@@ -481,7 +482,10 @@ int CGUIWindowAddonBrowser::SelectAddonID(const vector<ADDON::TYPE> &types, vect
       else if (*type == ADDON_VIDEO)
         CAddonsDirectory::GetScriptsAndPlugins("video", typeAddons);
       else if (*type == ADDON_GAME)
+      {
         CAddonsDirectory::GetScriptsAndPlugins("game", typeAddons);
+        GAME::CGameManager::Get().GetStandaloneGames(typeAddons);
+      }
       else
         CAddonMgr::Get().GetAddons(*type, typeAddons);
 

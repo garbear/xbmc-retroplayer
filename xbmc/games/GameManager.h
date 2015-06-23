@@ -63,6 +63,8 @@ namespace GAME
 
     virtual bool GetClient(const std::string& strClientId, GameClientPtr& addon) const;
 
+    bool GetStandaloneGames(ADDON::VECADDONS& gameClients) const;
+
     /**
      * Return true if the game add-on is currently being played.
      */

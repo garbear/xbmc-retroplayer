@@ -27,6 +27,7 @@
 #include "FileItem.h"
 #include "addons/AddonInstaller.h"
 #include "addons/PluginSource.h"
+#include "games/addons/GameClient.h"
 #include "games/GameManager.h"
 #include "guilib/TextureManager.h"
 #include "File.h"
@@ -469,7 +470,7 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   }
   else if (endpoint == "sources")
   {
-    return GetScriptsAndPlugins(path.GetFileName(), items);
+    return GetSources(path.GetFileName(), items);
   }
   else if (endpoint == "search")
   {
@@ -578,8 +579,6 @@ bool CAddonsDirectory::GetScriptsAndPlugins(const std::string &content, VECADDON
 
 bool CAddonsDirectory::GetScriptsAndPlugins(const std::string &content, CFileItemList &items)
 {
-  items.Clear();
-
   VECADDONS addons;
   if (!GetScriptsAndPlugins(content, addons))
     return false;
@@ -606,6 +605,32 @@ bool CAddonsDirectory::GetScriptsAndPlugins(const std::string &content, CFileIte
   items.SetLabel(g_localizeStrings.Get(24001)); // Add-ons
 
   return items.Size() > 0;
+}
+
+bool CAddonsDirectory::GetStandaloneGames(CFileItemList &items)
+{
+  VECADDONS addons;
+  if (!GAME::CGameManager::Get().GetStandaloneGames(addons))
+    return false;
+
+  for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
+  {
+    const AddonPtr addon = *it;
+    const std::string prot = "addon://";
+    CFileItemPtr item(FileItemFromAddon(addon, prot + addon->ID()));
+    items.Add(item);
+  }
+
+  return true;
+}
+
+bool CAddonsDirectory::GetSources(const std::string &content, CFileItemList &items)
+{
+  CPluginSource::Content type = CPluginSource::Translate(content);
+  if (type == CPluginSource::GAME)
+    GetStandaloneGames(items);
+
+  return GetScriptsAndPlugins(content, items);
 }
 
 CFileItemPtr CAddonsDirectory::GetMoreItem(const std::string &content)
