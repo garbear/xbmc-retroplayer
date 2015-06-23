@@ -1,6 +1,7 @@
 BINDINGS =xbmc/addons/include/xbmc_addon_cpp_dll.h
 BINDINGS+=xbmc/addons/include/xbmc_addon_dll.h
 BINDINGS+=xbmc/addons/include/xbmc_addon_types.h
+BINDINGS+=xbmc/addons/include/kodi_addon_utils.hpp
 BINDINGS+=xbmc/addons/include/xbmc_audioenc_dll.h
 BINDINGS+=xbmc/addons/include/xbmc_audioenc_types.h
 BINDINGS+=xbmc/addons/include/kodi_audiodec_dll.h
@@ -11,6 +12,7 @@ BINDINGS+=xbmc/addons/include/xbmc_pvr_dll.h
 BINDINGS+=xbmc/addons/include/xbmc_pvr_types.h
 BINDINGS+=xbmc/addons/include/xbmc_scr_dll.h
 BINDINGS+=xbmc/addons/include/xbmc_scr_types.h
+BINDINGS+=xbmc/addons/include/kodi_vfs_utils.hpp
 BINDINGS+=xbmc/addons/include/xbmc_vis_dll.h
 BINDINGS+=xbmc/addons/include/xbmc_vis_types.h
 BINDINGS+=xbmc/addons/include/xbmc_stream_utils.hpp
