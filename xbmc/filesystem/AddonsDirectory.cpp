@@ -27,6 +27,7 @@
 #include "FileItem.h"
 #include "addons/AddonInstaller.h"
 #include "addons/PluginSource.h"
+#include "games/GameManager.h"
 #include "guilib/TextureManager.h"
 #include "File.h"
 #include "SpecialProtocol.h"
@@ -308,9 +309,22 @@ static void RunningAddons(const CURL& path, CFileItemList &items)
 {
   VECADDONS addons;
   CAddonMgr::Get().GetAddons(ADDON_SERVICE, addons);
+  CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, addons);
 
   addons.erase(std::remove_if(addons.begin(), addons.end(),
-      [](const AddonPtr& addon){ return !CScriptInvocationManager::Get().IsRunning(addon->LibPath()); }), addons.end());
+      [](const AddonPtr& addon)
+      {
+        switch (addon->Type())
+        {
+          case ADDON_SERVICE:
+            return !CScriptInvocationManager::Get().IsRunning(addon->LibPath());
+          case ADDON_GAMEDLL:
+            return !GAME::CGameManager::Get().IsRunning(addon);
+          default:
+            return false;
+        }
+      }), addons.end());
+
   CAddonsDirectory::GenerateAddonListing(path, addons, items, g_localizeStrings.Get(24994));
 }
 

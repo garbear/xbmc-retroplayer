@@ -64,6 +64,11 @@ namespace GAME
     virtual bool GetClient(const std::string& strClientId, GameClientPtr& addon) const;
 
     /**
+     * Return true if the game add-on is currently being played.
+     */
+    bool IsRunning(const ADDON::AddonPtr& addon);
+
+    /**
      * Resolve a file item to a list of game client IDs.
      *
      *   # If the file forces a particular game client via file.SetProperty("gameclient", id),

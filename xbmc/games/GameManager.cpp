@@ -153,6 +153,15 @@ bool CGameManager::GetClient(const std::string& strClientId, GameClientPtr& addo
   return false;
 }
 
+bool CGameManager::IsRunning(const AddonPtr& addon)
+{
+  GameClientPtr game = std::dynamic_pointer_cast<CGameClient>(addon);
+  if (game)
+    return game->IsPlaying();
+
+  return false;
+}
+
 void CGameManager::GetGameClientIDs(const CFileItem& file, std::vector<std::string>& candidates) const
 {
   CSingleLock lock(m_critSection);
