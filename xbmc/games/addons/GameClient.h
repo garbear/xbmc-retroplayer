@@ -120,7 +120,7 @@ public:
   // Query properties of the game client
   const std::set<std::string>& GetExtensions() const    { return m_extensions; }
   bool                         SupportsVFS() const      { return m_bSupportsVFS; }
-  bool                         SupportsNoGame() const   { return m_bSupportsNoGame; }
+  bool                         HasStandalone() const    { return m_bHasStandalone; }
   //const GamePlatforms&         GetPlatforms() const     { return m_platforms; }
 
   // Optimistically returns true if the game client provided no extensions
@@ -192,7 +192,7 @@ private:
   // Game API xml parameters
   std::set<std::string> m_extensions;
   bool                  m_bSupportsVFS;
-  bool                  m_bSupportsNoGame;
+  bool                  m_bHasStandalone;
   //GamePlatforms         m_platforms;
 
   // Properties of the current playing file

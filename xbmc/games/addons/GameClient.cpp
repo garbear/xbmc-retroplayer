@@ -147,7 +147,7 @@ CGameClient::CGameClient(const AddonProps& props)
   if ((it = props.extrainfo.find("supports_vfs")) != props.extrainfo.end())
     m_bSupportsVFS = (it->second == "true" || it->second == "yes");
   if ((it = props.extrainfo.find("supports_no_game")) != props.extrainfo.end())
-    m_bSupportsNoGame = (it->second == "true" || it->second == "yes");
+    m_bHasStandalone = (it->second == "true" || it->second == "yes");
 }
 
 CGameClient::CGameClient(const cp_extension_t* ext)
@@ -181,11 +181,11 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       Props().extrainfo.insert(make_pair("supports_vfs", strSupportsVFS));
       m_bSupportsVFS = (strSupportsVFS == "true" || strSupportsVFS == "yes");
     }
-    std::string strSupportsNoGame = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
-    if (!strSupportsNoGame.empty())
+    std::string strHasStandalone = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
+    if (!strHasStandalone.empty())
     {
-      Props().extrainfo.insert(make_pair("supports_no_game", strSupportsNoGame));
-      m_bSupportsNoGame = (strSupportsNoGame == "true" || strSupportsNoGame == "yes");
+      Props().extrainfo.insert(make_pair("supports_no_game", strHasStandalone));
+      m_bHasStandalone = (strHasStandalone == "true" || strHasStandalone == "yes");
     }
   }
 }
@@ -193,7 +193,7 @@ CGameClient::CGameClient(const cp_extension_t* ext)
 void CGameClient::InitializeProperties(void)
 {
   m_bSupportsVFS = false;
-  m_bSupportsNoGame = false;
+  m_bHasStandalone = false;
   m_bIsPlaying = false;
   m_player = NULL;
   m_region = GAME_REGION_NTSC;
@@ -251,7 +251,7 @@ const std::string CGameClient::LibPath() const
 bool CGameClient::CanOpen(const CFileItem& file) const
 {
   // Game clients not supporting files can't open files
-  if (m_bSupportsNoGame)
+  if (m_bHasStandalone)
     return false;
 
   // Filter by gameclient property
@@ -720,7 +720,7 @@ void CGameClient::LogAddonProperties(void) const
   CLog::Log(LOGINFO, "GAME: Client: %s at version %s", Name().c_str(), Version().asString().c_str());
   CLog::Log(LOGINFO, "GAME: Valid extensions: %s", StringUtils::Join(vecExtensions, " ").c_str());
   CLog::Log(LOGINFO, "GAME: Supports VFS: %s", m_bSupportsVFS ? "yes" : "no");
-  CLog::Log(LOGINFO, "GAME: Supports no game: %s", m_bSupportsNoGame ? "yes" : "no");
+  CLog::Log(LOGINFO, "GAME: Supports standalone execution: %s", m_bHasStandalone ? "yes" : "no");
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
 }
 
