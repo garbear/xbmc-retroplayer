@@ -633,11 +633,12 @@ int CBuiltins::Execute(const std::string& execString)
   {
     if (params.size())
     {
+      const std::string& addonid = params[0];
+
       AddonPtr addon;
-      if (CAddonMgr::Get().GetAddon(params[0], addon, ADDON_PLUGIN))
+      if (CAddonMgr::Get().GetAddon(addonid, addon, ADDON_PLUGIN))
       {
         PluginPtr plugin = std::dynamic_pointer_cast<CPluginSource>(addon);
-        std::string addonid = params[0];
         std::string urlParameters;
         vector<string> parameters;
         if (params.size() == 2 &&
@@ -665,22 +666,22 @@ int CBuiltins::Execute(const std::string& execString)
         else if (plugin->Provides(CPluginSource::IMAGE))
           cmd = StringUtils::Format("ActivateWindow(Pictures,plugin://%s%s,return)", addonid.c_str(), urlParameters.c_str());
         else
-          // Pass the script name (params[0]) and all the parameters
+          // Pass the script name (addonid) and all the parameters
           // (params[1] ... params[x]) separated by a comma to RunPlugin
           cmd = StringUtils::Format("RunPlugin(%s)", StringUtils::Join(params, ",").c_str());
         Execute(cmd);
       }
-      else if (CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT) ||
-               CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_WEATHER) ||
-               CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_LYRICS) ||
-               CAddonMgr::Get().GetAddon(params[0], addon, ADDON_SCRIPT_LIBRARY))
+      else if (CAddonMgr::Get().GetAddon(addonid, addon, ADDON_SCRIPT) ||
+               CAddonMgr::Get().GetAddon(addonid, addon, ADDON_SCRIPT_WEATHER) ||
+               CAddonMgr::Get().GetAddon(addonid, addon, ADDON_SCRIPT_LYRICS) ||
+               CAddonMgr::Get().GetAddon(addonid, addon, ADDON_SCRIPT_LIBRARY))
       {
-        // Pass the script name (params[0]) and all the parameters
+        // Pass the script name (addonid) and all the parameters
         // (params[1] ... params[x]) separated by a comma to RunScript
         Execute(StringUtils::Format("RunScript(%s)", StringUtils::Join(params, ",").c_str()));
       }
       else
-        CLog::Log(LOGERROR, "RunAddon: unknown add-on id '%s', or unexpected add-on type (not a script or plugin).", params[0].c_str());
+        CLog::Log(LOGERROR, "RunAddon: unknown add-on id '%s', or unexpected add-on type (not a script or plugin).", addonid.c_str());
     }
     else
     {
