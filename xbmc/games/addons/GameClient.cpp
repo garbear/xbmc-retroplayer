@@ -148,7 +148,7 @@ CGameClient::CGameClient(const AddonProps& props)
   if ((it = props.extrainfo.find("supports_vfs")) != props.extrainfo.end())
     m_bSupportsVFS = (it->second == "true" || it->second == "yes");
   if ((it = props.extrainfo.find("supports_no_game")) != props.extrainfo.end())
-    m_bHasStandalone = (it->second == "true" || it->second == "yes");
+    m_bSupportsStandalone = (it->second == "true" || it->second == "yes");
 }
 
 CGameClient::CGameClient(const cp_extension_t* ext)
@@ -182,11 +182,11 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       Props().extrainfo.insert(make_pair("supports_vfs", strSupportsVFS));
       m_bSupportsVFS = (strSupportsVFS == "true" || strSupportsVFS == "yes");
     }
-    std::string strHasStandalone = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
-    if (!strHasStandalone.empty())
+    std::string strSupportsStandalone = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_no_game");
+    if (!strSupportsStandalone.empty())
     {
-      Props().extrainfo.insert(make_pair("supports_no_game", strHasStandalone));
-      m_bHasStandalone = (strHasStandalone == "true" || strHasStandalone == "yes");
+      Props().extrainfo.insert(make_pair("supports_no_game", strSupportsStandalone));
+      m_bSupportsStandalone = (strSupportsStandalone == "true" || strSupportsStandalone == "yes");
     }
   }
 }
@@ -194,7 +194,7 @@ CGameClient::CGameClient(const cp_extension_t* ext)
 void CGameClient::InitializeProperties(void)
 {
   m_bSupportsVFS = false;
-  m_bHasStandalone = false;
+  m_bSupportsStandalone = false;
   m_bIsPlaying = false;
   m_player = NULL;
   m_region = GAME_REGION_NTSC;
@@ -255,7 +255,7 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   if (file.HasProperty("Addon.ID") && file.GetProperty("Addon.ID").asString() != ID())
     return false;
 
-  if (!m_bHasStandalone)
+  if (!m_bSupportsStandalone)
   {
     // Filter by extension
     std::string strExtension = URIUtils::GetExtension(file.GetPath());
@@ -287,7 +287,7 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
   GAME_ERROR error = GAME_ERROR_FAILED;
   std::string strFilePath;
 
-  if (HasStandalone())
+  if (m_bSupportsStandalone)
   {
     try { LogError(error = m_pStruct->LoadStandalone(), "LoadStandalone()"); }
     catch (...) { LogException("LoadStandalone()"); }
@@ -738,7 +738,7 @@ void CGameClient::LogAddonProperties(void) const
   CLog::Log(LOGINFO, "GAME: Client: %s at version %s", Name().c_str(), Version().asString().c_str());
   CLog::Log(LOGINFO, "GAME: Valid extensions: %s", StringUtils::Join(vecExtensions, " ").c_str());
   CLog::Log(LOGINFO, "GAME: Supports VFS: %s", m_bSupportsVFS ? "yes" : "no");
-  CLog::Log(LOGINFO, "GAME: Supports standalone execution: %s", m_bHasStandalone ? "yes" : "no");
+  CLog::Log(LOGINFO, "GAME: Supports standalone execution: %s", m_bSupportsStandalone ? "yes" : "no");
   CLog::Log(LOGINFO, "GAME: ------------------------------------");
 }
 

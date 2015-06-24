@@ -158,13 +158,13 @@ bool CGameManager::GetClient(const std::string& strClientId, GameClientPtr& addo
 
 bool CGameManager::GetStandaloneGames(VECADDONS& gameClients) const
 {
-  VECADDONS tempAddons;
-  CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, tempAddons);
-  for (unsigned i=0; i<tempAddons.size(); i++)
+  VECADDONS addons;
+  CAddonMgr::Get().GetAddons(ADDON_GAMEDLL, addons);
+  for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
   {
-    GameClientPtr gameClient = std::dynamic_pointer_cast<CGameClient>(tempAddons[i]);
-    if (gameClient && gameClient->HasStandalone())
-      gameClients.push_back(tempAddons[i]);
+    GameClientPtr gameClient = std::dynamic_pointer_cast<CGameClient>(*it);
+    if (gameClient && (gameClient)->IsExecutable())
+      gameClients.push_back(gameClient);
   }
   return !gameClients.empty();
 }

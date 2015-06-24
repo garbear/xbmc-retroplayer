@@ -46,7 +46,7 @@ bool CRetroPlayerDialogs::GetGameClient(const CFileItem &file, GameClientPtr &re
   GameClientPtr gameClient;
   if (CGameManager::Get().GetClient(file.GetProperty("Addon.ID").asString(), gameClient))
   {
-    if (gameClient->HasStandalone())
+    if (gameClient->IsExecutable())
     {
       result = gameClient;
       return true;

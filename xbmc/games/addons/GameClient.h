@@ -116,11 +116,11 @@ public:
   virtual void              OnEnabled();
   virtual void              OnDisabled();
   virtual const std::string LibPath() const; // TODO: Don't make this function virtual, find another way
+  virtual bool              IsExecutable() const { return m_bSupportsStandalone; }
 
   // Query properties of the game client
   const std::set<std::string>& GetExtensions() const    { return m_extensions; }
   bool                         SupportsVFS() const      { return m_bSupportsVFS; }
-  bool                         HasStandalone() const    { return m_bHasStandalone; }
   //const GamePlatforms&         GetPlatforms() const     { return m_platforms; }
 
   // Optimistically returns true if the game client provided no extensions
@@ -192,7 +192,7 @@ private:
   // Game API xml parameters
   std::set<std::string> m_extensions;
   bool                  m_bSupportsVFS;
-  bool                  m_bHasStandalone;
+  bool                  m_bSupportsStandalone;
   //GamePlatforms         m_platforms;
 
   // Properties of the current playing file
