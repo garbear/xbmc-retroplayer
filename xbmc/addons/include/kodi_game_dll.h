@@ -45,6 +45,9 @@ GAME_ERROR LoadGame(const char* url);
 /*! Loads a "special" kind of game. Should not be used except in extreme cases */
 GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls);
 
+/*! Start playing without a game */
+GAME_ERROR LoadStandalone(void);
+
 /*! Unloads a currently loaded game */
 GAME_ERROR UnloadGame(void);
 
@@ -277,6 +280,7 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->GetMininumGameAPIVersion = GetMininumGameAPIVersion;
   pClient->LoadGame                 = LoadGame;
   pClient->LoadGameSpecial          = LoadGameSpecial;
+  pClient->LoadStandalone           = LoadStandalone;
   pClient->UnloadGame               = UnloadGame;
   pClient->Run                      = Run;
   pClient->Reset                    = Reset;

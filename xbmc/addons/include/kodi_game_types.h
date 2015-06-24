@@ -21,10 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.6"
+#define GAME_API_VERSION                "1.0.7"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.6"
+#define GAME_MIN_API_VERSION            "1.0.7"
 
 /* magic number for empty tray */
 #define GAME_NO_DISK                   ((unsigned)-1)
@@ -411,6 +411,7 @@ typedef struct GameClient
   const char* (__cdecl* GetMininumGameAPIVersion)(void);
   GAME_ERROR  (__cdecl* LoadGame)(const char* url);
   GAME_ERROR  (__cdecl* LoadGameSpecial)(GAME_TYPE type, const char** urls, size_t num_urls);
+  GAME_ERROR  (__cdecl* LoadStandalone)(void);
   GAME_ERROR  (__cdecl* UnloadGame)(void);
   GAME_ERROR  (__cdecl* Run)(void);
   GAME_ERROR  (__cdecl* Reset)(void);

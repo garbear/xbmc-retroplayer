@@ -42,6 +42,17 @@ using namespace GAME;
 
 bool CRetroPlayerDialogs::GetGameClient(const CFileItem &file, GameClientPtr &result)
 {
+  // Check if file is a standalone game client
+  GameClientPtr gameClient;
+  if (CGameManager::Get().GetClient(file.GetProperty("Addon.ID").asString(), gameClient))
+  {
+    if (gameClient->HasStandalone())
+    {
+      result = gameClient;
+      return true;
+    }
+  }
+
   // See how many game clients contend for this file
   std::vector<std::string> candidates;
   CGameManager::Get().GetGameClientIDs(file, candidates);

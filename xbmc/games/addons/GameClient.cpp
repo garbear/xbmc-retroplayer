@@ -250,27 +250,26 @@ const std::string CGameClient::LibPath() const
 
 bool CGameClient::CanOpen(const CFileItem& file) const
 {
-  // Game clients not supporting files can't open files
-  if (m_bHasStandalone)
-    return false;
-
   // Filter by Addon.ID property
   if (file.HasProperty("Addon.ID") && file.GetProperty("Addon.ID").asString() != ID())
     return false;
 
-  // Filter by extension
-  std::string strExtension = URIUtils::GetExtension(file.GetPath());
-  StringUtils::ToLower(strExtension);
-  if (!IsExtensionValid(strExtension))
-    return false;
+  if (!m_bHasStandalone)
+  {
+    // Filter by extension
+    std::string strExtension = URIUtils::GetExtension(file.GetPath());
+    StringUtils::ToLower(strExtension);
+    if (!IsExtensionValid(strExtension))
+      return false;
 
-  // If the file is on the VFS, the game client must support VFS
-  CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+    // If the file is on the VFS, the game client must support VFS
+    CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
 
-  const bool bIsLocalFS = translatedUrl.GetProtocol() == "file" || translatedUrl.GetProtocol().empty();
+    const bool bIsLocalFS = translatedUrl.GetProtocol() == "file" || translatedUrl.GetProtocol().empty();
 
-  if (!bIsLocalFS && !SupportsVFS())
-    return false;
+    if (!bIsLocalFS && !SupportsVFS())
+      return false;
+  }
 
   return true;
 }
@@ -284,20 +283,30 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 
   CloseFile();
 
-  // Try to resolve path to a local file, as not all game clients support VFS
-  CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
-  if (translatedUrl.GetProtocol() == "file")
-    translatedUrl.SetProtocol("");
-
-  std::string strTranslatedUrl = translatedUrl.Get();
-
   GAME_ERROR error = GAME_ERROR_FAILED;
-  try { LogError(error = m_pStruct->LoadGame(strTranslatedUrl.c_str()), "LoadGame()"); }
-  catch (...) { LogException("LoadGame()"); }
+  std::string strFilePath;
+
+  if (HasStandalone())
+  {
+    try { LogError(error = m_pStruct->LoadStandalone(), "LoadStandalone()"); }
+    catch (...) { LogException("LoadStandalone()"); }
+  }
+  else
+  {
+    // Try to resolve path to a local file, as not all game clients support VFS
+    CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+    if (translatedUrl.GetProtocol() == "file")
+      translatedUrl.SetProtocol("");
+
+    strFilePath = translatedUrl.Get();
+
+    try { LogError(error = m_pStruct->LoadGame(strFilePath.c_str()), "LoadGame()"); }
+    catch (...) { LogException("LoadGame()"); }
+  }
 
   if (error == GAME_ERROR_NO_ERROR && LoadGameInfo())
   {
-    m_filePath   = strTranslatedUrl;
+    m_filePath   = strFilePath;
     m_player     = player;
     m_bIsPlaying = true;
 

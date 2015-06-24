@@ -142,6 +142,9 @@ void CGameManager::UnregisterAddonByID(const std::string& strClientId)
 
 bool CGameManager::GetClient(const std::string& strClientId, GameClientPtr& addon) const
 {
+  if (strClientId.empty())
+    return false;
+
   CSingleLock lock(m_critSection);
 
   GameClientMap::const_iterator itr = m_gameClients.find(strClientId);
