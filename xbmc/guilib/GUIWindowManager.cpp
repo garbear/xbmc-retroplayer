@@ -1320,6 +1320,9 @@ int CGUIWindowManager::GetActiveWindowID()
     // check for LiveTV and switch to it's virtual window
     else if (g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())
       iWin = WINDOW_FULLSCREEN_LIVETV;
+    // check if a game is playing
+    else if (g_application.m_pPlayer->IsPlayingGame())
+      iWin = WINDOW_FULLSCREEN_GAME;
   }
   // special casing for PVR radio
   if (iWin == WINDOW_VISUALISATION && g_PVRManager.IsStarted() && g_application.CurrentFileItem().HasPVRChannelInfoTag())

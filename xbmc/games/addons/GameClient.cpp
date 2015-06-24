@@ -26,6 +26,8 @@
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "games/GameManager.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/WindowIDs.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "input/PortManager.h"
 #include "settings/Settings.h"
@@ -88,6 +90,10 @@ InputType CControllerInput::GetInputType(const std::string& feature) const
 {
   const std::vector<CGameControllerFeature>& features = m_controller->Layout().Features();
 
+  // TODO: Return INPUT_TYPE_UNKNOWN if feature isn't handled by the add-on, for
+  //       example if a libretro add-on doesn't include the feature in its
+  //       buttonmap.xml
+
   for (std::vector<CGameControllerFeature>::const_iterator it = features.begin(); it != features.end(); ++it)
   {
     if (feature == it->Name())
@@ -113,22 +119,34 @@ InputType CControllerInput::GetInputType(const std::string& feature) const
 
 bool CControllerInput::OnButtonPress(const std::string& feature, bool bPressed)
 {
-  return m_addon->OnButtonPress(m_port, feature, bPressed);
+  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
+    return m_addon->OnButtonPress(m_port, feature, bPressed);
+
+  return false;
 }
 
 bool CControllerInput::OnButtonMotion(const std::string& feature, float magnitude)
 {
-  return m_addon->OnButtonMotion(m_port, feature, magnitude);
+  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
+    return m_addon->OnButtonMotion(m_port, feature, magnitude);
+
+  return false;
 }
 
 bool CControllerInput::OnAnalogStickMotion(const std::string& feature, float x, float y)
 {
-  return m_addon->OnAnalogStickMotion(m_port, feature, x, y);
+  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
+    return m_addon->OnAnalogStickMotion(m_port, feature, x, y);
+
+  return false;
 }
 
 bool CControllerInput::OnAccelerometerMotion(const std::string& feature, float x, float y, float z)
 {
-  return m_addon->OnAccelerometerMotion(m_port, feature, x, y, z);
+  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
+    return m_addon->OnAccelerometerMotion(m_port, feature, x, y, z);
+
+  return false;
 }
 
 // --- CGameClient -------------------------------------------------------------
