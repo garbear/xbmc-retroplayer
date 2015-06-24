@@ -13216,7 +13216,7 @@ msgstr ""
 #: xbmc/addons/Addon.cpp
 #: xbmc/games/windows/GUIViewStateWindowGames.cpp
 msgctxt "#27016"
-msgid "Game Add-ons"
+msgid "Game add-ons"
 msgstr ""
 
 #: xbmc/windows/GUIMediaWindow.cpp
