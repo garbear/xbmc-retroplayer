@@ -148,6 +148,7 @@ public:
   // properties
   TYPE Type() const { return m_props.type; }
   bool IsType(TYPE type) const { return type == m_props.type; }
+  virtual bool IsExecutable() const { return false; }
   AddonProps Props() const { return m_props; }
   AddonProps& Props() { return m_props; }
   const std::string ID() const { return m_props.id; }

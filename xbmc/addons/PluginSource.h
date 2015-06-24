@@ -35,6 +35,7 @@ public:
   virtual ~CPluginSource() {}
   virtual AddonPtr Clone() const;
   virtual bool IsType(TYPE type) const;
+  virtual bool IsExecutable() const { return true; }
   bool Provides(const Content& content) const
   {
     return content == UNKNOWN ? false : m_providedContent.count(content) > 0;
