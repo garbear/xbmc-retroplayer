@@ -20,6 +20,11 @@
 #pragma once
 
 /*!
+ * \brief Add-on ID of the default game controller
+ */
+#define DEFAULT_GAME_CONTROLLER    "game.controller.default"
+
+/*!
  * \ingroup joysticks
  * \brief Cardinal directions
  */

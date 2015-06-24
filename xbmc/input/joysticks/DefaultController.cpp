@@ -23,8 +23,6 @@
 #include "JoystickTranslator.h"
 #include "input/Key.h"
 
-#define DEFAULT_GAME_CONTROLLER    "game.controller.default"
-
 #define ANALOG_DIGITAL_THRESHOLD   0.5f
 
 #ifndef ABS

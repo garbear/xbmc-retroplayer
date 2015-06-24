@@ -24,6 +24,7 @@
 #include "FileItem.h"
 #include "filesystem/SpecialProtocol.h"
 #include "games/GameManager.h"
+#include "input/joysticks/JoystickTypes.h"
 #include "input/PortManager.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
@@ -566,6 +567,14 @@ GameControllerVector CGameClient::GetControllers(void) const
       if (controller)
         controllers.push_back(controller);
     }
+  }
+
+  if (controllers.empty())
+  {
+    // Use the default controller
+    AddonPtr addon;
+    if (CAddonMgr::Get().GetAddon(DEFAULT_GAME_CONTROLLER, addon, ADDON_GAME_CONTROLLER))
+      controllers.push_back(std::dynamic_pointer_cast<CGameController>(addon));
   }
 
   return controllers;
