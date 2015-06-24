@@ -582,7 +582,7 @@ GameControllerVector CGameClient::GetControllers(void) const
 
 bool CGameClient::OnButtonPress(int port, const std::string& feature, bool bPressed)
 {
-  const GameControllerPtr& controller = m_controllers[port]->Controller();
+  std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
 
@@ -590,7 +590,7 @@ bool CGameClient::OnButtonPress(int port, const std::string& feature, bool bPres
 
   event.type                   = GAME_INPUT_EVENT_DIGITAL_BUTTON;
   event.port                   = port;
-  event.controller_id          = controller->ID().c_str();
+  event.controller_id          = strControllerId.c_str();
   event.feature_name           = feature.c_str();
   event.digital_button.pressed = bPressed;
 
@@ -602,7 +602,7 @@ bool CGameClient::OnButtonPress(int port, const std::string& feature, bool bPres
 
 bool CGameClient::OnButtonMotion(int port, const std::string& feature, float magnitude)
 {
-  const GameControllerPtr& controller = m_controllers[port]->Controller();
+  std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
 
@@ -610,7 +610,7 @@ bool CGameClient::OnButtonMotion(int port, const std::string& feature, float mag
 
   event.type                    = GAME_INPUT_EVENT_ANALOG_BUTTON;
   event.port                    = port;
-  event.controller_id           = controller->ID().c_str();
+  event.controller_id           = strControllerId.c_str();
   event.feature_name            = feature.c_str();
   event.analog_button.magnitude = magnitude;
 
@@ -622,7 +622,7 @@ bool CGameClient::OnButtonMotion(int port, const std::string& feature, float mag
 
 bool CGameClient::OnAnalogStickMotion(int port, const std::string& feature, float x, float y)
 {
-  const GameControllerPtr& controller = m_controllers[port]->Controller();
+  std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
 
@@ -630,7 +630,7 @@ bool CGameClient::OnAnalogStickMotion(int port, const std::string& feature, floa
 
   event.type           = GAME_INPUT_EVENT_ANALOG_STICK;
   event.port           = port;
-  event.controller_id  = controller->ID().c_str();
+  event.controller_id  = strControllerId.c_str();
   event.feature_name   = feature.c_str();
   event.analog_stick.x = x;
   event.analog_stick.y = y;
@@ -643,7 +643,7 @@ bool CGameClient::OnAnalogStickMotion(int port, const std::string& feature, floa
 
 bool CGameClient::OnAccelerometerMotion(int port, const std::string& feature, float x, float y, float z)
 {
-  const GameControllerPtr& controller = m_controllers[port]->Controller();
+  std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
 
@@ -651,7 +651,7 @@ bool CGameClient::OnAccelerometerMotion(int port, const std::string& feature, fl
 
   event.type            = GAME_INPUT_EVENT_ACCELEROMETER;
   event.port            = port;
-  event.controller_id   = controller->ID().c_str();
+  event.controller_id   = strControllerId.c_str();
   event.feature_name    = feature.c_str();
   event.accelerometer.x = x;
   event.accelerometer.y = y;
