@@ -66,6 +66,7 @@
 #include <algorithm>
 
 using namespace std;
+using namespace ADDON;
 using namespace XFILE;
 using namespace PLAYLIST;
 using namespace MUSIC_INFO;
@@ -729,9 +730,6 @@ bool CFileItem::IsVideo() const
   if (HasGameInfoTag())
     return false;
 
-  if (!GetProperty("gameclient").empty())
-    return false;
-
   if (HasMusicInfoTag())
     return false;
 
@@ -846,7 +844,8 @@ bool CFileItem::IsGame() const
   if (HasGameInfoTag())
     return true;
 
-  if (!GetProperty("gameclient").empty())
+  GameClientPtr gameClient;
+  if (CGameManager::Get().GetClient(GetProperty("Addon.ID").asString(), gameClient))
     return true;
 
   if (HasVideoInfoTag())
@@ -878,9 +877,6 @@ bool CFileItem::IsPicture() const
     return true;
 
   if (HasGameInfoTag())
-    return false;
-
-  if (!GetProperty("gameclient").empty())
     return false;
 
   if (HasMusicInfoTag())

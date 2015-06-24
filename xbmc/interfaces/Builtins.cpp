@@ -683,7 +683,7 @@ int CBuiltins::Execute(const std::string& execString)
       else if (addon->Type() == ADDON_GAMEDLL && params.size() >= 2)
       {
         CFileItem item(params[1], false);
-        item.SetProperty("gameclient", params[0]);
+        item.SetProperty("Addon.ID", params[0]);
         return g_application.PlayMedia(item);
       }
       else
@@ -761,7 +761,7 @@ int CBuiltins::Execute(const std::string& execString)
       else if (StringUtils::StartsWithNoCase(params[i], "gameclient="))
       {
         // A game client ID was specified
-        item.SetProperty("gameclient", params[i].substr(11));
+        item.SetProperty("Addon.ID", params[i].substr(11));
       }
     }
 

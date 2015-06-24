@@ -84,11 +84,11 @@ bool CRetroPlayerDialogs::GameLauchDialog(const CFileItem &file, GameClientPtr &
 {
   CFileItem fileCopy = file;
   // If an explicit game client was specified, try to download that
-  if (fileCopy.HasProperty("gameclient"))
+  if (fileCopy.HasProperty("Addon.ID"))
   {
-    if (InstallGameClient(fileCopy.GetProperty("gameclient").asString(), fileCopy, result))
+    if (InstallGameClient(fileCopy.GetProperty("Addon.ID").asString(), fileCopy, result))
       return true;
-    fileCopy.ClearProperty("gameclient"); // don't want this to interfere later on
+    fileCopy.ClearProperty("Addon.ID"); // don't want this to interfere later on
   }
 
   // First, ask the user if they would like to install a game client or go to

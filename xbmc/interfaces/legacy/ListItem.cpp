@@ -548,7 +548,7 @@ namespace XBMCAddon
           else if (key == "publisher")
             item->GetGameInfoTag()->SetPublisher(value);
           else if (key == "gameclient")
-            item->SetProperty("gameclient", value);
+            item->SetProperty("Addon.ID", value);
         }
       }
     } // end ListItem::setInfo

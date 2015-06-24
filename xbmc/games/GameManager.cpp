@@ -179,7 +179,7 @@ void CGameManager::GetGameClientIDs(const CFileItem& file, std::vector<std::stri
 {
   CSingleLock lock(m_critSection);
 
-  const std::string strRequestedClient = file.GetProperty("gameclient").asString();
+  const std::string strRequestedClient = file.GetProperty("Addon.ID").asString();
 
   for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {

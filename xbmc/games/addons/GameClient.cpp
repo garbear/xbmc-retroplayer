@@ -254,8 +254,8 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   if (m_bHasStandalone)
     return false;
 
-  // Filter by gameclient property
-  if (file.HasProperty("gameclient") && file.GetProperty("gameclient").asString() != ID())
+  // Filter by Addon.ID property
+  if (file.HasProperty("Addon.ID") && file.GetProperty("Addon.ID").asString() != ID())
     return false;
 
   // Filter by extension

@@ -145,7 +145,7 @@ void CGameFileAutoLauncher::Launch(const GameClientPtr& gameClient)
       window->Close();
 
     // Force game client (so we aren't prompted for game client list by PlayMedia())
-    file->SetProperty("gameclient", gameClient->ID());
+    file->SetProperty("Addon.ID", gameClient->ID());
 
     g_application.PlayMedia(*file);
   }

@@ -142,7 +142,7 @@ public:
   void SetFrameRateCorrection(double correctionFactor);
 
   /**
-   * Perform the gamut of checks on the file: "gameclient" property, platform,
+   * Perform the gamut of checks on the file: "Addon.ID" property, platform,
    * extension, and a positive match on at least one of the CGameFileLoader
    * strategies.
    */

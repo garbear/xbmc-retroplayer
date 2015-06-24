@@ -73,7 +73,7 @@ namespace GAME
     /**
      * Resolve a file item to a list of game client IDs.
      *
-     *   # If the file forces a particular game client via file.SetProperty("gameclient", id),
+     *   # If the file forces a particular game client via file.SetProperty("Addon.ID", id),
      *     the result will contain no more than one possible candidate.
      *   # If the file's game info tag provides a "platform", the available game
      *     clients will be filtered by this platform (given the <platform> tag
