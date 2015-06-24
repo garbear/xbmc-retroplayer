@@ -681,11 +681,28 @@ int CBuiltins::Execute(const std::string& execString)
         // (params[1] ... params[x]) separated by a comma to RunScript
         Execute(StringUtils::Format("RunScript(%s)", StringUtils::Join(params, ",").c_str()));
       }
-      else if (addon->Type() == ADDON_GAMEDLL && params.size() >= 2)
+      else if (CAddonMgr::Get().GetAddon(addonid, addon, ADDON_GAMEDLL))
       {
-        CFileItem item(params[1], false);
-        item.SetProperty("Addon.ID", params[0]);
-        return g_application.PlayMedia(item);
+        const bool bRunStandalone = (params.size() == 1);
+        if (bRunStandalone)
+        {
+          if (addon->IsExecutable())
+          {
+            CFileItem item("addon://" + addonid, false);
+            item.SetProperty("Addon.ID", addonid);
+            return g_application.PlayMedia(item);
+          }
+          else
+          {
+            CLog::Log(LOGERROR, "RunAddon: '%s' is not executable", addonid.c_str());
+          }
+        }
+        else
+        {
+          CFileItem item(params[1], false);
+          item.SetProperty("Addon.ID", addonid);
+          return g_application.PlayMedia(item);
+        }
       }
       else
         CLog::Log(LOGERROR, "RunAddon: unknown add-on id '%s', or unexpected add-on type (not a script or plugin).", addonid.c_str());
