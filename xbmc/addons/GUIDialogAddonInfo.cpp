@@ -155,7 +155,8 @@ void CGUIDialogAddonInfo::UpdateControls()
   bool isInstalled = NULL != m_localAddon.get();
   bool isEnabled = isInstalled && m_item->GetProperty("Addon.Enabled").asBoolean();
   bool isUpdatable = isInstalled && m_item->GetProperty("Addon.UpdateAvail").asBoolean();
-  bool isExecutable = isInstalled && (m_localAddon->Type() == ADDON_PLUGIN || m_localAddon->Type() == ADDON_SCRIPT);
+  bool isExecutable = isInstalled && m_localAddon->IsExecutable();
+
   if (isInstalled)
     GrabRollbackVersions();
 

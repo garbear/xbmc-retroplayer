@@ -91,6 +91,7 @@ namespace ADDON
     virtual AddonPtr Clone() const =0;
     virtual TYPE Type() const =0;
     virtual bool IsType(TYPE type) const =0;
+    virtual bool IsExecutable() const = 0;
     virtual AddonProps Props() const =0;
     virtual AddonProps& Props() =0;
     virtual const std::string ID() const =0;
