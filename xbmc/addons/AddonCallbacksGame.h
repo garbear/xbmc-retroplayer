@@ -45,35 +45,21 @@ public:
   CB_GameLib* GetCallbacks() const { return m_callbacks; }
 
   static void CloseGame(void* addonData);
+  static void VideoFrame(void* addonData, const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format);
+  static void AudioFrames(void* addonData, const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format);
+  static void HwSetInfo(void* addonData, const game_hw_info* hw_info);
+  static uintptr_t HwGetCurrentFramebuffer(void* addonData);
+  static game_proc_address_t HwGetProcAddress(void* addonData, const char* sym);
   static bool OpenPort(void* addonData, unsigned int port);
   static void ClosePort(void* addonData, unsigned int port);
-  static void EnvironmentSetRotation(void* addonData, GAME_ROTATION rotation);
-  static bool EnvironmentGetOverscan(void* addonData);
-  static bool EnvironmentCanDupe(void* addonData);
-  static bool EnvironmentSetSystemAvInfo(void* addonData, const game_system_av_info* info);
-  static bool VideoFrame(void* addonData, GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data);
-  static unsigned int AudioFrames(void* addonData, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data);
-  static bool RumbleSetState(void* addonData, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength);
-  static game_time_t PerfGetTimeUsec(void* addonData);
-  static game_perf_tick_t PerfGetCounter(void* addonData);
-  static uint64_t PerfGetCpuFeatures(void* addonData);
-  static void PerfLog(void* addonData);
-  static void PerfRegister(void* addonData, game_perf_counter *counter);
-  static void PerfStart(void* addonData, game_perf_counter *counter);
-  static void PerfStop(void* addonData, game_perf_counter *counter);
-  static void CameraSetInfo(void* addonData, game_camera_info *camera_info);
-  static bool CameraStart(void* addonData);
-  static void CameraStop(void* addonData);
-  static bool LocationStart(void* addonData);
-  static void LocationStop(void* addonData);
-  static bool LocationGetPosition(void* addonData, double *lat, double *lon, double *horiz_accuracy, double *vert_accuracy);
-  static void LocationSetInterval(void* addonData, unsigned interval_ms, unsigned interval_distance);
-  static void LocationInitialized(void* addonData);
-  static void LocationDeinitialized(void* addonData);
-  static void FrameTimeSetReference(void* addonData, game_usec_t usec);
-  static void HwSetInfo(void* addonData, const game_hw_info *hw_info);
-  static uintptr_t HwGetCurrentFramebuffer(void* addonData);
-  static game_proc_address_t HwGetProcAddress(void* addonData, const char *sym);
+  static void RumbleSetState(void* addonData, unsigned int port, GAME_RUMBLE_EFFECT effect, float strength);
+  static void SetCameraInfo(void* addonData, unsigned int width, unsigned int height, GAME_CAMERA_BUFFER caps);
+  static bool StartCamera(void* addonData);
+  static void StopCamera(void* addonData);
+  static bool StartLocation(void* addonData);
+  static void StopLocation(void* addonData);
+  static bool GetLocation(void* addonData,  double* lat, double* lon, double* horizAccuracy, double* vertAccuracy);
+  static void SetLocationInterval(void* addonData, unsigned int intervalMs, unsigned int intervalDistance);
 
 private:
   static GAME::CGameClient* GetGameClient(void* addonData, const char* strFunction);

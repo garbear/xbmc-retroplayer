@@ -98,35 +98,21 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_register_me)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_unregister_me)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_close_game)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_open_port)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_close_port)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_environment_set_rotation)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_environment_get_overscan)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_environment_can_dupe)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_environment_set_system_av_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_video_frame)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_audio_frames)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_rumble_set_state)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_perf_get_time_usec)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_perf_get_counter)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_perf_get_cpu_features)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_perf_log)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_perf_register)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_perf_start)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_perf_stop)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_camera_set_info)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_camera_start)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_camera_stop)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_location_start)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_location_stop)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_location_get_position)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_location_set_interval)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_location_initialized)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_location_deinitialized)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_frame_time_set_reference)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_hw_set_info)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_hw_get_current_framebuffer)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_hw_get_proc_address)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_open_port)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_close_port)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_rumble_set_state)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_set_camera_info)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_start_camera)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_stop_camera)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_start_location)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_stop_location)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_get_location)) throw false;
+      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_set_location_interval)) throw false;
     }
     catch (const bool& bSuccess)
     {
@@ -143,6 +129,31 @@ public:
     return GAME_close_game(m_handle, m_callbacks);
   }
 
+  void VideoFrame(const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
+  {
+    return GAME_video_frame(m_handle, m_callbacks, data, width, height, format);
+  }
+
+  void AudioFrames(const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format)
+  {
+    return GAME_audio_frames(m_handle, m_callbacks, data, frames, format);
+  }
+
+  void HwSetInfo(const struct game_hw_info* hw_info)
+  {
+    return GAME_hw_set_info(m_handle, m_callbacks, hw_info);
+  }
+
+  uintptr_t HwGetCurrentFramebuffer(void)
+  {
+    return GAME_hw_get_current_framebuffer(m_handle, m_callbacks);
+  }
+
+  game_proc_address_t HwGetProcAddress(const char* sym)
+  {
+    return GAME_hw_get_proc_address(m_handle, m_callbacks, sym);
+  }
+
   bool OpenPort(unsigned int port)
   {
     return GAME_open_port(m_handle, m_callbacks, port);
@@ -153,174 +164,65 @@ public:
     return GAME_close_port(m_handle, m_callbacks, port);
   }
 
-  void EnvironmentSetRotation(enum GAME_ROTATION rotation)
-  {
-    return GAME_environment_set_rotation(m_handle, m_callbacks, rotation);
-  }
-
-  bool EnvironmentGetOverscan(void)
-  {
-    return GAME_environment_get_overscan(m_handle, m_callbacks);
-  }
-
-  bool EnvironmentCanDupe(void)
-  {
-    return GAME_environment_can_dupe(m_handle, m_callbacks);
-  }
-
-  bool EnvironmentSetSystemAvInfo(const struct game_system_av_info* info)
-  {
-    return GAME_environment_set_system_av_info(m_handle, m_callbacks, info);
-  }
-
-  bool VideoFrame(GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data)
-  {
-    return GAME_video_frame(m_handle, m_callbacks, format, width, height, data);
-  }
-
-  unsigned int AudioFrames(GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data)
-  {
-    return GAME_audio_frames(m_handle, m_callbacks, format, frames, data);
-  }
-
-  bool RumbleSetState(unsigned port, enum GAME_RUMBLE_EFFECT effect, uint16_t strength)
+  void RumbleSetState(unsigned int port, GAME_RUMBLE_EFFECT effect, float strength)
   {
     return GAME_rumble_set_state(m_handle, m_callbacks, port, effect, strength);
   }
 
-  game_time_t PerfGetTimeUsec(void)
+  void SetCameraInfo(unsigned int width, unsigned int height, GAME_CAMERA_BUFFER caps)
   {
-    return GAME_perf_get_time_usec(m_handle, m_callbacks);
+    return GAME_set_camera_info(m_handle, m_callbacks, width, height, caps);
   }
 
-  game_perf_tick_t PerfGetCounter(void)
+  bool StartCamera(void)
   {
-    return GAME_perf_get_counter(m_handle, m_callbacks);
+    return GAME_start_camera(m_handle, m_callbacks);
   }
 
-  uint64_t PerfGetCpuFeatures(void)
+  void StopCamera(void)
   {
-    return GAME_perf_get_cpu_features(m_handle, m_callbacks);
+    return GAME_stop_camera(m_handle, m_callbacks);
   }
 
-  void PerfLog(void)
+  bool StartLocation(void)
   {
-    return GAME_perf_log(m_handle, m_callbacks);
+    return GAME_start_location(m_handle, m_callbacks);
   }
 
-  void PerfRegister(struct game_perf_counter *counter)
+  void StopLocation(void)
   {
-    return GAME_perf_register(m_handle, m_callbacks, counter);
+    return GAME_stop_location(m_handle, m_callbacks);
   }
 
-  void PerfStart(struct game_perf_counter *counter)
+  bool GetLocation(double* lat, double* lon, double* horiz_accuracy, double* vert_accuracy)
   {
-    return GAME_perf_start(m_handle, m_callbacks, counter);
+    return GAME_get_location(m_handle, m_callbacks, lat, lon, horiz_accuracy, vert_accuracy);
   }
 
-  void PerfStop(struct game_perf_counter *counter)
+  void SetLocationInterval(unsigned int interval_ms, unsigned int interval_distance)
   {
-    return GAME_perf_stop(m_handle, m_callbacks, counter);
-  }
-
-  void CameraSetInfo(struct game_camera_info *camera_info)
-  {
-    return GAME_camera_set_info(m_handle, m_callbacks, camera_info);
-  }
-
-  bool CameraStart(void)
-  {
-    return GAME_camera_start(m_handle, m_callbacks);
-  }
-
-  void CameraStop(void)
-  {
-    return GAME_camera_stop(m_handle, m_callbacks);
-  }
-
-  bool LocationStart(void)
-  {
-    return GAME_location_start(m_handle, m_callbacks);
-  }
-
-  void LocationStop(void)
-  {
-    return GAME_location_stop(m_handle, m_callbacks);
-  }
-
-  bool LocationGetPosition(double *lat, double *lon, double *horiz_accuracy, double *vert_accuracy)
-  {
-    return GAME_location_get_position(m_handle, m_callbacks, lat, lon, horiz_accuracy, vert_accuracy);
-  }
-
-  void LocationSetInterval(unsigned interval_ms, unsigned interval_distance)
-  {
-    return GAME_location_set_interval(m_handle, m_callbacks, interval_ms, interval_distance);
-  }
-
-  void LocationInitialized(void)
-  {
-    return GAME_location_initialized(m_handle, m_callbacks);
-  }
-
-  void LocationDeinitialized(void)
-  {
-    return GAME_location_deinitialized(m_handle, m_callbacks);
-  }
-
-  void FrameTimeSetReference(game_usec_t usec)
-  {
-    return GAME_frame_time_set_reference(m_handle, m_callbacks, usec);
-  }
-
-  void HwSetInfo(const struct game_hw_info *hw_info)
-  {
-    return GAME_hw_set_info(m_handle, m_callbacks, hw_info);
-  }
-
-  uintptr_t HwGetCurrentFramebuffer(void)
-  {
-    return GAME_hw_get_current_framebuffer(m_handle, m_callbacks);
-  }
-
-  game_proc_address_t HwGetProcAddress(const char *sym)
-  {
-    return GAME_hw_get_proc_address(m_handle, m_callbacks, sym);
+    return GAME_set_location_interval(m_handle, m_callbacks, interval_ms, interval_distance);
   }
 
 protected:
-    CB_GameLib* (*GAME_register_me)(void* handle);
-    void (*GAME_unregister_me)(void* handle, CB_GameLib* cb);
-    void (*GAME_close_game)(void* handle, CB_GameLib* cb);
-    bool (*GAME_open_port)(void* handle, CB_GameLib* cb, unsigned int port);
-    void (*GAME_close_port)(void* handle, CB_GameLib* cb, unsigned int port);
-    void (*GAME_environment_set_rotation)(void* handle, CB_GameLib* cb, enum GAME_ROTATION rotation);
-    bool (*GAME_environment_get_overscan)(void* handle, CB_GameLib* cb);
-    bool (*GAME_environment_can_dupe)(void* handle, CB_GameLib* cb);
-    bool (*GAME_environment_set_system_av_info)(void* handle, CB_GameLib* cb, const struct game_system_av_info* info);
-    bool (*GAME_video_frame)(void* handle, CB_GameLib* cb, GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data);
-    unsigned int (*GAME_audio_frames)(void* handle, CB_GameLib* cb, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data);
-    bool (*GAME_rumble_set_state)(void* handle, CB_GameLib* cb, unsigned port, enum GAME_RUMBLE_EFFECT effect, uint16_t strength);
-    game_time_t (*GAME_perf_get_time_usec)(void* handle, CB_GameLib* cb);
-    game_perf_tick_t (*GAME_perf_get_counter)(void* handle, CB_GameLib* cb);
-    uint64_t (*GAME_perf_get_cpu_features)(void* handle, CB_GameLib* cb);
-    void (*GAME_perf_log)(void* handle, CB_GameLib* cb);
-    void (*GAME_perf_register)(void* handle, CB_GameLib* cb, struct game_perf_counter *counter);
-    void (*GAME_perf_start)(void* handle, CB_GameLib* cb, struct game_perf_counter *counter);
-    void (*GAME_perf_stop)(void* handle, CB_GameLib* cb, struct game_perf_counter *counter);
-    void (*GAME_camera_set_info)(void* handle, CB_GameLib* cb, struct game_camera_info *camera_info);
-    bool (*GAME_camera_start)(void* handle, CB_GameLib* cb);
-    void (*GAME_camera_stop)(void* handle, CB_GameLib* cb);
-    bool (*GAME_location_start)(void* handle, CB_GameLib* cb);
-    void (*GAME_location_stop)(void* handle, CB_GameLib* cb);
-    bool (*GAME_location_get_position)(void* handle, CB_GameLib* cb, double *lat, double *lon, double *horiz_accuracy, double *vert_accuracy);
-    void (*GAME_location_set_interval)(void* handle, CB_GameLib* cb, unsigned interval_ms, unsigned interval_distance);
-    void (*GAME_location_initialized)(void* handle, CB_GameLib* cb);
-    void (*GAME_location_deinitialized)(void* handle, CB_GameLib* cb);
-    void (*GAME_frame_time_set_reference)(void* handle, CB_GameLib* cb, game_usec_t usec);
-    void (*GAME_hw_set_info)(void* handle, CB_GameLib* cb, const struct game_hw_info *hw_info);
-    uintptr_t (*GAME_hw_get_current_framebuffer)(void* handle, CB_GameLib* cb);
-    game_proc_address_t (*GAME_hw_get_proc_address)(void* handle, CB_GameLib* cb, const char *sym);
+  CB_GameLib* (*GAME_register_me)(void* handle);
+  void (*GAME_unregister_me)(void* handle, CB_GameLib* cb);
+  void (*GAME_close_game)(void* handle, CB_GameLib* cb);
+  void (*GAME_video_frame)(void* handle, CB_GameLib* cb, const uint8_t*, unsigned int, unsigned int, GAME_RENDER_FORMAT);
+  void (*GAME_audio_frames)(void* handle, CB_GameLib* cb, const uint8_t*, unsigned int, GAME_AUDIO_FORMAT);
+  void (*GAME_hw_set_info)(void* handle, CB_GameLib* cb, const struct game_hw_info*);
+  uintptr_t (*GAME_hw_get_current_framebuffer)(void* handle, CB_GameLib* cb);
+  game_proc_address_t (*GAME_hw_get_proc_address)(void* handle, CB_GameLib* cb, const char*);
+  bool (*GAME_open_port)(void* handle, CB_GameLib* cb, unsigned int);
+  void (*GAME_close_port)(void* handle, CB_GameLib* cb, unsigned int);
+  void (*GAME_rumble_set_state)(void* handle, CB_GameLib* cb, unsigned int, GAME_RUMBLE_EFFECT, float);
+  void (*GAME_set_camera_info)(void* handle, CB_GameLib* cb, unsigned int, unsigned int, GAME_CAMERA_BUFFER);
+  bool (*GAME_start_camera)(void* handle, CB_GameLib* cb);
+  void (*GAME_stop_camera)(void* handle, CB_GameLib* cb);
+  bool (*GAME_start_location)(void* handle, CB_GameLib* cb);
+  void (*GAME_stop_location)(void* handle, CB_GameLib* cb);
+  bool (*GAME_get_location)(void* handle, CB_GameLib* cb, double*, double*, double*, double*);
+  void (*GAME_set_location_interval)(void* handle, CB_GameLib* cb, unsigned int, unsigned int);
 
 private:
   void*        m_handle;

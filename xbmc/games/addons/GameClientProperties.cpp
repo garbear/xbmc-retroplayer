@@ -68,9 +68,11 @@ const char* CGameClientProperties::GetSaveDirectory()
 game_client_properties* CGameClientProperties::CreateProps()
 {
   game_client_properties* props = new game_client_properties;
-  props->library_path      = GetLibraryPath();
-  props->system_directory  = GetSystemDirectory();
-  props->content_directory = GetContentDirectory();
-  props->save_directory    = GetSaveDirectory();
+
+  props->game_client_dll_path = GetLibraryPath();
+  props->system_directory     = GetSystemDirectory();
+  props->content_directory    = GetContentDirectory();
+  props->save_directory       = GetSaveDirectory();
+
   return props;
 }

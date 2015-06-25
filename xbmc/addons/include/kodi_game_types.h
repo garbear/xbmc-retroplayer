@@ -21,10 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.7"
+#define GAME_API_VERSION                "1.0.8"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.7"
+#define GAME_MIN_API_VERSION            "1.0.8"
 
 /* magic number for empty tray */
 #define GAME_NO_DISK                   ((unsigned)-1)
@@ -66,17 +66,18 @@ extern "C" {
 /*! Game add-on error codes */
 typedef enum GAME_ERROR
 {
-  GAME_ERROR_NO_ERROR                =  0, // no error occurred
-  GAME_ERROR_UNKNOWN                 = -1, // an unknown error occurred
-  GAME_ERROR_NOT_IMPLEMENTED         = -2, // the method that the frontend called is not implemented
-  GAME_ERROR_REJECTED                = -3, // the command was rejected by the game client
-  GAME_ERROR_INVALID_PARAMETERS      = -4, // the parameters of the method that was called are invalid for this operation
-  GAME_ERROR_FAILED                  = -5, // the command failed
+  GAME_ERROR_NO_ERROR,               // no error occurred
+  GAME_ERROR_UNKNOWN,                // an unknown error occurred
+  GAME_ERROR_NOT_IMPLEMENTED,        // the method that the frontend called is not implemented
+  GAME_ERROR_REJECTED,               // the command was rejected by the game client
+  GAME_ERROR_INVALID_PARAMETERS,     // the parameters of the method that was called are invalid for this operation
+  GAME_ERROR_FAILED,                 // the command failed
+  GAME_ERROR_NOT_LOADED,             // no game is loaded
 } GAME_ERROR;
 
 typedef enum GAME_RENDER_FORMAT
 {
-  GAME_RENDER_FMT_NONE = 0,
+  GAME_RENDER_FMT_NONE,
   GAME_RENDER_FMT_YUV420P,
   GAME_RENDER_FMT_0RGB8888,
   GAME_RENDER_FMT_RGB565,
@@ -85,7 +86,7 @@ typedef enum GAME_RENDER_FORMAT
 
 typedef enum GAME_AUDIO_FORMAT
 {
-  GAME_AUDIO_FMT_NONE = 0,
+  GAME_AUDIO_FMT_NONE,
   GAME_AUDIO_FMT_S16NE,
 } GAME_AUDIO_FORMAT;
 
@@ -100,32 +101,33 @@ typedef enum GAME_INPUT_EVENT_SOURCE
   GAME_INPUT_EVENT_ABSOLUTE_POINTER,
 } GAME_INPUT_EVENT_SOURCE;
 
-/*! Returned from game_get_region() (TODO) */
+/*! Returned from game_get_region() */
 typedef enum GAME_REGION
 {
-  GAME_REGION_NTSC                   = 0,
-  GAME_REGION_PAL                    = 1,
+  GAME_REGION_UNKNOWN,
+  GAME_REGION_NTSC,
+  GAME_REGION_PAL,
 } GAME_REGION;
 
 typedef enum GAME_MEMORY
 {
   /*!
-    * Passed to game_get_memory_data/size(). If the memory type doesn't apply
-    * to the implementation NULL/0 can be returned.
-    */
+   * Passed to game_get_memory_data/size(). If the memory type doesn't apply
+   * to the implementation NULL/0 can be returned.
+   */
   GAME_MEMORY_MASK                   = 0xff,
 
   /*!
-    * Regular save ram. This ram is usually found on a game cartridge, backed
-    * up by a battery. If save game data is too complex for a single memory
-    * buffer, the SYSTEM_DIRECTORY environment callback can be used.
-    */
+   * Regular save ram. This ram is usually found on a game cartridge, backed
+   * up by a battery. If save game data is too complex for a single memory
+   * buffer, the SYSTEM_DIRECTORY environment callback can be used.
+   */
   GAME_MEMORY_SAVE_RAM               = 0,
 
   /*!
-    * Some games have a built-in clock to keep track of time. This memory is
-    * usually just a couple of bytes to keep track of time.
-    */
+   * Some games have a built-in clock to keep track of time. This memory is
+   * usually just a couple of bytes to keep track of time.
+   */
   GAME_MEMORY_RTC                    = 1,
 
   /*! System ram lets a frontend peek into a game systems main RAM */
@@ -140,24 +142,24 @@ typedef enum GAME_MEMORY
   GAME_MEMORY_SNES_SUFAMI_TURBO_A_RAM= ((3 << 8) | GAME_MEMORY_SAVE_RAM),
   GAME_MEMORY_SNES_SUFAMI_TURBO_B_RAM= ((4 << 8) | GAME_MEMORY_SAVE_RAM),
   GAME_MEMORY_SNES_GAME_BOY_RAM      = ((5 << 8) | GAME_MEMORY_SAVE_RAM),
-  GAME_MEMORY_SNES_GAME_BOY_RTC      = ((6 << 8) | GAME_MEMORY_RTC)
+  GAME_MEMORY_SNES_GAME_BOY_RTC      = ((6 << 8) | GAME_MEMORY_RTC),
 } GAME_MEMORY;
 
 /*!
-  * Special game types passed into game_load_game_special(). Only used when
-  * multiple ROMs are required.
-  */
-typedef enum GAME_TYPE
+ * Special game types passed into game_load_game_special(). Only used when
+ * multiple ROMs are required.
+ */
+typedef enum SPECIAL_GAME_TYPE
 {
-  GAME_TYPE_BSX                      = 0x101,
-  GAME_TYPE_BSX_SLOTTED              = 0x102,
-  GAME_TYPE_SUFAMI_TURBO             = 0x103,
-  GAME_TYPE_SUPER_GAME_BOY           = 0x104
-} GAME_TYPE;
+  SPECIAL_GAME_TYPE_BSX,
+  SPECIAL_GAME_TYPE_BSX_SLOTTED,
+  SPECIAL_GAME_TYPE_SUFAMI_TURBO,
+  SPECIAL_GAME_TYPE_SUPER_GAME_BOY,
+} SPECIAL_GAME_TYPE;
 
 typedef enum GAME_KEY_MOD
 {
-  GAME_KEY_MOD_NONE                  = 0x0000,
+  GAME_KEY_MOD_NONE                  = 0x00,
 
   GAME_KEY_MOD_SHIFT                 = 0x01,
   GAME_KEY_MOD_CTRL                  = 0x02,
@@ -168,14 +170,6 @@ typedef enum GAME_KEY_MOD
   GAME_KEY_MOD_CAPSLOCK              = 0x20,
   GAME_KEY_MOD_SCROLLOCK             = 0x40,
 } GAME_KEY_MOD;
-
-typedef enum GAME_LOG_LEVEL /* retro_log_level in libretro */
-{
-  GAME_LOG_DEBUG                     = 0,
-  GAME_LOG_INFO                      = 1,
-  GAME_LOG_WARN                      = 2,
-  GAME_LOG_ERROR                     = 3
-} GAME_LOG_LEVEL;
 
 /*! ID values for SIMD CPU features */
 typedef enum GAME_SIMD
@@ -196,48 +190,47 @@ typedef enum GAME_SIMD
   GAME_SIMD_VFPU                     = (1 << 13),
 } GAME_SIMD;
 
-typedef enum GAME_CAMERA_BUFFER /* retro_camera_buffer in libretro */
+typedef enum GAME_CAMERA_BUFFER
 {
-  GAME_CAMERA_BUFFER_OPENGL_TEXTURE  = 0,
-  GAME_CAMERA_BUFFER_RAW_FRAMEBUFFER = 1
+  GAME_CAMERA_BUFFER_OPENGL_TEXTURE,
+  GAME_CAMERA_BUFFER_RAW_FRAMEBUFFER,
 } GAME_CAMERA_BUFFER;
 
-
-typedef enum GAME_RUMBLE_EFFECT /* retro_rumble_effect in libretro */
+typedef enum GAME_RUMBLE_EFFECT
 {
-  GAME_RUMBLE_STRONG                 = 0,
-  GAME_RUMBLE_WEAK                   = 1
+  GAME_RUMBLE_STRONG,
+  GAME_RUMBLE_WEAK,
 } GAME_RUMBLE_EFFECT;
 
 // TODO
 typedef enum GAME_HW_FRAME_BUFFER
 {
-  GAME_HW_FRAME_BUFFER_VALID         = -1, // Pass this to game_video_refresh if rendering to hardware
-  GAME_HW_FRAME_BUFFER_DUPLICATE     = 0,  // Passing NULL to game_video_refresh is still a frame dupe as normal
-  GAME_HW_FRAME_BUFFER_RENDER        = 1,
+  GAME_HW_FRAME_BUFFER_VALID,     // Pass this to game_video_refresh if rendering to hardware
+  GAME_HW_FRAME_BUFFER_DUPLICATE, // Passing NULL to game_video_refresh is still a frame dupe as normal
+  GAME_HW_FRAME_BUFFER_RENDER,
 } GAME_HW_FRAME_BUFFER;
 
-typedef enum GAME_HW_CONTEXT_TYPE /* retro_hw_context_type in libretro */
+typedef enum GAME_HW_CONTEXT_TYPE
 {
-  GAME_HW_CONTEXT_NONE               = 0,
-  GAME_HW_CONTEXT_OPENGL             = 1, // OpenGL 2.x. Latest version available before 3.x+. Driver can choose to use latest compatibility context
-  GAME_HW_CONTEXT_OPENGLES2          = 2, // GLES 2.0
-  GAME_HW_CONTEXT_OPENGL_CORE        = 3, // Modern desktop core GL context. Use major/minor fields to set GL version
-  GAME_HW_CONTEXT_OPENGLES3          = 4, // GLES 3.0
+  GAME_HW_CONTEXT_NONE,
+  GAME_HW_CONTEXT_OPENGL,      // OpenGL 2.x. Latest version available before 3.x+. Driver can choose to use latest compatibility context
+  GAME_HW_CONTEXT_OPENGLES2,   // GLES 2.0
+  GAME_HW_CONTEXT_OPENGL_CORE, // Modern desktop core GL context. Use major/minor fields to set GL version
+  GAME_HW_CONTEXT_OPENGLES3,   // GLES 3.0
 } GAME_HW_CONTEXT_TYPE;
 
 typedef enum GAME_ROTATION
 {
-  GAME_ROTATION_0_CW                 = 0,
-  GAME_ROTATION_90_CW                = 1,
-  GAME_ROTATION_180_CW               = 2,
-  GAME_ROTATION_270_CW               = 3
+  GAME_ROTATION_0_CW,
+  GAME_ROTATION_90_CW,
+  GAME_ROTATION_180_CW,
+  GAME_ROTATION_270_CW,
 } GAME_ROTATION;
 
 typedef enum GAME_EJECT_STATE
 {
   GAME_NOT_EJECTED,
-  GAME_EJECTED
+  GAME_EJECTED,
 } GAME_EJECT_STATE;
 
 typedef struct game_controller
@@ -352,56 +345,77 @@ struct game_perf_counter
 
 struct game_camera_info
 {
-  uint64_t caps;                // Set by game client. Example bitmask: caps = (1 << GAME_CAMERA_BUFFER_OPENGL_TEXTURE) | (1 << GAME_CAMERA_BUFFER_RAW_FRAMEBUFFER).
+  uint64_t caps;                //
   unsigned width;               // Desired resolution for camera. Is only used as a hint.
   unsigned height;
 };
 
 struct game_hw_info
 {
-  enum GAME_HW_CONTEXT_TYPE context_type; // Which API to use. Set by game client.
-  bool     depth;               // Set if render buffers should have depth component attached.
-  bool     stencil;             // Set if stencil buffers should be attached.
-                                // If depth and stencil are true, a packed 24/8 buffer will be added. Only attaching stencil is invalid and will be ignored.
-  bool     bottom_left_origin;  // Use conventional bottom-left origin convention. Is false, standard top-left origin semantics are used.
-  unsigned version_major;       // Major version number for core GL context.
-  unsigned version_minor;       // Minor version number for core GL context.
+  enum GAME_HW_CONTEXT_TYPE context_type; // Which API to use. Set by game client
+  bool     depth;               // Set if render buffers should have depth component attached
+  bool     stencil;             // Set if stencil buffers should be attached
+                                // If depth and stencil are true, a packed 24/8 buffer will be added. Only attaching stencil is invalid and will be ignored
+  bool     bottom_left_origin;  // Use conventional bottom-left origin convention. Is false, standard top-left origin semantics are used
+  unsigned version_major;       // Major version number for core GL context
+  unsigned version_minor;       // Minor version number for core GL context
   bool     cache_context;       // If this is true, the frontend will go very far to avoid resetting context in scenarios like toggling fullscreen, etc.
-                                // The reset callback might still be called in extreme situations such as if the context is lost beyond recovery.
-                                // For optimal stability, set this to false, and allow context to be reset at any time.
-  bool     debug_context;       // Creates a debug context.
+                                // The reset callback might still be called in extreme situations such as if the context is lost beyond recovery
+                                // For optimal stability, set this to false, and allow context to be reset at any time
+  bool     debug_context;       // Creates a debug context
 };
 
 /*! Properties passed to the ADDON_Create() method of a game client */
 typedef struct game_client_properties
 {
   /*!
-   * Path to the game client's shared library being loaded. Replaces
-   * RETRO_ENVIRONMENT_GET_LIBRETRO_PATH.
+   * THe path of the game client being loaded, or empty to load from the network.
    */
-  const char* library_path;
+  const char* game_client_dll_path;
+
+  /*!
+   * Paths to proxy DLLs used to load the game client.
+   */
+  const char** proxy_dll_paths;
+
+  /*!
+   * Number of proxy DLL paths provided.
+   */
+  unsigned int proxy_dll_count;
+
+  /*!
+   * Hostname or IP address of the netplay server. Ignored if a game client is
+   * given. Otherwise, if this property is empty, servers will be disconvered on
+   * the network.
+   */
+  const char* netplay_server;
+
+  /*!
+   * Port of the netplay server. Ignored if a game client is given or servers
+   * are being auto-discovered.
+   */
+  unsigned int netplay_server_port;
 
   /*!
    * The "system" directory of the frontend. This directory can be used to
    * store system-specific ROMs such as BIOSes, configuration data, etc.
-   * Replaces RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY.
    */
   const char* system_directory;
 
   /*!
-    * The "content" directory of the frontend. This directory can be used to
-    * store specific assets that the core relies upon, such as art assets, input
-    * data, etc. Replaces RETRO_ENVIRONMENT_GET_CONTENT_DIRECTORY.
-    */
+   * The "content" directory of the frontend. This directory can be used to
+   * store specific assets that the core relies upon, such as art assets, input
+   * data, etc.
+   */
   const char* content_directory;
 
   /*!
-    * The "save" directory of the frontend. This directory can be used to store
-    * SRAM, memory cards, high scores, etc, if the game client cannot use the
-    * regular memory interface, GetMemoryData(). Replaces
-    * RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY.
-    */
+   * The "save" directory of the frontend. This directory can be used to store
+   * SRAM, memory cards, high scores, etc, if the game client cannot use the
+   * regular memory interface, GetMemoryData().
+   */
   const char* save_directory;
+
 } game_client_properties;
 
 /*! Structure to transfer the methods from kodi_game_dll.h to Kodi */
@@ -409,39 +423,36 @@ typedef struct GameClient
 {
   const char* (__cdecl* GetGameAPIVersion)(void);
   const char* (__cdecl* GetMininumGameAPIVersion)(void);
-  GAME_ERROR  (__cdecl* LoadGame)(const char* url);
-  GAME_ERROR  (__cdecl* LoadGameSpecial)(GAME_TYPE type, const char** urls, size_t num_urls);
+  GAME_ERROR  (__cdecl* LoadGame)(const char*);
+  GAME_ERROR  (__cdecl* LoadGameSpecial)(SPECIAL_GAME_TYPE, const char**, size_t);
   GAME_ERROR  (__cdecl* LoadStandalone)(void);
   GAME_ERROR  (__cdecl* UnloadGame)(void);
-  GAME_ERROR  (__cdecl* Run)(void);
-  GAME_ERROR  (__cdecl* Reset)(void);
-  void        (__cdecl* ControllerConnected)(unsigned int, bool, const struct game_controller*);
-  bool        (__cdecl* InputEvent)(unsigned int port, const game_input_event* event);
-  GAME_ERROR  (__cdecl* GetSystemAVInfo)(struct game_system_av_info *info);
-  size_t      (__cdecl* SerializeSize)(void);
-  GAME_ERROR  (__cdecl* Serialize)(void *data, size_t size);
-  GAME_ERROR  (__cdecl* Deserialize)(const void *data, size_t size);
-  GAME_ERROR  (__cdecl* CheatReset)(void);
-  GAME_ERROR  (__cdecl* CheatSet)(unsigned index, bool enabled, const char *code);
+  GAME_ERROR  (__cdecl* GetGameInfo)(game_system_av_info*);
   GAME_REGION (__cdecl* GetRegion)(void);
-  void*       (__cdecl* GetMemoryData)(GAME_MEMORY id);
-  size_t      (__cdecl* GetMemorySize)(GAME_MEMORY id);
-  GAME_ERROR  (__cdecl* DiskSetEjectState)(GAME_EJECT_STATE ejected);
-  GAME_EJECT_STATE (__cdecl* DiskGetEjectState)(void);
-  unsigned    (__cdecl* DiskGetImageIndex)(void);
-  GAME_ERROR  (__cdecl* DiskSetImageIndex)(unsigned index);
-  unsigned    (__cdecl* DiskGetNumImages)(void);
-  GAME_ERROR  (__cdecl* DiskReplaceImageIndex)(unsigned index, const char* url);
+  void        (__cdecl* FrameEvent)(void);
+  GAME_ERROR  (__cdecl* Reset)(void);
   GAME_ERROR  (__cdecl* DiskAddImageIndex)(void);
   GAME_ERROR  (__cdecl* HwContextReset)(void);
   GAME_ERROR  (__cdecl* HwContextDestroy)(void);
-  GAME_ERROR  (__cdecl* AudioAvailable)(void);
-  GAME_ERROR  (__cdecl* AudioSetState)(bool enabled);
-  GAME_ERROR  (__cdecl* FrameTimeNotify)(game_usec_t usec);
+  void        (__cdecl* UpdatePort)(unsigned int, bool, const game_controller*);
+  bool        (__cdecl* InputEvent)(unsigned int, const game_input_event*);
+  GAME_ERROR  (__cdecl* DiskSetEjectState)(GAME_EJECT_STATE);
+  GAME_EJECT_STATE (__cdecl* DiskGetEjectState)(void);
+  unsigned    (__cdecl* DiskGetImageIndex)(void);
+  GAME_ERROR  (__cdecl* DiskSetImageIndex)(unsigned int);
+  unsigned    (__cdecl* DiskGetNumImages)(void);
+  GAME_ERROR  (__cdecl* DiskReplaceImageIndex)(unsigned int, const char*);
   GAME_ERROR  (__cdecl* CameraInitialized)(void);
   GAME_ERROR  (__cdecl* CameraDeinitialized)(void);
-  GAME_ERROR  (__cdecl* CameraFrameRawBuffer)(const uint32_t *buffer, unsigned width, unsigned height, size_t pitch);
-  GAME_ERROR  (__cdecl* CameraFrameOpenglTexture)(unsigned texture_id, unsigned texture_target, const float *affine);
+  GAME_ERROR  (__cdecl* CameraFrameRawBuffer)(const uint32_t*, unsigned int, unsigned int, size_t);
+  GAME_ERROR  (__cdecl* CameraFrameOpenglTexture)(unsigned int, unsigned int, const float*);
+  size_t      (__cdecl* SerializeSize)(void);
+  GAME_ERROR  (__cdecl* Serialize)(uint8_t*, size_t);
+  GAME_ERROR  (__cdecl* Deserialize)(const uint8_t*, size_t);
+  GAME_ERROR  (__cdecl* CheatReset)(void);
+  GAME_ERROR  (__cdecl* GetMemory)(GAME_MEMORY, const uint8_t**, size_t*);
+  GAME_ERROR  (__cdecl* SetCheat)(unsigned int, bool, const char*);
+  GAME_ERROR  (__cdecl* FrameTimeNotify)(game_usec_t usec);
 } GameClient;
 
 #ifdef __cplusplus

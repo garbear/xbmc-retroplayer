@@ -127,8 +127,8 @@ public:
   virtual void GetSubtitleCapabilities(std::vector<int> &subCaps) { subCaps.assign(1, IPC_SUBS_ALL); }
 
   // Game API
-  bool         VideoFrame(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data) { return m_video.VideoFrame(format, width, height, data); }
-  unsigned int AudioFrames(AEDataFormat format, unsigned int frames, const uint8_t* data) { return m_audio.AudioFrames(format, frames, data); }
+  void VideoFrame(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data) { m_video.VideoFrame(format, width, height, data); }
+  void AudioFrames(AEDataFormat format, unsigned int frames, const uint8_t* data) { m_audio.AudioFrames(format, frames, data); }
 
 protected:
   virtual void Process();

@@ -327,8 +327,8 @@ bool CGameClient::LoadGameInfo()
   game_system_av_info av_info = { };
 
   GAME_ERROR error = GAME_ERROR_FAILED;
-  try { LogError(error = m_pStruct->GetSystemAVInfo(&av_info), "GetSystemAVInfo()"); }
-  catch (...) { LogException("GetSystemAVInfo()"); }
+  try { LogError(error = m_pStruct->GetGameInfo(&av_info), "GetGameInfo()"); }
+  catch (...) { LogException("GetGameInfo()"); }
 
   if (error != GAME_ERROR_NO_ERROR)
     return false;
@@ -434,37 +434,28 @@ void CGameClient::CloseFile()
   m_player = NULL;
 }
 
-bool CGameClient::RunFrame()
+void CGameClient::RunFrame()
 {
   CSingleLock lock(m_critSection);
 
   if (!m_bIsPlaying)
-    return false;
+    return;
 
-  GAME_ERROR error = GAME_ERROR_FAILED;
-  try { LogError(error = m_pStruct->Run(), "Run()"); }
-  catch (...) { LogException("Run()"); }
-
-  if (error != GAME_ERROR_NO_ERROR)
-    return false;
+  try { m_pStruct->FrameEvent(); }
+  catch (...) { LogException("FrameEvent()"); }
 
   // Append a new state delta to the rewind buffer
   if (m_bRewindEnabled)
   {
-    error = GAME_ERROR_FAILED;
+	GAME_ERROR error = GAME_ERROR_FAILED;
     try { LogError(error = m_pStruct->Serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()), "Serialize()"); }
     catch (...) { LogException("Serialize()"); }
 
-    if (error != GAME_ERROR_NO_ERROR)
-    {
+    if (error == GAME_ERROR_NO_ERROR)
+      m_serialState.AdvanceFrame();
+    else
       m_bRewindEnabled = false;
-      return false;
-    }
-
-    m_serialState.AdvanceFrame();
   }
-
-  return true;
 }
 
 unsigned int CGameClient::RewindFrames(unsigned int frames)
@@ -544,13 +535,13 @@ void CGameClient::UpdatePort(unsigned int port, const GameControllerPtr& control
     controllerStruct.rel_pointer_count    = controller->Layout().FeatureCount(FEATURE_RELATIVE_POINTER);
     controllerStruct.abs_pointer_count    = controller->Layout().FeatureCount(FEATURE_ABSOLUTE_POINTER);
 
-    try { m_pStruct->ControllerConnected(port, true, &controllerStruct); }
-    catch (...) { LogException("ControllerConnected()"); }
+    try { m_pStruct->UpdatePort(port, true, &controllerStruct); }
+    catch (...) { LogException("UpdatePort()"); }
   }
   else
   {
-    try { m_pStruct->ControllerConnected(port, false, NULL); }
-    catch (...) { LogException("ControllerConnected()"); }
+    try { m_pStruct->UpdatePort(port, false, NULL); }
+    catch (...) { LogException("UpdatePort()"); }
   }
 }
 

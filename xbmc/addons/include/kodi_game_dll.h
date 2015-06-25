@@ -22,94 +22,148 @@
 
 #include "kodi_game_types.h"
 
-/*! Functions that the game client add-on must implement */
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// --- Game API operations -----------------------------------------------------
+
 /*!
- * Get the GAME_API_VERSION_STRING that was used to compile this game client.
- * Used to check if the implementation is compatible with the frontend.
+ * \brief Return GAME_API_VERSION_STRING
+ *
+ * The add-on is backwards compatible with the frontend if this API version is
+ * is at least the frontend's minimum API version.
+ *
+ * \return Must be GAME_API_VERSION_STRING
  */
 const char* GetGameAPIVersion(void);
 
 /*!
- * Get the GAME_MIN_API_VERSION_STRING that was used to compile this game client.
- * Used to check if the implementation is compatible with the frontend.
+ * \brief Return GAME_MIN_API_VERSION_STRING
+ *
+ * The add-on is forwards compatible with the frontend if this minimum version
+ * is no more than the frontend's API version.
+ *
+ * \return Must be GAME_MIN_API_VERSION_STRING
  */
 const char* GetMininumGameAPIVersion(void);
 
-/*! Loads a game */
+// --- Game operations ---------------------------------------------------------
+
+/*!
+ * \brief Load a game
+ *
+ * \param url The URL to load
+ *
+ * return the error, or GAME_ERROR_NO_ERROR if the game was loaded
+ */
 GAME_ERROR LoadGame(const char* url);
 
-/*! Loads a "special" kind of game. Should not be used except in extreme cases */
-GAME_ERROR LoadGameSpecial(GAME_TYPE type, const char** urls, size_t num_urls);
+/*!
+ * \brief Load a game that requires multiple files
+ *
+ * \param type The game stype
+ * \param urls An array of urls
+ * \param urlCount The number of urls in the array
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the game was loaded
+ */
+GAME_ERROR LoadGameSpecial(SPECIAL_GAME_TYPE type, const char** urls, size_t urlCount);
 
-/*! Start playing without a game */
+/*!
+ * \brief Begin playing without a game file
+ *
+ * If the add-on supports standalone mode, it must add the <supports_standalone>
+ * tag to the extension point in addon.xml:
+ *
+ *     <supports_no_game>false</supports_no_game>
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the game add-on was loaded
+ */
 GAME_ERROR LoadStandalone(void);
 
+/*!
+ * \brief Unload the current game
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the game was unloaded
+ */
 /*! Unloads a currently loaded game */
 GAME_ERROR UnloadGame(void);
 
 /*!
- * Runs the game for one video frame.
+ * \brief Get information about the loaded game
  *
- * If a frame is not rendered for reasons where a game "dropped" a frame, this
- * still counts as a frame, and Run() should explicitly dupe a frame if
- * GET_CAN_DUPE returns true. In this case, the video callback can take a NULL
- * argument for data.
+ * \param info The info structure to fill
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if info was filled
  */
-GAME_ERROR Run(void);
+GAME_ERROR GetGameInfo(game_system_av_info* info);
 
-/*! Resets the current game */
+/*!
+ * \brief Get region of the loaded game
+ *
+ * \return the region, or GAME_REGION_UNKNOWN if unknown or no game is loaded
+ */
+GAME_REGION GetRegion(void);
+
+/*!
+ * \brief Notify the add-on that the frontend is rendering a new frame
+ */
+void FrameEvent(void);
+
+/*!
+ * \brief Reset the current game
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the game was reset
+ */
 GAME_ERROR Reset(void);
 
-/*!
- * Set the status of an open port.
- */
-void ControllerConnected(unsigned int port, bool connected, const struct game_controller* connected_controller);
+// --- Hardware rendering operations -------------------------------------------
 
 /*!
- * Called in response to an input event on an open port. Return true if the
- * event was handled by this add-on.
+ * \brief Invalidates the current HW context and reinitializes GPU resources
+ *
+ * Any GL state is lost, and must not be deinitialized explicitly.
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the HW context was reset
+ */
+GAME_ERROR HwContextReset(void);
+
+/*!
+ * \brief Called before the context is destroyed
+ *
+ * Resources can be deinitialized at this step.
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the HW context was destroyed
+ */
+GAME_ERROR HwContextDestroy(void);
+
+// --- Input operations --------------------------------------------------------
+
+/*!
+ * \brief Notify the add-on of a status change on an open port
+ *
+ * Ports can be opened using the OpenPort() callback
+ *
+ * \param port The port number passed to OpenPort()
+ * \param collected True if a controller was connected, false if disconnected
+ * \param controller The connected controller
+ */
+void UpdatePort(unsigned int port, bool connected, const game_controller* controller);
+
+/*!
+ * \brief Notify the add-on of an input event
+ *
+ * \param port The port number passed to OpenPort()
+ * \param event The input event
+ *
+ * \return true if the event was handled, false otherwise
  */
 bool InputEvent(unsigned int port, const game_input_event* event);
 
-/*!
- * Gets information about system audio/video timings and geometry. Can be
- * called only after Load() has successfully completed.
- * NOTE: The implementation of this function might not initialize every
- * variable if needed. E.g. geom.aspect_ratio might not be initialized if
- * core doesn't desire a particular aspect ratio.
- */
-GAME_ERROR GetSystemAVInfo(struct game_system_av_info *info);
+// --- Disk operations ---------------------------------------------------------
 
-/*!
- * Returns the amount of data the implementation requires to serialize
- * internal state (save states). Between calls to Load() and
- * Unload(), the returned size is never allowed to be larger than
- * a previous returned value, to ensure that the frontend can allocate a save
- * state buffer once.
- */
-size_t SerializeSize(void);
-
-/*!
- * Serializes internal state. It should return GAME_ERROR_FAILED if failed
- * or size is lower than SerializeSize(), and GAME_ERROR_NO_ERROR on
- * success.
- */
-GAME_ERROR Serialize(void *data, size_t size);
-GAME_ERROR Deserialize(const void *data, size_t size);
-
-GAME_ERROR CheatReset(void);
-GAME_ERROR CheatSet(unsigned index, bool enabled, const char *code);
-
-/*! Gets the region of the game */
-GAME_REGION GetRegion(void);
-
-/*! Gets region of memory */
-void* GetMemoryData(GAME_MEMORY id);
-size_t GetMemorySize(GAME_MEMORY id);
+// TODO: Rewrite disk interface
 
 /*!
  * Interface to eject and insert disk images. This is used for games which
@@ -122,8 +176,6 @@ size_t GetMemorySize(GAME_MEMORY id);
  * DiskControlSetEjectState(true). Set the disk index with
  * DiskControlSetImageIndex(index). Insert the disk again with
  * DiskControlSetEjectState(false).
- *
- * Replaces RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE.
  */
 
 /*!
@@ -146,7 +198,7 @@ unsigned DiskGetImageIndex(void);
  * implementation supports setting "no disk" (empty tray) by setting index to
  * GAME_NO_DISK.
  */
-GAME_ERROR DiskSetImageIndex(unsigned index);
+GAME_ERROR DiskSetImageIndex(unsigned int index);
 
 /*! Gets total number of images which are available to use */
 unsigned DiskGetNumImages(void);
@@ -162,7 +214,7 @@ unsigned DiskGetNumImages(void);
  * DiskControlGetImageIndex() returned 4 before. Index 1 will be
  * removed, and the new index is 3.
  */
-GAME_ERROR DiskReplaceImageIndex(unsigned index, const char* url);
+GAME_ERROR DiskReplaceImageIndex(unsigned int index, const char* url);
 
 /*!
  * Adds a new valid index (DiskControlGetNumImages()) to the internal disk list.
@@ -172,109 +224,123 @@ GAME_ERROR DiskReplaceImageIndex(unsigned index, const char* url);
  */
 GAME_ERROR DiskAddImageIndex(void);
 
-/*!
- * Invalidates the current HW context. Any GL state is lost, and must not
- * be deinitialized explicitly. If explicit deinitialization is desired by
- * the game client, it should implement context_destroy callback. If
- * called, all GPU resources must be reinitialized. Usually called when
- * frontend reinits video driver. Also called first time video driver is
- * initialized, allowing the client to init resources.
- */
-GAME_ERROR HwContextReset(void);
+// --- Camera operations -------------------------------------------------------
 
 /*!
- * Called before the context is destroyed. Resources can be deinitialized
- * at this step.
- */
-GAME_ERROR HwContextDestroy(void);
-
-/*!
- * Interface which is used to notify a game client about audio being
- * available for writing. The function can be called from any thread, so
- * a core using this must have a thread safe audio implementation. It is
- * intended for games where audio and video are completely asynchronous
- * and audio can be generated on the fly. This interface is not recommended
- * for use with emulators which have highly synchronous audio.
- *
- * The function only notifies about writability; the game client still
- * has to call the normal audio functions to write audio. The audio
- * functions must be called from within the notification function. The
- * amount of audio data to write is up to the implementation. Generally,
- * the audio function will be called continuously in a loop.
- *
- * Due to thread safety guarantees and lack of sync between audio and
- * video, a frontend can selectively disallow this interface based on
- * internal configuration. A core using this interface must also implement
- * the "normal" audio interface.
- *
- * Replaces RETRO_ENVIRONMENT_SET_AUDIO_CALLBACK.
- */
-GAME_ERROR AudioAvailable(void);
-
-/*!
- * If enabled is true, audio driver in frontend is active, and callback is
- * expected to be called regularly. If enabled is false, audio driver in
- * frontend is paused or inactive. Audio callback will not be called until
- * audio_set_state() has been called with true. Initial state is false
- * (inactive).
- */
-GAME_ERROR AudioSetState(bool enabled);
-
-/*!
- * Frame time interface. Replaces RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK.
- *
- * Notifies a game client of time spent since last invocation of
- * Run() in microseconds. It will be called right before Run()
- * every frame.The frontend can tamper with the timing to
- * support cases like fast-forward, slow-motion, frame stepping, etc. In this case the
- * delta time will use the reference value in frame_time_callback.
- */
-GAME_ERROR FrameTimeNotify(game_usec_t usec);
-
-/*!
- * Signals when the camera driver is initialized. CameraStart() can be called
- * from the client.
+ * \brief Notify the add-on that the camera has been initialized
  */
 GAME_ERROR CameraInitialized(void);
 
-/*! Signals when the camera driver is deinitialized */
+/*!
+ * \brief Notify the add-on that the camera has been deinitialized
+ * */
 GAME_ERROR CameraDeinitialized(void);
 
 /*!
- * A function for raw framebuffer data. buffer points to an XRGB8888 buffer.
- * width, height and pitch are similar to VideoRefresh(). First pixel is top-
- * left origin.
+ * \brief Transfer raw framebuffer data
+ *
+ * \param buffer points to an XRGB8888 buffer
+ * \param width The frame width
+ * \param height The frame height
+ * \param stride The number of bytes in one row of pixels
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the data was received
  */
-GAME_ERROR CameraFrameRawBuffer(const uint32_t *buffer, unsigned width, unsigned height, size_t pitch);
+GAME_ERROR CameraFrameRawBuffer(const uint32_t* buffer, unsigned int width, unsigned int height, size_t stride);
 
 /*!
- * A function for when OpenGL textures are used.
+ * \brief Transfer OpenGL texture
  *
- * texture_id is a texture owned by camera driver. Its state or content
- * should be considered immutable, except for things like texture filtering
- * and clamping.
+ * The state or content of the OpenGL texture should be considered immutable,
+ * except for things like texture filtering and clamping.
  *
- * texture_target is the texture target for the GL texture. These can
- * include e.g. GL_TEXTURE_2D, GL_TEXTURE_RECTANGLE, and possibly more
- * depending on extensions.
+ * The texture target can include e.g. GL_TEXTURE_2D, GL_TEXTURE_RECTANGLE, and
+ * possibly more depending on extensions.
  *
- * affine points to a packed 3x3 column-major matrix used to apply an
- * affine transform to texture coordinates.
- * (affine_matrix * vec3(coord_x, coord_y, 1.0))
- * After transform, normalized texture coord (0, 0) should be bottom-left
- * and (1, 1) should be top-right (or (width, height) for RECTANGLE).
+ * The affine matrix is used to apply an affine transform to texture coordinates:
  *
- * GL-specific typedefs are avoided here to avoid relying on gl.h in the
- * API definition.
+ *     (affine_matrix * vec3(coord_x, coord_y, 1.0))
+ *
+ * After transform, normalized texture coord (0, 0) should be bottom-left and
+ * (1, 1) should be top-right (or (width, height) for RECTANGLE).
+ *
+ * \param textureId A texture owned by camera driver.
+ * \param textureTarget The texture target for the GL texture
+ * \param affine Points to a packed 3x3 column-major matrix
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the texture was received
  */
-GAME_ERROR CameraFrameOpenglTexture(unsigned texture_id, unsigned texture_target, const float *affine);
+GAME_ERROR CameraFrameOpenglTexture(unsigned int textureId, unsigned int textureTarget, const float* affine);
+
+// --- Serialization operations ------------------------------------------------
 
 /*!
- * Called by Kodi to assign the function pointers of this add-on to pClient.
+ * \brief Get the number of bytes required to serialize the game
+ *
+ * \return the number of bytes, or 0 if serialization is not supported
+ */
+size_t SerializeSize(void);
+
+/*!
+ * \brief Serialize the state of the game
+ *
+ * \param data The buffer receiving the serialized game data
+ * \param size The size of the buffer
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the game was serialized into the buffer
+ */
+GAME_ERROR Serialize(uint8_t* data, size_t size);
+
+/*!
+ * \brief Deserialize the game from the given state
+ *
+ * \param data A buffer containing the game's new state
+ * \param size The size of the buffer
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the game deserialized
+ */
+GAME_ERROR Deserialize(const uint8_t* data, size_t size);
+
+// --- Cheat operations --------------------------------------------------------
+
+/*!
+ * \brief Reset the cheat system
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the cheat system was reset
+ */
+GAME_ERROR CheatReset(void);
+
+/*!
+ * \brief Get a region of memory
+ *
+ * \param type The type of memory to retrieve
+ * \param data Set to the region of memory; must remain valid until UnloadGame() is called
+ * \param size Set to the size of the region of memory
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if data was set to a valid buffer
+ */
+GAME_ERROR GetMemory(GAME_MEMORY type, const uint8_t** data, size_t* size);
+
+/*!
+ * \brief Set a cheat code
+ *
+ * \param index
+ * \param enabled
+ * \param code
+ *
+ * \return the error, or GAME_ERROR_NO_ERROR if the cheat was set
+ */
+GAME_ERROR SetCheat(unsigned int index, bool enabled, const char* code);
+
+// --- Add-on helper implementation --------------------------------------------
+
+/*!
+ * \brief Called by Kodi to assign the function pointers of this add-on to pClient
+ *
  * Note that get_addon() is defined here, so it will be available in all
  * compiled game clients.
  */
-void __declspec(dllexport) get_addon(struct GameClient* pClient)
+void __declspec(dllexport) get_addon(GameClient* pClient)
 {
   pClient->GetGameAPIVersion        = GetGameAPIVersion;
   pClient->GetMininumGameAPIVersion = GetMininumGameAPIVersion;
@@ -282,19 +348,14 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->LoadGameSpecial          = LoadGameSpecial;
   pClient->LoadStandalone           = LoadStandalone;
   pClient->UnloadGame               = UnloadGame;
-  pClient->Run                      = Run;
-  pClient->Reset                    = Reset;
-  pClient->ControllerConnected      = ControllerConnected;
-  pClient->InputEvent               = InputEvent;
-  pClient->GetSystemAVInfo          = GetSystemAVInfo;
-  pClient->SerializeSize            = SerializeSize;
-  pClient->Serialize                = Serialize;
-  pClient->Deserialize              = Deserialize;
-  pClient->CheatReset               = CheatReset;
-  pClient->CheatSet                 = CheatSet;
+  pClient->GetGameInfo              = GetGameInfo;
   pClient->GetRegion                = GetRegion;
-  pClient->GetMemoryData            = GetMemoryData;
-  pClient->GetMemorySize            = GetMemorySize;
+  pClient->FrameEvent               = FrameEvent;
+  pClient->Reset                    = Reset;
+  pClient->HwContextReset           = HwContextReset;
+  pClient->HwContextDestroy         = HwContextDestroy;
+  pClient->UpdatePort               = UpdatePort;
+  pClient->InputEvent               = InputEvent;
   pClient->DiskSetEjectState        = DiskSetEjectState;
   pClient->DiskGetEjectState        = DiskGetEjectState;
   pClient->DiskGetImageIndex        = DiskGetImageIndex;
@@ -302,15 +363,16 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->DiskGetNumImages         = DiskGetNumImages;
   pClient->DiskReplaceImageIndex    = DiskReplaceImageIndex;
   pClient->DiskAddImageIndex        = DiskAddImageIndex;
-  pClient->HwContextReset           = HwContextReset;
-  pClient->HwContextDestroy         = HwContextDestroy;
-  pClient->AudioAvailable           = AudioAvailable;
-  pClient->AudioSetState            = AudioSetState;
-  pClient->FrameTimeNotify          = FrameTimeNotify;
   pClient->CameraInitialized        = CameraInitialized;
   pClient->CameraDeinitialized      = CameraDeinitialized;
   pClient->CameraFrameRawBuffer     = CameraFrameRawBuffer;
   pClient->CameraFrameOpenglTexture = CameraFrameOpenglTexture;
+  pClient->SerializeSize            = SerializeSize;
+  pClient->Serialize                = Serialize;
+  pClient->Deserialize              = Deserialize;
+  pClient->CheatReset               = CheatReset;
+  pClient->GetMemory                = GetMemory;
+  pClient->SetCheat                 = SetCheat;
 }
 
 #ifdef __cplusplus

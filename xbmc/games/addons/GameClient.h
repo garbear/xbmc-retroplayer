@@ -150,7 +150,7 @@ public:
   bool OpenFile(const CFileItem& file, IPlayer* player);
   void Reset();
   void CloseFile();
-  bool RunFrame();
+  void RunFrame();
   unsigned int RewindFrames(unsigned int frames); // Returns number of frames rewound
   size_t GetAvailableFrames() const { return m_bRewindEnabled ? m_serialState.GetFramesAvailable() : 0; }
   size_t GetMaxFrames() const { return m_bRewindEnabled ? m_serialState.GetMaxFrames() : 0; }

@@ -218,11 +218,7 @@ void CRetroPlayer::Process()
     }
 
     // Run the game client for the next frame
-    if (!m_gameClient->RunFrame())
-    {
-      m_bStop = true;
-      break;
-    }
+    m_gameClient->RunFrame();
 
     // Slow down (increase nextpts) if we're playing catchup after stalling
     if (nextpts < CDVDClock::GetAbsoluteClock())

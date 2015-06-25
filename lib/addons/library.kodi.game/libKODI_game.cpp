@@ -62,6 +62,41 @@ DLLEXPORT void GAME_close_game(AddonCB* frontend, CB_GameLib* cb)
   return cb->CloseGame(frontend->addonData);
 }
 
+DLLEXPORT void GAME_video_frame(AddonCB* frontend, CB_GameLib* cb, const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
+{
+  if (frontend == NULL || cb == NULL)
+    return;
+  return cb->VideoFrame(frontend->addonData, data, width, height, format);
+}
+
+DLLEXPORT void GAME_audio_frames(AddonCB* frontend, CB_GameLib* cb, const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format)
+{
+  if (frontend == NULL || cb == NULL)
+    return;
+  return cb->AudioFrames(frontend->addonData, data, frames, format);
+}
+
+DLLEXPORT void GAME_hw_set_info(AddonCB* frontend, CB_GameLib* cb, game_hw_info* hw_info)
+{
+  if (frontend == NULL || cb == NULL)
+    return;
+  return cb->HwSetInfo(frontend->addonData, hw_info);
+}
+
+DLLEXPORT uintptr_t GAME_hw_get_current_framebuffer(AddonCB* frontend, CB_GameLib* cb)
+{
+  if (frontend == NULL || cb == NULL)
+    return 0;
+  return cb->HwGetCurrentFramebuffer(frontend->addonData);
+}
+
+DLLEXPORT game_proc_address_t GAME_hw_get_proc_address(AddonCB* frontend, CB_GameLib* cb, const char* sym)
+{
+  if (frontend == NULL || cb == NULL)
+    return NULL;
+  return cb->HwGetProcAddress(frontend->addonData, sym);
+}
+
 DLLEXPORT bool GAME_open_port(AddonCB* frontend, CB_GameLib* cb, unsigned int port)
 {
   if (frontend == NULL || cb == NULL)
@@ -76,193 +111,60 @@ DLLEXPORT void GAME_close_port(AddonCB* frontend, CB_GameLib* cb, unsigned int p
   return cb->ClosePort(frontend->addonData, port);
 }
 
-DLLEXPORT void GAME_environment_set_rotation(AddonCB* frontend, CB_GameLib* cb, GAME_ROTATION rotation)
+DLLEXPORT void GAME_rumble_set_state(AddonCB* frontend, CB_GameLib* cb, unsigned int port, GAME_RUMBLE_EFFECT effect, float strength)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->EnvironmentSetRotation(frontend->addonData, rotation);
-}
-
-DLLEXPORT bool GAME_environment_get_overscan(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentGetOverscan(frontend->addonData);
-}
-
-DLLEXPORT bool GAME_environment_can_dupe(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentCanDupe(frontend->addonData);
-}
-
-DLLEXPORT bool GAME_environment_set_system_av_info(AddonCB* frontend, CB_GameLib* cb, const struct game_system_av_info* info)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->EnvironmentSetSystemAvInfo(frontend->addonData, info);
-}
-
-DLLEXPORT bool GAME_video_frame(AddonCB* frontend, CB_GameLib* cb, GAME_RENDER_FORMAT format, unsigned int width, unsigned int height, const uint8_t* data)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->VideoFrame(frontend->addonData, format, width, height, data);
-}
-
-DLLEXPORT unsigned int GAME_audio_frames(AddonCB* frontend, CB_GameLib* cb, GAME_AUDIO_FORMAT format, unsigned int frames, const uint8_t* data)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0;
-  return cb->AudioFrames(frontend->addonData, format, frames, data);
-}
-
-DLLEXPORT bool GAME_rumble_set_state(AddonCB* frontend, CB_GameLib* cb, unsigned port, GAME_RUMBLE_EFFECT effect, uint16_t strength)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
   return cb->RumbleSetState(frontend->addonData, port, effect, strength);
 }
 
-DLLEXPORT game_time_t GAME_perf_get_time_usec(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0;
-  return cb->PerfGetTimeUsec(frontend->addonData);
-}
-
-DLLEXPORT game_perf_tick_t GAME_perf_get_counter(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0;
-  return cb->PerfGetCounter(frontend->addonData);
-}
-
-DLLEXPORT uint64_t GAME_perf_get_cpu_features(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0;
-  return cb->PerfGetCpuFeatures(frontend->addonData);
-}
-
-DLLEXPORT void GAME_perf_log(AddonCB* frontend, CB_GameLib* cb)
+DLLEXPORT void GAME_set_camera_info(AddonCB* frontend, CB_GameLib* cb, unsigned int width, unsigned int height, GAME_CAMERA_BUFFER caps)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->PerfLog(frontend->addonData);
+  return cb->SetCameraInfo(frontend->addonData, width, height, caps);
 }
 
-DLLEXPORT void GAME_perf_register(AddonCB* frontend, CB_GameLib* cb, game_perf_counter *counter)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->PerfRegister(frontend->addonData, counter);
-}
-
-DLLEXPORT void GAME_perf_start(AddonCB* frontend, CB_GameLib* cb, game_perf_counter *counter)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->PerfStart(frontend->addonData, counter);
-}
-
-DLLEXPORT void GAME_perf_stop(AddonCB* frontend, CB_GameLib* cb, game_perf_counter *counter)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->PerfStop(frontend->addonData, counter);
-}
-
-DLLEXPORT void GAME_camera_set_info(AddonCB* frontend, CB_GameLib* cb, game_camera_info *camera_info)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->CameraSetInfo(frontend->addonData, camera_info);
-}
-
-DLLEXPORT bool GAME_camera_start(AddonCB* frontend, CB_GameLib* cb)
+DLLEXPORT bool GAME_start_camera(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->CameraStart(frontend->addonData);
+  return cb->StartCamera(frontend->addonData);
 }
 
-DLLEXPORT void GAME_camera_stop(AddonCB* frontend, CB_GameLib* cb)
+DLLEXPORT void GAME_stop_camera(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->CameraStop(frontend->addonData);
+  return cb->StopCamera(frontend->addonData);
 }
 
-DLLEXPORT bool GAME_location_start(AddonCB* frontend, CB_GameLib* cb)
+DLLEXPORT bool GAME_start_location(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->LocationStart(frontend->addonData);
+  return cb->StartLocation(frontend->addonData);
 }
 
-DLLEXPORT void GAME_location_stop(AddonCB* frontend, CB_GameLib* cb)
+DLLEXPORT void GAME_stop_location(AddonCB* frontend, CB_GameLib* cb)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->LocationStop(frontend->addonData);
+  return cb->StopLocation(frontend->addonData);
 }
 
-DLLEXPORT bool GAME_location_get_position(AddonCB* frontend, CB_GameLib* cb, double *lat, double *lon, double *horiz_accuracy, double *vert_accuracy)
+DLLEXPORT bool GAME_get_location(AddonCB* frontend, CB_GameLib* cb, double* lat, double* lon, double* horiz_accuracy, double* vert_accuracy)
 {
   if (frontend == NULL || cb == NULL)
     return false;
-  return cb->LocationGetPosition(frontend->addonData, lat, lon, horiz_accuracy, vert_accuracy);
+  return cb->GetLocation(frontend->addonData, lat, lon, horiz_accuracy, vert_accuracy);
 }
 
-DLLEXPORT void GAME_location_set_interval(AddonCB* frontend, CB_GameLib* cb, unsigned interval_ms, unsigned interval_distance)
+DLLEXPORT void GAME_set_location_interval(AddonCB* frontend, CB_GameLib* cb, unsigned interval_ms, unsigned interval_distance)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->LocationSetInterval(frontend->addonData, interval_ms, interval_distance);
-}
-
-DLLEXPORT void GAME_location_initialized(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->LocationInitialized(frontend->addonData);
-}
-
-DLLEXPORT void GAME_location_deinitialized(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->LocationDeinitialized(frontend->addonData);
-}
-
-DLLEXPORT void GAME_frame_time_set_reference(AddonCB* frontend, CB_GameLib* cb, game_usec_t usec)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->FrameTimeSetReference(frontend->addonData, usec);
-}
-
-DLLEXPORT void GAME_hw_set_info(AddonCB* frontend, CB_GameLib* cb, game_hw_info *hw_info)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->HwSetInfo(frontend->addonData, hw_info);
-}
-
-DLLEXPORT uintptr_t GAME_hw_get_current_framebuffer(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return 0;
-  return cb->HwGetCurrentFramebuffer(frontend->addonData);
-}
-
-DLLEXPORT game_proc_address_t GAME_hw_get_proc_address(AddonCB* frontend, CB_GameLib* cb, const char *sym)
-{
-  if (frontend == NULL || cb == NULL)
-    return NULL;
-  return cb->HwGetProcAddress(frontend->addonData, sym);
+  return cb->SetLocationInterval(frontend->addonData, interval_ms, interval_distance);
 }
 
 #ifdef __cplusplus
