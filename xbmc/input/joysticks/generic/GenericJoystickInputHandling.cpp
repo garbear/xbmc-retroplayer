@@ -66,6 +66,10 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
     if (pressed)
       bHandled = true;
   }
+  else if (bPressed)
+  {
+    CLog::Log(LOGDEBUG, "Joystick handling: No feature mapped to button %u", buttonIndex);
+  }
 
   return bHandled;
 }

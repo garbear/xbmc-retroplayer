@@ -20,6 +20,7 @@
 
 #include "AddonJoystickButtonMapRO.h"
 #include "addons/include/kodi_peripheral_utils.hpp"
+#include "utils/log.h"
 
 using namespace PERIPHERALS;
 
@@ -37,8 +38,16 @@ bool CAddonJoystickButtonMapRO::Load(void)
 
   if (m_addon && m_addon->GetButtonMap(m_device, m_strControllerId, m_features))
   {
+    CLog::Log(LOGDEBUG, "Loaded button map with %lu features for controller %s",
+              m_features.size(), m_strControllerId.c_str());
+
     m_driverMap = ToDriverMap(m_features);
+
     return true;
+  }
+  else
+  {
+    CLog::Log(LOGDEBUG, "Failed to load button map for controller %s", m_strControllerId.c_str());
   }
 
   return false;

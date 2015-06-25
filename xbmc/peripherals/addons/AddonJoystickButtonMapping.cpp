@@ -22,7 +22,6 @@
 #include "input/joysticks/generic/GenericJoystickButtonMapping.h"
 #include "input/joysticks/IJoystickButtonMapper.h"
 #include "peripherals/addons/AddonJoystickButtonMap.h"
-#include "utils/log.h"
 
 using namespace PERIPHERALS;
 
@@ -34,17 +33,10 @@ CAddonJoystickButtonMapping::CAddonJoystickButtonMapping(CPeripheral* peripheral
   : m_driverHandler(NULL)
 {
   m_buttonMap = new CAddonJoystickButtonMap(peripheral, mapper->ControllerID());
-
   if (m_buttonMap->Load())
-  {
     m_driverHandler = new CGenericJoystickButtonMapping(mapper, m_buttonMap);
-    CLog::Log(LOGDEBUG, "Successfully loaded button map for controller %s", mapper->ControllerID().c_str());
-  }
   else
-  {
-    CLog::Log(LOGERROR, "Failed to load button map for controller \"%s\"", mapper->ControllerID().c_str());
     SAFE_DELETE(m_buttonMap);
-  }
 }
 
 CAddonJoystickButtonMapping::~CAddonJoystickButtonMapping(void)
