@@ -393,6 +393,22 @@ static bool Repos(const CURL& path, CFileItemList &items)
   return true;
 }
 
+static bool HaveControllers(void)
+{
+  VECADDONS addons;
+  return CAddonMgr::Get().HasAddons(ADDON_GAME_CONTROLLER, true) ||
+         CAddonMgr::Get().HasAddons(ADDON_GAME_CONTROLLER, false);
+}
+
+static void GetControllers(const CURL &path, CFileItemList& items)
+{
+  VECADDONS controllers;
+  CAddonMgr::Get().GetAddons(ADDON_GAME_CONTROLLER, controllers, true);
+  CAddonMgr::Get().GetAddons(ADDON_GAME_CONTROLLER, controllers, false);
+
+  CAddonsDirectory::GenerateAddonListing(path, controllers, items, g_localizeStrings.Get(27023));
+}
+
 static void Manage(CFileItemList &items)
 {
   items.SetLabel(g_localizeStrings.Get(24992));
@@ -413,6 +429,13 @@ static void Manage(CFileItemList &items)
   {
     CFileItemPtr item(new CFileItem("addons://running/", true));
     item->SetLabel(g_localizeStrings.Get(24994));
+    item->SetSpecialSort(SortSpecialOnTop);
+    items.Add(item);
+  }
+  if (HaveControllers())
+  {
+    CFileItemPtr item(new CFileItem("addons://controllers/", true));
+    item->SetLabel(g_localizeStrings.Get(27023));
     item->SetSpecialSort(SortSpecialOnTop);
     items.Add(item);
   }
@@ -479,6 +502,11 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   else if (endpoint == "manage")
   {
     Manage(items);
+    return true;
+  }
+  else if (endpoint == "controllers")
+  {
+    GetControllers(path, items);
     return true;
   }
   else

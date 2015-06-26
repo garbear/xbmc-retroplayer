@@ -13249,7 +13249,12 @@ msgctxt "#27022"
 msgid "No info available yet."
 msgstr ""
 
-#empty strings from id 27023 to 29799
+#: xbmc/filesystem/AddonsDirectory.cpp
+msgctxt "#27023"
+msgid "Game controllers"
+msgstr ""
+
+#empty strings from id 27024 to 29799
 
 #strings 29800 thru 29998 reserved strings used only in the default Project Mayhem III skin and not c++ code
 
