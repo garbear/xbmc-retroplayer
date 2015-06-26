@@ -597,7 +597,11 @@ void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystic
 
 void CPeripheralAddon::SetJoystickInfo(CPeripheralJoystick& joystick, const ADDON::Joystick& joystickInfo)
 {
-  joystick.SetDeviceName(joystickInfo.Name()); // TODO: Move to SetPeripheralInfo()
+  // TODO: Name should be set in SetPeripheralInfo()
+  std::string strDeviceName = joystickInfo.Name();
+  StringUtils::Trim(strDeviceName);
+  joystick.SetDeviceName(strDeviceName);
+
   joystick.SetProvider(joystickInfo.Provider());
   joystick.SetRequestedPort(joystickInfo.RequestedPort());
   joystick.SetButtonCount(joystickInfo.ButtonCount());
