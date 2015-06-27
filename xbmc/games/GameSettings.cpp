@@ -43,7 +43,7 @@ void CGameSettings::OnSettingAction(const CSetting* setting)
   if (settingId == "gamesgeneral.manageaddons")
   {
     std::vector<std::string> params;
-    params.push_back("addons://all/kodi.gameclient");
+    params.push_back("addons://user/kodi.gameclient");
     g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
   }
   else if (settingId == "gamesinput.controllerconfig")
