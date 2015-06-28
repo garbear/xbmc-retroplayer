@@ -13977,7 +13977,7 @@ msgstr ""
 
 #: xbmc/addons/Addon.cpp
 msgctxt "#35050"
-msgid "Game accessories"
+msgid "Game controllers"
 msgstr ""
 
 #: xbmc/games/windows/GUIDialogControllerInput.cpp
