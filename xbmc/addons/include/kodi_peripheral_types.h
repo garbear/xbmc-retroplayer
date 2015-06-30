@@ -144,7 +144,11 @@ extern "C"
   } JOYSTICK_STATE_HAT;
 
   /*!
-   * @brief value in the closed interval [-1, 1]
+   * @brief value in the closed interval [-1.0, 1.0]
+   *
+   * The axis state uses the XInput coordinate system:
+   *  - Negative values signify down or to the left
+   *  - Positive values signify up or to the right
    */
   typedef float JOYSTICK_STATE_AXIS;
 
