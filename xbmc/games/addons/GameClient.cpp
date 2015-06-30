@@ -41,26 +41,29 @@ using namespace GAME;
 using namespace XFILE;
 
 #define EXTENSION_SEPARATOR          "|"
+#define EXTENSION_WILDCARD           "*"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
 
 // --- NormalizeExtension ------------------------------------------------------
 
-struct NormalizeExtension
+/*
+ * \brief Convert to lower case and canonicalize with a leading "."
+ */
+std::string NormalizeExtension(const std::string& strExtension)
 {
-  std::string operator()(const std::string& strExtension)
-  {
-    std::string ext = strExtension;
+  std::string ext = strExtension;
 
+  if (!ext.empty() && ext != EXTENSION_WILDCARD)
+  {
     StringUtils::ToLower(ext);
 
-    // Make sure extension starts with "."
     if (ext[0] != '.')
       ext.insert(0, ".");
-
-    return ext;
   }
-};
+
+  return ext;
+}
 
 // --- CControllerInput ------------------------------------------------------------
 
@@ -255,22 +258,17 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   if (file.HasProperty("Addon.ID") && file.GetProperty("Addon.ID").asString() != ID())
     return false;
 
-  if (!m_bSupportsStandalone)
-  {
-    // Filter by extension
-    std::string strExtension = URIUtils::GetExtension(file.GetPath());
-    StringUtils::ToLower(strExtension);
-    if (!IsExtensionValid(strExtension))
-      return false;
+  // Filter by extension
+  if (!IsExtensionValid(URIUtils::GetExtension(file.GetPath())))
+    return false;
 
-    // If the file is on the VFS, the game client must support VFS
-    CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+  // If the file is on the VFS, the game client must support VFS
+  CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
 
-    const bool bIsLocalFS = translatedUrl.GetProtocol() == "file" || translatedUrl.GetProtocol().empty();
+  const bool bIsLocalFS = translatedUrl.GetProtocol() == "file" || translatedUrl.GetProtocol().empty();
 
-    if (!bIsLocalFS && !SupportsVFS())
-      return false;
-  }
+  if (!bIsLocalFS && !SupportsVFS())
+    return false;
 
   return true;
 }
@@ -673,24 +671,23 @@ void CGameClient::SetFrameRateCorrection(double correctionFactor)
 
 bool CGameClient::IsExtensionValid(const std::string& strExtension) const
 {
-  if (m_extensions.empty())
-    return true; // Be optimistic :)
   if (strExtension.empty())
     return false;
 
-  // Convert to lower case and canonicalize with a leading "."
-  std::string strExtension2(strExtension);
-  StringUtils::ToLower(strExtension2);
-  if (strExtension2[0] != '.')
-    strExtension2.insert(0, ".");
-  return m_extensions.find(strExtension2) != m_extensions.end();
+  if (m_extensions.empty())
+    return false; // Game client didn't provide any extensions
+
+  if (m_extensions.find(EXTENSION_WILDCARD) != m_extensions.end())
+    return true; // Game client accepts all extensions
+
+  return m_extensions.find(NormalizeExtension(strExtension)) != m_extensions.end();
 }
 
 std::vector<std::string> CGameClient::ParseExtensions(const std::string& strExtensionList)
 {
   std::vector<std::string> extensions = StringUtils::Split(strExtensionList, EXTENSION_SEPARATOR);
 
-  std::transform(extensions.begin(), extensions.end(), extensions.begin(), NormalizeExtension());
+  std::transform(extensions.begin(), extensions.end(), extensions.begin(), NormalizeExtension);
 
   return extensions;
 }

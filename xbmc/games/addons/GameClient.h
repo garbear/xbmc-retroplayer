@@ -122,11 +122,9 @@ public:
   const std::set<std::string>& GetExtensions() const    { return m_extensions; }
   bool                         SupportsVFS() const      { return m_bSupportsVFS; }
   //const GamePlatforms&         GetPlatforms() const     { return m_platforms; }
-
-  // Optimistically returns true if the game client provided no extensions
   bool                         IsExtensionValid(const std::string& strExtension) const;
 
-  // Path to the game client library (ODO: Remove me)
+  // Path to the game client library (TODO: Remove me)
   const std::string&           GameClientPath() const   { return m_strGameClientPath; }
 
   // Query properties of the running game
