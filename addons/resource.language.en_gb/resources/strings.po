@@ -13156,7 +13156,6 @@ msgctxt "#27004"
 msgid "A compatible emulator was installed for:"
 msgstr ""
 
-#: system/settings/settings.xml
 #: xbmc/cores/RetroPlayer/RetroPlayerDialogs.cpp
 #: xbmc/games/GameFileAutoLauncher.cpp
 msgctxt "#27005"
@@ -13183,10 +13182,7 @@ msgctxt "#27009"
 msgid "Maximum time possible to rewind, if supported. Large rewind histories can use a lot of RAM."
 msgstr ""
 
-#: system/settings/settings.xml
-msgctxt "#27010"
-msgid "Install, remove and manage emulators in the Add-on Manager."
-msgstr ""
+# empty string with id 27010
 
 #: system/settings/settings.xml
 msgctxt "#27011"
