@@ -386,12 +386,11 @@ bool CGUIBaseContainer::OnAction(const CAction &action)
     }
     break;
 
-  case ACTION_SELECT_ITEM:
-  case ACTION_MOUSE_LEFT_CLICK:
-    return OnClick(action.GetID());
-
   default:
-    break;
+    if (action.GetID())
+    {
+      return OnClick(action.GetID());
+    }
   }
   return false;
 }
