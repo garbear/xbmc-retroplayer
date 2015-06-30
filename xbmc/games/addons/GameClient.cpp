@@ -277,7 +277,10 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 {
   CSingleLock lock(m_critSection);
 
-  if (!Initialized() || !CanOpen(file))
+  if (!Initialized())
+    return false;
+
+  if (!m_bSupportsStandalone && !CanOpen(file))
     return false;
 
   CloseFile();
