@@ -190,7 +190,7 @@ bool CButtonKeyHandler::SendDigitalAction(unsigned int buttonKeyId, unsigned int
   CAction action(CButtonTranslator::GetInstance().GetAction(g_windowManager.GetActiveWindowID(), CKey(buttonKeyId, holdTimeMs)));
   if (action.GetID() > 0)
   {
-    CApplicationMessenger::Get().SendAction(action);
+    CApplicationMessenger::Get().SendAction(action, WINDOW_INVALID, false);
     return true;
   }
 
@@ -203,7 +203,7 @@ bool CButtonKeyHandler::SendAnalogAction(unsigned int buttonKeyId, float magnitu
   if (action.GetID() > 0)
   {
     CAction actionWithAmount(action.GetID(), magnitude, 0.0f, action.GetName());
-    CApplicationMessenger::Get().SendAction(actionWithAmount);
+    CApplicationMessenger::Get().SendAction(actionWithAmount, WINDOW_INVALID, false);
     return true;
   }
 
