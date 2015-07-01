@@ -30,9 +30,16 @@
 #define REPEAT_TIMEOUT_MS   50
 
 CButtonKeyHandler::CButtonKeyHandler(void)
-  : m_holdTimer(this),
+  : CThread("ButtonKeyHandler"),
+    m_state(STATE_UNPRESSED),
     m_lastButtonPress(0)
 {
+  Create(false);
+}
+
+CButtonKeyHandler::~CButtonKeyHandler(void)
+{
+  StopThread(true);
 }
 
 InputType CButtonKeyHandler::GetInputType(unsigned int buttonKeyId) const
@@ -56,6 +63,8 @@ void CButtonKeyHandler::OnDigitalButtonKey(unsigned int buttonKeyId, bool bPress
 {
   if (buttonKeyId != 0)
   {
+    CSingleLock lock(m_digitalMutex);
+
     if (bPressed && !IsHeld(buttonKeyId))
       ProcessButtonPress(buttonKeyId);
     else if (!bPressed && IsHeld(buttonKeyId))
@@ -69,23 +78,91 @@ void CButtonKeyHandler::OnAnalogButtonKey(unsigned int buttonKeyId, float magnit
     SendAnalogAction(buttonKeyId, magnitude);
 }
 
-void CButtonKeyHandler::OnTimeout(void)
+void CButtonKeyHandler::Process()
 {
-  const unsigned int holdTimeMs = (unsigned int)m_holdTimer.GetTotalElapsedMilliseconds();
+  unsigned int holdStartTime = 0;
+  unsigned int pressedButton = 0;
 
-  if (m_lastButtonPress != 0 && holdTimeMs >= HOLD_TIMEOUT_MS)
-    SendDigitalAction(m_lastButtonPress, holdTimeMs);
+  while (!m_bStop)
+  {
+    switch (m_state)
+    {
+      case STATE_UNPRESSED:
+      {
+        // Wait for button press
+        WaitResponse waitResponse = AbortableWait(m_pressEvent);
+
+        CSingleLock lock(m_digitalMutex);
+
+        if (waitResponse == WAIT_SIGNALED && m_lastButtonPress != 0)
+        {
+          pressedButton = m_lastButtonPress;
+          m_state = STATE_BUTTON_PRESSED;
+        }
+        break;
+      }
+
+      case STATE_BUTTON_PRESSED:
+      {
+        holdStartTime = XbmcThreads::SystemClockMillis();
+
+        // Wait for hold time to elapse
+        WaitResponse waitResponse = AbortableWait(m_pressEvent, HOLD_TIMEOUT_MS);
+
+        CSingleLock lock(m_digitalMutex);
+
+        if (m_lastButtonPress == 0)
+        {
+          m_state = STATE_UNPRESSED;
+        }
+        else if (waitResponse == WAIT_SIGNALED || m_lastButtonPress != pressedButton)
+        {
+          pressedButton = m_lastButtonPress;
+          // m_state is unchanged
+        }
+        else if (waitResponse == WAIT_TIMEDOUT)
+        {
+          m_state = STATE_BUTTON_HELD;
+        }
+        break;
+      }
+
+      case STATE_BUTTON_HELD:
+      {
+        const unsigned int holdTimeMs = XbmcThreads::SystemClockMillis() - holdStartTime;
+        SendDigitalAction(pressedButton, holdTimeMs);
+
+        // Wait for repeat time to elapse
+        WaitResponse waitResponse = AbortableWait(m_pressEvent, REPEAT_TIMEOUT_MS);
+
+        CSingleLock lock(m_digitalMutex);
+
+        if (m_lastButtonPress == 0)
+        {
+          m_state = STATE_UNPRESSED;
+        }
+        else if (waitResponse == WAIT_SIGNALED || m_lastButtonPress != pressedButton)
+        {
+          pressedButton = m_lastButtonPress;
+          m_state = STATE_BUTTON_PRESSED;
+        }
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
 }
 
 bool CButtonKeyHandler::ProcessButtonPress(unsigned int buttonKeyId)
 {
-  ClearHoldTimer();
-
   m_pressedButtons.push_back(buttonKeyId);
 
   if (SendDigitalAction(buttonKeyId))
   {
-    StartHoldTimer(buttonKeyId);
+    m_lastButtonPress = buttonKeyId;
+    m_pressEvent.Set();
     return true;
   }
 
@@ -97,24 +174,15 @@ void CButtonKeyHandler::ProcessButtonRelease(unsigned int buttonKeyId)
   m_pressedButtons.erase(std::remove(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyId), m_pressedButtons.end());
 
   if (buttonKeyId == m_lastButtonPress || m_pressedButtons.empty())
-    ClearHoldTimer();
+  {
+    m_lastButtonPress = 0;
+    m_pressEvent.Set();
+  }
 }
 
 bool CButtonKeyHandler::IsHeld(unsigned int buttonKeyId) const
 {
   return std::find(m_pressedButtons.begin(), m_pressedButtons.end(), buttonKeyId) != m_pressedButtons.end();
-}
-
-void CButtonKeyHandler::StartHoldTimer(unsigned int buttonKeyId)
-{
-  m_lastButtonPress = buttonKeyId;
-  m_holdTimer.Start(REPEAT_TIMEOUT_MS, true);
-}
-
-void CButtonKeyHandler::ClearHoldTimer(void)
-{
-  m_holdTimer.Stop(true);
-  m_lastButtonPress = 0;
 }
 
 bool CButtonKeyHandler::SendDigitalAction(unsigned int buttonKeyId, unsigned int holdTimeMs /* = 0 */)

@@ -20,37 +20,46 @@
 #pragma once
 
 #include "input/joysticks/IButtonKeyHandler.h"
-#include "threads/Timer.h"
+#include "threads/CriticalSection.h"
+#include "threads/Event.h"
+#include "threads/Thread.h"
 
 #include <vector>
 
-class CButtonKeyHandler : public IButtonKeyHandler, public ITimerCallback
+class CButtonKeyHandler : public IButtonKeyHandler, protected CThread
 {
 public:
   CButtonKeyHandler(void);
 
-  virtual ~CButtonKeyHandler(void) { }
+  virtual ~CButtonKeyHandler(void);
 
   // implementation of IButtonKeyHandler
   virtual InputType GetInputType(unsigned int buttonKeyId) const;
   virtual void OnDigitalButtonKey(unsigned int buttonKeyId, bool bPressed);
   virtual void OnAnalogButtonKey(unsigned int buttonKeyId, float magnitude);
 
-  // implementation of ITimerCallback
-  virtual void OnTimeout(void);
+protected:
+  // implementation of CThread
+  virtual void Process(void);
 
 private:
+  enum BUTTON_STATE
+  {
+    STATE_UNPRESSED,
+    STATE_BUTTON_PRESSED,
+    STATE_BUTTON_HELD,
+  };
+
   bool ProcessButtonPress(unsigned int buttonKeyId);
   void ProcessButtonRelease(unsigned int buttonKeyId);
   bool IsHeld(unsigned int buttonKeyId) const;
 
-  void StartHoldTimer(unsigned int buttonKeyId);
-  void ClearHoldTimer(void);
+  static bool SendDigitalAction(unsigned int buttonKeyId, unsigned int holdTimeMs = 0);
+  static bool SendAnalogAction(unsigned int buttonKeyId, float magnitude);
 
-  bool SendDigitalAction(unsigned int buttonKeyId, unsigned int holdTimeMs = 0);
-  bool SendAnalogAction(unsigned int buttonKeyId, float magnitude);
-
-  CTimer                    m_holdTimer; // TODO: This creates a new thread every button press!
+  BUTTON_STATE              m_state;
   unsigned int              m_lastButtonPress;
   std::vector<unsigned int> m_pressedButtons;
+  CEvent                    m_pressEvent;
+  CCriticalSection          m_digitalMutex;
 };
