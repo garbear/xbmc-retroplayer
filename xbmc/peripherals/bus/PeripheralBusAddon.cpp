@@ -121,9 +121,15 @@ bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
 
 void CPeripheralBusAddon::ProcessEvents(void)
 {
-  CSingleLock lock(m_critSection);
+  PeripheralAddonVector addons;
 
-  for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
+  {
+    CSingleLock lock(m_critSection);
+    addons = m_addons;
+  }
+
+  // Don't hold lock while processing events
+  for (PeripheralAddonVector::const_iterator itAddon = addons.begin(); itAddon != addons.end(); ++itAddon)
     (*itAddon)->ProcessEvents();
 }
 
