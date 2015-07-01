@@ -22,6 +22,7 @@
 #include "games/GameTypes.h"
 #include "games/windows/wizards/IGUIControllerWizard.h"
 #include "guilib/GUIDialog.h"
+#include "interfaces/IAnnouncer.h"
 
 #include <string>
 
@@ -29,11 +30,12 @@ class CGUIButtonControl;
 class CGUIFocusPlane;
 
 class CGUIDialogControllerInput : public CGUIDialog,
-                                  public GAME::IGUIControllerWizardCallbacks
+                                  public GAME::IGUIControllerWizardCallbacks,
+                                  public ANNOUNCEMENT::IAnnouncer
 {
 public:
   CGUIDialogControllerInput(void);
-  virtual ~CGUIDialogControllerInput(void) { }
+  virtual ~CGUIDialogControllerInput(void);
 
   // implementation of CGUIControl
   virtual bool OnMessage(CGUIMessage& message);
@@ -43,6 +45,9 @@ public:
   virtual void SetLabel(unsigned int iFeature, const std::string& strLabel);
   virtual void ResetLabel(unsigned int iFeature);
   virtual void End(void);
+
+  // implementation of IAnnouncer
+  virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
 
   void DoModal(const GAME::GameControllerPtr& controller, CGUIFocusPlane* focusControl);
 

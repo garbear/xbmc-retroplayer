@@ -28,7 +28,10 @@
 #include "guilib/GUIFocusPlane.h"
 #include "guilib/GUIMessage.h"
 #include "guilib/WindowIDs.h"
+#include "interfaces/AnnouncementManager.h"
+#include "utils/Variant.h"
 
+using namespace ANNOUNCEMENT;
 using namespace GAME;
 
 #define GROUP_LIST             996
@@ -43,6 +46,13 @@ CGUIDialogControllerInput::CGUIDialogControllerInput(void)
 {
   // initialize CGUIWindow
   m_loadType = KEEP_IN_MEMORY;
+
+  CAnnouncementManager::Get().AddAnnouncer(this);
+}
+
+CGUIDialogControllerInput::~CGUIDialogControllerInput(void)
+{
+  CAnnouncementManager::Get().RemoveAnnouncer(this);
 }
 
 bool CGUIDialogControllerInput::OnMessage(CGUIMessage& message)
@@ -119,6 +129,18 @@ void CGUIDialogControllerInput::ResetLabel(unsigned int iFeature)
 void CGUIDialogControllerInput::End(void)
 {
   Close();
+}
+
+void CGUIDialogControllerInput::Announce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data)
+{
+  if (flag & GUI)
+  {
+    if (strcmp(message, "OnScreensaverActivated") == 0)
+    {
+      if (m_wizard)
+        m_wizard->Abort();
+    }
+  }
 }
 
 void CGUIDialogControllerInput::DoModal(const GameControllerPtr& controller, CGUIFocusPlane* focusControl)
