@@ -142,12 +142,17 @@ void CPeripherals::TriggerDeviceScan(const PeripheralBusType type /* = PERIPHERA
   CSingleLock lock(m_critSection);
   for (unsigned int iBusPtr = 0; iBusPtr < m_busses.size(); iBusPtr++)
   {
-    if (type == PERIPHERAL_BUS_UNKNOWN || m_busses.at(iBusPtr)->Type() == type)
-    {
+    bool bScan = false;
+
+    if (type == PERIPHERAL_BUS_UNKNOWN)
+      bScan = true;
+    else if (m_busses.at(iBusPtr)->Type() == PERIPHERAL_BUS_ADDON)
+      bScan = true;
+    else if (type == m_busses.at(iBusPtr)->Type())
+      bScan = true;
+
+    if (bScan)
       m_busses.at(iBusPtr)->TriggerDeviceScan();
-      if (type != PERIPHERAL_BUS_UNKNOWN)
-        break;
-    }
   }
 }
 
