@@ -608,10 +608,6 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     Manage(items);
     return true;
   }
-  else if (endpoint == "games")
-  {
-    // TODO
-  }
   else
   {
     return Browse(path, items);
