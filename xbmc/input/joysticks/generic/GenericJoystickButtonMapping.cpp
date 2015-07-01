@@ -26,7 +26,7 @@
 #include <assert.h>
 #include <cmath>
 
-#define AXIS_THRESHOLD  0.5f
+#define AXIS_THRESHOLD  0.75f
 
 CGenericJoystickButtonMapping::CGenericJoystickButtonMapping(IJoystickButtonMapper* buttonMapper, IJoystickButtonMap* buttonMap)
   : m_buttonMapper(buttonMapper),
