@@ -107,7 +107,7 @@ public:
   {
     if (!m_pFile)
       return 0;
-    return m_XBMC->ReadFile(m_pFile, lpBuffer, uiBufferSize);
+    return m_XBMC->ReadFile(m_pFile, lpBuffer, static_cast<size_t>(uiBufferSize));
   }
 
   /*!
@@ -142,7 +142,7 @@ public:
   {
     if (!m_pFile)
       return 0;
-    return m_XBMC->WriteFile(m_pFile, lpBuffer, uiBufferSize);
+    return m_XBMC->WriteFile(m_pFile, lpBuffer, static_cast<size_t>(uiBufferSize));
   }
 
   /*!
