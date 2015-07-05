@@ -180,10 +180,10 @@ extern "C"
     pClient->FreeButtonMap                  = FreeButtonMap;
     pClient->MapJoystickFeature             = MapJoystickFeature;
 #endif
-  };
+  }
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif // __PERIPHERAL_DLL_H__

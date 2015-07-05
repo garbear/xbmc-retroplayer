@@ -311,10 +311,10 @@ void __declspec(dllexport) get_addon(struct GameClient* pClient)
   pClient->CameraDeinitialized      = CameraDeinitialized;
   pClient->CameraFrameRawBuffer     = CameraFrameRawBuffer;
   pClient->CameraFrameOpenglTexture = CameraFrameOpenglTexture;
-};
+}
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif // KODI_GAME_DLL_H_
