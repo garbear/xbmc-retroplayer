@@ -1,1 +1,1 @@
-peripheral.joystick https://github.com/kodi-game/peripheral.joystick 7643538
+peripheral.joystick https://github.com/kodi-game/peripheral.joystick d9c8540
