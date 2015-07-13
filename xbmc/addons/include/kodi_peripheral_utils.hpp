@@ -92,8 +92,8 @@ namespace ADDON
   class Peripheral
   {
   public:
-    Peripheral(PERIPHERAL_TYPE type = PERIPHERAL_TYPE_UNKNOWN, const std::string& strName = "")
-    : m_type(type),
+    Peripheral(PERIPHERAL_TYPE type = PERIPHERAL_TYPE_UNKNOWN, const std::string& strName = "") :
+      m_type(type),
       m_strName(strName),
       m_vendorId(0),
       m_productId(0),
@@ -101,8 +101,8 @@ namespace ADDON
     {
     }
 
-    Peripheral(const PERIPHERAL_INFO& info)
-    : m_type(info.type),
+    Peripheral(const PERIPHERAL_INFO& info) :
+      m_type(info.type),
       m_strName(info.name ? info.name : ""),
       m_vendorId(info.vendor_id),
       m_productId(info.product_id),
@@ -158,13 +158,13 @@ namespace ADDON
   class PeripheralEvent
   {
   public:
-    PeripheralEvent(void)
-    : m_event()
+    PeripheralEvent(void) :
+      m_event()
     {
     }
 
-    PeripheralEvent(unsigned int peripheralIndex, unsigned int buttonIndex, JOYSTICK_STATE_BUTTON state)
-    : m_event()
+    PeripheralEvent(unsigned int peripheralIndex, unsigned int buttonIndex, JOYSTICK_STATE_BUTTON state) :
+      m_event()
     {
       SetType(PERIPHERAL_EVENT_TYPE_DRIVER_BUTTON);
       SetPeripheralIndex(peripheralIndex);
@@ -172,8 +172,8 @@ namespace ADDON
       SetButtonState(state);
     }
 
-    PeripheralEvent(unsigned int peripheralIndex, unsigned int hatIndex, JOYSTICK_STATE_HAT state)
-    : m_event()
+    PeripheralEvent(unsigned int peripheralIndex, unsigned int hatIndex, JOYSTICK_STATE_HAT state) :
+      m_event()
     {
       SetType(PERIPHERAL_EVENT_TYPE_DRIVER_HAT);
       SetPeripheralIndex(peripheralIndex);
@@ -181,8 +181,8 @@ namespace ADDON
       SetHatState(state);
     }
 
-    PeripheralEvent(unsigned int peripheralIndex, unsigned int axisIndex, JOYSTICK_STATE_AXIS state)
-    : m_event()
+    PeripheralEvent(unsigned int peripheralIndex, unsigned int axisIndex, JOYSTICK_STATE_AXIS state) :
+      m_event()
     {
       SetType(PERIPHERAL_EVENT_TYPE_DRIVER_AXIS);
       SetPeripheralIndex(peripheralIndex);
@@ -190,8 +190,8 @@ namespace ADDON
       SetAxisState(state);
     }
 
-    PeripheralEvent(const PERIPHERAL_EVENT& event)
-    : m_event(event)
+    PeripheralEvent(const PERIPHERAL_EVENT& event) :
+      m_event(event)
     {
     }
 
@@ -234,13 +234,13 @@ namespace ADDON
   class Joystick : public Peripheral
   {
   public:
-    Joystick(const std::string& provider = "", const std::string& strName = "")
-    : Peripheral(PERIPHERAL_TYPE_JOYSTICK, strName),
+    Joystick(const std::string& provider = "", const std::string& strName = "") :
+      Peripheral(PERIPHERAL_TYPE_JOYSTICK, strName),
       m_provider(provider),
-    m_requestedPort(NO_PORT_REQUESTED),
-    m_buttonCount(0),
-    m_hatCount(0),
-    m_axisCount(0)
+      m_requestedPort(NO_PORT_REQUESTED),
+      m_buttonCount(0),
+      m_hatCount(0),
+      m_axisCount(0)
     {
     }
 
@@ -249,13 +249,13 @@ namespace ADDON
       *this = other;
     }
 
-    Joystick(const JOYSTICK_INFO& info)
-    : Peripheral(info.peripheral),
+    Joystick(const JOYSTICK_INFO& info) :
+      Peripheral(info.peripheral),
       m_provider(info.provider ? info.provider : ""),
-    m_requestedPort(info.requested_port),
-    m_buttonCount(info.button_count),
-    m_hatCount(info.hat_count),
-    m_axisCount(info.axis_count)
+      m_requestedPort(info.requested_port),
+      m_buttonCount(info.button_count),
+      m_hatCount(info.hat_count),
+      m_axisCount(info.axis_count)
     {
     }
 
@@ -332,13 +332,13 @@ namespace ADDON
     {
     }
 
-    JoystickFeature(const std::string& name)
-    : m_name(name)
+    JoystickFeature(const std::string& name) :
+      m_name(name)
     {
     }
 
-    JoystickFeature(const JOYSTICK_FEATURE& feature)
-    : m_name(feature.feature_name ? feature.feature_name : "")
+    JoystickFeature(const JOYSTICK_FEATURE& feature) :
+      m_name(feature.feature_name ? feature.feature_name : "")
     {
     }
 
