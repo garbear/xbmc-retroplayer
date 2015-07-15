@@ -66,9 +66,6 @@ typedef intptr_t      ssize_t;
 #define ADDON_DLL_NAME "libXBMC_addon-" ADDON_HELPER_ARCH ADDON_HELPER_EXT
 #define ADDON_DLL "/library.xbmc.addon/" ADDON_DLL_NAME
 #endif
-#if defined(ANDROID)
-#include <sys/stat.h>
-#endif
 
 #ifdef LOG_DEBUG
 #undef LOG_DEBUG
@@ -81,6 +78,21 @@ typedef intptr_t      ssize_t;
 #endif
 #ifdef LOG_ERROR
 #undef LOG_ERROR
+#endif
+
+#include <sys/stat.h>
+#if !defined(__stat64)
+  #if defined(TARGET_DARWIN) || defined(TARGET_FREEBSD)
+    #define stat64 stat
+    #define __stat64 stat
+    #define fstat64 fstat
+    typedef int64_t off64_t;
+    #if defined(TARGET_FREEBSD)
+      #define statfs64 statfs
+    #endif
+  #else
+    #define __stat64 stat64
+  #endif
 #endif
 
 namespace ADDON
