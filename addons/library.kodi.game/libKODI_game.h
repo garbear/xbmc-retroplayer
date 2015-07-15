@@ -74,7 +74,7 @@ public:
     m_handle = handle;
 
     std::string libBasePath;
-    libBasePath  = ((cb_array*)m_handle)->libPath;
+    libBasePath  = ((cb_array*)m_handle)->libBasePath;
     libBasePath += GAME_HELPER_DLL;
 
 #if defined(ANDROID)
@@ -329,6 +329,6 @@ private:
 
   struct cb_array
   {
-    const char* libPath;
+    const char* libBasePath;
   };
 };
