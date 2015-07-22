@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #include "../../addons/library.kodi.guilib/libKODI_guilib.h"
+#include "../../addons/library.kodi.interfaces/libKODI_interfaces.h"
 #include "cores/dvdplayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "addons/include/xbmc_pvr_types.h"
 #include "addons/include/xbmc_codec_types.h"
@@ -372,6 +373,25 @@ typedef struct CB_GUILib
   GUIDialog_Select                                    Dialog_Select;
 } CB_GUILib;
 
+//------------------------------------------------
+//     library.kodi.interfaces definitions
+//------------------------------------------------
+typedef int     (*Interfaces_ExecuteScriptSync)(void *AddonData, const char *AddonName, const char *Script, const char **Arguments, uint32_t TimeoutMs, bool WaitShutdown);
+typedef int     (*Interfaces_ExecuteScriptAsync)(void *AddonData, const char *AddonName, const char *Script, const char **Arguments);
+typedef int     (*Interfaces_GetPythonInterpreter)(void *AddonData);
+typedef bool    (*Interfaces_ActivatePythonInterpreter)(void *AddonData, int InterpreterId);
+typedef bool    (*Interfaces_DeactivatePythonInterpreter)(void *AddonData, int InterpreterId);
+
+typedef struct CB_InterfacesLib
+{
+  Interfaces_ExecuteScriptSync              ExecuteScriptSync;
+  Interfaces_ExecuteScriptAsync             ExecuteScriptAsync;
+  Interfaces_GetPythonInterpreter           GetPythonInterpreter;
+  Interfaces_ActivatePythonInterpreter    ActivatePythonInterpreter;
+  Interfaces_DeactivatePythonInterpreter  DeactivatePythonInterpreter;
+} CB_InterfacesLib;
+
+
 typedef void (*PVRTransferEpgEntry)(void *userData, const ADDON_HANDLE handle, const EPG_TAG *epgentry);
 typedef void (*PVRTransferChannelEntry)(void *userData, const ADDON_HANDLE handle, const PVR_CHANNEL *chan);
 typedef void (*PVRTransferTimerEntry)(void *userData, const ADDON_HANDLE handle, const PVR_TIMER *timer);
@@ -417,6 +437,8 @@ typedef CB_CODECLib* (*XBMCCODECLib_RegisterMe)(void *addonData);
 typedef void (*XBMCCODECLib_UnRegisterMe)(void *addonData, CB_CODECLib *cbTable);
 typedef CB_GUILib* (*XBMCGUILib_RegisterMe)(void *addonData);
 typedef void (*XBMCGUILib_UnRegisterMe)(void *addonData, CB_GUILib *cbTable);
+typedef CB_InterfacesLib* (*KODIInterfacesLib_RegisterMe)(void *addonData);
+typedef void (*KODIInterfacesLib_UnRegisterMe)(void *addonData, CB_InterfacesLib *cbTable);
 typedef CB_PeripheralLib* (*XBMCPeripheralLib_RegisterMe)(void *addonData);
 typedef void (*XBMCPeripheralLib_UnRegisterMe)(void *addonData, CB_PeripheralLib *cbTable);
 typedef CB_PVRLib* (*XBMCPVRLib_RegisterMe)(void *addonData);
@@ -434,6 +456,8 @@ typedef struct AddonCB
   XBMCCODECLib_UnRegisterMe  CODECLib_UnRegisterMe;
   XBMCGUILib_RegisterMe      GUILib_RegisterMe;
   XBMCGUILib_UnRegisterMe    GUILib_UnRegisterMe;
+  KODIInterfacesLib_RegisterMe    InterfacesLib_RegisterMe;
+  KODIInterfacesLib_UnRegisterMe  InterfacesLib_UnRegisterMe;
   XBMCPeripheralLib_RegisterMe   PeripheralLib_RegisterMe;
   XBMCPeripheralLib_UnRegisterMe PeripheralLib_UnRegisterMe;
   XBMCPVRLib_RegisterMe      PVRLib_RegisterMe;
@@ -450,6 +474,7 @@ class CAddon;
 class CAddonCallbacksAddon;
 class CAddonCallbacksCodec;
 class CAddonCallbacksGUI;
+class CAddonCallbacksInterfaces;
 class CAddonCallbacksPeripheral;
 class CAddonCallbacksPVR;
 class CAddonCallbacksGame;
@@ -467,6 +492,8 @@ public:
   static void CODECLib_UnRegisterMe(void *addonData, CB_CODECLib *cbTable);
   static CB_GUILib* GUILib_RegisterMe(void *addonData);
   static void GUILib_UnRegisterMe(void *addonData, CB_GUILib *cbTable);
+  static CB_InterfacesLib* InterfacesLib_RegisterMe(void *addonData);
+  static void InterfacesLib_UnRegisterMe(void *addonData, CB_InterfacesLib *cbTable);
   static CB_PeripheralLib* PeripheralLib_RegisterMe(void *addonData);
   static void PeripheralLib_UnRegisterMe(void *addonData, CB_PeripheralLib *cbTable);
   static CB_PVRLib* PVRLib_RegisterMe(void *addonData);
@@ -477,6 +504,7 @@ public:
   CAddonCallbacksAddon *GetHelperAddon() { return m_helperAddon; }
   CAddonCallbacksCodec *GetHelperCodec() { return m_helperCODEC; }
   CAddonCallbacksGUI *GetHelperGUI() { return m_helperGUI; }
+  CAddonCallbacksInterfaces *GetHelperInterfaces() { return m_helperInterfaces; }
   CAddonCallbacksPeripheral *GetHelperPeripheral() { return m_helperPeripheral; }
   CAddonCallbacksPVR *GetHelperPVR() { return m_helperPVR; }
   CAddonCallbacksGame *GetHelperGame() { return m_helperGame; }
@@ -487,6 +515,7 @@ private:
   CAddonCallbacksAddon *m_helperAddon;
   CAddonCallbacksCodec *m_helperCODEC;
   CAddonCallbacksGUI   *m_helperGUI;
+  CAddonCallbacksInterfaces   *m_helperInterfaces;
   CAddonCallbacksPeripheral *m_helperPeripheral;
   CAddonCallbacksPVR   *m_helperPVR;
   CAddonCallbacksGame  *m_helperGame;
