@@ -50,6 +50,8 @@ specific paths:
     <CMAKE_INSTALL_PREFIX>/share/kodi/addons.
   * ARCH_DEFINES specifies the platform-specific C/C++ preprocessor defines
     (defaults to empty).
+  * ADDON_TARBALL_CACHING specifies whether downloaded addon source tarballs
+    should be cached or not (defaults to ON).
 
 The buildsystem makes some assumptions about the environment which must be met
 by whoever uses it:
