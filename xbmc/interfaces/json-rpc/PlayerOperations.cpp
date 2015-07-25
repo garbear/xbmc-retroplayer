@@ -1054,14 +1054,14 @@ PlayerType CPlayerOperations::GetPlayer(const CVariant &player)
       break;
 
     default:
-      playerID = None;
+      playerID = (PlayerType)None;
       break;
   }
 
   if (GetPlaylist(playerID) == iPlayer)
     return playerID;
   else
-    return None;
+    return (PlayerType)None;
 }
 
 int CPlayerOperations::GetPlaylist(PlayerType player)
