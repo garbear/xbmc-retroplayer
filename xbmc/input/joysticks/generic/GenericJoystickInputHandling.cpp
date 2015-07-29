@@ -63,8 +63,7 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
 
     wasPressed = pressed;
 
-    if (pressed)
-      bHandled = true;
+    bHandled = true;
   }
   else if (bPressed)
   {
@@ -105,8 +104,7 @@ bool CGenericJoystickInputHandling::ProcessHatDirection(int index,
     std::string feature;
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
-      if (bActivated)
-        bHandled = true;
+      bHandled = true;
 
       CLog::Log(LOGDEBUG, "CGenericJoystickInputHandling: %s feature [ %s ] %s from hat",
                 m_handler->ControllerID().c_str(), feature.c_str(), bActivated ? "activated" : "deactivated");
@@ -118,7 +116,7 @@ bool CGenericJoystickInputHandling::ProcessHatDirection(int index,
     }
   }
 
-  return false;
+  return bHandled;
 }
 
 bool CGenericJoystickInputHandling::OnAxisMotion(unsigned int axisIndex, float newPosition)
