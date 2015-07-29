@@ -55,8 +55,6 @@ void CGameClientProperties::InitializeProperties(void)
   m_properties.game_client_dll_path = GetLibraryPath();
   m_properties.proxy_dll_paths      = GetProxyDllPaths();
   m_properties.proxy_dll_count      = GetProxyDllCount();
-  m_properties.netplay_server       = GetNetplayServer();
-  m_properties.netplay_server_port  = GetNetplayServerPort();
   m_properties.system_directory     = GetSystemDirectory();
   m_properties.content_directory    = GetContentDirectory();
   m_properties.save_directory       = GetSaveDirectory();
@@ -82,16 +80,6 @@ const char* const* CGameClientProperties::GetProxyDllPaths(void)
     AddProxyDll(it->first);
 
   return !m_proxyDllPaths.empty() ? m_proxyDllPaths.data() : NULL;
-}
-
-const char* CGameClientProperties::GetNetplayServer(void)
-{
-  return "127.0.0.1"; // TODO
-}
-
-unsigned int CGameClientProperties::GetNetplayServerPort(void)
-{
-  return 35890; // TODO
 }
 
 const char* CGameClientProperties::GetSystemDirectory(void)

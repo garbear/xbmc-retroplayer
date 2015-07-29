@@ -55,12 +55,6 @@ private:
   // Number of proxy DLLs needed to load the game client
   unsigned int GetProxyDllCount(void) const { return m_proxyDllPaths.size(); }
 
-  // Address of netplay server (TODO: implement auto-discovery)
-  const char* GetNetplayServer(void);
-
-  // Port of netplay server (TODO: implement auto-discovery)
-  unsigned int GetNetplayServerPort(void);
-
   // Equal to special://profile/addon_data/<parent's id>/system
   const char* GetSystemDirectory(void);
 

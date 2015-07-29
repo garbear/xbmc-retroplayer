@@ -21,10 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.8"
+#define GAME_API_VERSION                "1.0.9"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.8"
+#define GAME_MIN_API_VERSION            "1.0.9"
 
 /* magic number for empty tray */
 #define GAME_NO_DISK                   ((unsigned)-1)
@@ -382,19 +382,6 @@ typedef struct game_client_properties
    * Number of proxy DLL paths provided.
    */
   unsigned int proxy_dll_count;
-
-  /*!
-   * Hostname or IP address of the netplay server. Ignored if a game client is
-   * given. Otherwise, if this property is empty, servers will be disconvered on
-   * the network.
-   */
-  const char* netplay_server;
-
-  /*!
-   * Port of the netplay server. Ignored if a game client is given or servers
-   * are being auto-discovered.
-   */
-  unsigned int netplay_server_port;
 
   /*!
    * The "system" directory of the frontend. This directory can be used to
