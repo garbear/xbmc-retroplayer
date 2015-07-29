@@ -133,8 +133,7 @@ bool CControllerInput::OnAccelerometerMotion(const std::string& feature, float x
 CGameClient::CGameClient(const AddonProps& props)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(props),
     m_apiVersion("0.0.0"),
-    m_libraryProps(this),
-    m_strGameClientPath(CAddon::LibPath())
+    m_libraryProps(this, m_pInfo)
 {
   InitializeProperties();
 
@@ -157,8 +156,7 @@ CGameClient::CGameClient(const AddonProps& props)
 CGameClient::CGameClient(const cp_extension_t* ext)
   : CAddonDll<DllGameClient, GameClient, game_client_properties>(ext),
     m_apiVersion("0.0.0"),
-    m_libraryProps(this),
-    m_strGameClientPath(CAddon::LibPath())
+    m_libraryProps(this, m_pInfo)
 {
   InitializeProperties();
 
@@ -196,6 +194,8 @@ CGameClient::CGameClient(const cp_extension_t* ext)
 
 void CGameClient::InitializeProperties(void)
 {
+  m_libraryProps.InitializeProperties();
+
   m_bSupportsVFS = false;
   m_bSupportsStandalone = false;
   m_bIsPlaying = false;
@@ -206,15 +206,21 @@ void CGameClient::InitializeProperties(void)
   m_sampleRate = 0.0;
   m_serializeSize = 0;
   m_bRewindEnabled = false;
-  m_pInfo = m_libraryProps.CreateProps();
 }
 
 CGameClient::~CGameClient(void)
 {
   if (m_bIsPlaying && m_player)
     m_player->CloseFile();
+}
 
-  SAFE_DELETE(m_pInfo);
+const std::string CGameClient::LibPath() const
+{
+  // If the game client requires a proxy, load its DLL instead
+  if (m_pInfo->proxy_dll_count > 0)
+    return m_pInfo->proxy_dll_paths[0];
+
+  return CAddon::LibPath();
 }
 
 AddonPtr CGameClient::GetRunningInstance() const
@@ -234,22 +240,6 @@ void CGameClient::OnEnabled()
 void CGameClient::OnDisabled()
 {
   CGameManager::Get().UnregisterAddonByID(ID());
-}
-
-const std::string CGameClient::LibPath() const
-{
-  // Use helper library add-on to load libretro cores
-  // TODO: Compare helper version with required dependency
-  const ADDONDEPS& dependencies = GetDeps();
-  ADDONDEPS::const_iterator it = dependencies.find(LIBRETRO_WRAPPER_LIBRARY);
-  if (it != dependencies.end())
-  {
-    AddonPtr addon;
-    if (CAddonMgr::Get().GetAddon(LIBRETRO_WRAPPER_LIBRARY, addon, ADDON_GAMEDLL) && addon)
-      return addon->LibPath();
-  }
-
-  return CAddon::LibPath();
 }
 
 bool CGameClient::CanOpen(const CFileItem& file) const

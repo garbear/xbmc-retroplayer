@@ -376,7 +376,7 @@ typedef struct game_client_properties
   /*!
    * Paths to proxy DLLs used to load the game client.
    */
-  const char** proxy_dll_paths;
+  const char* const* proxy_dll_paths;
 
   /*!
    * Number of proxy DLL paths provided.

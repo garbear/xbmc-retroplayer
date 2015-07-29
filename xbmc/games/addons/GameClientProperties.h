@@ -19,7 +19,10 @@
  */
 #pragma once
 
+#include "addons/include/kodi_game_types.h"
+
 #include <string>
+#include <vector>
 
 struct game_client_properties;
 
@@ -29,36 +32,55 @@ namespace GAME
 class CGameClient;
 
 /**
- * A wrapper for game client properties declared in kodi_game_types.h. The
- * definitions of all properties are encapsulated within this class.
+ * \brief Wrapper for game client properties declared in kodi_game_types.h
  */
 class CGameClientProperties
 {
 public:
-  CGameClientProperties(const CGameClient* parent);
+  CGameClientProperties(const CGameClient* parent, game_client_properties*& props);
+  ~CGameClientProperties(void);
 
-  // Equal to CGameClient::GameClientPath(), passed to game client DLL
-  const char* GetLibraryPath();
-
-  // "special://profile/addon_data/id/system", passed to game client DLL
-  const char* GetSystemDirectory();
-
-  // Directory containing CGameClient::GameClientPath(), passed to game client DLL
-  const char* GetContentDirectory();
-
-  // "special://profile/addon_data/id/save", passed to game client DLL
-  const char* GetSaveDirectory();
-
-  game_client_properties* CreateProps();
+  void InitializeProperties(void);
 
 private:
-  const CGameClient* const m_parent;
+  // Equal to parent's library path
+  const char* GetLibraryPath(void);
+
+  // List of proxy DLLs needed to load the game client
+  const char* const* GetProxyDllPaths(void);
+
+  // Number of proxy DLLs needed to load the game client
+  unsigned int GetProxyDllCount(void) const { return m_proxyDllPaths.size(); }
+
+  // Address of netplay server (TODO: implement auto-discovery)
+  const char* GetNetplayServer(void);
+
+  // Port of netplay server (TODO: implement auto-discovery)
+  unsigned int GetNetplayServerPort(void);
+
+  // Equal to special://profile/addon_data/<parent's id>/system
+  const char* GetSystemDirectory(void);
+
+  // Equal to parent's library path (TODO)
+  const char* GetContentDirectory(void);
+
+  // Equal to special://profile/addon_data/<parent's id>/save
+  const char* GetSaveDirectory(void);
+
+  // Helper functions
+  bool AddProxyDll(const std::string& strLibPath);
+  bool HasProxyDll(const char* strLibPath) const;
+
+  const CGameClient* const  m_parent;
+  game_client_properties    m_properties;
 
   // Buffers to hold the strings
-  std::string  m_strLibraryPath;
-  std::string  m_strSystemDirectory;
-  std::string  m_strContentDirectory;
-  std::string  m_strSaveDirectory;
+  std::string        m_strLibraryPath;
+  std::vector<char*> m_proxyDllPaths;
+  std::string        m_strNetplayServer;
+  std::string        m_strSystemDirectory;
+  std::string        m_strContentDirectory;
+  std::string        m_strSaveDirectory;
 };
 
 } // namespace GAME

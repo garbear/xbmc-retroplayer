@@ -73,8 +73,6 @@
 #include <set>
 #include <string>
 
-#define LIBRETRO_WRAPPER_LIBRARY   "game.libretro"
-
 class CFileItem;
 class IPlayer;
 
@@ -111,21 +109,18 @@ public:
   CGameClient(const cp_extension_t* props);
   virtual ~CGameClient(void);
 
-  // Implementation of CAddon
+  // Implementation of IAddon
+  virtual bool              IsExecutable() const { return m_bSupportsStandalone; }
+  virtual const std::string LibPath() const;
   virtual ADDON::AddonPtr   GetRunningInstance() const;
   virtual void              OnEnabled();
   virtual void              OnDisabled();
-  virtual const std::string LibPath() const; // TODO: Don't make this function virtual, find another way
-  virtual bool              IsExecutable() const { return m_bSupportsStandalone; }
 
   // Query properties of the game client
   const std::set<std::string>& GetExtensions() const    { return m_extensions; }
   bool                         SupportsVFS() const      { return m_bSupportsVFS; }
   //const GamePlatforms&         GetPlatforms() const     { return m_platforms; }
   bool                         IsExtensionValid(const std::string& strExtension) const;
-
-  // Path to the game client library (TODO: Remove me)
-  const std::string&           GameClientPath() const   { return m_strGameClientPath; }
 
   // Query properties of the running game
   bool               IsPlaying() const     { return m_bIsPlaying; }
@@ -185,7 +180,6 @@ private:
 
   ADDON::AddonVersion   m_apiVersion;
   CGameClientProperties m_libraryProps;        // Properties to pass to the DLL
-  const std::string     m_strGameClientPath;   // Path to the game client library
 
   // Game API xml parameters
   std::set<std::string> m_extensions;
