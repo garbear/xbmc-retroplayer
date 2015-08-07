@@ -118,55 +118,6 @@ DLLEXPORT void GAME_rumble_set_state(AddonCB* frontend, CB_GameLib* cb, unsigned
   return cb->RumbleSetState(frontend->addonData, port, effect, strength);
 }
 
-DLLEXPORT void GAME_set_camera_info(AddonCB* frontend, CB_GameLib* cb, unsigned int width, unsigned int height, GAME_CAMERA_BUFFER caps)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->SetCameraInfo(frontend->addonData, width, height, caps);
-}
-
-DLLEXPORT bool GAME_start_camera(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->StartCamera(frontend->addonData);
-}
-
-DLLEXPORT void GAME_stop_camera(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->StopCamera(frontend->addonData);
-}
-
-DLLEXPORT bool GAME_start_location(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->StartLocation(frontend->addonData);
-}
-
-DLLEXPORT void GAME_stop_location(AddonCB* frontend, CB_GameLib* cb)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->StopLocation(frontend->addonData);
-}
-
-DLLEXPORT bool GAME_get_location(AddonCB* frontend, CB_GameLib* cb, double* lat, double* lon, double* horiz_accuracy, double* vert_accuracy)
-{
-  if (frontend == NULL || cb == NULL)
-    return false;
-  return cb->GetLocation(frontend->addonData, lat, lon, horiz_accuracy, vert_accuracy);
-}
-
-DLLEXPORT void GAME_set_location_interval(AddonCB* frontend, CB_GameLib* cb, unsigned interval_ms, unsigned interval_distance)
-{
-  if (frontend == NULL || cb == NULL)
-    return;
-  return cb->SetLocationInterval(frontend->addonData, interval_ms, interval_distance);
-}
-
 #ifdef __cplusplus
 }
 #endif

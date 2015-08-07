@@ -45,13 +45,6 @@ CAddonCallbacksGame::CAddonCallbacksGame(CAddon* addon)
   m_callbacks->OpenPort                       = OpenPort;
   m_callbacks->ClosePort                      = ClosePort;
   m_callbacks->RumbleSetState                 = RumbleSetState;
-  m_callbacks->SetCameraInfo                  = SetCameraInfo;
-  m_callbacks->StartCamera                    = StartCamera;
-  m_callbacks->StopCamera                     = StopCamera;
-  m_callbacks->StartLocation                  = StartLocation;
-  m_callbacks->StopLocation                   = StopLocation;
-  m_callbacks->GetLocation                    = GetLocation;
-  m_callbacks->SetLocationInterval            = SetLocationInterval;
 }
 
 CAddonCallbacksGame::~CAddonCallbacksGame()
@@ -204,44 +197,6 @@ void CAddonCallbacksGame::RumbleSetState(void* addonData, unsigned int port, GAM
   if (!retroPlayer)
     return;
 
-  // TODO
-}
-
-void CAddonCallbacksGame::SetCameraInfo(void* addonData, unsigned int width, unsigned int height, GAME_CAMERA_BUFFER caps)
-{
-  // TODO
-}
-
-bool CAddonCallbacksGame::StartCamera(void* addonData)
-{
-  // TODO
-  return false;
-}
-
-void CAddonCallbacksGame::StopCamera(void* addonData)
-{
-  // TODO
-}
-
-bool CAddonCallbacksGame::StartLocation(void* addonData)
-{
-  // TODO
-  return false;
-}
-
-void CAddonCallbacksGame::StopLocation(void* addonData)
-{
-  // TODO
-}
-
-bool CAddonCallbacksGame::GetLocation(void* addonData, double* lat, double* lon, double* horizAccuracy, double* vertAccuracy)
-{
-  // TODO
-  return false;
-}
-
-void CAddonCallbacksGame::SetLocationInterval(void* addonData, unsigned int intervalMs, unsigned int intervalDistance)
-{
   // TODO
 }
 

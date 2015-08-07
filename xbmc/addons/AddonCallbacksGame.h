@@ -53,13 +53,6 @@ public:
   static bool OpenPort(void* addonData, unsigned int port);
   static void ClosePort(void* addonData, unsigned int port);
   static void RumbleSetState(void* addonData, unsigned int port, GAME_RUMBLE_EFFECT effect, float strength);
-  static void SetCameraInfo(void* addonData, unsigned int width, unsigned int height, GAME_CAMERA_BUFFER caps);
-  static bool StartCamera(void* addonData);
-  static void StopCamera(void* addonData);
-  static bool StartLocation(void* addonData);
-  static void StopLocation(void* addonData);
-  static bool GetLocation(void* addonData,  double* lat, double* lon, double* horizAccuracy, double* vertAccuracy);
-  static void SetLocationInterval(void* addonData, unsigned int intervalMs, unsigned int intervalDistance);
 
 private:
   static GAME::CGameClient* GetGameClient(void* addonData, const char* strFunction);

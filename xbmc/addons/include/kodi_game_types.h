@@ -21,13 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.9"
+#define GAME_API_VERSION                "1.0.10"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.9"
-
-/* magic number for empty tray */
-#define GAME_NO_DISK                   ((unsigned)-1)
+#define GAME_MIN_API_VERSION            "1.0.10"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -190,12 +187,6 @@ typedef enum GAME_SIMD
   GAME_SIMD_VFPU                     = (1 << 13),
 } GAME_SIMD;
 
-typedef enum GAME_CAMERA_BUFFER
-{
-  GAME_CAMERA_BUFFER_OPENGL_TEXTURE,
-  GAME_CAMERA_BUFFER_RAW_FRAMEBUFFER,
-} GAME_CAMERA_BUFFER;
-
 typedef enum GAME_RUMBLE_EFFECT
 {
   GAME_RUMBLE_STRONG,
@@ -226,12 +217,6 @@ typedef enum GAME_ROTATION
   GAME_ROTATION_180_CW,
   GAME_ROTATION_270_CW,
 } GAME_ROTATION;
-
-typedef enum GAME_EJECT_STATE
-{
-  GAME_NOT_EJECTED,
-  GAME_EJECTED,
-} GAME_EJECT_STATE;
 
 typedef struct game_controller
 {
@@ -329,40 +314,21 @@ struct game_system_av_info
   struct game_system_timing timing;
 };
 
-typedef uint64_t  game_perf_tick_t;
-typedef int64_t   game_time_t;
-typedef int64_t   game_usec_t;
-typedef void      (*game_proc_address_t)(void);
-
-struct game_perf_counter
-{
-  const char       *ident;
-  game_perf_tick_t start;
-  game_perf_tick_t total;
-  game_perf_tick_t call_cnt;
-  bool              registered;
-};
-
-struct game_camera_info
-{
-  uint64_t caps;                //
-  unsigned width;               // Desired resolution for camera. Is only used as a hint.
-  unsigned height;
-};
+typedef void (*game_proc_address_t)(void);
 
 struct game_hw_info
 {
-  enum GAME_HW_CONTEXT_TYPE context_type; // Which API to use. Set by game client
-  bool     depth;               // Set if render buffers should have depth component attached
-  bool     stencil;             // Set if stencil buffers should be attached
-                                // If depth and stencil are true, a packed 24/8 buffer will be added. Only attaching stencil is invalid and will be ignored
-  bool     bottom_left_origin;  // Use conventional bottom-left origin convention. Is false, standard top-left origin semantics are used
-  unsigned version_major;       // Major version number for core GL context
-  unsigned version_minor;       // Minor version number for core GL context
-  bool     cache_context;       // If this is true, the frontend will go very far to avoid resetting context in scenarios like toggling fullscreen, etc.
-                                // The reset callback might still be called in extreme situations such as if the context is lost beyond recovery
-                                // For optimal stability, set this to false, and allow context to be reset at any time
-  bool     debug_context;       // Creates a debug context
+  GAME_HW_CONTEXT_TYPE context_type;        // Which API to use. Set by game client
+  bool                 depth;               // Set if render buffers should have depth component attached
+  bool                 stencil;             // Set if stencil buffers should be attached
+                                            // If depth and stencil are true, a packed 24/8 buffer will be added. Only attaching stencil is invalid and will be ignored
+  bool                 bottom_left_origin;  // Use conventional bottom-left origin convention. Is false, standard top-left origin semantics are used
+  unsigned             version_major;       // Major version number for core GL context
+  unsigned             version_minor;       // Minor version number for core GL context
+  bool                 cache_context;       // If this is true, the frontend will go very far to avoid resetting context in scenarios like toggling fullscreen, etc.
+                                            // The reset callback might still be called in extreme situations such as if the context is lost beyond recovery
+                                            // For optimal stability, set this to false, and allow context to be reset at any time
+  bool                 debug_context;       // Creates a debug context
 };
 
 /*! Properties passed to the ADDON_Create() method of a game client */
@@ -418,28 +384,16 @@ typedef struct GameClient
   GAME_REGION (__cdecl* GetRegion)(void);
   void        (__cdecl* FrameEvent)(void);
   GAME_ERROR  (__cdecl* Reset)(void);
-  GAME_ERROR  (__cdecl* DiskAddImageIndex)(void);
   GAME_ERROR  (__cdecl* HwContextReset)(void);
   GAME_ERROR  (__cdecl* HwContextDestroy)(void);
   void        (__cdecl* UpdatePort)(unsigned int, bool, const game_controller*);
   bool        (__cdecl* InputEvent)(unsigned int, const game_input_event*);
-  GAME_ERROR  (__cdecl* DiskSetEjectState)(GAME_EJECT_STATE);
-  GAME_EJECT_STATE (__cdecl* DiskGetEjectState)(void);
-  unsigned    (__cdecl* DiskGetImageIndex)(void);
-  GAME_ERROR  (__cdecl* DiskSetImageIndex)(unsigned int);
-  unsigned    (__cdecl* DiskGetNumImages)(void);
-  GAME_ERROR  (__cdecl* DiskReplaceImageIndex)(unsigned int, const char*);
-  GAME_ERROR  (__cdecl* CameraInitialized)(void);
-  GAME_ERROR  (__cdecl* CameraDeinitialized)(void);
-  GAME_ERROR  (__cdecl* CameraFrameRawBuffer)(const uint32_t*, unsigned int, unsigned int, size_t);
-  GAME_ERROR  (__cdecl* CameraFrameOpenglTexture)(unsigned int, unsigned int, const float*);
   size_t      (__cdecl* SerializeSize)(void);
   GAME_ERROR  (__cdecl* Serialize)(uint8_t*, size_t);
   GAME_ERROR  (__cdecl* Deserialize)(const uint8_t*, size_t);
   GAME_ERROR  (__cdecl* CheatReset)(void);
   GAME_ERROR  (__cdecl* GetMemory)(GAME_MEMORY, const uint8_t**, size_t*);
   GAME_ERROR  (__cdecl* SetCheat)(unsigned int, bool, const char*);
-  GAME_ERROR  (__cdecl* FrameTimeNotify)(game_usec_t usec);
 } GameClient;
 
 #ifdef __cplusplus

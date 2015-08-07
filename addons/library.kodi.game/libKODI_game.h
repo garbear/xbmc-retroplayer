@@ -106,13 +106,6 @@ public:
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_open_port)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_close_port)) throw false;
       if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_rumble_set_state)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_set_camera_info)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_start_camera)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_stop_camera)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_start_location)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_stop_location)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_get_location)) throw false;
-      if (!GAME_REGISTER_SYMBOL(m_libKODI_game, GAME_set_location_interval)) throw false;
     }
     catch (const bool& bSuccess)
     {
@@ -169,41 +162,6 @@ public:
     return GAME_rumble_set_state(m_handle, m_callbacks, port, effect, strength);
   }
 
-  void SetCameraInfo(unsigned int width, unsigned int height, GAME_CAMERA_BUFFER caps)
-  {
-    return GAME_set_camera_info(m_handle, m_callbacks, width, height, caps);
-  }
-
-  bool StartCamera(void)
-  {
-    return GAME_start_camera(m_handle, m_callbacks);
-  }
-
-  void StopCamera(void)
-  {
-    return GAME_stop_camera(m_handle, m_callbacks);
-  }
-
-  bool StartLocation(void)
-  {
-    return GAME_start_location(m_handle, m_callbacks);
-  }
-
-  void StopLocation(void)
-  {
-    return GAME_stop_location(m_handle, m_callbacks);
-  }
-
-  bool GetLocation(double* lat, double* lon, double* horiz_accuracy, double* vert_accuracy)
-  {
-    return GAME_get_location(m_handle, m_callbacks, lat, lon, horiz_accuracy, vert_accuracy);
-  }
-
-  void SetLocationInterval(unsigned int interval_ms, unsigned int interval_distance)
-  {
-    return GAME_set_location_interval(m_handle, m_callbacks, interval_ms, interval_distance);
-  }
-
 protected:
   CB_GameLib* (*GAME_register_me)(void* handle);
   void (*GAME_unregister_me)(void* handle, CB_GameLib* cb);
@@ -216,13 +174,6 @@ protected:
   bool (*GAME_open_port)(void* handle, CB_GameLib* cb, unsigned int);
   void (*GAME_close_port)(void* handle, CB_GameLib* cb, unsigned int);
   void (*GAME_rumble_set_state)(void* handle, CB_GameLib* cb, unsigned int, GAME_RUMBLE_EFFECT, float);
-  void (*GAME_set_camera_info)(void* handle, CB_GameLib* cb, unsigned int, unsigned int, GAME_CAMERA_BUFFER);
-  bool (*GAME_start_camera)(void* handle, CB_GameLib* cb);
-  void (*GAME_stop_camera)(void* handle, CB_GameLib* cb);
-  bool (*GAME_start_location)(void* handle, CB_GameLib* cb);
-  void (*GAME_stop_location)(void* handle, CB_GameLib* cb);
-  bool (*GAME_get_location)(void* handle, CB_GameLib* cb, double*, double*, double*, double*);
-  void (*GAME_set_location_interval)(void* handle, CB_GameLib* cb, unsigned int, unsigned int);
 
 private:
   void*        m_handle;

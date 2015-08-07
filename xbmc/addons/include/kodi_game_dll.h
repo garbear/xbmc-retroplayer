@@ -161,117 +161,6 @@ void UpdatePort(unsigned int port, bool connected, const game_controller* contro
  */
 bool InputEvent(unsigned int port, const game_input_event* event);
 
-// --- Disk operations ---------------------------------------------------------
-
-// TODO: Rewrite disk interface
-
-/*!
- * Interface to eject and insert disk images. This is used for games which
- * consist of multiple images and must be manually swapped out by the user
- * (e.g. PSX) during runtime. If the implementation can do this
- * automatically, it should strive to do so. However, there are cases where
- * the user must manually do so.
- *
- * Overview: To swap a disk image, eject the disk image with
- * DiskControlSetEjectState(true). Set the disk index with
- * DiskControlSetImageIndex(index). Insert the disk again with
- * DiskControlSetEjectState(false).
- */
-
-/*!
- * If ejected is true, "ejects" the virtual disk tray. When ejected, the
- * disk image index can be set.
- */
-GAME_ERROR DiskSetEjectState(GAME_EJECT_STATE ejected);
-
-/*! Gets current eject state. The initial state is not ejected. */
-GAME_EJECT_STATE DiskGetEjectState(void);
-
-/*!
- * Gets current disk index. First disk is index 0. If return value
- * is >= DiskControlGetNumImages(), no disk is currently inserted.
- */
-unsigned DiskGetImageIndex(void);
-
-/*!
- * Sets image index. Can only be called when disk is ejected. The
- * implementation supports setting "no disk" (empty tray) by setting index to
- * GAME_NO_DISK.
- */
-GAME_ERROR DiskSetImageIndex(unsigned int index);
-
-/*! Gets total number of images which are available to use */
-unsigned DiskGetNumImages(void);
-
-/*!
- * Replaces the disk image associated with index. Arguments to pass in info
- * have same requirements as Load(). Virtual disk tray must be
- * ejected when calling this. Replacing a disk image with info = NULL will
- * remove the disk image from the internal list. As a result, calls to
- * DiskControlGetImageIndex() can change.
- *
- * E.g. DiskControlReplaceImageIndex(1, NULL), and previous
- * DiskControlGetImageIndex() returned 4 before. Index 1 will be
- * removed, and the new index is 3.
- */
-GAME_ERROR DiskReplaceImageIndex(unsigned int index, const char* url);
-
-/*!
- * Adds a new valid index (DiskControlGetNumImages()) to the internal disk list.
- * This will increment subsequent return values from DiskControlGetNumImages() by
- * 1. This image index cannot be used until a disk image has been set with
- * replace_image_index.
- */
-GAME_ERROR DiskAddImageIndex(void);
-
-// --- Camera operations -------------------------------------------------------
-
-/*!
- * \brief Notify the add-on that the camera has been initialized
- */
-GAME_ERROR CameraInitialized(void);
-
-/*!
- * \brief Notify the add-on that the camera has been deinitialized
- * */
-GAME_ERROR CameraDeinitialized(void);
-
-/*!
- * \brief Transfer raw framebuffer data
- *
- * \param buffer points to an XRGB8888 buffer
- * \param width The frame width
- * \param height The frame height
- * \param stride The number of bytes in one row of pixels
- *
- * \return the error, or GAME_ERROR_NO_ERROR if the data was received
- */
-GAME_ERROR CameraFrameRawBuffer(const uint32_t* buffer, unsigned int width, unsigned int height, size_t stride);
-
-/*!
- * \brief Transfer OpenGL texture
- *
- * The state or content of the OpenGL texture should be considered immutable,
- * except for things like texture filtering and clamping.
- *
- * The texture target can include e.g. GL_TEXTURE_2D, GL_TEXTURE_RECTANGLE, and
- * possibly more depending on extensions.
- *
- * The affine matrix is used to apply an affine transform to texture coordinates:
- *
- *     (affine_matrix * vec3(coord_x, coord_y, 1.0))
- *
- * After transform, normalized texture coord (0, 0) should be bottom-left and
- * (1, 1) should be top-right (or (width, height) for RECTANGLE).
- *
- * \param textureId A texture owned by camera driver.
- * \param textureTarget The texture target for the GL texture
- * \param affine Points to a packed 3x3 column-major matrix
- *
- * \return the error, or GAME_ERROR_NO_ERROR if the texture was received
- */
-GAME_ERROR CameraFrameOpenglTexture(unsigned int textureId, unsigned int textureTarget, const float* affine);
-
 // --- Serialization operations ------------------------------------------------
 
 /*!
@@ -356,17 +245,6 @@ void __declspec(dllexport) get_addon(GameClient* pClient)
   pClient->HwContextDestroy         = HwContextDestroy;
   pClient->UpdatePort               = UpdatePort;
   pClient->InputEvent               = InputEvent;
-  pClient->DiskSetEjectState        = DiskSetEjectState;
-  pClient->DiskGetEjectState        = DiskGetEjectState;
-  pClient->DiskGetImageIndex        = DiskGetImageIndex;
-  pClient->DiskSetImageIndex        = DiskSetImageIndex;
-  pClient->DiskGetNumImages         = DiskGetNumImages;
-  pClient->DiskReplaceImageIndex    = DiskReplaceImageIndex;
-  pClient->DiskAddImageIndex        = DiskAddImageIndex;
-  pClient->CameraInitialized        = CameraInitialized;
-  pClient->CameraDeinitialized      = CameraDeinitialized;
-  pClient->CameraFrameRawBuffer     = CameraFrameRawBuffer;
-  pClient->CameraFrameOpenglTexture = CameraFrameOpenglTexture;
   pClient->SerializeSize            = SerializeSize;
   pClient->Serialize                = Serialize;
   pClient->Deserialize              = Deserialize;
