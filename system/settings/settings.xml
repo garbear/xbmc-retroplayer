@@ -2025,12 +2025,6 @@
           </control>
         </setting>
       </group>
-      <group id="2">
-        <setting id="gamesgeneral.manageaddons" type="action" label="27005" help="27010">
-          <level>0</level>
-          <control type="button" format="action" />
-        </setting>
-      </group>
     </category>
     <category id="gamesinput" label="27019" help="27020">
       <group id="1">

@@ -835,7 +835,6 @@ void CSettings::InitializeISettingCallbacks()
   m_settingsManager->RegisterCallback(&PVR::g_PVRManager, settingSet);
 
   settingSet.clear();
-  settingSet.insert("gamesgeneral.manageaddons");
   settingSet.insert("gamesinput.controllerconfig");
   m_settingsManager->RegisterCallback(&GAME::CGameSettings::Get(), settingSet);
 
