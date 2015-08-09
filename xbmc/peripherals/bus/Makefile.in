@@ -1,5 +1,5 @@
 SRCS  = PeripheralBus.cpp
-SRCS += PeripheralBusAddon.cpp
+SRCS += virtual/PeripheralBusAddon.cpp
 SRCS += virtual/PeripheralBusApplication.cpp
 
 ifeq (@USE_LIBUDEV@,1)

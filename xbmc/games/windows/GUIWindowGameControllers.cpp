@@ -30,7 +30,7 @@
 #include "guilib/WindowIDs.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "input/Key.h"
-#include "peripherals/bus/PeripheralBusAddon.h"
+#include "peripherals/bus/virtual/PeripheralBusAddon.h"
 #include "peripherals/devices/PeripheralJoystick.h"
 #include "peripherals/Peripherals.h"
 #include "utils/log.h"

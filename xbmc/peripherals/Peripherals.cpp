@@ -31,7 +31,7 @@
 #include "devices/PeripheralCecAdapter.h"
 #include "devices/PeripheralImon.h"
 #include "bus/PeripheralBusUSB.h"
-#include "bus/PeripheralBusAddon.h"
+#include "bus/virtual/PeripheralBusAddon.h"
 #include "bus/virtual/PeripheralBusApplication.h"
 #include "dialogs/GUIDialogPeripheralManager.h"
 

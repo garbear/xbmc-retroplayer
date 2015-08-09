@@ -28,7 +28,7 @@
 #include "input/joysticks/JoystickDriverPrimitive.h"
 #include "input/joysticks/JoystickTranslator.h"
 #include "peripherals/Peripherals.h"
-#include "peripherals/bus/PeripheralBusAddon.h"
+#include "peripherals/bus/virtual/PeripheralBusAddon.h"
 #include "peripherals/devices/PeripheralJoystick.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
