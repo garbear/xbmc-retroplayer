@@ -21,7 +21,7 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.10"
+#define GAME_API_VERSION                "1.0.11"
 
 /* min. game API version */
 #define GAME_MIN_API_VERSION            "1.0.10"
@@ -335,14 +335,14 @@ struct game_hw_info
 typedef struct game_client_properties
 {
   /*!
-   * THe path of the game client being loaded, or empty to load from the network.
+   * The path of the game client being loaded.
    */
   const char* game_client_dll_path;
 
   /*!
    * Paths to proxy DLLs used to load the game client.
    */
-  const char* const* proxy_dll_paths;
+  const char** proxy_dll_paths;
 
   /*!
    * Number of proxy DLL paths provided.

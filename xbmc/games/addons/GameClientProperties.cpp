@@ -71,7 +71,7 @@ const char* CGameClientProperties::GetLibraryPath(void)
   return m_strLibraryPath.c_str();
 }
 
-const char* const* CGameClientProperties::GetProxyDllPaths(void)
+const char** CGameClientProperties::GetProxyDllPaths(void)
 {
   // Add all game client dependencies
   // TODO: Compare helper version with required dependency
@@ -79,7 +79,7 @@ const char* const* CGameClientProperties::GetProxyDllPaths(void)
   for (ADDONDEPS::const_iterator it = dependencies.begin(); it != dependencies.end(); ++it)
     AddProxyDll(it->first);
 
-  return !m_proxyDllPaths.empty() ? m_proxyDllPaths.data() : NULL;
+  return !m_proxyDllPaths.empty() ? const_cast<const char**>(m_proxyDllPaths.data()) : NULL;
 }
 
 const char* CGameClientProperties::GetSystemDirectory(void)

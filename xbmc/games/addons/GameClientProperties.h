@@ -50,7 +50,7 @@ private:
   const char* GetLibraryPath(void);
 
   // List of proxy DLLs needed to load the game client
-  const char* const* GetProxyDllPaths(void);
+  const char** GetProxyDllPaths(void);
 
   // Number of proxy DLLs needed to load the game client
   unsigned int GetProxyDllCount(void) const { return m_proxyDllPaths.size(); }
