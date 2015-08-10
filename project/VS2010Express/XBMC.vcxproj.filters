@@ -2990,9 +2990,6 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPeripheral.cpp">
       <Filter>addons</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.cpp">
-      <Filter>peripherals\bus</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.cpp">
       <Filter>peripherals\devices</Filter>
     </ClCompile>
@@ -3241,9 +3238,6 @@
     <ClCompile Include="..\..\xbmc\games\addons\GameClientProperties.cpp">
       <Filter>games\addons</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\test\TestGameFileLoader.cpp">
-      <Filter>games\test</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp">
       <Filter>games</Filter>
     </ClCompile>
@@ -3273,6 +3267,9 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp">
       <Filter>games\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusAddon.cpp">
+      <Filter>peripherals\bus\virtual</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6035,9 +6032,6 @@
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksPeripheral.h">
       <Filter>addons</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.h">
-      <Filter>peripherals\bus</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\xbmc\peripherals\devices\PeripheralJoystick.h">
       <Filter>peripherals\devices</Filter>
     </ClInclude>
@@ -6134,7 +6128,7 @@
     <ClInclude Include="..\..\xbmc\addons\LanguageResource.h">
       <Filter>addons</Filter>
     </ClInclude>
-     <ClInclude Include="..\..\xbmc\addons\UISoundsResource.h">
+    <ClInclude Include="..\..\xbmc\addons\UISoundsResource.h">
       <Filter>addons</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\filesystem\ResourceFile.h">
@@ -6334,6 +6328,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h">
       <Filter>games\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusAddon.h">
+      <Filter>peripherals\bus\virtual</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

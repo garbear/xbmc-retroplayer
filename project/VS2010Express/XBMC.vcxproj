@@ -722,7 +722,7 @@
     <ClCompile Include="..\..\xbmc\peripherals\addons\AddonJoystickInputHandling.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\addons\PeripheralAddon.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBus.cpp" />
-    <ClCompile Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.cpp" />
+    <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusAddon.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusApplication.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.cpp" />
     <ClCompile Include="..\..\xbmc\peripherals\bus\win32\PeripheralBusUSB.cpp" />
@@ -1078,7 +1078,7 @@
     <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickButtonMapWO.h" />
     <ClInclude Include="..\..\xbmc\peripherals\addons\AddonJoystickInputHandling.h" />
     <ClInclude Include="..\..\xbmc\peripherals\addons\PeripheralAddon.h" />
-    <ClInclude Include="..\..\xbmc\peripherals\bus\PeripheralBusAddon.h" />
+    <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusAddon.h" />
     <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusApplication.h" />
     <ClInclude Include="..\..\xbmc\peripherals\bus\virtual\PeripheralBusCEC.h" />
     <ClInclude Include="..\..\xbmc\network\upnp\UPnPSettings.h" />
