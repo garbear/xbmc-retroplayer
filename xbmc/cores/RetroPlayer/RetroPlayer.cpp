@@ -159,7 +159,10 @@ bool CRetroPlayer::CloseFile(bool reopen /* = false */)
 
   // Save the game before the video cuts out
   if (m_gameClient)
+  {
     m_gameClient->CloseFile();
+    m_gameClient->Destroy();
+  }
 
   m_file.reset();
 
