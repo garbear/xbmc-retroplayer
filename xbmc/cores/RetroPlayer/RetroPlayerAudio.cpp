@@ -74,7 +74,7 @@ bool CRetroPlayerAudio::Start(AEDataFormat format, double samplerate)
   return true;
 }
 
-unsigned int CRetroPlayerAudio::AudioFrames(AEDataFormat format, unsigned int frames, const uint8_t* data)
+unsigned int CRetroPlayerAudio::AudioFrames(const uint8_t* data, unsigned int size, unsigned int frames, AEDataFormat format)
 {
   // TODO: reconfigure if format changes
 

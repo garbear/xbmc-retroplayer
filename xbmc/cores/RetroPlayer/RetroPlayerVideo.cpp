@@ -73,13 +73,13 @@ void CRetroPlayerVideo::Stop(void)
   m_frameReadyEvent.Set();
 }
 
-bool CRetroPlayerVideo::VideoFrame(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data)
+bool CRetroPlayerVideo::VideoFrame(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, AVPixelFormat format)
 {
   if (!m_bStop && !IsFrameReady())
   {
-    if (Configure(format, width, height))
+    if (Configure(width, height, format))
     {
-      ColorspaceConversion(format, width, height, data, *m_picture);
+      ColorspaceConversion(data, size, width, height, *m_picture);
       SetFrameReady(true);
       return true;
     }
@@ -128,12 +128,8 @@ void CRetroPlayerVideo::Process(void)
   Cleanup();
 }
 
-bool CRetroPlayerVideo::Configure(AVPixelFormat format, unsigned int width, unsigned int height)
+bool CRetroPlayerVideo::Configure(unsigned int width, unsigned int height, AVPixelFormat format)
 {
-  // Check for valid format (TODO)
-  if (GetPitch(format, width) == 0)
-    return false;
-
   if (!g_renderManager.IsConfigured() ||
       m_format           != format    ||
       m_picture          == NULL      ||
@@ -180,18 +176,21 @@ bool CRetroPlayerVideo::Configure(AVPixelFormat format, unsigned int width, unsi
   return true;
 }
 
-void CRetroPlayerVideo::ColorspaceConversion(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data, DVDVideoPicture &output)
+void CRetroPlayerVideo::ColorspaceConversion(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, DVDVideoPicture &output)
 {
-  const unsigned int pitch = GetPitch(format, width);
+  const unsigned int stride = size / height;
 
-  uint8_t* dataMutable = const_cast<uint8_t*>(data);
+  if (stride != 0)
+  {
+    uint8_t* dataMutable = const_cast<uint8_t*>(data);
 
-  uint8_t* src[] =       { dataMutable,         0,                   0,                   0 };
-  int      srcStride[] = { (int)pitch,          0,                   0,                   0 };
-  uint8_t* dst[] =       { output.data[0],      output.data[1],      output.data[2],      0 };
-  int      dstStride[] = { output.iLineSize[0], output.iLineSize[1], output.iLineSize[2], 0 };
+    uint8_t* src[] =       { dataMutable,         0,                   0,                   0 };
+    int      srcStride[] = { (int)stride,         0,                   0,                   0 };
+    uint8_t* dst[] =       { output.data[0],      output.data[1],      output.data[2],      0 };
+    int      dstStride[] = { output.iLineSize[0], output.iLineSize[1], output.iLineSize[2], 0 };
 
-  sws_scale(m_swsContext, src, srcStride, 0, height, dst, dstStride);
+    sws_scale(m_swsContext, src, srcStride, 0, height, dst, dstStride);
+  }
 }
 
 bool CRetroPlayerVideo::IsFrameReady(void)
@@ -207,27 +206,4 @@ void CRetroPlayerVideo::SetFrameReady(bool bReady)
   m_bFrameReady = bReady;
   if (m_bFrameReady)
     m_frameReadyEvent.Set();
-}
-
-unsigned int CRetroPlayerVideo::GetPitch(AVPixelFormat format, unsigned int width)
-{
-  unsigned int pitch = 0;
-
-  switch (format)
-  {
-    case PIX_FMT_0RGB32:
-      pitch = width * 4;
-      break;
-    case PIX_FMT_RGB565:
-      pitch = width * 2;
-      break;
-    case PIX_FMT_RGB555:
-      pitch = width * 2;
-      break;
-    default:
-      CLog::Log(LOGERROR, "RetroPlayerVideo: Unsupported format: %d", format);
-      break;
-  }
-
-  return pitch;
 }

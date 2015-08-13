@@ -62,18 +62,18 @@ DLLEXPORT void GAME_close_game(AddonCB* frontend, CB_GameLib* cb)
   return cb->CloseGame(frontend->addonData);
 }
 
-DLLEXPORT void GAME_video_frame(AddonCB* frontend, CB_GameLib* cb, const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
+DLLEXPORT void GAME_video_frame(AddonCB* frontend, CB_GameLib* cb, const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->VideoFrame(frontend->addonData, data, width, height, format);
+  return cb->VideoFrame(frontend->addonData, data, size, width, height, format);
 }
 
-DLLEXPORT void GAME_audio_frames(AddonCB* frontend, CB_GameLib* cb, const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format)
+DLLEXPORT void GAME_audio_frames(AddonCB* frontend, CB_GameLib* cb, const uint8_t* data, unsigned int size, unsigned int frames, GAME_AUDIO_FORMAT format)
 {
   if (frontend == NULL || cb == NULL)
     return;
-  return cb->AudioFrames(frontend->addonData, data, frames, format);
+  return cb->AudioFrames(frontend->addonData, data, size, frames, format);
 }
 
 DLLEXPORT void GAME_hw_set_info(AddonCB* frontend, CB_GameLib* cb, game_hw_info* hw_info)

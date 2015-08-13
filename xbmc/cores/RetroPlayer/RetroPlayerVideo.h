@@ -37,7 +37,7 @@ public:
   void Start(double framerate);
   void Stop(void);
 
-  bool VideoFrame(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data);
+  bool VideoFrame(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, AVPixelFormat format);
 
 protected:
   virtual void Process(void);
@@ -45,14 +45,12 @@ protected:
 private:
   void Cleanup(void);
 
-  bool Configure(AVPixelFormat format, unsigned int width, unsigned int height);
-  
-  void ColorspaceConversion(AVPixelFormat format, unsigned int width, unsigned int height, const uint8_t* data, DVDVideoPicture &output);
+  bool Configure(unsigned int width, unsigned int height, AVPixelFormat format);
+
+  void ColorspaceConversion(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, DVDVideoPicture &output);
 
   bool IsFrameReady(void);
   void SetFrameReady(bool bReady);
-  
-  static unsigned int GetPitch(AVPixelFormat format, unsigned int width);
 
   double            m_framerate;
   AVPixelFormat     m_format;

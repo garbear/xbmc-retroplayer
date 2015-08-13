@@ -38,21 +38,23 @@ typedef struct CB_GameLib
   /*!
    * \brief Render a frame
    *
-   * \param format The format of the frame being rendered
+   * \param data The frame's data
+   * \param size The size of the data
    * \param width The width, in pixels
    * \param height The height, in pixels
-   * \param data The frame's data
+   * \param format The format of the frame being rendered
    */
-  void (*VideoFrame)(void* addonData, const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format);
+  void (*VideoFrame)(void* addonData, const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format);
 
   /*!
    * \brief Render a chunk of audio data
    *
    * \param data The audio data
+   * \param size The size of the data
    * \param frames The number of frames; a left and right sample make one frame
    * \param format The format of the audio data
    */
-  void (*AudioFrames)(void* addonData, const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format);
+  void (*AudioFrames)(void* addonData, const uint8_t* data, unsigned int size, unsigned int frames, GAME_AUDIO_FORMAT format);
 
   // -- Hardware rendering callbacks -------------------------------------------
 

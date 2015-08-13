@@ -99,7 +99,7 @@ void CAddonCallbacksGame::CloseGame(void* addonData)
   retroPlayer->CloseFile();
 }
 
-void CAddonCallbacksGame::VideoFrame(void* addonData, const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
+void CAddonCallbacksGame::VideoFrame(void* addonData, const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
 {
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
@@ -129,10 +129,10 @@ void CAddonCallbacksGame::VideoFrame(void* addonData, const uint8_t* data, unsig
   if (pixelFormat == AV_PIX_FMT_NONE || width == 0 || height == 0 || data == NULL)
     return;
 
-  retroPlayer->VideoFrame(pixelFormat, width, height, data);
+  retroPlayer->VideoFrame(data, size, width, height, pixelFormat);
 }
 
-void CAddonCallbacksGame::AudioFrames(void* addonData, const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format)
+void CAddonCallbacksGame::AudioFrames(void* addonData, const uint8_t* data, unsigned int size, unsigned int frames, GAME_AUDIO_FORMAT format)
 {
   CRetroPlayer* retroPlayer = GetRetroPlayer(addonData, __FUNCTION__);
   if (!retroPlayer)
@@ -153,7 +153,7 @@ void CAddonCallbacksGame::AudioFrames(void* addonData, const uint8_t* data, unsi
   if (audioFormat == AE_FMT_INVALID || frames == 0 || data == NULL)
     return;
 
-  retroPlayer->AudioFrames(audioFormat, frames, data);
+  retroPlayer->AudioFrames(data, size, frames, audioFormat);
 }
 
 void CAddonCallbacksGame::HwSetInfo(void* addonData, const game_hw_info *hw_info)

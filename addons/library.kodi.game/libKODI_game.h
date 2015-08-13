@@ -122,14 +122,14 @@ public:
     return GAME_close_game(m_handle, m_callbacks);
   }
 
-  void VideoFrame(const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
+  void VideoFrame(const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format)
   {
-    return GAME_video_frame(m_handle, m_callbacks, data, width, height, format);
+    return GAME_video_frame(m_handle, m_callbacks, data, size, width, height, format);
   }
 
-  void AudioFrames(const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format)
+  void AudioFrames(const uint8_t* data, unsigned int size, unsigned int frames, GAME_AUDIO_FORMAT format)
   {
-    return GAME_audio_frames(m_handle, m_callbacks, data, frames, format);
+    return GAME_audio_frames(m_handle, m_callbacks, data, size, frames, format);
   }
 
   void HwSetInfo(const struct game_hw_info* hw_info)
@@ -166,8 +166,8 @@ protected:
   CB_GameLib* (*GAME_register_me)(void* handle);
   void (*GAME_unregister_me)(void* handle, CB_GameLib* cb);
   void (*GAME_close_game)(void* handle, CB_GameLib* cb);
-  void (*GAME_video_frame)(void* handle, CB_GameLib* cb, const uint8_t*, unsigned int, unsigned int, GAME_RENDER_FORMAT);
-  void (*GAME_audio_frames)(void* handle, CB_GameLib* cb, const uint8_t*, unsigned int, GAME_AUDIO_FORMAT);
+  void (*GAME_video_frame)(void* handle, CB_GameLib* cb, const uint8_t*, unsigned int, unsigned int, unsigned int, GAME_RENDER_FORMAT);
+  void (*GAME_audio_frames)(void* handle, CB_GameLib* cb, const uint8_t*, unsigned int, unsigned int, GAME_AUDIO_FORMAT);
   void (*GAME_hw_set_info)(void* handle, CB_GameLib* cb, const struct game_hw_info*);
   uintptr_t (*GAME_hw_get_current_framebuffer)(void* handle, CB_GameLib* cb);
   game_proc_address_t (*GAME_hw_get_proc_address)(void* handle, CB_GameLib* cb, const char*);

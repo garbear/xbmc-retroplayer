@@ -45,8 +45,8 @@ public:
   CB_GameLib* GetCallbacks() const { return m_callbacks; }
 
   static void CloseGame(void* addonData);
-  static void VideoFrame(void* addonData, const uint8_t* data, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format);
-  static void AudioFrames(void* addonData, const uint8_t* data, unsigned int frames, GAME_AUDIO_FORMAT format);
+  static void VideoFrame(void* addonData, const uint8_t* data, unsigned int size, unsigned int width, unsigned int height, GAME_RENDER_FORMAT format);
+  static void AudioFrames(void* addonData, const uint8_t* data, unsigned int size, unsigned int frames, GAME_AUDIO_FORMAT format);
   static void HwSetInfo(void* addonData, const game_hw_info* hw_info);
   static uintptr_t HwGetCurrentFramebuffer(void* addonData);
   static game_proc_address_t HwGetProcAddress(void* addonData, const char* sym);

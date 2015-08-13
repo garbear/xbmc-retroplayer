@@ -34,7 +34,7 @@ public:
   bool Start(AEDataFormat format, double samplerate);
   void Stop(void) { Cleanup(); }
 
-  unsigned int AudioFrames(AEDataFormat format, unsigned int frames, const uint8_t* data);
+  unsigned int AudioFrames(const uint8_t* data, unsigned int size, unsigned int frames, AEDataFormat format);
 
   /**
    * Accumulative audio delay. Does not include delay due to current packet, so
