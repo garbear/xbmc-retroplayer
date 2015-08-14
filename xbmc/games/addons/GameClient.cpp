@@ -194,8 +194,6 @@ CGameClient::CGameClient(const cp_extension_t* ext)
 
 void CGameClient::InitializeProperties(void)
 {
-  m_libraryProps.InitializeProperties();
-
   m_bSupportsVFS = false;
   m_bSupportsStandalone = false;
   m_bIsPlaying = false;
@@ -212,6 +210,12 @@ CGameClient::~CGameClient(void)
 {
   if (m_bIsPlaying && m_player)
     m_player->CloseFile();
+}
+
+bool CGameClient::Initialize(void)
+{
+  m_libraryProps.InitializeProperties();
+  return Create() == ADDON_STATUS_OK;
 }
 
 const std::string CGameClient::LibPath() const

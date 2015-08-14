@@ -109,6 +109,8 @@ public:
   CGameClient(const cp_extension_t* props);
   virtual ~CGameClient(void);
 
+  bool Initialize(void);
+
   // Implementation of IAddon
   virtual bool              IsExecutable() const { return m_bSupportsStandalone; }
   virtual const std::string LibPath() const;

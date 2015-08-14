@@ -38,12 +38,15 @@ class CGameClientProperties
 {
 public:
   CGameClientProperties(const CGameClient* parent, game_client_properties*& props);
-  ~CGameClientProperties(void);
+  ~CGameClientProperties(void) { ReleaseResources(); }
 
   void InitializeProperties(void);
 
 private:
-  // Equal to parent's library path
+  // Release mutable resources
+  void ReleaseResources(void);
+
+  // Equal to parent's real library path
   const char* GetLibraryPath(void);
 
   // List of proxy DLLs needed to load the game client
@@ -69,18 +72,18 @@ private:
 
   // Helper functions
   bool AddProxyDll(const std::string& strLibPath);
-  bool HasProxyDll(const char* strLibPath) const;
+  bool HasProxyDll(const std::string& strLibPath) const;
 
   const CGameClient* const  m_parent;
   game_client_properties    m_properties;
 
   // Buffers to hold the strings
-  std::string        m_strLibraryPath;
-  std::vector<char*> m_proxyDllPaths;
-  std::string        m_strNetplayServer;
-  std::string        m_strSystemDirectory;
-  std::string        m_strContentDirectory;
-  std::string        m_strSaveDirectory;
+  std::string        m_strLibraryPath;      // immutable
+  std::vector<char*> m_proxyDllPaths;       // mutable
+  std::string        m_strNetplayServer;    // immutable
+  std::string        m_strSystemDirectory;  // immutable
+  std::string        m_strContentDirectory; // immutable
+  std::string        m_strSaveDirectory;    // immutable
 };
 
 } // namespace GAME
