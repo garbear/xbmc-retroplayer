@@ -23,10 +23,13 @@ RetroPlayer is a new player core for Kodi Entertainment Center. It is similar to
 Many of these features are still works-in-progress, so fork the code and help out!
 
 # Building Kodi and games
-Make sure to have all Kodi's dependencies installed, look here for instructions for various operating systems: [Compiling Kodi](http://kodi.wiki/view/Compiling), then:
+Build per usual and specify a prefix during the `./configure` step:
 
-`./bootstrap`, `./configure` and `make -j8` as per usual
+```
+./bootstrap
+./configure --prefix=$HOME/kodi
+make -j8
+```
 
-`make install DESTDIR=$HOME/kodi` whenever one of these headers changes: [xbmc/addons/addon-bindings.mk](https://github.com/garbear/xbmc/blob/retroplayer-15alpha1/xbmc/addons/addon-bindings.mk)
+Game add-ons are hosted at https://github.com/kodi-game. See instructions in their READMEs for how to compile.
 
-To build game add-ons, follow the "Building in-tree" instructions from the [game.libretro readme](https://github.com/kodi-game/game.libretro). If you omit `ADDONS="game.libretro"` then all add-ons will be built in one go.
