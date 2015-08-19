@@ -21,7 +21,9 @@
 #include "GameClient.h"
 #include "addons/AddonManager.h"
 #include "cores/IPlayer.h"
+#include "dialogs/GUIDialogContextMenu.h"
 #include "FileItem.h"
+#include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "games/GameManager.h"
 #include "input/joysticks/JoystickTypes.h"
@@ -44,6 +46,7 @@ using namespace XFILE;
 #define EXTENSION_WILDCARD           "*"
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
+#define MAX_LAUNCH_FILE_CHOICES      20 // Show up to this many games when a direcory is played
 
 // --- NormalizeExtension ------------------------------------------------------
 
@@ -151,6 +154,8 @@ CGameClient::CGameClient(const AddonProps& props)
     m_bSupportsVFS = (it->second == "true" || it->second == "yes");
   if ((it = props.extrainfo.find("supports_no_game")) != props.extrainfo.end())
     m_bSupportsStandalone = (it->second == "true" || it->second == "yes");
+  if ((it = props.extrainfo.find("supports_directory")) != props.extrainfo.end())
+    m_bSupportsDirectory = (it->second == "true" || it->second == "yes");
 }
 
 CGameClient::CGameClient(const cp_extension_t* ext)
@@ -189,6 +194,12 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       Props().extrainfo.insert(make_pair("supports_no_game", strSupportsStandalone));
       m_bSupportsStandalone = (strSupportsStandalone == "true" || strSupportsStandalone == "yes");
     }
+    std::string strSupportsDirectory = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_directory");
+    if (!strSupportsDirectory.empty())
+    {
+      Props().extrainfo.insert(make_pair("supports_directory", strSupportsDirectory));
+      m_bSupportsDirectory = (strSupportsDirectory == "true" || strSupportsDirectory == "yes");
+    }
   }
 }
 
@@ -196,6 +207,7 @@ void CGameClient::InitializeProperties(void)
 {
   m_bSupportsVFS = false;
   m_bSupportsStandalone = false;
+  m_bSupportsDirectory = false;
   m_bIsPlaying = false;
   m_player = NULL;
   m_region = GAME_REGION_NTSC;
@@ -252,23 +264,162 @@ bool CGameClient::CanOpen(const CFileItem& file) const
   if (file.HasProperty("Addon.ID") && file.GetProperty("Addon.ID").asString() != ID())
     return false;
 
-  // Filter by extension
-  if (!IsExtensionValid(URIUtils::GetExtension(file.GetPath())))
-    return false;
-
-  // If the file is on the VFS, the game client must support VFS
+  // Try to resolve path to a local file, as not all game clients support VFS
   CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+  if (translatedUrl.GetProtocol() == "file")
+    translatedUrl.SetProtocol("");
 
-  const bool bIsLocalFS = translatedUrl.GetProtocol() == "file" || translatedUrl.GetProtocol().empty();
-
+  // Filter by vfs support
+  const bool bIsLocalFS = translatedUrl.GetProtocol().empty();
   if (!bIsLocalFS && !SupportsVFS())
     return false;
 
-  return true;
+  if (file.m_bIsFolder)
+    return CanOpenDirectory(translatedUrl.Get());
+  else
+    return CanOpenFile(translatedUrl.Get());
+}
+
+bool CGameClient::CanOpenFile(std::string strPath) const
+{
+  // Filter by extension
+  if (IsExtensionValid(URIUtils::GetExtension(strPath)))
+    return true;
+
+  if (URIUtils::IsArchive(strPath))
+    return CanOpenDirectory(strPath);
+
+  return false;
+}
+
+bool CGameClient::CanOpenDirectory(std::string strPath) const
+{
+  // Turn archive files into archive paths
+  if (URIUtils::IsArchive(strPath))
+  {
+    // Must support VFS to load by zip:// protocol
+    if (!SupportsVFS())
+      return false;
+
+    std::string strType = URIUtils::GetExtension(strPath);
+    if (!strType.empty())
+    {
+      if (strType[0] == '.')
+        strType.erase(strType.begin());
+      strPath = URIUtils::CreateArchivePath(strType, CURL(strPath)).Get();
+    }
+  }
+
+  CFileItemList itemList;
+  if (ResolveDirectory(strPath, itemList))
+    return !itemList.IsEmpty();
+
+  return false;
+}
+
+std::string CGameClient::ResolvePath(const CFileItem& file) const
+{
+  CURL resolvedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
+  if (resolvedUrl.GetProtocol() == "file")
+    resolvedUrl.SetProtocol("");
+
+  std::string strPath = resolvedUrl.Get();
+  if (!file.m_bIsFolder && IsExtensionValid(URIUtils::GetExtension(strPath)))
+    return strPath;
+
+  if (file.m_bIsFolder || URIUtils::IsArchive(strPath))
+  {
+    // Turn archive files into archive paths
+    if (URIUtils::IsArchive(strPath))
+    {
+      std::string strType = URIUtils::GetExtension(strPath);
+      if (!strType.empty())
+      {
+        if (strType[0] == '.')
+          strType.erase(strType.begin());
+        strPath = URIUtils::CreateArchivePath(strType, resolvedUrl).Get();
+      }
+    }
+
+    CFileItemList files;
+    if (ResolveDirectory(strPath, files))
+    {
+      if (files.Size() == 1)
+      {
+        return files[0]->GetPath();
+      }
+      else if (files.Size() >= 2)
+      {
+        unsigned int fileCount = std::min((unsigned int)files.Size(), (unsigned int)MAX_LAUNCH_FILE_CHOICES);
+
+        CContextButtons choices;
+        choices.reserve(fileCount);
+
+        for (unsigned int i = 0; i < fileCount; i++)
+          choices.push_back(std::make_pair(i, files[i]->GetLabel()));
+
+        int result = CGUIDialogContextMenu::ShowAndGetChoice(choices);
+        if (result >= 0)
+          return files[result]->GetPath();
+        else
+          CLog::Log(LOGDEBUG, "GameClient: User cancelled game file selection");
+      }
+    }
+  }
+
+  return "";
+}
+
+bool CGameClient::ResolveDirectory(const std::string& strPath, CFileItemList& files) const
+{
+  CFileItemList directories;
+  if (GetDirectory(strPath, files, directories))
+  {
+    if (files.IsEmpty() && !directories.IsEmpty())
+    {
+      // Try first subdirectory if there are no files
+      CFileItemList dummy;
+      GetDirectory(directories[0]->GetPath(), files, dummy);
+    }
+  }
+
+  return !files.IsEmpty();
+}
+
+bool CGameClient::GetDirectory(std::string strPath, CFileItemList& files, CFileItemList& directories) const
+{
+  if (m_extensions.empty())
+    return false;
+
+  std::string strValidExts;
+  if (!IsExtensionValid(EXTENSION_WILDCARD))
+  {
+    for (std::set<std::string>::const_iterator it = m_extensions.begin(); it != m_extensions.end(); it++)
+      strValidExts += *it + "|";
+  }
+
+  CFileItemList items;
+  if (CDirectory::GetDirectory(strPath, items, strValidExts, DIR_FLAG_READ_CACHE | DIR_FLAG_NO_FILE_INFO))
+  {
+    for (int i = 0; i < items.Size(); i++)
+    {
+      if (items[i]->m_bIsFolder)
+        directories.Add(items[i]);
+      else
+        files.Add(items[i]);
+    }
+    return true;
+  }
+
+  return false;
 }
 
 bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 {
+  // Filter by Addon.ID property
+  if (file.HasProperty("Addon.ID") && file.GetProperty("Addon.ID").asString() != ID())
+    return false;
+
   CSingleLock lock(m_critSection);
 
   if (!Initialized())
@@ -289,12 +440,11 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
   }
   else
   {
-    // Try to resolve path to a local file, as not all game clients support VFS
-    CURL translatedUrl(CSpecialProtocol::TranslatePath(file.GetPath()));
-    if (translatedUrl.GetProtocol() == "file")
-      translatedUrl.SetProtocol("");
+    std::string strFilePath = ResolvePath(file);
+    if (strFilePath.empty())
+      return false;
 
-    strFilePath = translatedUrl.Get();
+    CLog::Log(LOGDEBUG, "GameClient: Loading %s", strFilePath.c_str());
 
     try { LogError(error = m_pStruct->LoadGame(strFilePath.c_str()), "LoadGame()"); }
     catch (...) { LogException("LoadGame()"); }

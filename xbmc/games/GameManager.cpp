@@ -79,6 +79,9 @@ bool CGameManager::UpdateAddons()
 
 void CGameManager::UpdateExtensions()
 {
+  m_gameExtensions.insert(".zip");
+  m_gameExtensions.insert(".rar");
+
   CAddonDatabase database;
   if (database.Open())
   {

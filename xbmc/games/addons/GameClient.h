@@ -136,12 +136,12 @@ public:
   // TODO: Remove me
   void SetFrameRateCorrection(double correctionFactor);
 
-  /**
-   * Perform the gamut of checks on the file: "Addon.ID" property, platform,
-   * extension, and a positive match on at least one of the CGameFileLoader
-   * strategies.
-   */
   bool CanOpen(const CFileItem& file) const;
+  bool CanOpenFile(std::string strPath) const;
+  bool CanOpenDirectory(std::string strPath) const;
+  std::string ResolvePath(const CFileItem& file) const;
+  bool ResolveDirectory(const std::string& strPath, CFileItemList& files) const;
+  bool GetDirectory(std::string strPath, CFileItemList& files, CFileItemList& directories) const;
 
   // Game API functions
   bool OpenFile(const CFileItem& file, IPlayer* player);
@@ -187,6 +187,7 @@ private:
   std::set<std::string> m_extensions;
   bool                  m_bSupportsVFS;
   bool                  m_bSupportsStandalone;
+  bool                  m_bSupportsDirectory;
   //GamePlatforms         m_platforms;
 
   // Properties of the current playing file
