@@ -19,6 +19,7 @@
  */
 #pragma once
 
+#include "peripherals/PeripheralTypes.h"
 #include "threads/CriticalSection.h"
 #include "utils/Observer.h"
 
@@ -49,7 +50,8 @@ public:
    * \param handler  The instance accepting all input delivered to the port
    * \param port     The port number belonging to the game client
    */
-  void OpenPort(IJoystickInputHandler* handler, unsigned int port);
+  void OpenPort(IJoystickInputHandler* handler, unsigned int port,
+                PERIPHERALS::PeripheralType device = PERIPHERALS::PERIPHERAL_UNKNOWN);
 
   /*!
    * \brief Close an opened port
@@ -69,14 +71,22 @@ public:
    * attempt to honor that request.
    */
   void MapDevices(const std::vector<PERIPHERALS::CPeripheral*>& devices,
-                  std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& deviceToPortMap) const;
+                  std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& deviceToPortMap);
 
 private:
+  struct SDevice
+  {
+    PERIPHERALS::CPeripheral* device;
+    bool                      bConnected;
+  };
+
   struct SPort
   {
-    IJoystickInputHandler* handler;     // Input handler for this port
-    unsigned int           port;        // Port number belonging to the game client
-    unsigned int           deviceCount; // Number of devices attached to this port
+    IJoystickInputHandler*      handler;     // Input handler for this port
+    unsigned int                port;        // Port number belonging to the game client
+    PERIPHERALS::PeripheralType type;
+    std::vector<SDevice>        devices;
+
   };
 
   /*!
@@ -98,13 +108,14 @@ private:
    * A port is considered open if no other ports have a fewer number of devices
    * connected.
    */
-  static unsigned int GetNextOpenPort(const std::vector<SPort>& ports, int requestedPort);
+  int GetTargetPort(int requestedPort, PERIPHERALS::PeripheralType deviceType) const;
 
   /*!
-   * \brief Helper function to return the number of devices attached to the
-   *        port with the fewest devices.
+   * \brief Helper function to get the device's requested port
+   * \param device If device is not a joystick, this returns JOYSTICK_PORT_UNKNOWN
+   * \return the requested port, or JOYSTICK_PORT_UNKNOWN if no port is requested
    */
-  static unsigned int GetMinDeviceCount(const std::vector<SPort>& ports);
+  static int GetRequestedPort(const PERIPHERALS::CPeripheral* device);
 
   std::vector<SPort> m_ports;
   CCriticalSection   m_mutex;
