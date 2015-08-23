@@ -1,0 +1,1 @@
+game.libretro.bnes https://github.com/kodi-game/game.libretro.bnes 1b1a9fe
