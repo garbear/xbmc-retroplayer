@@ -1,1 +1,1 @@
-game.libretro.fceu-next https://github.com/kodi-game/game.libretro.fceu-next 5f6eda9
+game.libretro.fceu-next https://github.com/kodi-game/game.libretro.fceu-next 3befc07
