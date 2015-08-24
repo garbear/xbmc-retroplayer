@@ -301,13 +301,7 @@ bool CGameClient::CanOpenDirectory(std::string strPath) const
     if (!SupportsVFS())
       return false;
 
-    std::string strType = URIUtils::GetExtension(strPath);
-    if (!strType.empty())
-    {
-      if (strType[0] == '.')
-        strType.erase(strType.begin());
-      strPath = URIUtils::CreateArchivePath(strType, CURL(strPath)).Get();
-    }
+    strPath = ToArchivePath(strPath);
   }
 
   CFileItemList itemList;
@@ -323,51 +317,77 @@ std::string CGameClient::ResolvePath(const CFileItem& file) const
   if (resolvedUrl.GetProtocol() == "file")
     resolvedUrl.SetProtocol("");
 
-  std::string strPath = resolvedUrl.Get();
-  if (!file.m_bIsFolder && IsExtensionValid(URIUtils::GetExtension(strPath)))
-    return strPath;
+  std::string strResolvedPath;
 
-  if (file.m_bIsFolder || URIUtils::IsArchive(strPath))
+  std::string strPath = resolvedUrl.Get();
+
+  const bool bIsValidExt = !file.m_bIsFolder && IsExtensionValid(URIUtils::GetExtension(strPath));
+  if (bIsValidExt)
   {
-    // Turn archive files into archive paths
+    strResolvedPath = strPath;
+  }
+  else
+  {
+    bool bIsFolder = file.m_bIsFolder;
+
     if (URIUtils::IsArchive(strPath))
     {
-      std::string strType = URIUtils::GetExtension(strPath);
-      if (!strType.empty())
-      {
-        if (strType[0] == '.')
-          strType.erase(strType.begin());
-        strPath = URIUtils::CreateArchivePath(strType, resolvedUrl).Get();
-      }
+      // Turn archive files into archive paths
+      strPath = ToArchivePath(strPath);
+      bIsFolder |= !strPath.empty();
     }
 
-    CFileItemList files;
-    if (ResolveDirectory(strPath, files))
+    if (bIsFolder)
     {
-      if (files.Size() == 1)
+      CFileItemList files;
+      if (ResolveDirectory(strPath, files))
       {
-        return files[0]->GetPath();
-      }
-      else if (files.Size() >= 2)
-      {
-        unsigned int fileCount = std::min((unsigned int)files.Size(), (unsigned int)MAX_LAUNCH_FILE_CHOICES);
+        if (files.Size() == 1)
+        {
+          strResolvedPath = files[0]->GetPath();
+        }
+        else if (files.Size() >= 2)
+        {
+          CLog::Log(LOGDEBUG, "%s: Directory contains %d possible game files (%s)", ID().c_str(), files.Size(), strPath.c_str());
 
-        CContextButtons choices;
-        choices.reserve(fileCount);
+          // Don't show too many files
+          unsigned int fileCount = std::min((unsigned int)files.Size(), (unsigned int)MAX_LAUNCH_FILE_CHOICES);
 
-        for (unsigned int i = 0; i < fileCount; i++)
-          choices.push_back(std::make_pair(i, files[i]->GetLabel()));
+          CContextButtons choices;
+          choices.reserve(fileCount);
 
-        int result = CGUIDialogContextMenu::ShowAndGetChoice(choices);
-        if (result >= 0)
-          return files[result]->GetPath();
-        else
-          CLog::Log(LOGDEBUG, "GameClient: User cancelled game file selection");
+          for (unsigned int i = 0; i < fileCount; i++)
+            choices.push_back(std::make_pair(i, files[i]->GetLabel()));
+
+          int result = CGUIDialogContextMenu::ShowAndGetChoice(choices);
+          if (result >= 0)
+            strResolvedPath = files[result]->GetPath();
+          else
+            CLog::Log(LOGDEBUG, "%s: User cancelled game file selection", ID().c_str());
+        }
+
+        if (!strResolvedPath.empty())
+          CLog::Log(LOGDEBUG, "%s: Directory resolved to file: %s", ID().c_str(), strResolvedPath.c_str());
       }
     }
   }
 
-  return "";
+  return strResolvedPath;
+}
+
+std::string CGameClient::ToArchivePath(const std::string& strPath)
+{
+  std::string strArchivePath;
+
+  std::string strType = URIUtils::GetExtension(strPath);
+  if (!strType.empty())
+  {
+    if (strType[0] == '.')
+      strType.erase(strType.begin());
+    strArchivePath = URIUtils::CreateArchivePath(strType, CURL(strPath)).Get();
+  }
+
+  return strArchivePath;
 }
 
 bool CGameClient::ResolveDirectory(const std::string& strPath, CFileItemList& files) const
@@ -375,9 +395,9 @@ bool CGameClient::ResolveDirectory(const std::string& strPath, CFileItemList& fi
   CFileItemList directories;
   if (GetDirectory(strPath, files, directories))
   {
-    if (files.IsEmpty() && !directories.IsEmpty())
+    if (files.IsEmpty() && directories.Size() == 1)
     {
-      // Try first subdirectory if there are no files
+      // Try again in subdirectory if there are no files and a single directory
       CFileItemList dummy;
       GetDirectory(directories[0]->GetPath(), files, dummy);
     }

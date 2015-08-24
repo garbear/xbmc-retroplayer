@@ -173,6 +173,7 @@ private:
   GameControllerVector GetControllers(void) const;
 
   // Helper functions
+  static std::string ToArchivePath(const std::string& strPath);
   static std::vector<std::string> ParseExtensions(const std::string& strExtensionList);
   //void SetPlatforms(const std::string& strPlatformList);
   bool LogError(GAME_ERROR error, const char* strMethod) const;
