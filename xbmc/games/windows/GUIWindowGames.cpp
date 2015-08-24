@@ -213,15 +213,16 @@ void CGUIWindowGames::OnInfo(int itemNumber)
 
 bool CGUIWindowGames::PlayGame(const CFileItem &item)
 {
+  // Decode zip:// path for zip root directory
   CFileItem gameFile = item;
   CURL url(item.GetPath());
   if (url.GetProtocol() == "zip" && url.GetFileName() == "")
-    gameFile = CFileItem(url.GetHostName(), false);
+    gameFile.SetPath(url.GetHostName());
 
   // Allocate a game info tag to let the player know it's a game
   gameFile.GetGameInfoTag();
 
-  // Let RetroPlayer choose the right action henceforth
+  // Let RetroPlayer choose the right action
   return g_application.PlayFile(gameFile) == PLAYBACK_OK;
 }
 
