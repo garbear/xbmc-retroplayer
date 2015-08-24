@@ -1,1 +1,1 @@
-game.libretro.2048 https://github.com/kodi-game/game.libretro.2048 928faaf
+game.libretro.2048 https://github.com/kodi-game/game.libretro.2048 af6e2f8
