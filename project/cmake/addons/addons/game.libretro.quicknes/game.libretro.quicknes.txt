@@ -1,1 +1,1 @@
-game.libretro.quicknes https://github.com/kodi-game/game.libretro.quicknes 07dc179
+game.libretro.quicknes https://github.com/kodi-game/game.libretro.quicknes d427361

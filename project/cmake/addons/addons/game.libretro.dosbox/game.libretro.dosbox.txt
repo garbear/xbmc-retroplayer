@@ -1,1 +1,1 @@
-game.libretro.dosbox https://github.com/kodi-game/game.libretro.dosbox d0e2e84
+game.libretro.dosbox https://github.com/kodi-game/game.libretro.dosbox 5d5f74d

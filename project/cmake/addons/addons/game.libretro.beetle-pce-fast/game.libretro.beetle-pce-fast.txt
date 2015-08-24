@@ -1,1 +1,1 @@
-game.libretro.beetle-pce-fast https://github.com/kodi-game/game.libretro.beetle-pce-fast db9e57b
+game.libretro.beetle-pce-fast https://github.com/kodi-game/game.libretro.beetle-pce-fast 6888e6a
