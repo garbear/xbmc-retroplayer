@@ -1,1 +1,1 @@
-game.libretro.genplus https://github.com/kodi-game/game.libretro.genplus dba5189
+game.libretro.genplus https://github.com/kodi-game/game.libretro.genplus master

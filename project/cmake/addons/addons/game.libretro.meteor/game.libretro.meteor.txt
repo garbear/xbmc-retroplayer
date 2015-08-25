@@ -1,1 +1,1 @@
-game.libretro.meteor https://github.com/kodi-game/game.libretro.meteor 4e54c82
+game.libretro.meteor https://github.com/kodi-game/game.libretro.meteor master
