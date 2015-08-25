@@ -1,1 +1,1 @@
-windows linux darwin
+linux windows osx
