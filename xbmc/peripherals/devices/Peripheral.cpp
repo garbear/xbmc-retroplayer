@@ -533,7 +533,7 @@ void CPeripheral::RegisterJoystickInputHandler(IJoystickInputHandler* handler)
   if (it == m_inputHandlers.end())
   {
     m_inputHandlers[handler] = new CAddonJoystickInputHandling(this, handler);
-    RegisterJoystickDriverHandler(m_inputHandlers[handler]);
+    RegisterJoystickDriverHandler(m_inputHandlers[handler], false);
   }
 }
 
@@ -554,7 +554,7 @@ void CPeripheral::RegisterJoystickButtonMapper(IJoystickButtonMapper* mapper)
   if (it == m_buttonMappers.end())
   {
     CAddonJoystickButtonMapping* addonMapping = new CAddonJoystickButtonMapping(this, mapper);
-    RegisterJoystickDriverHandler(addonMapping);
+    RegisterJoystickDriverHandler(addonMapping, false);
     m_buttonMappers[mapper] = addonMapping;
   }
 }

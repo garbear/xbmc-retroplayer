@@ -73,32 +73,47 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
   return bSuccess;
 }
 
-void CPeripheralJoystick::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler)
+void CPeripheralJoystick::RegisterJoystickDriverHandler(IJoystickDriverHandler* handler, bool bPromiscuous)
 {
   CSingleLock lock(m_handlerMutex);
 
-  if (handler && std::find(m_driverHandlers.begin(), m_driverHandlers.end(), handler) == m_driverHandlers.end())
-    m_driverHandlers.insert(m_driverHandlers.begin(), handler);
+  DriverHandler driverHandler = { handler, bPromiscuous };
+  m_driverHandlers.insert(m_driverHandlers.begin(), driverHandler);
 }
 
 void CPeripheralJoystick::UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler)
 {
   CSingleLock lock(m_handlerMutex);
 
-  m_driverHandlers.erase(std::remove(m_driverHandlers.begin(), m_driverHandlers.end(), handler), m_driverHandlers.end());
+  m_driverHandlers.erase(std::remove_if(m_driverHandlers.begin(), m_driverHandlers.end(),
+    [handler](const DriverHandler& driverHandler)
+    {
+      return driverHandler.handler == handler;
+    }), m_driverHandlers.end());
 }
 
 bool CPeripheralJoystick::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   CSingleLock lock(m_handlerMutex);
 
+  // Process promiscuous handlers
+  for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  {
+    if (it->bPromiscuous)
+      it->handler->OnButtonMotion(buttonIndex, bPressed);
+  }
+
   bool bHandled = false;
 
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  // Process regular handlers until one is handled
+  for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
   {
-    // If button is released, notify all handlers to avoid "sticking"
-    if (!bHandled || !bPressed)
-      bHandled |= (*it)->OnButtonMotion(buttonIndex, bPressed);
+    if (!it->bPromiscuous)
+    {
+      // If button is released, notify all handlers to avoid "sticking"
+      if (!bHandled || !bPressed)
+        bHandled |= it->handler->OnButtonMotion(buttonIndex, bPressed);
+    }
   }
 
   return bHandled;
@@ -108,13 +123,24 @@ bool CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direct
 {
   CSingleLock lock(m_handlerMutex);
 
+  // Process promiscuous handlers
+  for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  {
+    if (it->bPromiscuous)
+      it->handler->OnHatMotion(hatIndex, direction);
+  }
+
   bool bHandled = false;
 
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  // Process regular handlers until one is handled
+  for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
   {
-    // If hat is centered, notify all handlers to avoid "sticking"
-    if (!bHandled || direction == HatDirectionNone)
-      bHandled |= (*it)->OnHatMotion(hatIndex, direction);
+    if (!it->bPromiscuous)
+    {
+      // If hat is centered, notify all handlers to avoid "sticking"
+      if (!bHandled || direction == HatDirectionNone)
+        bHandled |= it->handler->OnHatMotion(hatIndex, direction);
+    }
   }
 
   return bHandled;
@@ -124,13 +150,24 @@ bool CPeripheralJoystick::OnAxisMotion(unsigned int axisIndex, float position)
 {
   CSingleLock lock(m_handlerMutex);
 
+  // Process promiscuous handlers
+  for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  {
+    if (it->bPromiscuous)
+      it->handler->OnAxisMotion(axisIndex, position);
+  }
+
   bool bHandled = false;
 
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+  // Process regular handlers until one is handled
+  for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
   {
-    // If axis is centered, notify all handlers to avoid "sticking"
-    if (!bHandled || position == 0.0f)
-      bHandled |= (*it)->OnAxisMotion(axisIndex, position);
+    if (!it->bPromiscuous)
+    {
+      // If axis is centered, notify all handlers to avoid "sticking"
+      if (!bHandled || position == 0.0f)
+        bHandled |= it->handler->OnAxisMotion(axisIndex, position);
+    }
   }
 
   return bHandled;
@@ -140,6 +177,6 @@ void CPeripheralJoystick::ProcessAxisMotions(void)
 {
   CSingleLock lock(m_handlerMutex);
 
-  for (std::vector<IJoystickDriverHandler*>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
-    (*it)->ProcessAxisMotions();
+  for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
+    it->handler->ProcessAxisMotions();
 }

@@ -166,7 +166,7 @@ namespace PERIPHERALS
 
     virtual bool ErrorOccured(void) const { return m_bError; }
 
-    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler) { }
+    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler, bool bPromiscuous) { }
     virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler) { }
 
     virtual void RegisterJoystickInputHandler(IJoystickInputHandler* handler);

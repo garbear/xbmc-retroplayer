@@ -42,7 +42,7 @@ namespace PERIPHERALS
 
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
-    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler);
+    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler, bool bPromiscuous);
     virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler);
 
     // implementation of IJoystickDriverHandler
@@ -84,13 +84,19 @@ namespace PERIPHERALS
     void SetAxisCount(unsigned int axisCount)     { m_axisCount     = axisCount; }
 
   protected:
+    struct DriverHandler
+    {
+      IJoystickDriverHandler* handler;
+      bool                    bPromiscuous;
+    };
+
     std::string                          m_strProvider;
     int                                  m_requestedPort;
     unsigned int                         m_buttonCount;
     unsigned int                         m_hatCount;
     unsigned int                         m_axisCount;
     CDefaultController                   m_defaultInputHandler;
-    std::vector<IJoystickDriverHandler*> m_driverHandlers;
+    std::vector<DriverHandler>           m_driverHandlers;
     CCriticalSection                     m_handlerMutex;
   };
 }

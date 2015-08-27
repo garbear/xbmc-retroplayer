@@ -38,7 +38,7 @@ namespace PERIPHERALS
 
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
-    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler);
+    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler, bool bPromiscuous);
     virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler);
 
     // implementation of IKeyboardHandler
@@ -46,8 +46,14 @@ namespace PERIPHERALS
     virtual void OnKeyRelease(const CKey& key);
 
   private:
-    typedef std::pair<IJoystickDriverHandler*, IKeyboardHandler*> KeyboardHandlerHandle;
-    typedef std::vector<KeyboardHandlerHandle>                    KeyboardHandlerVector;
+    struct KeyboardHandler
+    {
+      IKeyboardHandler* handler;
+      bool              bPromiscuous;
+    };
+
+    typedef std::pair<IJoystickDriverHandler*, KeyboardHandler> KeyboardHandlerHandle;
+    typedef std::vector<KeyboardHandlerHandle>                  KeyboardHandlerVector;
 
     KeyboardHandlerVector m_keyboardHandlers;
     CCriticalSection      m_handlerMutex;
