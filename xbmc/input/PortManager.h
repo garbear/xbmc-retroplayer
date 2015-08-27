@@ -76,8 +76,8 @@ public:
 private:
   struct SDevice
   {
-    PERIPHERALS::CPeripheral* device;
-    bool                      bConnected;
+    void* device;
+    bool  bConnected;
   };
 
   struct SPort

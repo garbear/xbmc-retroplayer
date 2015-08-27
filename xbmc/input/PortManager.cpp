@@ -72,7 +72,7 @@ void CPortManager::MapDevices(const std::vector<CPeripheral*>& devices,
       if (std::find(devices.begin(), devices.end(), itPortDevice->device) != devices.end())
       {
         itPortDevice->bConnected = true;
-        deviceToPortMap[itPortDevice->device] = itPort->handler;
+        deviceToPortMap[static_cast<CPeripheral*>(itPortDevice->device)] = itPort->handler;
       }
       else
       {
