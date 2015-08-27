@@ -64,6 +64,25 @@ void CPortManager::MapDevices(const std::vector<CPeripheral*>& devices,
   if (m_ports.empty())
     return; // Nothing to do
 
+  // Force the keyboard to disconnect so that joysticks get priority
+  for (std::vector<CPeripheral*>::const_iterator itDevice = devices.begin(); itDevice != devices.end(); ++itDevice)
+  {
+    if ((*itDevice)->Type() == PERIPHERAL_KEYBOARD)
+    {
+      const CPeripheral* keyboard = *itDevice;
+      for (std::vector<SPort>::iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
+      {
+        std::vector<SDevice>& portDevices = itPort->devices;
+        portDevices.erase(std::remove_if(portDevices.begin(), portDevices.end(),
+          [keyboard](const SDevice& portDevice)
+          {
+            return portDevice.device == keyboard;
+          }), portDevices.end());
+      }
+      break;
+    }
+  }
+
   // Look for connected/removed devices
   for (std::vector<SPort>::iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
   {
