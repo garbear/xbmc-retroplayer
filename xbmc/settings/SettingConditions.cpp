@@ -209,9 +209,6 @@ void CSettingConditions::Initialize()
 #ifdef HAS_KARAOKE
   m_simpleConditions.insert("has_karaoke");
 #endif
-#ifdef HAS_SDL_JOYSTICK
-  m_simpleConditions.insert("has_sdl_joystick");
-#endif
 #ifdef HAS_TOUCH_SKIN
   m_simpleConditions.insert("has_touch_skin");
 #endif

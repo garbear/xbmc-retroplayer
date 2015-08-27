@@ -1230,11 +1230,6 @@ bool CApplication::Initialize()
   // reset our screensaver (starts timers etc.)
   ResetScreenSaver();
 
-#ifdef HAS_SDL_JOYSTICK
-  CInputManager::Get().SetEnabledJoystick(CSettings::Get().GetBool("input.enablejoystick") &&
-                    CPeripheralImon::GetCountOfImonsConflictWithDInput() == 0 );
-#endif
-
   // if the user interfaces has been fully initialized let everyone know
   if (uiInitializationFinished)
   {

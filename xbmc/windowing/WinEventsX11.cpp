@@ -39,10 +39,6 @@
 #include "input/MouseStat.h"
 #include "input/InputManager.h"
 
-#ifdef HAS_SDL_JOYSTICK
-#include "input/SDLJoystick.h"
-#endif
-
 CWinEventsX11Imp* CWinEventsX11Imp::WinEvents = 0;
 
 static uint32_t SymMappingsX11[][2] =
@@ -593,30 +589,6 @@ bool CWinEventsX11Imp::MessagePump()
     g_Windowing.NotifyXRREvent();
     WinEvents->m_xrrEventPending = false;
   }
-
-#ifdef HAS_SDL_JOYSTICK
-  SDL_Event event;
-  while (SDL_PollEvent(&event))
-  {
-    switch(event.type)
-    {
-      case SDL_JOYBUTTONUP:
-      case SDL_JOYBUTTONDOWN:
-      case SDL_JOYAXISMOTION:
-      case SDL_JOYBALLMOTION:
-      case SDL_JOYHATMOTION:
-      case SDL_JOYDEVICEADDED:
-      case SDL_JOYDEVICEREMOVED:
-        CInputManager::Get().UpdateJoystick(event);
-        ret = true;
-        break;
-
-      default:
-        break;
-    }
-    memset(&event, 0, sizeof(SDL_Event));
-  }
-#endif
 
   return ret;
 }
