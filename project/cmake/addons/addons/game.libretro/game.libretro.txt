@@ -1,1 +1,1 @@
-game.libretro https://github.com/kodi-game/game.libretro 7aeb8af
+game.libretro https://github.com/kodi-game/game.libretro f89e4d5
