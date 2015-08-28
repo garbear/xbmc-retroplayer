@@ -67,7 +67,9 @@
 #include "games/ControllerTypes.h"
 #include "games/GameTypes.h"
 #include "games/SerialState.h"
+#include "input/IKeyboardHandler.h"
 #include "input/joysticks/IJoystickInputHandler.h"
+#include "input/Key.h"
 #include "threads/CriticalSection.h"
 
 #include <map>
@@ -103,7 +105,8 @@ private:
   const GameControllerPtr m_controller;
 };
 
-class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>
+class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_client_properties>,
+                    public IKeyboardHandler
 {
 public:
   CGameClient(const ADDON::AddonProps& props);
@@ -162,6 +165,10 @@ public:
   bool OnAnalogStickMotion(int port, const std::string& feature, float x, float y);
   bool OnAccelerometerMotion(int port, const std::string& feature, float x, float y, float z);
 
+  // implementation of IKeyboardHandler
+  virtual bool OnKeyPress(const CKey& key);
+  virtual void OnKeyRelease(const CKey& key);
+
 private:
   // Called by the constructors
   void InitializeProperties(void);
@@ -171,12 +178,15 @@ private:
   bool InitSerialization();
 
   void ClearPorts(void);
+  void OpenKeyboard(void);
+  void CloseKeyboard(void);
   GameControllerVector GetControllers(void) const;
 
   // Helper functions
   static std::string ToArchivePath(const std::string& strPath);
   static std::vector<std::string> ParseExtensions(const std::string& strExtensionList);
   //void SetPlatforms(const std::string& strPlatformList);
+  static GAME_KEY_MOD GetModifiers(CKey::Modifier modifier);
   bool LogError(GAME_ERROR error, const char* strMethod) const;
   void LogException(const char* strFunctionName) const;
   void LogAddonProperties(void) const; // Unused currently
@@ -190,6 +200,7 @@ private:
   bool                  m_bSupportsVFS;
   bool                  m_bSupportsStandalone;
   bool                  m_bSupportsDirectory;
+  bool                  m_bSupportsKeyboard;
   //GamePlatforms         m_platforms;
 
   // Properties of the current playing file

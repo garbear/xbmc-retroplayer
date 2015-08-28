@@ -28,6 +28,7 @@
 #include "games/GameManager.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
+#include "input/InputManager.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "input/PortManager.h"
 #include "settings/Settings.h"
@@ -49,6 +50,7 @@ using namespace XFILE;
 #define GAME_REGION_NTSC_STRING      "NTSC"
 #define GAME_REGION_PAL_STRING       "PAL"
 #define MAX_LAUNCH_FILE_CHOICES      20 // Show up to this many games when a direcory is played
+#define BUTTON_INDEX_MASK            0x01ff
 
 // --- NormalizeExtension ------------------------------------------------------
 
@@ -174,6 +176,8 @@ CGameClient::CGameClient(const AddonProps& props)
     m_bSupportsStandalone = (it->second == "true" || it->second == "yes");
   if ((it = props.extrainfo.find("supports_directory")) != props.extrainfo.end())
     m_bSupportsDirectory = (it->second == "true" || it->second == "yes");
+  if ((it = props.extrainfo.find("supports_keyboard")) != props.extrainfo.end())
+    m_bSupportsKeyboard = (it->second == "true" || it->second == "yes");
 }
 
 CGameClient::CGameClient(const cp_extension_t* ext)
@@ -218,6 +222,12 @@ CGameClient::CGameClient(const cp_extension_t* ext)
       Props().extrainfo.insert(make_pair("supports_directory", strSupportsDirectory));
       m_bSupportsDirectory = (strSupportsDirectory == "true" || strSupportsDirectory == "yes");
     }
+    std::string strSupportsKeyboard = CAddonMgr::Get().GetExtValue(ext->configuration, "supports_keyboard");
+    if (!strSupportsKeyboard.empty())
+    {
+      Props().extrainfo.insert(make_pair("supports_keyboard", strSupportsKeyboard));
+      m_bSupportsKeyboard = (strSupportsKeyboard == "true" || strSupportsKeyboard == "yes");
+    }
   }
 }
 
@@ -226,6 +236,7 @@ void CGameClient::InitializeProperties(void)
   m_bSupportsVFS = false;
   m_bSupportsStandalone = false;
   m_bSupportsDirectory = false;
+  m_bSupportsKeyboard = false;
   m_bIsPlaying = false;
   m_player = NULL;
   m_region = GAME_REGION_NTSC;
@@ -501,6 +512,9 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
 
     InitSerialization();
 
+    if (m_bSupportsKeyboard)
+      OpenKeyboard();
+
     return true;
   }
 
@@ -615,6 +629,9 @@ void CGameClient::CloseFile()
   }
 
   ClearPorts();
+
+  if (m_bSupportsKeyboard)
+    CloseKeyboard();
 
   m_bIsPlaying = false;
   m_filePath.clear();
@@ -732,6 +749,16 @@ void CGameClient::UpdatePort(unsigned int port, const GameControllerPtr& control
   }
 }
 
+void CGameClient::OpenKeyboard(void)
+{
+  CInputManager::Get().RegisterKeyboardHandler(this);
+}
+
+void CGameClient::CloseKeyboard(void)
+{
+  CInputManager::Get().UnregisterKeyboardHandler(this);
+}
+
 GameControllerVector CGameClient::GetControllers(void) const
 {
   GameControllerVector controllers;
@@ -842,6 +869,48 @@ bool CGameClient::OnAccelerometerMotion(int port, const std::string& feature, fl
   return bHandled;
 }
 
+bool CGameClient::OnKeyPress(const CKey& key)
+{
+  bool bHandled = false;
+
+  game_input_event event;
+
+  event.type            = GAME_INPUT_EVENT_KEY;
+  event.port            = 0;
+  event.controller_id   = ""; // TODO
+  event.feature_name    = ""; // TODO
+  event.key.pressed     = true;
+  event.key.character   = key.GetButtonCode() & BUTTON_INDEX_MASK;
+  event.key.modifiers   = GetModifiers(static_cast<CKey::Modifier>(key.GetModifiers()));
+
+  if (event.key.character != 0)
+  {
+    try { bHandled = m_pStruct->InputEvent(0, &event); }
+    catch (...) { LogException("InputEvent()"); }
+  }
+
+  return bHandled;
+}
+
+void CGameClient::OnKeyRelease(const CKey& key)
+{
+  game_input_event event;
+
+  event.type            = GAME_INPUT_EVENT_KEY;
+  event.port            = 0;
+  event.controller_id   = ""; // TODO
+  event.feature_name    = ""; // TODO
+  event.key.pressed     = false;
+  event.key.character   = key.GetButtonCode() & BUTTON_INDEX_MASK;
+  event.key.modifiers   = GetModifiers(static_cast<CKey::Modifier>(key.GetModifiers()));
+
+  if (event.key.character != 0)
+  {
+    try { m_pStruct->InputEvent(0, &event); }
+    catch (...) { LogException("InputEvent()"); }
+  }
+}
+
 void CGameClient::SetFrameRateCorrection(double correctionFactor)
 {
   if (correctionFactor != 0.0)
@@ -888,6 +957,19 @@ void CGameClient::SetPlatforms(const string& strPlatformList)
   }
 }
 */
+
+GAME_KEY_MOD CGameClient::GetModifiers(CKey::Modifier modifier)
+{
+  unsigned int mods = GAME_KEY_MOD_NONE;
+
+  if (modifier & CKey::MODIFIER_CTRL)  mods = mods | GAME_KEY_MOD_CTRL;
+  if (modifier & CKey::MODIFIER_SHIFT) mods = mods | GAME_KEY_MOD_SHIFT;
+  if (modifier & CKey::MODIFIER_ALT)   mods = mods | GAME_KEY_MOD_ALT;
+  if (modifier & CKey::MODIFIER_RALT)  mods = mods | GAME_KEY_MOD_ALT;
+  if (modifier & CKey::MODIFIER_META)  mods = mods | GAME_KEY_MOD_META;
+
+  return static_cast<GAME_KEY_MOD>(mods);
+}
 
 bool CGameClient::LogError(GAME_ERROR error, const char* strMethod) const
 {
