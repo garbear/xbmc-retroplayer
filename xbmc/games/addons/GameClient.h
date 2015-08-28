@@ -213,6 +213,7 @@ private:
   double                m_sampleRate;          // Audio frequency
 
   // Save/rewind functionality
+  bool                  m_bSerializationInited;
   unsigned int          m_serializeSize;
   bool                  m_bRewindEnabled;
   CSerialState          m_serialState;

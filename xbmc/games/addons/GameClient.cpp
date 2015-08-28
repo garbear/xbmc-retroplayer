@@ -243,6 +243,7 @@ void CGameClient::InitializeProperties(void)
   m_frameRate = 0.0;
   m_frameRateCorrection = 1.0;
   m_sampleRate = 0.0;
+  m_bSerializationInited = false;
   m_serializeSize = 0;
   m_bRewindEnabled = false;
 }
@@ -510,8 +511,6 @@ bool CGameClient::OpenFile(const CFileItem& file, IPlayer* player)
     m_player     = player;
     m_bIsPlaying = true;
 
-    InitSerialization();
-
     if (m_bSupportsKeyboard)
       OpenKeyboard();
 
@@ -592,6 +591,8 @@ bool CGameClient::InitSerialization()
     }
   }
 
+  m_bSerializationInited = true;
+
   return true;
 }
 
@@ -651,7 +652,10 @@ void CGameClient::RunFrame()
   // Append a new state delta to the rewind buffer
   if (m_bRewindEnabled)
   {
-	GAME_ERROR error = GAME_ERROR_FAILED;
+    if (!m_bSerializationInited)
+      InitSerialization();
+
+    GAME_ERROR error = GAME_ERROR_FAILED;
     try { LogError(error = m_pStruct->Serialize(m_serialState.GetNextState(), m_serialState.GetFrameSize()), "Serialize()"); }
     catch (...) { LogException("Serialize()"); }
 
