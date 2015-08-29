@@ -26,6 +26,7 @@ SRCS=Addon.cpp \
      Service.cpp \
      Skin.cpp \
      UISoundsResource.cpp \
+     VFSEntry.cpp \
      Visualisation.cpp \
      Webinterface.cpp \
 

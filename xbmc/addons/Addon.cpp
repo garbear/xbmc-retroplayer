@@ -100,8 +100,6 @@ static const TypeMapping types[] =
    {"xbmc.service",                      ADDON_SERVICE,             24018, "DefaultAddonService.png" },
    {"kodi.resource.language",            ADDON_RESOURCE_LANGUAGE,   24026, "DefaultAddonLanguage.png" },
    {"kodi.resource.uisounds",            ADDON_RESOURCE_UISOUNDS,   24006, "DefaultAddonUISounds.png" },
-   {"kodi.adsp",                         ADDON_ADSPDLL,             24135, "DefaultAddonAudioDSP.png" },
-   {"kodi.adsp",                         ADDON_ADSPDLL,             24135, "DefaultAddonAudioDSP.png" },
    {"kodi.vfs",                          ADDON_VFS,                   204, "DefaultAddonVfs.png" },
   };
 

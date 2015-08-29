@@ -47,6 +47,7 @@
 #include "guilib/StereoscopicsManager.h"
 #include "addons/LanguageResource.h"
 #include "addons/Skin.h"
+#include "addons/VFSEntry.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #ifdef HAS_PYTHON
 #include "interfaces/python/XBPython.h"

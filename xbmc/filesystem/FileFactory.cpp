@@ -90,6 +90,7 @@
 #include "network/WakeOnAccess.h"
 #include "addons/VFSEntry.h"
 #include "addons/AddonManager.h"
+#include "utils/StringUtils.h"
 
 using namespace ADDON;
 using namespace XFILE;
