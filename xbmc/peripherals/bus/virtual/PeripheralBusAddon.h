@@ -57,6 +57,8 @@ namespace PERIPHERALS
     virtual void UnregisterRemovedDevices(const PeripheralScanResults &results);
 
   private:
+    void UpdateAddons(void);
+
     PeripheralAddonVector m_addons;
     PeripheralAddonVector m_failedAddons;
     CCriticalSection      m_critSection;

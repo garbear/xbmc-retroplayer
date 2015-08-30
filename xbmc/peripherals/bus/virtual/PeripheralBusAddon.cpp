@@ -79,41 +79,16 @@ unsigned int CPeripheralBusAddon::GetAddonCount(void) const
 
 bool CPeripheralBusAddon::PerformDeviceScan(PeripheralScanResults &results)
 {
-  VECADDONS addons;
-  CAddonMgr::Get().GetAddons(ADDON_PERIPHERALDLL, addons, true);
+  UpdateAddons();
 
+  PeripheralAddonVector addons;
   {
     CSingleLock lock(m_critSection);
-
-    PeripheralAddonVector createdAddons;
-    m_addons.swap(createdAddons);
-
-    for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
-    {
-      PeripheralAddonPtr addon = std::dynamic_pointer_cast<CPeripheralAddon>(*it);
-      if (!addon)
-        continue;
-
-      // If add-on failed to load, skip it
-      if (std::find(m_failedAddons.begin(), m_failedAddons.end(), addon) != m_failedAddons.end())
-        continue;
-
-      // If add-on hasn't been created, try to create it now
-      if (std::find(createdAddons.begin(), createdAddons.end(), addon) == createdAddons.end())
-      {
-        if (addon->CreateAddon() != ADDON_STATUS_OK)
-        {
-          m_failedAddons.push_back(addon);
-          continue;
-        }
-      }
-
-      m_addons.push_back(addon);
-    }
-
-    for (PeripheralAddonVector::const_iterator itAddon = m_addons.begin(); itAddon != m_addons.end(); ++itAddon)
-      (*itAddon)->PerformDeviceScan(results);
+    addons = m_addons;
   }
+  
+  for (PeripheralAddonVector::const_iterator it = addons.begin(); it != addons.end(); ++it)
+    (*it)->PerformDeviceScan(results);
 
   // Scan during bus initialization must return true or bus gets deleted
   return true;
@@ -128,7 +103,6 @@ void CPeripheralBusAddon::ProcessEvents(void)
     addons = m_addons;
   }
 
-  // Don't hold lock while processing events
   for (PeripheralAddonVector::const_iterator itAddon = addons.begin(); itAddon != addons.end(); ++itAddon)
     (*itAddon)->ProcessEvents();
 }
@@ -274,4 +248,66 @@ bool CPeripheralBusAddon::SplitLocation(const std::string& strLocation, Peripher
     }
   }
   return false;
+}
+
+void CPeripheralBusAddon::UpdateAddons(void)
+{
+  PeripheralAddonVector removedAddons;
+  PeripheralAddonVector newAddons;
+
+  VECADDONS addons;
+  CAddonMgr::Get().GetAddons(ADDON_PERIPHERALDLL, addons, true);
+
+  {
+    CSingleLock lock(m_critSection);
+    
+    // Search for removed add-ons
+    for (PeripheralAddonVector::const_iterator it = m_addons.begin(); it != m_addons.end(); ++it)
+    {
+      const bool bRemoved = (std::find(addons.begin(), addons.end(),
+        std::static_pointer_cast<CAddon>(*it)) == addons.end());
+
+      if (bRemoved)
+        removedAddons.push_back(*it);
+    }
+
+    // Search for new add-ons
+    for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
+    {
+      PeripheralAddonPtr addon = std::dynamic_pointer_cast<CPeripheralAddon>(*it);
+      if (!addon)
+        continue;
+
+      // If add-on failed to load, skip it
+      if (std::find(m_failedAddons.begin(), m_failedAddons.end(), addon) != m_failedAddons.end())
+        continue;
+
+      // If add-on has already been created, skip it
+      if (std::find(m_addons.begin(), m_addons.end(), addon) != m_addons.end())
+        continue;
+
+      newAddons.push_back(addon);
+    }
+
+    // Update m_addons
+    for (PeripheralAddonVector::const_iterator it = removedAddons.begin(); it != removedAddons.end(); ++it)
+      m_addons.erase(std::remove(m_addons.begin(), m_addons.end(), *it), m_addons.end());
+    for (PeripheralAddonVector::const_iterator it = newAddons.begin(); it != newAddons.end(); ++it)
+      m_addons.push_back(*it);
+  }
+
+  // Destroy removed add-ons
+  for (PeripheralAddonVector::const_iterator it = removedAddons.begin(); it != removedAddons.end(); ++it)
+    (*it)->Destroy();
+
+  // Create new add-ons
+  for (PeripheralAddonVector::const_iterator it = newAddons.begin(); it != newAddons.end(); ++it)
+  {
+    if ((*it)->CreateAddon() != ADDON_STATUS_OK)
+    {
+      CSingleLock lock(m_critSection);
+      m_addons.erase(std::remove(m_addons.begin(), m_addons.end(), *it), m_addons.end());
+      m_failedAddons.push_back(*it);
+    }
+  }
 }
