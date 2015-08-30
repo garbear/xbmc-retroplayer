@@ -25,6 +25,7 @@ using namespace PERIPHERALS;
 CPeripheralBusApplication::CPeripheralBusApplication(CPeripherals* manager) :
     CPeripheralBus("PeripBusApplication", manager, PERIPHERAL_BUS_APPLICATION)
 {
+  m_bNeedsPolling = false;
 }
 
 bool CPeripheralBusApplication::PerformDeviceScan(PeripheralScanResults& results)
