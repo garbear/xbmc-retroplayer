@@ -22,6 +22,7 @@
 #include "GameClient.h"
 #include "addons/IAddon.h"
 #include "addons/AddonManager.h"
+#include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "settings/Settings.h"
 
@@ -29,6 +30,7 @@
 
 using namespace ADDON;
 using namespace GAME;
+using namespace XFILE;
 
 #define GAME_CLIENT_SAVE_DIRECTORY    "save"
 #define GAME_CLIENT_SYSTEM_DIRECTORY  "system"
@@ -85,7 +87,11 @@ const char** CGameClientProperties::GetProxyDllPaths(void)
 const char* CGameClientProperties::GetSystemDirectory(void)
 {
   if (m_strSystemDirectory.empty())
+  {
     m_strSystemDirectory = CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SYSTEM_DIRECTORY));
+    if (!CDirectory::Exists(m_strSystemDirectory))
+      CDirectory::Create(m_strSystemDirectory);
+  }
   return m_strSystemDirectory.c_str();
 }
 
@@ -99,7 +105,11 @@ const char* CGameClientProperties::GetContentDirectory(void)
 const char* CGameClientProperties::GetSaveDirectory(void)
 {
   if (m_strSaveDirectory.empty())
+  {
     m_strSaveDirectory = CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(m_parent->Profile(), GAME_CLIENT_SAVE_DIRECTORY));
+    if (!CDirectory::Exists(m_strSaveDirectory))
+      CDirectory::Create(m_strSaveDirectory);
+  }
   return m_strSaveDirectory.c_str();
 }
 
