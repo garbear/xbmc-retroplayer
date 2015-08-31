@@ -2476,6 +2476,7 @@ OUTPUT_FILES="Makefile \
     lib/addons/library.xbmc.addon/Makefile \
     lib/addons/library.xbmc.codec/Makefile \
     lib/addons/library.kodi.guilib/Makefile \
+    lib/addons/library.kodi.interfaces/Makefile \
     lib/addons/library.xbmc.pvr/Makefile \
     lib/addons/library.kodi.game/Makefile \
     lib/addons/library.kodi.peripheral/Makefile \
