@@ -399,6 +399,9 @@
 		68DC88021B2CADF800EFB049 /* GUIWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87FD1B2CADF800EFB049 /* GUIWindowGames.cpp */; };
 		68DC88031B2CADF800EFB049 /* GUIWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87FD1B2CADF800EFB049 /* GUIWindowGames.cpp */; };
 		68DC88041B2CADF800EFB049 /* GUIWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DC87FD1B2CADF800EFB049 /* GUIWindowGames.cpp */; };
+		68EB34141B9409360091D9EB /* AddonCallbacksInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68EB34121B9409360091D9EB /* AddonCallbacksInterfaces.cpp */; };
+		68EB34151B9409360091D9EB /* AddonCallbacksInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68EB34121B9409360091D9EB /* AddonCallbacksInterfaces.cpp */; };
+		68EB34161B9409360091D9EB /* AddonCallbacksInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68EB34121B9409360091D9EB /* AddonCallbacksInterfaces.cpp */; };
 		68F2DA0C1B2A608B006E297B /* AddonJoystickButtonMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */; };
 		68F2DA0D1B2A608B006E297B /* AddonJoystickButtonMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */; };
 		68F2DA0E1B2A608B006E297B /* AddonJoystickButtonMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */; };
@@ -3861,6 +3864,8 @@
 		68DC87FC1B2CADF800EFB049 /* GUIViewStateWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIViewStateWindowGames.h; path = games/windows/GUIViewStateWindowGames.h; sourceTree = "<group>"; };
 		68DC87FD1B2CADF800EFB049 /* GUIWindowGames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIWindowGames.cpp; path = games/windows/GUIWindowGames.cpp; sourceTree = "<group>"; };
 		68DC87FE1B2CADF800EFB049 /* GUIWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIWindowGames.h; path = games/windows/GUIWindowGames.h; sourceTree = "<group>"; };
+		68EB34121B9409360091D9EB /* AddonCallbacksInterfaces.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksInterfaces.cpp; sourceTree = "<group>"; };
+		68EB34131B9409360091D9EB /* AddonCallbacksInterfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksInterfaces.h; sourceTree = "<group>"; };
 		68F2DA001B2A608B006E297B /* AddonJoystickButtonMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonJoystickButtonMap.cpp; path = addons/AddonJoystickButtonMap.cpp; sourceTree = "<group>"; };
 		68F2DA011B2A608B006E297B /* AddonJoystickButtonMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonJoystickButtonMap.h; path = addons/AddonJoystickButtonMap.h; sourceTree = "<group>"; };
 		68F2DA021B2A608B006E297B /* AddonJoystickButtonMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonJoystickButtonMapping.cpp; path = addons/AddonJoystickButtonMapping.cpp; sourceTree = "<group>"; };
@@ -6117,6 +6122,8 @@
 				687AAF371B2CA4D700C16152 /* AddonCallbacksGame.h */,
 				C8482915156CFFE7005A996F /* AddonCallbacksGUI.cpp */,
 				C8482916156CFFE7005A996F /* AddonCallbacksGUI.h */,
+				68EB34121B9409360091D9EB /* AddonCallbacksInterfaces.cpp */,
+				68EB34131B9409360091D9EB /* AddonCallbacksInterfaces.h */,
 				68CB84DA1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp */,
 				68CB84DB1ACC85C40015C5E7 /* AddonCallbacksPeripheral.h */,
 				C8482917156CFFE7005A996F /* AddonCallbacksPVR.cpp */,
@@ -10726,6 +10733,7 @@
 				E38E20C70D25F9FD00618676 /* GUIWindowSlideShow.cpp in Sources */,
 				E38E20C80D25F9FD00618676 /* GUIWindowStartup.cpp in Sources */,
 				E38E20C90D25F9FD00618676 /* GUIWindowSystemInfo.cpp in Sources */,
+				68EB34141B9409360091D9EB /* AddonCallbacksInterfaces.cpp in Sources */,
 				E38E20CA0D25F9FD00618676 /* GUIWindowVideoBase.cpp in Sources */,
 				E38E20CC0D25F9FD00618676 /* GUIDialogVideoInfo.cpp in Sources */,
 				E38E20CD0D25F9FD00618676 /* GUIWindowVideoNav.cpp in Sources */,
@@ -12598,6 +12606,7 @@
 				7CCDA176192753E30074CF51 /* PltSsdp.cpp in Sources */,
 				7CCDA17F192753E30074CF51 /* PltStateVariable.cpp in Sources */,
 				7CCDA188192753E30074CF51 /* PltTaskManager.cpp in Sources */,
+				68EB34161B9409360091D9EB /* AddonCallbacksInterfaces.cpp in Sources */,
 				7CCDA191192753E30074CF51 /* PltThreadTask.cpp in Sources */,
 				7CCDA19A192753E30074CF51 /* PltUPnP.cpp in Sources */,
 				7CCDA1A3192753E30074CF51 /* PltMediaConnect.cpp in Sources */,
@@ -13042,6 +13051,7 @@
 				E49912C8174E5DA000741B6D /* DirectoryNodeRecentlyAddedMovies.cpp in Sources */,
 				E49912C9174E5DA000741B6D /* DirectoryNodeRecentlyAddedMusicVideos.cpp in Sources */,
 				E49912CA174E5DA000741B6D /* DirectoryNodeRoot.cpp in Sources */,
+				68EB34151B9409360091D9EB /* AddonCallbacksInterfaces.cpp in Sources */,
 				E49912CB174E5DA000741B6D /* DirectoryNodeSeasons.cpp in Sources */,
 				395C2A201A9F96A700EBC7AD /* ContextItemAddon.cpp in Sources */,
 				E49912CC174E5DA000741B6D /* DirectoryNodeTitleMovies.cpp in Sources */,
