@@ -19,6 +19,8 @@
  *
  */
 
+#include <stdint.h>
+
 struct CB_InterfacesLib;
 
 namespace ADDON
