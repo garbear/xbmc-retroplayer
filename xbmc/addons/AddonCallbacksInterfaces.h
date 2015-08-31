@@ -19,11 +19,12 @@
  *
  */
 
-#include "AddonCallbacks.h"
-#include "include/kodi_interfaces_types.h"
+struct CB_InterfacesLib;
 
 namespace ADDON
 {
+
+class CAddon;
 
 /*!
  * Callbacks for Kodi's AudioEngine.

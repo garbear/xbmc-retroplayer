@@ -19,13 +19,15 @@
  */
 
 #include "AddonCallbacksInterfaces.h"
+#include "AddonCallbacks.h"
 #include "addons/AddonManager.h"
+#include "addons/include/kodi_interfaces_types.h"
+#include "interfaces/generic/ScriptInvocationManager.h"
+#include "interfaces/python/XBPython.h"
 #include "utils/log.h"
-#include "include/kodi_interfaces_types.h"
-#include "xbmc/interfaces/generic/ScriptInvocationManager.h"
-#include "xbmc/interfaces/python/XBPython.h"
-#include <vector>
+
 #include <string>
+#include <vector>
 
 using namespace std;
 
