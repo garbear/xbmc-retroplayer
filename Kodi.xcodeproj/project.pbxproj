@@ -297,6 +297,9 @@
 		6842F75C1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75D1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75E1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
+		687A21B91B940982008A5B49 /* VFSEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687A21B71B940982008A5B49 /* VFSEntry.cpp */; };
+		687A21BA1B940982008A5B49 /* VFSEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687A21B71B940982008A5B49 /* VFSEntry.cpp */; };
+		687A21BB1B940982008A5B49 /* VFSEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687A21B71B940982008A5B49 /* VFSEntry.cpp */; };
 		687AAF391B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
 		687AAF3A1B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
 		687AAF3B1B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
@@ -3782,6 +3785,8 @@
 		681EC9151B2A88240064E12D /* GameInfoTagLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameInfoTagLoader.h; path = games/tags/GameInfoTagLoader.h; sourceTree = "<group>"; };
 		6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		6842F75B1B8C4744007A231D /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
+		687A21B71B940982008A5B49 /* VFSEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VFSEntry.cpp; sourceTree = "<group>"; };
+		687A21B81B940982008A5B49 /* VFSEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VFSEntry.h; sourceTree = "<group>"; };
 		687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksGame.cpp; sourceTree = "<group>"; };
 		687AAF371B2CA4D700C16152 /* AddonCallbacksGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksGame.h; sourceTree = "<group>"; };
 		687AAF381B2CA4D700C16152 /* DllGameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DllGameClient.h; sourceTree = "<group>"; };
@@ -6161,6 +6166,8 @@
 				F52B063911869862004B1D66 /* Skin.h */,
 				3961C4371ABC0A46002DBBFB /* UISoundsResource.cpp */,
 				3961C4381ABC0A46002DBBFB /* UISoundsResource.h */,
+				687A21B71B940982008A5B49 /* VFSEntry.cpp */,
+				687A21B81B940982008A5B49 /* VFSEntry.h */,
 				18B4A0001152BFA5001AF8A6 /* Visualisation.cpp */,
 				18B4A0011152BFA5001AF8A6 /* Visualisation.h */,
 				395C29BF1A98A0A000EBC7AD /* Webinterface.cpp */,
@@ -10940,6 +10947,7 @@
 				7CCF7FC9106A0DF500992676 /* TimeUtils.cpp in Sources */,
 				F57B6F801071B8B500079ACB /* JobManager.cpp in Sources */,
 				F5E55B5D10741272006E788A /* DVDPlayerTeletext.cpp in Sources */,
+				687A21B91B940982008A5B49 /* VFSEntry.cpp in Sources */,
 				F5E55B66107412DE006E788A /* GUIDialogTeletext.cpp in Sources */,
 				F5E55B7010741340006E788A /* Teletext.cpp in Sources */,
 				43348AA4107747CD00F859CF /* Edl.cpp in Sources */,
@@ -12494,6 +12502,7 @@
 				395C29F21A98A16300EBC7AD /* HTTPPythonWsgiInvoker.cpp in Sources */,
 				DFF0F47617528350002DA3A4 /* WinSystemIOS.mm in Sources */,
 				DF32466419E931A8005E8CFB /* ActiveAEResampleFFMPEG.cpp in Sources */,
+				687A21BB1B940982008A5B49 /* VFSEntry.cpp in Sources */,
 				DFF0F47E17528350002DA3A4 /* AutoPool.mm in Sources */,
 				DFF0F48017528350002DA3A4 /* DarwinUtils.mm in Sources */,
 				DFF0F48117528350002DA3A4 /* OSXGNUReplacements.c in Sources */,
@@ -13744,6 +13753,7 @@
 				7CCDACCB19275D790074CF51 /* NptAppleLogConfig.mm in Sources */,
 				68DC87F61B2CACD000EFB049 /* RetroPlayerDialogs.cpp in Sources */,
 				7CAA469119427AED00008885 /* PosixDirectory.cpp in Sources */,
+				687A21BA1B940982008A5B49 /* VFSEntry.cpp in Sources */,
 				7C525DF6195E2D8100BE3482 /* SaveFileStateJob.cpp in Sources */,
 				7C908895196358A8003D0619 /* auto_buffer.cpp in Sources */,
 				7CF34DA01930264A00D543C5 /* AudioEncoder.cpp in Sources */,
