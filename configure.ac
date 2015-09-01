@@ -1159,6 +1159,8 @@ PKG_CHECK_MODULES([BSON], [libbson-1.0],
   [INCLUDES="$INCLUDES $BSON_CFLAGS"; LIBS="$LIBS $BSON_LIBS"],
   [AC_MSG_ERROR([libbson-1.0 not found])])
 
+AC_CHECK_LIB([leveldb], [main],, [AC_MSG_ERROR("leveldb not found")])
+
 PKG_CHECK_MODULES([YAJL], [yajl >= 2],
   [INCLUDES="$INCLUDES $YAJL_CFLAGS"; LIBS="$LIBS $YAJL_LIBS"; YAJL_FOUND="true"],
   [AC_COMPILE_IFELSE(
