@@ -13241,7 +13241,7 @@ msgstr ""
 
 #: xbmc/windows/GUIMediaWindow.cpp
 msgctxt "#27017"
-msgid "Add Games..."
+msgid "Add games..."
 msgstr ""
 
 #: xbmc/addons/Addon.cpp
