@@ -367,9 +367,6 @@
     <Filter Include="games\tags">
       <UniqueIdentifier>{43ec8ed7-e2f3-4e78-8d03-350479c4b40a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="games\test">
-      <UniqueIdentifier>{4cad6943-a5ca-415b-b465-7a3207e74dd1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="cores\RetroPlayer">
       <UniqueIdentifier>{7c1ec2e2-f324-4955-a4d8-5929210761e1}</UniqueIdentifier>
     </Filter>
@@ -3240,9 +3237,6 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\addons\GameClientProperties.cpp">
       <Filter>games\addons</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\test\TestGameFileLoader.cpp">
-      <Filter>games\test</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp">
       <Filter>games</Filter>

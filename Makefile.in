@@ -296,7 +296,6 @@ CHECK_LIBS = xbmc/addons/test/addonsTest.a \
              xbmc/filesystem/test/filesystemTest.a \
              xbmc/music/tags/test/tagsTest.a \
              xbmc/network/test/networkTest.a \
-             xbmc/games/test/gamesTest.a \
              xbmc/utils/test/utilsTest.a \
              xbmc/video/test/videoTest.a \
              xbmc/threads/test/threadTest.a \
