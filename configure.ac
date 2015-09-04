@@ -1170,6 +1170,8 @@ PKG_CHECK_MODULES([LEVELDB], [libleveldb],
   [INCLUDES="$INCLUDES $LEVELDB_CFLAGS"; LIBS="$LIBS $LEVELDB_LIBS"],
   [AC_MSG_ERROR([LeveldB not found])])
 
+AC_CHECK_LIB([kyotocabinet], [main],, [AC_MSG_ERROR("kyotocabinet not found")])
+
 PKG_CHECK_MODULES([YAJL], [yajl >= 2],
   [INCLUDES="$INCLUDES $YAJL_CFLAGS"; LIBS="$LIBS $YAJL_LIBS"; YAJL_FOUND="true"],
   [AC_COMPILE_IFELSE(

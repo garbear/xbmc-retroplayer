@@ -15,7 +15,8 @@ DEPENDS = \
 	python26 libshairplay \
 	libplist libcec libbluray boost tinyxml dummy-libxbmc \
 	libamplayer libssh taglib libusb libnfs libmp3lame \
-	pythonmodule-pil libxslt ffmpeg platform libbson unqlite ejdb leveldb
+	pythonmodule-pil libxslt ffmpeg platform libbson unqlite ejdb leveldb \
+	kyotocabinet
 
 FFMPEG_DEPENDS = gnutls
 
