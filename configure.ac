@@ -1161,6 +1161,8 @@ PKG_CHECK_MODULES([BSON], [libbson-1.0],
 
 AC_CHECK_LIB([leveldb], [main],, [AC_MSG_ERROR("leveldb not found")])
 
+AC_CHECK_LIB([kyotocabinet], [main],, [AC_MSG_ERROR("kyotocabinet not found")])
+
 PKG_CHECK_MODULES([YAJL], [yajl >= 2],
   [INCLUDES="$INCLUDES $YAJL_CFLAGS"; LIBS="$LIBS $YAJL_LIBS"; YAJL_FOUND="true"],
   [AC_COMPILE_IFELSE(

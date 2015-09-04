@@ -1,0 +1,25 @@
+From fc9786795faf7bb648b0238d9fea959c824d38a2 Mon Sep 17 00:00:00 2001
+From: Garrett Brown <themagnificentmrb@gmail.com>
+Date: Fri, 4 Sep 2015 10:45:58 -0700
+Subject: [PATCH] Fix return value
+
+---
+ kcdbext.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kcdbext.h b/kcdbext.h
+index 001c09a..93c612d 100644
+--- a/kcdbext.h
++++ b/kcdbext.h
+@@ -1278,7 +1278,7 @@ class IndexDB {
+     if (omode_ == 0) {
+       set_error(_KCCODELINE_, BasicDB::Error::INVALID, "not opened");
+       *sp = 0;
+-      return false;
++      return NULL;
+     }
+     if (!cache_) return db_.get(kbuf, ksiz, sp);
+     size_t dvsiz = 0;
+-- 
+1.9.1
+

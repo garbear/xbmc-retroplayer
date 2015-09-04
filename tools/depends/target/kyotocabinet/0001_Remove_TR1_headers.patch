@@ -1,0 +1,41 @@
+From 6c26b2463cfb1d47b676734cc1550ff04bf4928f Mon Sep 17 00:00:00 2001
+From: Garrett Brown <themagnificentmrb@gmail.com>
+Date: Fri, 4 Sep 2015 09:21:16 -0700
+Subject: [PATCH] Remove TR1 headers
+
+---
+ kccommon.h | 15 ---------------
+ 1 file changed, 15 deletions(-)
+
+diff --git a/kccommon.h b/kccommon.h
+index 5cd2e6e..c6ee8da 100644
+--- a/kccommon.h
++++ b/kccommon.h
+@@ -82,24 +82,9 @@ using ::modfl;
+ using ::snprintf;
+ }
+ 
+-#if __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__) || defined(_MSC_VER)
+-
+ #include <unordered_map>
+ #include <unordered_set>
+ 
+-#else
+-
+-#include <tr1/unordered_map>
+-#include <tr1/unordered_set>
+-
+-namespace std {
+-using tr1::hash;
+-using tr1::unordered_map;
+-using tr1::unordered_set;
+-}
+-
+-#endif
+-
+ #undef VERSION
+ #undef LIBVER
+ #undef LIBREV
+-- 
+1.9.1
+
