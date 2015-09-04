@@ -20,24 +20,11 @@
 
 #include "BSONVariantWriter.h"
 #include "Base64.h"
-#include "system.h" // include before bson.h
-#include <bson.h>
 #include "log.h"
+#include "StringUtils.h"
 #include "Variant.h"
 
-void CBSONVariantWriter::WriteBase64(const CVariant &value, std::string &output)
-{
-  std::string data;
-  CBSONVariantWriter::Write(value, data);
-  Base64::Encode(data.data(), data.size(), output);
-}
-
-std::string CBSONVariantWriter::WriteBase64(const CVariant &value)
-{
-  std::string data;
-  CBSONVariantWriter::Write(value, data);
-  return Base64::Encode(data.data(), data.size());
-}
+#include <bson.h>
 
 std::string CBSONVariantWriter::Write(const CVariant &value)
 {
@@ -59,6 +46,20 @@ void CBSONVariantWriter::Write(const CVariant &value, std::string &output)
   output.assign(bson_get_data(&document), bson_get_data(&document) + document.len);
 
   bson_destroy(&document);
+}
+
+std::string CBSONVariantWriter::WriteBase64(const CVariant &value)
+{
+  std::string output;
+  WriteBase64(value, output);
+  return output;
+}
+
+void CBSONVariantWriter::WriteBase64(const CVariant &value, std::string &output)
+{
+  std::string data;
+  Write(value, data);
+  Base64::Encode(data.data(), data.size(), output);
 }
 
 bool CBSONVariantWriter::InternalWrite(bson_t *document, const char *name, const CVariant &value)
@@ -89,11 +90,10 @@ bool CBSONVariantWriter::InternalWrite(bson_t *document, const char *name, const
 
       // For the array, we have to manually set the index values from "0" to "N"
       unsigned short i = 0;
-      char index[6];
       for (CVariant::const_iterator_array it = value.begin_array(); it != value.end_array() && success; it++)
       {
-        snprintf(index, sizeof(index), "%u", i++);
-        success &= InternalWrite(&child, index, *it);
+        std::string strIndex = StringUtils::Format("%u", i++);
+        success &= InternalWrite(&child, strIndex.c_str(), *it);
       }
       success &= bson_append_array_end(document, &child);
     }
