@@ -26,7 +26,7 @@ endif
 	cd $(PLATFORM); patch -p1 < ../0001_Remove_TR1_headers.patch
 	cd $(PLATFORM); patch -p1 < ../0002_Fix_return_value.patch
 	cd $(PLATFORM); autoreconf -vif
-	cd $(PLATFORM); ./configure --prefix=$(PREFIX) --disable-shared --enable-static
+	cd $(PLATFORM); ./configure --prefix=$(PREFIX)
 
 $(LIBDYLIB): $(PLATFORM)
 	$(MAKE) -C $(PLATFORM)
