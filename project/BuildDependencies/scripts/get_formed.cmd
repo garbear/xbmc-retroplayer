@@ -17,6 +17,8 @@ IF EXIST %FORMED_OK_FLAG% (
 CALL :setStageName Starting downloads of formed packages...
 SET SCRIPT_PATH=%CD%
 CD %DL_PATH% || EXIT /B 10
+call :processFile kyotocabinet-1.2.76.zip https://dl.dropboxusercontent.com/u/50838998
+IF ERRORLEVEL 1 EXIT /B %ERRORLEVEL%
 call :processFile libbson-1.1.10-win32.zip https://dl.dropboxusercontent.com/u/50838998
 IF ERRORLEVEL 1 EXIT /B %ERRORLEVEL%
 call :processFile unqlite-1.1.6-win32.zip https://dl.dropboxusercontent.com/u/50838998
