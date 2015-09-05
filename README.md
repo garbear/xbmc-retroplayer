@@ -22,6 +22,18 @@ Many of these features are still works-in-progress, so fork the code and help ou
 
 # Building Kodi and games
 
+Kodi's game library brings additional dependencies. Use your package manager to install LevelDB and Kyoto Cabinet:
+
+```
+sudo apt-get install libleveldb-dev libkyotocabinet-dev
+```
+
+Kodi also depends on libbson. We supply a Makefile to make it easy to install:
+
+```
+make -C tools/depends/target/libbson PREFIX=/usr/local
+```
+
 Build Kodi per usual. If you are developing binary add-ons using a local prefix, specifying it during the `./configure` step:
 
 ```
