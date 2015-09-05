@@ -23,7 +23,8 @@ RetroPlayer is a new player core for Kodi Entertainment Center. It is similar to
 Many of these features are still works-in-progress, so fork the code and help out!
 
 # Building Kodi and games
-Build per usual and specify a prefix during the `./configure` step:
+
+Build Kodi per usual. If you are developing binary add-ons using a local prefix, specifying it during the `./configure` step:
 
 ```
 ./bootstrap
@@ -31,5 +32,15 @@ Build per usual and specify a prefix during the `./configure` step:
 make -j8
 ```
 
-Game add-ons are hosted at https://github.com/kodi-game. See instructions in their READMEs for how to compile.
+Joystick support is now provided through a binary add-on. Follow the out-of-tree instructions at https://github.com/kodi-game/peripheral.joystick.
 
+Game add-ons are hosted separately at https://github.com/kodi-game. If you would like to compile all game add-ons in one fell swoop, create a build directory out-of-tree and run the following command (assuming you cloned Kodi into `$HOME/workspace/kodi`):
+
+```
+cmake -DADDONS_TO_BUILD=game.*
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_INSTALL_PREFIX=$HOME/workspace/kodi/addons \
+      -DPACKAGE_ZIP=1 \
+      $HOME/workspace/kodi/project/cmake/addons
+make
+```
