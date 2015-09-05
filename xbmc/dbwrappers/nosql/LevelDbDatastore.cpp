@@ -25,7 +25,8 @@
 using namespace dbiplus;
 
 CLevelDbDatastore::CLevelDbDatastore(const std::string& strPath) :
-  m_strPath(strPath)
+  m_strPath(strPath),
+  m_db(NULL)
 {
 }
 

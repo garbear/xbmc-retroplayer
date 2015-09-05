@@ -26,7 +26,8 @@
 using namespace dbiplus;
 
 CKyotoCabinetDatastore::CKyotoCabinetDatastore(const std::string& strPath) :
-  m_strPath(strPath)
+  m_strPath(strPath),
+  m_db(NULL)
 {
 }
 
