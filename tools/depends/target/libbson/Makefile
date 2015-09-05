@@ -1,5 +1,5 @@
 -include ../../Makefile.include
-DEPS = Makefile
+ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # lib name, version
 LIBNAME=libbson
@@ -8,9 +8,25 @@ SOURCE=$(LIBNAME)-$(VERSION)
 ARCHIVE=$(SOURCE).tar.gz
 BASE_URL := https://github.com/mongodb/libbson/releases/download/1.1.10
 
-LIBDYLIB=$(PLATFORM)/.libs/$(LIBNAME).a
+ifeq ($(CROSS_COMPILING), yes)
+  DEPS = ../../Makefile.include
+else
 
-all: .installed-$(PLATFORM)
+  ifeq ($(PLATFORM),)
+    PLATFORM = native
+    TARBALLS_LOCATION = $(ROOT_DIR)
+    BASE_URL := https://github.com/mongodb/libbson/releases/download/1.1.10
+    RETRIEVE_TOOL := curl -Ls --create-dirs -f -O
+    ARCHIVE_TOOL := tar --strip-components=1 -xf
+  endif
+endif
+
+LIBDYLIB=$(PLATFORM)/.libs/$(LIBNAME)-1.0.a
+
+all: .installed-$(PLATFORM) $(PREFIX)/lib/$(LIBNAME)-1.0.a
+
+$(PREFIX)/lib/$(LIBNAME)-1.0.a:
+	@$(MAKE) -C $(PLATFORM) install
 
 $(TARBALLS_LOCATION)/$(ARCHIVE):
 	cd $(TARBALLS_LOCATION); $(RETRIEVE_TOOL) $(RETRIEVE_TOOL_FLAGS) $(BASE_URL)/$(ARCHIVE)
@@ -23,19 +39,20 @@ ifeq ($(PREFIX),)
 endif
 	rm -rf $(PLATFORM); mkdir -p $(PLATFORM)
 	cd $(PLATFORM); $(ARCHIVE_TOOL) $(ARCHIVE_TOOL_FLAGS) $(TARBALLS_LOCATION)/$(ARCHIVE)
-	cd $(PLATFORM); autoreconf -vif
-	cd $(PLATFORM); ./configure --prefix=$(PREFIX) --disable-shared --enable-static
 
 $(LIBDYLIB): $(PLATFORM)
-	$(MAKE) -C $(PLATFORM)
+	@if test -f $(LIBDYLIB); then :; else \
+          cd $(PLATFORM) && autoreconf -vif && ./configure --prefix=${PREFIX} --disable-shared --enable-static && ${MAKE} ;\
+        fi
 
 .installed-$(PLATFORM): $(LIBDYLIB)
+	@echo "in installed"
 	$(MAKE) -C $(PLATFORM) install
 	touch $@
 
 clean:
 	$(MAKE) -C $(PLATFORM) clean
-	rm -rf $(PLATFORM) .installed-$(PLATFORM)
+	rm -f .installed-$(PLATFORM)
 
 distclean::
 	rm -rf $(PLATFORM) .installed-$(PLATFORM)
