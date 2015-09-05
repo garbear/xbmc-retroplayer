@@ -22,6 +22,7 @@
 #include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/Key.h"
 
+#include <algorithm>
 #include <assert.h>
 
 CGenericJoystickKeyboardHandler::CGenericJoystickKeyboardHandler(IJoystickDriverHandler* handler)
@@ -48,5 +49,5 @@ void CGenericJoystickKeyboardHandler::OnKeyRelease(const CKey& key)
 
 unsigned int CGenericJoystickKeyboardHandler::GetButtonIndex(const CKey& key)
 {
-  return key.GetVKey();
+  return std::min(key.GetButtonCode(), (uint32_t)0x01ff);
 }
