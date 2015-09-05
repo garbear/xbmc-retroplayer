@@ -24,6 +24,8 @@
 
 #include <assert.h>
 
+#define BUTTON_INDEX_MASK  0x01ff
+
 CGenericJoystickKeyboardHandler::CGenericJoystickKeyboardHandler(IJoystickDriverHandler* handler)
  : m_handler(handler)
 {
@@ -48,5 +50,5 @@ void CGenericJoystickKeyboardHandler::OnKeyRelease(const CKey& key)
 
 unsigned int CGenericJoystickKeyboardHandler::GetButtonIndex(const CKey& key)
 {
-  return key.GetVKey();
+  return key.GetButtonCode() & BUTTON_INDEX_MASK;
 }
