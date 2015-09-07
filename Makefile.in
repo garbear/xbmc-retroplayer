@@ -51,6 +51,7 @@ DIRECTORY_ARCHIVES=$(DVDPLAYER_ARCHIVES) \
                    xbmc/filesystem/filesystem.a \
                    xbmc/games/games.a \
                    xbmc/games/addons/gameaddons.a \
+                   xbmc/games/database/gamedatabase.a \
                    xbmc/games/tags/gameinfotags.a \
                    xbmc/games/windows/gamewindows.a \
                    xbmc/games/windows/wizards/gameguiwizards.a \

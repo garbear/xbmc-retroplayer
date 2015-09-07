@@ -19,45 +19,17 @@
  */
 #pragma once
 
-#include "threads/CriticalSection.h"
-
-#include <memory>
-#include <string>
-
-class CVariant;
+#include "utils/ISerializable.h"
+#include "utils/Observer.h"
 
 namespace dbiplus
 {
-  class IDocumentStore;
+  class IDocument : public ISerializable, public Observable
+  {
+  public:
+    virtual ~IDocument(void) { }
+
+    virtual void Serialize(CVariant& value) const override = 0;
+    virtual void Deserialize(const CVariant& value) = 0;
+  };
 }
-
-class CNoSqlDatabase
-{
-public:
-  CNoSqlDatabase(void) { }
-  ~CNoSqlDatabase(void) { }
-
-  virtual const char* GetBaseDBName() const = 0;
-
-  bool Connect(void);
-  void Disconnect(void);
-
-  bool Put(const CVariant& key, const CVariant& value);
-  bool Get(const CVariant& key, CVariant& value);
-  bool Delete(const CVariant& key);
-  //bool CreateSnapshot(void);
-  //bool WriteBatch(void);
-  //bool RangeIteration(void);
-
-  // CustomComparators
-  // Sync/Async
-
-protected:
-  std::string GetDatabasePath(void) const;
-  
-  std::unique_ptr<dbiplus::IDocumentStore> m_pDS;
-
-private:
-  unsigned int     m_openCount;
-  CCriticalSection m_openMutex;
-};

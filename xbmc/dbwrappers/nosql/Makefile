@@ -1,7 +1,8 @@
-SRCS=GenericDocumentStore.cpp \
+SRCS=DenormalizedDatabase.cpp \
+     DocumentGroup.cpp \
+     GenericDocumentStore.cpp \
      KyotoCabinetDatastore.cpp \
      LevelDbDatastore.cpp \
-     NoSqlDatabase.cpp \
 
 LIB=nosql.a
 
