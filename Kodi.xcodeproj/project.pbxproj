@@ -276,6 +276,9 @@
 		5EE4F9171A9FF2AE002E20F8 /* CueInfoLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3113A1A978B9B00551907 /* CueInfoLoader.cpp */; };
 		5EE4F9181A9FF36F002E20F8 /* CueInfoLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EB3113A1A978B9B00551907 /* CueInfoLoader.cpp */; };
 		5EF801001A97892A0035AA4D /* ReplayGain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EF800FE1A97892A0035AA4D /* ReplayGain.cpp */; };
+		680B04991BA01A40005A8C81 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680B04971BA01A40005A8C81 /* Game.cpp */; };
+		680B049A1BA01A41005A8C81 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680B04971BA01A40005A8C81 /* Game.cpp */; };
+		680B049B1BA01A41005A8C81 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680B04971BA01A40005A8C81 /* Game.cpp */; };
 		680F19FD1B2A5AEB0008A19D /* GenericJoystickButtonMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680F19F91B2A5AEB0008A19D /* GenericJoystickButtonMapping.cpp */; };
 		680F19FE1B2A5AEB0008A19D /* GenericJoystickButtonMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680F19F91B2A5AEB0008A19D /* GenericJoystickButtonMapping.cpp */; };
 		680F19FF1B2A5AEB0008A19D /* GenericJoystickButtonMapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 680F19F91B2A5AEB0008A19D /* GenericJoystickButtonMapping.cpp */; };
@@ -294,6 +297,12 @@
 		681EC9191B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
 		681EC91A1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
 		681EC91B1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
+		682328041B9DD1F400C98F6C /* DenormalizedDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682328001B9DD1F400C98F6C /* DenormalizedDatabase.cpp */; };
+		682328051B9DD1F400C98F6C /* DenormalizedDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682328001B9DD1F400C98F6C /* DenormalizedDatabase.cpp */; };
+		682328061B9DD1F400C98F6C /* DenormalizedDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682328001B9DD1F400C98F6C /* DenormalizedDatabase.cpp */; };
+		682328131B9DD21C00C98F6C /* GameDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */; };
+		682328141B9DD21C00C98F6C /* GameDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */; };
+		682328151B9DD21C00C98F6C /* GameDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */; };
 		6842F75C1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75D1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75E1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
@@ -369,12 +378,12 @@
 		68C1D1E71B99A0D50062BAA6 /* LevelDbDatastore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1D1E01B99A0D50062BAA6 /* LevelDbDatastore.cpp */; };
 		68C1D1E81B99A0D50062BAA6 /* LevelDbDatastore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1D1E01B99A0D50062BAA6 /* LevelDbDatastore.cpp */; };
 		68C1D1E91B99A0D50062BAA6 /* LevelDbDatastore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1D1E01B99A0D50062BAA6 /* LevelDbDatastore.cpp */; };
-		68C1D1EA1B99A0D50062BAA6 /* NoSqlDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1D1E21B99A0D50062BAA6 /* NoSqlDatabase.cpp */; };
-		68C1D1EB1B99A0D50062BAA6 /* NoSqlDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1D1E21B99A0D50062BAA6 /* NoSqlDatabase.cpp */; };
-		68C1D1EC1B99A0D50062BAA6 /* NoSqlDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1D1E21B99A0D50062BAA6 /* NoSqlDatabase.cpp */; };
 		68CB84DC1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CB84DA1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp */; };
 		68CB84DD1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CB84DA1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp */; };
 		68CB84DE1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CB84DA1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp */; };
+		68CBEB491B9F43FF00673A11 /* DocumentGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CBEB471B9F43FF00673A11 /* DocumentGroup.cpp */; };
+		68CBEB4A1B9F43FF00673A11 /* DocumentGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CBEB471B9F43FF00673A11 /* DocumentGroup.cpp */; };
+		68CBEB4B1B9F43FF00673A11 /* DocumentGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CBEB471B9F43FF00673A11 /* DocumentGroup.cpp */; };
 		68CF9B891B2C8A760016931A /* ControllerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CF9B871B2C8A750016931A /* ControllerManager.cpp */; };
 		68CF9B8A1B2C8A760016931A /* ControllerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CF9B871B2C8A750016931A /* ControllerManager.cpp */; };
 		68CF9B8B1B2C8A760016931A /* ControllerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68CF9B871B2C8A750016931A /* ControllerManager.cpp */; };
@@ -3783,6 +3792,8 @@
 		5EB3113B1A978B9B00551907 /* CueInfoLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CueInfoLoader.h; sourceTree = "<group>"; };
 		5EF800FE1A97892A0035AA4D /* ReplayGain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ReplayGain.cpp; sourceTree = "<group>"; };
 		5EF800FF1A97892A0035AA4D /* ReplayGain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayGain.h; sourceTree = "<group>"; };
+		680B04971BA01A40005A8C81 /* Game.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Game.cpp; path = games/Game.cpp; sourceTree = "<group>"; };
+		680B04981BA01A40005A8C81 /* Game.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Game.h; path = games/Game.h; sourceTree = "<group>"; };
 		680B096F1ACC646D006B19A8 /* IKeyboardHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IKeyboardHandler.h; sourceTree = "<group>"; };
 		680F19F91B2A5AEB0008A19D /* GenericJoystickButtonMapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GenericJoystickButtonMapping.cpp; path = joysticks/generic/GenericJoystickButtonMapping.cpp; sourceTree = "<group>"; };
 		680F19FA1B2A5AEB0008A19D /* GenericJoystickButtonMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenericJoystickButtonMapping.h; path = joysticks/generic/GenericJoystickButtonMapping.h; sourceTree = "<group>"; };
@@ -3798,6 +3809,10 @@
 		681EC9131B2A88240064E12D /* GameInfoTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameInfoTag.h; path = games/tags/GameInfoTag.h; sourceTree = "<group>"; };
 		681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameInfoTagLoader.cpp; path = games/tags/GameInfoTagLoader.cpp; sourceTree = "<group>"; };
 		681EC9151B2A88240064E12D /* GameInfoTagLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameInfoTagLoader.h; path = games/tags/GameInfoTagLoader.h; sourceTree = "<group>"; };
+		682328001B9DD1F400C98F6C /* DenormalizedDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DenormalizedDatabase.cpp; path = nosql/DenormalizedDatabase.cpp; sourceTree = "<group>"; };
+		682328011B9DD1F400C98F6C /* DenormalizedDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DenormalizedDatabase.h; path = nosql/DenormalizedDatabase.h; sourceTree = "<group>"; };
+		6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameDatabase.cpp; path = games/database/GameDatabase.cpp; sourceTree = "<group>"; };
+		6823280E1B9DD21C00C98F6C /* GameDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameDatabase.h; path = games/database/GameDatabase.h; sourceTree = "<group>"; };
 		6826413D1B9EED4700EEB2C2 /* ControllerTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControllerTypes.h; path = games/ControllerTypes.h; sourceTree = "<group>"; };
 		6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		6842F75B1B8C4744007A231D /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
@@ -3859,10 +3874,11 @@
 		68C1D1DF1B99A0D50062BAA6 /* IKeyValueStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IKeyValueStore.h; path = nosql/IKeyValueStore.h; sourceTree = "<group>"; };
 		68C1D1E01B99A0D50062BAA6 /* LevelDbDatastore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelDbDatastore.cpp; path = nosql/LevelDbDatastore.cpp; sourceTree = "<group>"; };
 		68C1D1E11B99A0D50062BAA6 /* LevelDbDatastore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LevelDbDatastore.h; path = nosql/LevelDbDatastore.h; sourceTree = "<group>"; };
-		68C1D1E21B99A0D50062BAA6 /* NoSqlDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NoSqlDatabase.cpp; path = nosql/NoSqlDatabase.cpp; sourceTree = "<group>"; };
-		68C1D1E31B99A0D50062BAA6 /* NoSqlDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NoSqlDatabase.h; path = nosql/NoSqlDatabase.h; sourceTree = "<group>"; };
 		68CB84DA1ACC85C40015C5E7 /* AddonCallbacksPeripheral.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksPeripheral.cpp; sourceTree = "<group>"; };
 		68CB84DB1ACC85C40015C5E7 /* AddonCallbacksPeripheral.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksPeripheral.h; sourceTree = "<group>"; };
+		68CBEB471B9F43FF00673A11 /* DocumentGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DocumentGroup.cpp; path = nosql/DocumentGroup.cpp; sourceTree = "<group>"; };
+		68CBEB481B9F43FF00673A11 /* DocumentGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DocumentGroup.h; path = nosql/DocumentGroup.h; sourceTree = "<group>"; };
+		68CBEB4C1B9F440900673A11 /* IDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IDocument.h; path = nosql/IDocument.h; sourceTree = "<group>"; };
 		68CF9B871B2C8A750016931A /* ControllerManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ControllerManager.cpp; path = games/ControllerManager.cpp; sourceTree = "<group>"; };
 		68CF9B881B2C8A760016931A /* ControllerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControllerManager.h; path = games/ControllerManager.h; sourceTree = "<group>"; };
 		68D279951ACC6D9000B25E88 /* PortManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PortManager.cpp; sourceTree = "<group>"; };
@@ -7161,15 +7177,27 @@
 			name = tags;
 			sourceTree = "<group>";
 		};
+		6823280A1B9DD20200C98F6C /* database */ = {
+			isa = PBXGroup;
+			children = (
+				6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */,
+				6823280E1B9DD21C00C98F6C /* GameDatabase.h */,
+			);
+			name = database;
+			sourceTree = "<group>";
+		};
 		68A5875C1B2A82F1002D3F53 /* games */ = {
 			isa = PBXGroup;
 			children = (
 				68A5875F1B2A8332002D3F53 /* addons */,
+				6823280A1B9DD20200C98F6C /* database */,
 				681EC9111B2A880E0064E12D /* tags */,
 				68A5875D1B2A8318002D3F53 /* windows */,
 				68CF9B871B2C8A750016931A /* ControllerManager.cpp */,
 				68CF9B881B2C8A760016931A /* ControllerManager.h */,
 				6826413D1B9EED4700EEB2C2 /* ControllerTypes.h */,
+				680B04971BA01A40005A8C81 /* Game.cpp */,
+				680B04981BA01A40005A8C81 /* Game.h */,
 				68A5876F1B2A83DC002D3F53 /* GameDefinitions.h */,
 				687AAF461B2CA51D00C16152 /* GameFileAutoLauncher.cpp */,
 				687AAF471B2CA51D00C16152 /* GameFileAutoLauncher.h */,
@@ -7269,16 +7297,19 @@
 		68C1D1DB1B99A0AD0062BAA6 /* nosql */ = {
 			isa = PBXGroup;
 			children = (
+				682328001B9DD1F400C98F6C /* DenormalizedDatabase.cpp */,
+				682328011B9DD1F400C98F6C /* DenormalizedDatabase.h */,
+				68CBEB471B9F43FF00673A11 /* DocumentGroup.cpp */,
+				68CBEB481B9F43FF00673A11 /* DocumentGroup.h */,
 				68C1D1DC1B99A0D50062BAA6 /* GenericDocumentStore.cpp */,
 				68C1D1DD1B99A0D50062BAA6 /* GenericDocumentStore.h */,
+				68CBEB4C1B9F440900673A11 /* IDocument.h */,
 				68C1D1DE1B99A0D50062BAA6 /* IDocumentStore.h */,
 				68C1D1DF1B99A0D50062BAA6 /* IKeyValueStore.h */,
 				68D79CAE1B9A3C0700F8D9A5 /* KyotoCabinetDatastore.cpp */,
 				68D79CAF1B9A3C0700F8D9A5 /* KyotoCabinetDatastore.h */,
 				68C1D1E01B99A0D50062BAA6 /* LevelDbDatastore.cpp */,
 				68C1D1E11B99A0D50062BAA6 /* LevelDbDatastore.h */,
-				68C1D1E21B99A0D50062BAA6 /* NoSqlDatabase.cpp */,
-				68C1D1E31B99A0D50062BAA6 /* NoSqlDatabase.h */,
 			);
 			name = nosql;
 			sourceTree = "<group>";
@@ -10814,7 +10845,6 @@
 				395C29F01A98A16300EBC7AD /* HTTPPythonWsgiInvoker.cpp in Sources */,
 				E38E22500D25F9FE00618676 /* rarvm.cpp in Sources */,
 				E38E22520D25F9FE00618676 /* rawread.cpp in Sources */,
-				68C1D1EA1B99A0D50062BAA6 /* NoSqlDatabase.cpp in Sources */,
 				E38E22530D25F9FE00618676 /* rdwrfn.cpp in Sources */,
 				E38E22540D25F9FE00618676 /* recvol.cpp in Sources */,
 				E38E22550D25F9FE00618676 /* resource.cpp in Sources */,
@@ -11061,6 +11091,7 @@
 				18B7C7B11294222E009E7A26 /* GUIBaseContainer.cpp in Sources */,
 				18B7C7B21294222E009E7A26 /* GUIBorderedImage.cpp in Sources */,
 				18B7C7B31294222E009E7A26 /* GUIButtonControl.cpp in Sources */,
+				682328041B9DD1F400C98F6C /* DenormalizedDatabase.cpp in Sources */,
 				687AAF4E1B2CA51D00C16152 /* GameFileAutoLauncher.cpp in Sources */,
 				18B7C7B51294222E009E7A26 /* GUICheckMarkControl.cpp in Sources */,
 				18B7C7B61294222E009E7A26 /* GUIColorManager.cpp in Sources */,
@@ -11285,6 +11316,7 @@
 				F5ED8D6C1551F91400842059 /* BlurayDirectory.cpp in Sources */,
 				F5ED908815538DCE00842059 /* XBMCTinyXML.cpp in Sources */,
 				F5ED908E15538E2300842059 /* POUtils.cpp in Sources */,
+				682328131B9DD21C00C98F6C /* GameDatabase.cpp in Sources */,
 				DFB65FB515373AE7006B8FF1 /* AEFactory.cpp in Sources */,
 				DFB65FB715373AE7006B8FF1 /* AEEncoderFFmpeg.cpp in Sources */,
 				DFB65FCC15373AE7006B8FF1 /* AEBitstreamPacker.cpp in Sources */,
@@ -11348,9 +11380,11 @@
 				C848291C156CFFE7005A996F /* AddonCallbacksPVR.cpp in Sources */,
 				C848291F156D003E005A996F /* TextSearch.cpp in Sources */,
 				18E7CACB1578C26D001D4554 /* CDDARipJob.cpp in Sources */,
+				68CBEB491B9F43FF00673A11 /* DocumentGroup.cpp in Sources */,
 				36A9443D15821E2800727135 /* DatabaseUtils.cpp in Sources */,
 				36A9444115821E7C00727135 /* SortUtils.cpp in Sources */,
 				1DE0443515828F4B005DDB4D /* Exception.cpp in Sources */,
+				680B04991BA01A40005A8C81 /* Game.cpp in Sources */,
 				7C1D682915A7D2FD00658B65 /* DatabaseManager.cpp in Sources */,
 				7C1A492315A962EE004AF4A4 /* SeekHandler.cpp in Sources */,
 				DF830D0C15BB260C00602BE6 /* GUIDialogKeyboardGeneric.cpp in Sources */,
@@ -11684,6 +11718,7 @@
 				DFF0F10417528350002DA3A4 /* options.cpp in Sources */,
 				DFF0F10517528350002DA3A4 /* pathfn.cpp in Sources */,
 				DFF0F10617528350002DA3A4 /* rar.cpp in Sources */,
+				68CBEB4B1B9F43FF00673A11 /* DocumentGroup.cpp in Sources */,
 				DFF0F10717528350002DA3A4 /* rarvm.cpp in Sources */,
 				DFF0F10817528350002DA3A4 /* rawread.cpp in Sources */,
 				DFF0F10917528350002DA3A4 /* rdwrfn.cpp in Sources */,
@@ -11754,6 +11789,7 @@
 				DFF0F15017528350002DA3A4 /* dll_tracker.cpp in Sources */,
 				DFF0F15117528350002DA3A4 /* dll_tracker_file.cpp in Sources */,
 				DFF0F15217528350002DA3A4 /* dll_tracker_library.cpp in Sources */,
+				680B049B1BA01A41005A8C81 /* Game.cpp in Sources */,
 				DFF0F15317528350002DA3A4 /* dll_util.cpp in Sources */,
 				68A5876B1B2A8342002D3F53 /* GameControllerFeature.cpp in Sources */,
 				DFF0F15417528350002DA3A4 /* DllLoader.cpp in Sources */,
@@ -11911,7 +11947,6 @@
 				DFF0F1FD17528350002DA3A4 /* FileFactory.cpp in Sources */,
 				DFF0F1FE17528350002DA3A4 /* FileReaderFile.cpp in Sources */,
 				DFF0F1FF17528350002DA3A4 /* FTPDirectory.cpp in Sources */,
-				68C1D1EC1B99A0D50062BAA6 /* NoSqlDatabase.cpp in Sources */,
 				DFF0F20017528350002DA3A4 /* FTPParse.cpp in Sources */,
 				DFF0F20317528350002DA3A4 /* HDHomeRunDirectory.cpp in Sources */,
 				DFF0F20417528350002DA3A4 /* HDHomeRunFile.cpp in Sources */,
@@ -12267,6 +12302,7 @@
 				687AAF421B2CA50800C16152 /* GameClient.cpp in Sources */,
 				DFF0F35417528350002DA3A4 /* Peripherals.cpp in Sources */,
 				DFF0F35517528350002DA3A4 /* GUIDialogPictureInfo.cpp in Sources */,
+				682328151B9DD21C00C98F6C /* GameDatabase.cpp in Sources */,
 				DFF0F35617528350002DA3A4 /* GUIViewStatePictures.cpp in Sources */,
 				68AFC9BD1ACC5E2700DD5173 /* GenericJoystickKeyboardHandler.cpp in Sources */,
 				DFF0F35717528350002DA3A4 /* GUIWindowPictures.cpp in Sources */,
@@ -12367,6 +12403,7 @@
 				DFF0F3B917528350002DA3A4 /* Timer.cpp in Sources */,
 				DFF0F3BA17528350002DA3A4 /* AlarmClock.cpp in Sources */,
 				DFF0F3BB17528350002DA3A4 /* AliasShortcutUtils.cpp in Sources */,
+				682328061B9DD1F400C98F6C /* DenormalizedDatabase.cpp in Sources */,
 				DFF0F3BC17528350002DA3A4 /* Archive.cpp in Sources */,
 				DFF0F3BD17528350002DA3A4 /* AsyncFileCopy.cpp in Sources */,
 				DFF0F3BE17528350002DA3A4 /* AutoPtrHandle.cpp in Sources */,
@@ -12861,6 +12898,7 @@
 				E49911CB174E5D2500741B6D /* DVDOverlayCodecTX3G.cpp in Sources */,
 				E49911CE174E5D2500741B6D /* DVDVideoCodecFFmpeg.cpp in Sources */,
 				E49911CF174E5D2500741B6D /* DVDVideoCodecLibMpeg2.cpp in Sources */,
+				682328141B9DD21C00C98F6C /* GameDatabase.cpp in Sources */,
 				395C29BD1A94733100EBC7AD /* Key.cpp in Sources */,
 				E49911D0174E5D2500741B6D /* DVDVideoCodecVDA.cpp in Sources */,
 				E49911D1174E5D2500741B6D /* DVDVideoPPFFmpeg.cpp in Sources */,
@@ -13003,6 +13041,7 @@
 				E4991263174E5D8F00741B6D /* File.cpp in Sources */,
 				E4991264174E5D8F00741B6D /* FileCache.cpp in Sources */,
 				E4991265174E5D8F00741B6D /* FileDirectoryFactory.cpp in Sources */,
+				682328051B9DD1F400C98F6C /* DenormalizedDatabase.cpp in Sources */,
 				E4991266174E5D8F00741B6D /* FileFactory.cpp in Sources */,
 				687AAF521B2CA51D00C16152 /* GameManager.cpp in Sources */,
 				395C29EE1A98A16300EBC7AD /* HTTPPythonInvoker.cpp in Sources */,
@@ -13056,6 +13095,7 @@
 				68AFC9A51ACC5E2000DD5173 /* JoystickDriverPrimitive.cpp in Sources */,
 				68F2DA191B2A608B006E297B /* AddonJoystickInputHandling.cpp in Sources */,
 				E4991298174E5D9900741B6D /* NFSDirectory.cpp in Sources */,
+				680B049A1BA01A41005A8C81 /* Game.cpp in Sources */,
 				E4991299174E5D9900741B6D /* NFSFile.cpp in Sources */,
 				E499129A174E5D9900741B6D /* NptXbmcFile.cpp in Sources */,
 				E499129D174E5D9900741B6D /* PipeFile.cpp in Sources */,
@@ -13231,6 +13271,7 @@
 				E4991354174E5EBE00741B6D /* GUIOperations.cpp in Sources */,
 				E4991355174E5EBE00741B6D /* InputOperations.cpp in Sources */,
 				E4991356174E5EBE00741B6D /* JSONRPC.cpp in Sources */,
+				68CBEB4A1B9F43FF00673A11 /* DocumentGroup.cpp in Sources */,
 				E4991357174E5EBE00741B6D /* JSONServiceDescription.cpp in Sources */,
 				E4991358174E5EBE00741B6D /* PlayerOperations.cpp in Sources */,
 				E4991359174E5EBE00741B6D /* PlaylistOperations.cpp in Sources */,
@@ -13503,7 +13544,6 @@
 				E499146B174E605900741B6D /* RingBuffer.cpp in Sources */,
 				68AFC9B61ACC5E2700DD5173 /* DigitalAnalogButtonConverter.cpp in Sources */,
 				E499146C174E605900741B6D /* RssManager.cpp in Sources */,
-				68C1D1EB1B99A0D50062BAA6 /* NoSqlDatabase.cpp in Sources */,
 				E499146D174E605900741B6D /* RssReader.cpp in Sources */,
 				E499146E174E605900741B6D /* ScraperParser.cpp in Sources */,
 				E499146F174E605900741B6D /* ScraperUrl.cpp in Sources */,
