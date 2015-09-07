@@ -23,6 +23,8 @@
 #include "games/GameDefinitions.h"
 #include "utils/Variant.h"
 
+#include <algorithm>
+
 using namespace dbiplus;
 using namespace GAME;
 
@@ -116,9 +118,11 @@ GameVector CGameDatabase::DowncastArray(const std::vector<IDocument*>& documents
 {
   GameVector games;
 
-  games.reserve(documents.size());
-  for (std::vector<IDocument*>::iterator it = documents.begin(); it != documents.end(); ++it)
-    games.push_back(GamePtr(static_cast<CGame*>(*it)));
+  std::transform(documents.begin(), documents.end(), games.begin(),
+    [](IDocument* document)
+    {
+      return GamePtr(static_cast<CGame*>(document));
+    });
 
   return games;
 }
