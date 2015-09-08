@@ -21,7 +21,7 @@
 
 #include "GameControllerLayout.h"
 #include "addons/Addon.h"
-#include "games/GameTypes.h"
+#include "games/ControllerTypes.h"
 
 #include <string>
 

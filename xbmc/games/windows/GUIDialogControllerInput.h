@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "games/GameTypes.h"
+#include "games/ControllerTypes.h"
 #include "games/windows/wizards/IGUIControllerWizard.h"
 #include "guilib/GUIDialog.h"
 #include "interfaces/IAnnouncer.h"

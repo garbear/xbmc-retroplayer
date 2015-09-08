@@ -20,7 +20,7 @@
 #pragma once
 
 #include "addons/Addon.h"
-#include "games/GameTypes.h"
+#include "games/ControllerTypes.h"
 #include "guilib/GUIWindow.h"
 #include "input/joysticks/IJoystickInputHandler.h"
 #include "FileItem.h"

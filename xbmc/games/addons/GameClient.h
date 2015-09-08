@@ -64,6 +64,7 @@
 #include "addons/Addon.h"
 #include "addons/AddonDll.h"
 #include "addons/DllGameClient.h"
+#include "games/ControllerTypes.h"
 #include "games/GameTypes.h"
 #include "games/SerialState.h"
 #include "input/joysticks/IJoystickInputHandler.h"

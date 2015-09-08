@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2015 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2015 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,9 +24,35 @@
 
 namespace GAME
 {
+  class CGameController;
+  typedef std::shared_ptr<CGameController> GameControllerPtr;
+  typedef std::vector<GameControllerPtr>   GameControllerVector;
 
-class CGameClient;
-typedef std::shared_ptr<CGameClient> GameClientPtr;
-typedef std::vector<GameClientPtr>   GameClientVector;
+  /*!
+   * \brief Types of features used in the game controller abstraction
+   */
+  enum FeatureType
+  {
+    FEATURE_UNKNOWN,
+    FEATURE_BUTTON,
+    FEATURE_ANALOG_STICK,
+    FEATURE_ACCELEROMETER,
+    FEATURE_KEY,
+    FEATURE_RELATIVE_POINTER,
+    FEATURE_ABSOLUTE_POINTER,
+  };
 
+  enum ButtonType
+  {
+    BUTTON_UNKNOWN,
+    BUTTON_DIGITAL,
+    BUTTON_ANALOG,
+  };
+
+  enum FeatureGeometryType
+  {
+    GEOMETRY_NONE,
+    GEOMETRY_RECTANGLE,
+    GEOMETRY_CIRCLE,
+  };
 }

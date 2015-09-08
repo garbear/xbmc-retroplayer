@@ -20,7 +20,7 @@
 #pragma once
 
 #include "IGUIControllerWizard.h"
-#include "games/GameTypes.h"
+#include "games/ControllerTypes.h"
 #include "input/joysticks/IJoystickButtonMapper.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
 #include "threads/CriticalSection.h"

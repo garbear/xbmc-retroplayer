@@ -20,7 +20,7 @@
 #pragma once
 
 #include "GUIImage.h"
-#include "games/GameTypes.h"
+#include "games/ControllerTypes.h"
 #include "threads/CriticalSection.h"
 
 class CGUIGameController : public CGUIImage

@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "GameTypes.h"
+#include "ControllerTypes.h"
 #include "utils/Observer.h"
 #include "threads/CriticalSection.h"
 
