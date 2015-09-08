@@ -954,6 +954,7 @@
     <ClInclude Include="..\..\xbmc\games\addons\GameControllerFeature.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameControllerLayout.h" />
     <ClInclude Include="..\..\xbmc\games\ControllerManager.h" />
+    <ClInclude Include="..\..\xbmc\games\ControllerTypes.h" />
     <ClInclude Include="..\..\xbmc\games\GameDefinitions.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h" />
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />

@@ -6332,6 +6332,9 @@
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h">
       <Filter>games\windows</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\ControllerTypes.h">
+      <Filter>games</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\xbmc\win32\XBMC_PC.rc">
