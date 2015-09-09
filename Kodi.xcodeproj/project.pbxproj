@@ -312,6 +312,12 @@
 		682CD2531BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */; };
 		682CD2541BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */; };
 		682CD2551BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */; };
+		682CD25A1BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2561BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp */; };
+		682CD25B1BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2561BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp */; };
+		682CD25C1BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2561BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp */; };
+		682CD25D1BA02C6A00DC9BC8 /* ContentAddonFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2581BA02C6A00DC9BC8 /* ContentAddonFile.cpp */; };
+		682CD25E1BA02C6A00DC9BC8 /* ContentAddonFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2581BA02C6A00DC9BC8 /* ContentAddonFile.cpp */; };
+		682CD25F1BA02C6A00DC9BC8 /* ContentAddonFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2581BA02C6A00DC9BC8 /* ContentAddonFile.cpp */; };
 		6842F75C1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75D1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75E1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
@@ -3831,6 +3837,10 @@
 		682CD2501BA029C400DC9BC8 /* AddonCallbacksContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksContent.h; sourceTree = "<group>"; };
 		682CD2511BA029C400DC9BC8 /* BinaryAddonManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryAddonManager.h; sourceTree = "<group>"; };
 		682CD2521BA029C400DC9BC8 /* DllContentAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DllContentAddon.h; sourceTree = "<group>"; };
+		682CD2561BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentAddonDirectory.cpp; sourceTree = "<group>"; };
+		682CD2571BA02C6A00DC9BC8 /* ContentAddonDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentAddonDirectory.h; sourceTree = "<group>"; };
+		682CD2581BA02C6A00DC9BC8 /* ContentAddonFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentAddonFile.cpp; sourceTree = "<group>"; };
+		682CD2591BA02C6A00DC9BC8 /* ContentAddonFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentAddonFile.h; sourceTree = "<group>"; };
 		6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		6842F75B1B8C4744007A231D /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
 		687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksGame.cpp; sourceTree = "<group>"; };
@@ -9162,6 +9172,10 @@
 				DF93D66A1444A8B0007C6459 /* CDDAFile.h */,
 				7C99B6A2133D342100FC2B16 /* CircularCache.cpp */,
 				7C99B6A3133D342100FC2B16 /* CircularCache.h */,
+				682CD2561BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp */,
+				682CD2571BA02C6A00DC9BC8 /* ContentAddonDirectory.h */,
+				682CD2581BA02C6A00DC9BC8 /* ContentAddonFile.cpp */,
+				682CD2591BA02C6A00DC9BC8 /* ContentAddonFile.h */,
 				DF93D66B1444A8B0007C6459 /* CurlFile.cpp */,
 				DF93D66C1444A8B0007C6459 /* CurlFile.h */,
 				DFD5812116C8284F0008EEA0 /* DAVCommon.cpp */,
@@ -10732,6 +10746,7 @@
 				E38E203D0D25F9FD00618676 /* DirectoryNodeAlbumTop100Song.cpp in Sources */,
 				E38E203E0D25F9FD00618676 /* DirectoryNodeArtist.cpp in Sources */,
 				682CD2531BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */,
+				682CD25A1BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp in Sources */,
 				E38E20400D25F9FD00618676 /* DirectoryNodeOverview.cpp in Sources */,
 				E38E20410D25F9FD00618676 /* DirectoryNodeRoot.cpp in Sources */,
 				E38E20420D25F9FD00618676 /* DirectoryNodeSong.cpp in Sources */,
@@ -11049,6 +11064,7 @@
 				7C779E3F104A57E500F444C4 /* WinSystemOSXGL.mm in Sources */,
 				7C779E54104A58F900F444C4 /* GUIWindowTestPatternGL.cpp in Sources */,
 				7C62F24210505BC7002AD2C1 /* Bookmark.cpp in Sources */,
+				682CD25D1BA02C6A00DC9BC8 /* ContentAddonFile.cpp in Sources */,
 				7C62F45E1057A62D002AD2C1 /* DirectoryNodeSingles.cpp in Sources */,
 				7CCF7F1D1069F3AE00992676 /* Builtins.cpp in Sources */,
 				7CCF7FC9106A0DF500992676 /* TimeUtils.cpp in Sources */,
@@ -12282,6 +12298,7 @@
 				DFF0F32A17528350002DA3A4 /* ZeroconfOSX.cpp in Sources */,
 				DFF0F32B17528350002DA3A4 /* UPnP.cpp in Sources */,
 				68D279BA1ACC6E0100B25E88 /* PeripheralJoystick.cpp in Sources */,
+				682CD25F1BA02C6A00DC9BC8 /* ContentAddonFile.cpp in Sources */,
 				DFF0F32C17528350002DA3A4 /* UPnPInternal.cpp in Sources */,
 				DFF0F32D17528350002DA3A4 /* UPnPPlayer.cpp in Sources */,
 				DF02BA631A910624006DCA16 /* VideoSyncIos.cpp in Sources */,
@@ -12579,6 +12596,7 @@
 				DFF0F44B17528350002DA3A4 /* TextureDatabase.cpp in Sources */,
 				DFF0F44C17528350002DA3A4 /* ThumbLoader.cpp in Sources */,
 				DFF0F44D17528350002DA3A4 /* ThumbnailCache.cpp in Sources */,
+				682CD25C1BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp in Sources */,
 				395F6DDF1A8133360088CC74 /* GUIDialogSimpleMenu.cpp in Sources */,
 				DFF0F44E17528350002DA3A4 /* URL.cpp in Sources */,
 				DFF0F44F17528350002DA3A4 /* Util.cpp in Sources */,
@@ -13371,6 +13389,7 @@
 				E4991396174E5F0E00741B6D /* GUIWindowMusicNav.cpp in Sources */,
 				E4991397174E5F0E00741B6D /* GUIWindowMusicPlaylist.cpp in Sources */,
 				E4991398174E5F0E00741B6D /* GUIWindowMusicPlaylistEditor.cpp in Sources */,
+				682CD25B1BA02C6A00DC9BC8 /* ContentAddonDirectory.cpp in Sources */,
 				E4991399174E5F0E00741B6D /* GUIWindowMusicSongs.cpp in Sources */,
 				E499139A174E5F0E00741B6D /* GUIWindowVisualisation.cpp in Sources */,
 				E499139B174E5F0E00741B6D /* Album.cpp in Sources */,
@@ -13392,6 +13411,7 @@
 				E49913AA174E5F2100741B6D /* ZeroconfBrowserOSX.cpp in Sources */,
 				E49913AB174E5F2100741B6D /* ZeroconfOSX.cpp in Sources */,
 				E49913AC174E5F3300741B6D /* UPnP.cpp in Sources */,
+				682CD25E1BA02C6A00DC9BC8 /* ContentAddonFile.cpp in Sources */,
 				E49913AD174E5F3300741B6D /* UPnPInternal.cpp in Sources */,
 				E49913AE174E5F3300741B6D /* UPnPPlayer.cpp in Sources */,
 				E49913AF174E5F3300741B6D /* UPnPRenderer.cpp in Sources */,
