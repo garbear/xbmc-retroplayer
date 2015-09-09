@@ -12,6 +12,14 @@ RetroPlayer is a new player core for Kodi Entertainment Center. It is similar to
 
 **Game Add-ons:** Standalone games, emulators and game streamers. From day one, RetroPlayer has been compatible with the [libretro](http://www.libretro.com/) ecosystem.
 
+**Game library:** Defined by XML nodes similar to [video library nodes](http://kodi.wiki/view/Video_nodes).
+
+**Content add-ons:** Add-ons that can provide library content. These are similar to plugins, but content is scanned into the library instead of browsed through the add-ons node. Python is currently supported, and binary content add-ons are in the works.
+
+**Unified content database:** A new database, backed by a key-value store, handles all library content. Content add-ons open up new possibilities; installing a few add-ons can grow the game library to tens of thousands of games. A database that can scale to handle large libraries is mandatory.
+
+**Unified content scraping:** Content scraping is provided by Heimdall ([forum](http://forum.kodi.tv/showthread.php?tid=134012&page=4), [github](https://github.com/topfs2/heimdall)), a python-based metadata scraper written by topfs2 for GSoC 2012.
+
 **Peripheral Add-ons:** Add-ons that expose hardware devices to Kodi. Communication with devices takes place over a bus. The peripheral add-on API is a virtual bus, alongside USB and PCI, that allows third parties to expose hardware devices to Kodi.
 
 **Joystick input:** Various joystick APIs (DirectX, XInput, SDL, etc.) provide access to raw hardware events, like button presses and axis positions. The joystick input system maps these to physical elements on the controller, such as the X button, left trigger or right analog stick. The gesture recognition from touch input has been converted to monitor holding, double-pressing, analog stick rotation and (someday) accelerometer gestures.
