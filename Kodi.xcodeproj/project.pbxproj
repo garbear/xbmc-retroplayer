@@ -303,6 +303,15 @@
 		682328131B9DD21C00C98F6C /* GameDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */; };
 		682328141B9DD21C00C98F6C /* GameDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */; };
 		682328151B9DD21C00C98F6C /* GameDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */; };
+		682CD2491BA029B800DC9BC8 /* ContentAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2451BA029B800DC9BC8 /* ContentAddon.cpp */; };
+		682CD24A1BA029B800DC9BC8 /* ContentAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2451BA029B800DC9BC8 /* ContentAddon.cpp */; };
+		682CD24B1BA029B800DC9BC8 /* ContentAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2451BA029B800DC9BC8 /* ContentAddon.cpp */; };
+		682CD24C1BA029B800DC9BC8 /* ContentAddons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2471BA029B800DC9BC8 /* ContentAddons.cpp */; };
+		682CD24D1BA029B800DC9BC8 /* ContentAddons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2471BA029B800DC9BC8 /* ContentAddons.cpp */; };
+		682CD24E1BA029B800DC9BC8 /* ContentAddons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD2471BA029B800DC9BC8 /* ContentAddons.cpp */; };
+		682CD2531BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */; };
+		682CD2541BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */; };
+		682CD2551BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */; };
 		6842F75C1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75D1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75E1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
@@ -3814,6 +3823,14 @@
 		6823280D1B9DD21C00C98F6C /* GameDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameDatabase.cpp; path = games/database/GameDatabase.cpp; sourceTree = "<group>"; };
 		6823280E1B9DD21C00C98F6C /* GameDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameDatabase.h; path = games/database/GameDatabase.h; sourceTree = "<group>"; };
 		6826413D1B9EED4700EEB2C2 /* ControllerTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControllerTypes.h; path = games/ControllerTypes.h; sourceTree = "<group>"; };
+		682CD2451BA029B800DC9BC8 /* ContentAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentAddon.cpp; sourceTree = "<group>"; };
+		682CD2461BA029B800DC9BC8 /* ContentAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentAddon.h; sourceTree = "<group>"; };
+		682CD2471BA029B800DC9BC8 /* ContentAddons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ContentAddons.cpp; sourceTree = "<group>"; };
+		682CD2481BA029B800DC9BC8 /* ContentAddons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentAddons.h; sourceTree = "<group>"; };
+		682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksContent.cpp; sourceTree = "<group>"; };
+		682CD2501BA029C400DC9BC8 /* AddonCallbacksContent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksContent.h; sourceTree = "<group>"; };
+		682CD2511BA029C400DC9BC8 /* BinaryAddonManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryAddonManager.h; sourceTree = "<group>"; };
+		682CD2521BA029C400DC9BC8 /* DllContentAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DllContentAddon.h; sourceTree = "<group>"; };
 		6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		6842F75B1B8C4744007A231D /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
 		687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksGame.cpp; sourceTree = "<group>"; };
@@ -6157,6 +6174,8 @@
 				C8482914156CFFE7005A996F /* AddonCallbacksAddon.h */,
 				DFBB4306178B574E006CC20A /* AddonCallbacksCodec.cpp */,
 				DFBB4307178B574E006CC20A /* AddonCallbacksCodec.h */,
+				682CD24F1BA029C400DC9BC8 /* AddonCallbacksContent.cpp */,
+				682CD2501BA029C400DC9BC8 /* AddonCallbacksContent.h */,
 				687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */,
 				687AAF371B2CA4D700C16152 /* AddonCallbacksGame.h */,
 				C8482915156CFFE7005A996F /* AddonCallbacksGUI.cpp */,
@@ -6180,9 +6199,15 @@
 				395C2A231AA4C32100EBC7AD /* AudioDecoder.h */,
 				7CF34D9D1930264A00D543C5 /* AudioEncoder.cpp */,
 				7CF34D9E1930264A00D543C5 /* AudioEncoder.h */,
+				682CD2511BA029C400DC9BC8 /* BinaryAddonManager.h */,
+				682CD2451BA029B800DC9BC8 /* ContentAddon.cpp */,
+				682CD2461BA029B800DC9BC8 /* ContentAddon.h */,
+				682CD2471BA029B800DC9BC8 /* ContentAddons.cpp */,
+				682CD2481BA029B800DC9BC8 /* ContentAddons.h */,
 				395C2A1D1A9F96A700EBC7AD /* ContextItemAddon.cpp */,
 				395C2A1E1A9F96A700EBC7AD /* ContextItemAddon.h */,
 				18B49FF61152BFA5001AF8A6 /* DllAddon.h */,
+				682CD2521BA029C400DC9BC8 /* DllContentAddon.h */,
 				687AAF381B2CA4D700C16152 /* DllGameClient.h */,
 				18B7C38612942090009E7A26 /* GUIDialogAddonInfo.cpp */,
 				18B7C38712942090009E7A26 /* GUIDialogAddonInfo.h */,
@@ -10706,6 +10731,7 @@
 				E38E203C0D25F9FD00618676 /* DirectoryNodeAlbumTop100.cpp in Sources */,
 				E38E203D0D25F9FD00618676 /* DirectoryNodeAlbumTop100Song.cpp in Sources */,
 				E38E203E0D25F9FD00618676 /* DirectoryNodeArtist.cpp in Sources */,
+				682CD2531BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */,
 				E38E20400D25F9FD00618676 /* DirectoryNodeOverview.cpp in Sources */,
 				E38E20410D25F9FD00618676 /* DirectoryNodeRoot.cpp in Sources */,
 				E38E20420D25F9FD00618676 /* DirectoryNodeSong.cpp in Sources */,
@@ -11279,6 +11305,7 @@
 				DFCA6AC8152245CD000BFAAE /* HTTPVfsHandler.cpp in Sources */,
 				DFCA6AC9152245CD000BFAAE /* HTTPWebinterfaceAddonsHandler.cpp in Sources */,
 				DFCA6ACA152245CD000BFAAE /* HTTPWebinterfaceHandler.cpp in Sources */,
+				682CD2491BA029B800DC9BC8 /* ContentAddon.cpp in Sources */,
 				DFCA6ACB152245CD000BFAAE /* IHTTPRequestHandler.cpp in Sources */,
 				DF93D65D1444A7A3007C6459 /* SlingboxDirectory.cpp in Sources */,
 				DF93D69A1444A8B1007C6459 /* DirectoryCache.cpp in Sources */,
@@ -11684,6 +11711,7 @@
 				7C525DF5195E2D8100BE3482 /* SaveFileStateJob.cpp in Sources */,
 				7C908894196358A8003D0619 /* auto_buffer.cpp in Sources */,
 				7CF34D9F1930264A00D543C5 /* AudioEncoder.cpp in Sources */,
+				682CD24C1BA029B800DC9BC8 /* ContentAddons.cpp in Sources */,
 				7CF80DC919710DC2003B2B34 /* KeyboardLayout.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12022,6 +12050,7 @@
 				DFF0F24C17528350002DA3A4 /* SourcesDirectory.cpp in Sources */,
 				DFF0F24D17528350002DA3A4 /* SpecialProtocol.cpp in Sources */,
 				DFF0F24E17528350002DA3A4 /* SpecialProtocolDirectory.cpp in Sources */,
+				682CD24B1BA029B800DC9BC8 /* ContentAddon.cpp in Sources */,
 				DFF0F24F17528350002DA3A4 /* SpecialProtocolFile.cpp in Sources */,
 				395897171AAD94F00033D27C /* KeyboardLayoutManager.cpp in Sources */,
 				DFF0F25017528350002DA3A4 /* StackDirectory.cpp in Sources */,
@@ -12318,6 +12347,7 @@
 				DFF0F36017528350002DA3A4 /* PlayListFactory.cpp in Sources */,
 				395C29BE1A94733100EBC7AD /* Key.cpp in Sources */,
 				DFF0F36117528350002DA3A4 /* PlayListM3U.cpp in Sources */,
+				682CD2551BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */,
 				DF4BF0191A4EF31F0053AC56 /* cc_decoder.c in Sources */,
 				DFF0F36217528350002DA3A4 /* PlayListPLS.cpp in Sources */,
 				DFF0F36317528350002DA3A4 /* PlayListURL.cpp in Sources */,
@@ -12445,6 +12475,7 @@
 				395C29E01A98A11C00EBC7AD /* WsgiResponseBody.cpp in Sources */,
 				DFF0F3E217528350002DA3A4 /* PerformanceSample.cpp in Sources */,
 				DFF0F3E317528350002DA3A4 /* PerformanceStats.cpp in Sources */,
+				682CD24E1BA029B800DC9BC8 /* ContentAddons.cpp in Sources */,
 				DFF0F3E417528350002DA3A4 /* POUtils.cpp in Sources */,
 				DFF0F3E517528350002DA3A4 /* RecentlyAddedJob.cpp in Sources */,
 				DFF0F3E617528350002DA3A4 /* RegExp.cpp in Sources */,
@@ -12903,6 +12934,7 @@
 				E49911D0174E5D2500741B6D /* DVDVideoCodecVDA.cpp in Sources */,
 				E49911D1174E5D2500741B6D /* DVDVideoPPFFmpeg.cpp in Sources */,
 				E49911D2174E5D2E00741B6D /* DVDDemux.cpp in Sources */,
+				682CD2541BA029C400DC9BC8 /* AddonCallbacksContent.cpp in Sources */,
 				E49911D3174E5D2E00741B6D /* DVDDemuxBXA.cpp in Sources */,
 				E49911D4174E5D2E00741B6D /* DVDDemuxCDDA.cpp in Sources */,
 				E49911D5174E5D2E00741B6D /* DVDDemuxFFmpeg.cpp in Sources */,
@@ -12925,6 +12957,7 @@
 				E49911E6174E5D3700741B6D /* DVDInputStreamRTMP.cpp in Sources */,
 				E49911E7174E5D3700741B6D /* DVDInputStreamTV.cpp in Sources */,
 				E49911E8174E5D3700741B6D /* DVDStateSerializer.cpp in Sources */,
+				682CD24D1BA029B800DC9BC8 /* ContentAddons.cpp in Sources */,
 				E49911E9174E5D3E00741B6D /* DVDSubtitleParserSSA.cpp in Sources */,
 				E49911EA174E5D3E00741B6D /* DVDSubtitlesLibass.cpp in Sources */,
 				E49911EB174E5D3E00741B6D /* DVDSubtitleParserMicroDVD.cpp in Sources */,
@@ -13322,6 +13355,7 @@
 				E4991381174E5F0E00741B6D /* karaokelyricsmanager.cpp in Sources */,
 				E4991382174E5F0E00741B6D /* karaokelyricstext.cpp in Sources */,
 				E4991383174E5F0E00741B6D /* karaokelyricstextkar.cpp in Sources */,
+				682CD24A1BA029B800DC9BC8 /* ContentAddon.cpp in Sources */,
 				E4991384174E5F0E00741B6D /* karaokelyricstextlrc.cpp in Sources */,
 				E4991385174E5F0E00741B6D /* karaokelyricstextustar.cpp in Sources */,
 				E4991386174E5F0E00741B6D /* karaokevideobackground.cpp in Sources */,
