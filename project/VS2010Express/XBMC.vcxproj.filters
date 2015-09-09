@@ -3304,6 +3304,15 @@
     <ClCompile Include="..\..\xbmc\dbwrappers\nosql\MongoDbDatastore.cpp">
       <Filter>dbwrappers\nosql</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\addons\ContentAddon.cpp">
+      <Filter>addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\addons\ContentAddons.cpp">
+      <Filter>addons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\addons\AddonCallbacksContent.cpp">
+      <Filter>addons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6403,6 +6412,21 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\dbwrappers\nosql\MongoDbDatastore.h">
       <Filter>dbwrappers\nosql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\addons\BinaryAddonManager.h">
+      <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\addons\ContentAddon.h">
+      <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\addons\ContentAddons.h">
+      <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\addons\DllContentAddon.h">
+      <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\addons\AddonCallbacksContent.h">
+      <Filter>addons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

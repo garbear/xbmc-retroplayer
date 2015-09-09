@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacks.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksAddon.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksCodec.cpp" />
+    <ClCompile Include="..\..\xbmc\addons\AddonCallbacksContent.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGame.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGUI.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksPeripheral.cpp" />
@@ -180,6 +181,8 @@
     <ClCompile Include="..\..\xbmc\addons\AddonDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonInstaller.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AddonVersion.cpp" />
+    <ClCompile Include="..\..\xbmc\addons\ContentAddon.cpp" />
+    <ClCompile Include="..\..\xbmc\addons\ContentAddons.cpp" />
     <ClCompile Include="..\..\xbmc\addons\ContextItemAddon.cpp" />
     <ClCompile Include="..\..\xbmc\addons\AudioDecoder.cpp" />
     <ClCompile Include="..\..\xbmc\addons\GUIDialogAddonInfo.cpp" />
@@ -878,10 +881,15 @@
     <ClCompile Include="..\..\xbmc\TextureDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\DatabaseManager.cpp" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksCodec.h" />
+    <ClInclude Include="..\..\xbmc\addons\AddonCallbacksContent.h" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksGame.h" />
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksPeripheral.h" />
     <ClInclude Include="..\..\xbmc\addons\AudioDecoder.h" />
+    <ClInclude Include="..\..\xbmc\addons\BinaryAddonManager.h" />
+    <ClInclude Include="..\..\xbmc\addons\ContentAddon.h" />
+    <ClInclude Include="..\..\xbmc\addons\ContentAddons.h" />
     <ClInclude Include="..\..\xbmc\addons\ContextItemAddon.h" />
+    <ClInclude Include="..\..\xbmc\addons\DllContentAddon.h" />
     <ClInclude Include="..\..\xbmc\addons\DllGameClient.h" />
     <ClInclude Include="..\..\xbmc\addons\Webinterface.h" />
     <ClInclude Include="..\..\xbmc\addons\UISoundsResource.h" />
