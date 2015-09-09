@@ -265,6 +265,7 @@
     <ClCompile Include="..\..\xbmc\dbwrappers\nosql\DenormalizedDatabase.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\nosql\DocumentGroup.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\nosql\GenericDocumentStore.cpp" />
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\MongoDbDatastore.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\qry_dat.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\sqlitedataset.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogBoxBase.cpp" />
@@ -939,6 +940,7 @@
     <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IDocument.h" />
     <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IDocumentStore.h" />
     <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IKeyValueStore.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\MongoDbDatastore.h" />
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogKeyboardGeneric.h" />
     <ClInclude Include="..\..\xbmc\DbUrl.h" />
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogMediaFilter.h" />

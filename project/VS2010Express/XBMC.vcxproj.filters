@@ -3301,6 +3301,9 @@
     <ClCompile Include="..\..\xbmc\games\database\GameDatabase.cpp">
       <Filter>games\database</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\MongoDbDatastore.cpp">
+      <Filter>dbwrappers\nosql</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6397,6 +6400,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\database\GameDatabase.h">
       <Filter>games\database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\MongoDbDatastore.h">
+      <Filter>dbwrappers\nosql</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
