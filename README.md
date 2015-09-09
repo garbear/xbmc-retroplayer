@@ -18,8 +18,6 @@ RetroPlayer is a new player core for Kodi Entertainment Center. It is similar to
 
 **Media readers:** Plugging a cartridge into [Retrode](http://www.retrode.org/)-like devices can display game metadata and automatically launch the game. Removing a cartridge from the media reader can take a save-state so that the next time the game is inserted, gameplay begins from where it left off. Games can be cached indefinitely, so there is no need to insert the cartridge a second time (although it's possibly quicker than browsing for the cached game!). Game filenames aren't available, so game metadata is extracted from the ROM itself using [PyRomInfo](https://github.com/garbear/pyrominfo).
 
-**Game library:** Games offer new ways of interacting with media libraries. Box art, game trailers, gameplay videos, system intros, save states, and more. Games don't have to be loaded on your computer; plugins provide games that can be scanned into the library. Retro ROMs are TINY. Free clones of virtually every popular game can be streamed and cached directly from [public domain ROM sites](http://forum.xbmc.org/showthread.php?tid=173355).
-
 Many of these features are still works-in-progress, so fork the code and help out!
 
 # Building Kodi and games
