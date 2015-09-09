@@ -3313,6 +3313,12 @@
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksContent.cpp">
       <Filter>addons</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\ContentAddonDirectory.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\filesystem\ContentAddonFile.cpp">
+      <Filter>filesystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -6427,6 +6433,12 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\addons\AddonCallbacksContent.h">
       <Filter>addons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\ContentAddonDirectory.h">
+      <Filter>filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\filesystem\ContentAddonFile.h">
+      <Filter>filesystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

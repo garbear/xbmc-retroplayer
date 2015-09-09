@@ -316,6 +316,8 @@
     <ClCompile Include="..\..\xbmc\filesystem\CDDADirectory.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\CDDAFile.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\CircularCache.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\ContentAddonDirectory.cpp" />
+    <ClCompile Include="..\..\xbmc\filesystem\ContentAddonFile.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\CurlFile.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\DAVCommon.cpp" />
     <ClCompile Include="..\..\xbmc\filesystem\DAVDirectory.cpp" />
@@ -955,6 +957,8 @@
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogSimpleMenu.h" />
     <ClInclude Include="..\..\xbmc\FileItemListModification.h" />
     <ClInclude Include="..\..\xbmc\filesystem\BlurayFile.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\ContentAddonDirectory.h" />
+    <ClInclude Include="..\..\xbmc\filesystem\ContentAddonFile.h" />
     <ClInclude Include="..\..\xbmc\filesystem\HTTPFile.h" />
     <ClInclude Include="..\..\xbmc\filesystem\DAVCommon.h" />
     <ClInclude Include="..\..\xbmc\filesystem\DAVFile.h" />
