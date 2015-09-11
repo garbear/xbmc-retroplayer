@@ -262,6 +262,10 @@
     <ClCompile Include="..\..\xbmc\dbwrappers\DatabaseQuery.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\dataset.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\mysqldataset.cpp" />
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\DocumentIterator.cpp" />
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\GenericDocumentStore.cpp" />
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\wrappers\EjdbDatastore.cpp" />
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\wrappers\UnQLiteDatastore.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\qry_dat.cpp" />
     <ClCompile Include="..\..\xbmc\dbwrappers\sqlitedataset.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogBoxBase.cpp" />
@@ -418,6 +422,7 @@
     <ClCompile Include="..\..\xbmc\games\addons\GameControllerFeature.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameControllerLayout.cpp" />
     <ClCompile Include="..\..\xbmc\games\ControllerManager.cpp" />
+    <ClCompile Include="..\..\xbmc\games\Game.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameSettings.cpp" />
@@ -928,6 +933,13 @@
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerDialogs.h" />
     <ClInclude Include="..\..\xbmc\cores\RetroPlayer\RetroPlayerVideo.h" />
     <ClInclude Include="..\..\xbmc\cores\VideoRenderers\OverlayRendererGUI.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\DocumentIterator.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\GenericDocumentStore.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IDocument.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IDocumentStore.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IKeyValueStore.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\wrappers\EjdbDatastore.h" />
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\wrappers\UnQLiteDatastore.h" />
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogKeyboardGeneric.h" />
     <ClInclude Include="..\..\xbmc\DbUrl.h" />
     <ClInclude Include="..\..\xbmc\dialogs\GUIDialogMediaFilter.h" />
@@ -955,6 +967,7 @@
     <ClInclude Include="..\..\xbmc\games\addons\GameControllerLayout.h" />
     <ClInclude Include="..\..\xbmc\games\ControllerManager.h" />
     <ClInclude Include="..\..\xbmc\games\ControllerTypes.h" />
+    <ClInclude Include="..\..\xbmc\games\Game.h" />
     <ClInclude Include="..\..\xbmc\games\GameDefinitions.h" />
     <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h" />
     <ClInclude Include="..\..\xbmc\games\GameManager.h" />

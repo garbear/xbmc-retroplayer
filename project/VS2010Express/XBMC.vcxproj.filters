@@ -373,6 +373,12 @@
     <Filter Include="games\windows">
       <UniqueIdentifier>{b27eff5a-49e1-4e7d-b4c2-f4e46d18629a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="dbwrappers\nosql">
+      <UniqueIdentifier>{85fbc7e8-051e-4359-adbc-6b1428551f5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dbwrappers\nosql\wrappers">
+      <UniqueIdentifier>{2b2509e3-4927-4d5c-bb71-1d2acd732121}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3279,6 +3285,21 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\test\TestBSONVariantWriter.cpp">
       <Filter>utils\test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\Game.cpp">
+      <Filter>games</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\wrappers\EjdbDatastore.cpp">
+      <Filter>dbwrappers\nosql\wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\wrappers\UnQLiteDatastore.cpp">
+      <Filter>dbwrappers\nosql\wrappers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\DocumentIterator.cpp">
+      <Filter>dbwrappers\nosql</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\nosql\GenericDocumentStore.cpp">
+      <Filter>dbwrappers\nosql</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6352,6 +6373,30 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\BSONVariantWriter.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\Game.h">
+      <Filter>games</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\wrappers\EjdbDatastore.h">
+      <Filter>dbwrappers\nosql\wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\wrappers\UnQLiteDatastore.h">
+      <Filter>dbwrappers\nosql\wrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\DocumentIterator.h">
+      <Filter>dbwrappers\nosql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\GenericDocumentStore.h">
+      <Filter>dbwrappers\nosql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IDocument.h">
+      <Filter>dbwrappers\nosql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IDocumentStore.h">
+      <Filter>dbwrappers\nosql</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\nosql\IKeyValueStore.h">
+      <Filter>dbwrappers\nosql</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
