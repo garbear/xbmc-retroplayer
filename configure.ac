@@ -1162,6 +1162,10 @@ PKG_CHECK_MODULES([BSON], [libbson-1.0],
 AC_CHECK_LIB([unqlite], [unqlite_open],, [AC_MSG_ERROR("unqlite not found")])
 AC_CHECK_HEADERS([unqlite.h], [AC_MSG_NOTICE(unqlite found)], [AC_MSG_ERROR("unqlite.h not found")])
 
+PKG_CHECK_MODULES([EJDB], [libejdb],
+  [INCLUDES="$INCLUDES $EJDB_CFLAGS"; LIBS="$LIBS $EJDB_LIBS"],
+  [AC_MSG_ERROR([ejdb not found])])
+
 PKG_CHECK_MODULES([YAJL], [yajl >= 2],
   [INCLUDES="$INCLUDES $YAJL_CFLAGS"; LIBS="$LIBS $YAJL_LIBS"; YAJL_FOUND="true"],
   [AC_COMPILE_IFELSE(
