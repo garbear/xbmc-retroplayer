@@ -1166,7 +1166,9 @@ PKG_CHECK_MODULES([EJDB], [libejdb],
   [INCLUDES="$INCLUDES $EJDB_CFLAGS"; LIBS="$LIBS $EJDB_LIBS"],
   [AC_MSG_ERROR([ejdb not found])])
 
-AC_CHECK_LIB([leveldb], [leveldb_open],, [AC_MSG_ERROR("LevelDB not found")])
+PKG_CHECK_MODULES([LEVELDB], [libleveldb],
+  [INCLUDES="$INCLUDES $LEVELDB_CFLAGS"; LIBS="$LIBS $LEVELDB_LIBS"],
+  [AC_MSG_ERROR([LeveldB not found])])
 
 PKG_CHECK_MODULES([YAJL], [yajl >= 2],
   [INCLUDES="$INCLUDES $YAJL_CFLAGS"; LIBS="$LIBS $YAJL_LIBS"; YAJL_FOUND="true"],
