@@ -21,6 +21,8 @@ call :processFile libbson-1.1.10-win32.zip https://dl.dropboxusercontent.com/u/5
 IF ERRORLEVEL 1 EXIT /B %ERRORLEVEL%
 call :processFile unqlite-1.1.6-win32.zip https://dl.dropboxusercontent.com/u/50838998
 IF ERRORLEVEL 1 EXIT /B %ERRORLEVEL%
+call :processFile ejdb-1.2.10-win32.zip https://dl.dropboxusercontent.com/u/50838998
+IF ERRORLEVEL 1 EXIT /B %ERRORLEVEL%
 FOR /F "eol=; tokens=1" %%f IN (%SCRIPT_PATH%\0_package.list) DO (
 CALL :processFile %%f http://mirrors.xbmc.org/build-deps/win32
 IF ERRORLEVEL 1 EXIT /B %ERRORLEVEL%
