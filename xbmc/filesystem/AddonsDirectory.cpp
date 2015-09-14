@@ -69,7 +69,7 @@ const std::array<TYPE, 5> infoProviderTypes = {
   ADDON_SCRAPER_TVSHOWS,
 };
 
-const std::array<TYPE, 5> gameTypes = {
+const std::array<TYPE, 3> gameTypes = {
   ADDON_GAMEDLL,
   ADDON_GAME,
   ADDON_GAME_CONTROLLER,
