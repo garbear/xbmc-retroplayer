@@ -23,7 +23,7 @@
 
 using namespace GAME;
 
-static const char* TranslateFeatureType(FeatureType type)
+const char* CGameTranslator::TranslateFeatureType(FeatureType type)
 {
   switch (type)
   {
@@ -51,7 +51,7 @@ FeatureType CGameTranslator::TranslateFeatureType(const std::string& strType)
   return FEATURE_UNKNOWN;
 }
 
-static const char* TranslateButtonType(ButtonType type)
+const char* CGameTranslator::TranslateButtonType(ButtonType type)
 {
   switch (type)
   {
