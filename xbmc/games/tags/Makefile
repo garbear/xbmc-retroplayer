@@ -1,5 +1,4 @@
 SRCS=GameInfoTag.cpp \
-     GameInfoTagLoader.cpp \
 
 LIB=gameinfotags.a
 

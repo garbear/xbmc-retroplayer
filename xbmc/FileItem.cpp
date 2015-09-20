@@ -60,7 +60,6 @@
 #include "utils/Mime.h"
 #include "games/GameManager.h"
 #include "games/tags/GameInfoTag.h"
-#include "games/tags/GameInfoTagLoader.h"
 
 #include <assert.h>
 #include <algorithm>
@@ -3150,11 +3149,8 @@ bool CFileItem::LoadGameTag()
   if (HasGameInfoTag() && m_gameInfoTag->IsLoaded())
     return true;
 
-  // Load tag from file
-  CLog::Log(LOGDEBUG, "%s: loading tag information for file: %s", __FUNCTION__, m_strPath.c_str());
-
-  if (CGameInfoTagLoader::Get().Load(m_strPath, *GetGameInfoTag()))
-    return true;
+  // TODO
+  GetGameInfoTag();
 
   return false;
 }
