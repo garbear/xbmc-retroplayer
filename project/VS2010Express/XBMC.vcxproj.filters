@@ -3226,9 +3226,6 @@
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp">
       <Filter>games\tags</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\tags\GameInfoTagLoader.cpp">
-      <Filter>games\tags</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\addons\AddonCallbacksGame.cpp">
       <Filter>addons</Filter>
     </ClCompile>
@@ -6283,9 +6280,6 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\guilib\GUIGameController.h">
       <Filter>guilib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\tags\GameInfoTagLoader.h">
-      <Filter>games\tags</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\tags\GameInfoTag.h">
       <Filter>games\tags</Filter>
