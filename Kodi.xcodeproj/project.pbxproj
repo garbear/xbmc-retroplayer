@@ -291,9 +291,6 @@
 		681EC9161B2A88240064E12D /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9121B2A88240064E12D /* GameInfoTag.cpp */; };
 		681EC9171B2A88240064E12D /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9121B2A88240064E12D /* GameInfoTag.cpp */; };
 		681EC9181B2A88240064E12D /* GameInfoTag.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9121B2A88240064E12D /* GameInfoTag.cpp */; };
-		681EC9191B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
-		681EC91A1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
-		681EC91B1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */; };
 		6842F75C1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75D1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75E1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
@@ -3778,8 +3775,6 @@
 		680F1A081B2A5B1D0008A19D /* IJoystickButtonMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IJoystickButtonMapper.h; path = joysticks/IJoystickButtonMapper.h; sourceTree = "<group>"; };
 		681EC9121B2A88240064E12D /* GameInfoTag.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameInfoTag.cpp; path = games/tags/GameInfoTag.cpp; sourceTree = "<group>"; };
 		681EC9131B2A88240064E12D /* GameInfoTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameInfoTag.h; path = games/tags/GameInfoTag.h; sourceTree = "<group>"; };
-		681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameInfoTagLoader.cpp; path = games/tags/GameInfoTagLoader.cpp; sourceTree = "<group>"; };
-		681EC9151B2A88240064E12D /* GameInfoTagLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameInfoTagLoader.h; path = games/tags/GameInfoTagLoader.h; sourceTree = "<group>"; };
 		6826413D1B9EED4700EEB2C2 /* ControllerTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControllerTypes.h; path = games/ControllerTypes.h; sourceTree = "<group>"; };
 		6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		6842F75B1B8C4744007A231D /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
@@ -7122,8 +7117,6 @@
 			children = (
 				681EC9121B2A88240064E12D /* GameInfoTag.cpp */,
 				681EC9131B2A88240064E12D /* GameInfoTag.h */,
-				681EC9141B2A88240064E12D /* GameInfoTagLoader.cpp */,
-				681EC9151B2A88240064E12D /* GameInfoTagLoader.h */,
 			);
 			name = tags;
 			sourceTree = "<group>";
@@ -10674,7 +10667,6 @@
 				E38E20820D25F9FD00618676 /* GUIDialogFileStacking.cpp in Sources */,
 				E38E20830D25F9FD00618676 /* GUIDialogGamepad.cpp in Sources */,
 				E38E20890D25F9FD00618676 /* GUIDialogMediaSource.cpp in Sources */,
-				681EC9191B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */,
 				E38E208A0D25F9FD00618676 /* GUIDialogMusicOSD.cpp in Sources */,
 				E38E208C0D25F9FD00618676 /* GUIDialogMuteBug.cpp in Sources */,
 				E38E208D0D25F9FD00618676 /* GUIDialogNetworkSetup.cpp in Sources */,
@@ -12010,7 +12002,6 @@
 				DFF0F29F17528350002DA3A4 /* GUIProgressControl.cpp in Sources */,
 				DFF0F2A017528350002DA3A4 /* GUIRadioButtonControl.cpp in Sources */,
 				DFF0F2A117528350002DA3A4 /* GUIRenderingControl.cpp in Sources */,
-				681EC91B1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */,
 				DFF0F2A217528350002DA3A4 /* GUIResizeControl.cpp in Sources */,
 				DF4BF01A1A4EF31F0053AC56 /* cc_decoder708.cpp in Sources */,
 				395C2A1B1A9F074C00EBC7AD /* Locale.cpp in Sources */,
@@ -12915,7 +12906,6 @@
 				E499124F174E5D8F00741B6D /* AddonsDirectory.cpp in Sources */,
 				E4991253174E5D8F00741B6D /* BlurayDirectory.cpp in Sources */,
 				E4991254174E5D8F00741B6D /* CacheStrategy.cpp in Sources */,
-				681EC91A1B2A88240064E12D /* GameInfoTagLoader.cpp in Sources */,
 				687AAF581B2CA51D00C16152 /* SerialState.cpp in Sources */,
 				E4991255174E5D8F00741B6D /* CDDADirectory.cpp in Sources */,
 				E4991256174E5D8F00741B6D /* CDDAFile.cpp in Sources */,
