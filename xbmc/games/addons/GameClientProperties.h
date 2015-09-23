@@ -58,7 +58,7 @@ private:
   // Equal to special://profile/addon_data/<parent's id>/system
   const char* GetSystemDirectory(void);
 
-  // Equal to parent's library path (TODO)
+  // Equal to parent's add-on path
   const char* GetContentDirectory(void);
 
   // Equal to special://profile/addon_data/<parent's id>/save

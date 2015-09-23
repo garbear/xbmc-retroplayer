@@ -98,7 +98,7 @@ const char* CGameClientProperties::GetSystemDirectory(void)
 const char* CGameClientProperties::GetContentDirectory(void)
 {
   if (m_strContentDirectory.empty())
-    m_strContentDirectory = CSpecialProtocol::TranslatePath(URIUtils::GetParentPath(GetLibraryPath()));
+    m_strContentDirectory = CSpecialProtocol::TranslatePath(m_parent->Path());
   return m_strContentDirectory.c_str();
 }
 
