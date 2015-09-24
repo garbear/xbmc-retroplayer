@@ -35,7 +35,7 @@ Joystick support is now provided through a binary add-on. Follow the out-of-tree
 Game add-ons are hosted separately at https://github.com/kodi-game. If you would like to compile all game add-ons in one fell swoop, create a build directory out-of-tree and run the following command (assuming you cloned Kodi into `$HOME/workspace/kodi`):
 
 ```
-cmake -DADDONS_TO_BUILD=game.*
+cmake -DADDONS_TO_BUILD=game.* \
       -DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_INSTALL_PREFIX=$HOME/workspace/kodi/addons \
       -DPACKAGE_ZIP=1 \
