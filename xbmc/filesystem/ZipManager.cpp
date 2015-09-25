@@ -112,7 +112,7 @@ bool CZipManager::GetZipList(const CURL& url, vector<SZipEntry>& items)
   }
   else if (fileSize < ECDREC_SIZE - 1)
   {
-    CLog::Log(LOGERROR, "ZipManager: Invalid zip file length: %d", fileSize);
+    CLog::Log(LOGERROR, "ZipManager: Invalid zip file length: %lld", fileSize);
     return false;
   }
   int searchSize = (int) min(65557, fileSize-ECDREC_SIZE+1);
