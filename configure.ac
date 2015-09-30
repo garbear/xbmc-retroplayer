@@ -1275,23 +1275,6 @@ if test "x$use_dbus" != "xno"; then
 else
   AC_MSG_NOTICE($dbus_disabled)
 fi
-  #case "$host_vendor" != "apple"; determine availability of SDL or SDL2
-  # joystick
-  if test "$use_joystick" != "no"; then
-    PKG_CHECK_MODULES([SDL2], [sdl2],
-      [AC_DEFINE([SDL_VERSION],[2],["SDL major version"])
-       AC_DEFINE([HAVE_SDL],[1],["Define to 1 if using sdl"])
-       INCLUDES="$INCLUDES $SDL2_CFLAGS"; LIBS="$LIBS $SDL2_LIBS"; use_joystick="yes"],
-      [if test "$use_joystick" = "yes"; then
-        AC_MSG_ERROR($sdl_joystick_not_found)
-      elif test "$use_joystick" != "no"; then
-        AC_MSG_NOTICE($sdl_joystick_not_found)
-        use_joystick="no"
-      fi
-     ])
-  else
-    AC_MSG_RESULT($sdl_joystick_not_found)
-  fi
 fi
 
 XB_FIND_SONAME([OGG],         [ogg])
