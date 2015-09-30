@@ -26,7 +26,7 @@
 
 // --- CFocusRendererGL --------------------------------------------------------
 
-#if defined(HAS_GL) || HAS_GLES == 2
+#if defined(HAS_GL)
 
 #include "cores/VideoRenderers/VideoShaders/VideoFilterShader.h"
 #include "guilib/FrameBufferObject.h"
@@ -221,7 +221,7 @@ void CGUIFocusPlane::Initialize(void)
 {
   m_bFocused = false;
 
-#if defined(HAS_GL) || HAS_GLES == 2
+#if defined(HAS_GL)
   m_renderer = new CFocusRendererGL(this);
 #else
   m_renderer = NULL;
