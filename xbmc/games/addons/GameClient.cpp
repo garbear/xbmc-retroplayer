@@ -226,7 +226,12 @@ CGameClient::~CGameClient(void)
 
 bool CGameClient::Initialize(void)
 {
+  // Ensure user profile directory exists for add-on
+  if (!CDirectory::Exists(Profile()))
+    CDirectory::Create(Profile());
+
   m_libraryProps.InitializeProperties();
+
   return Create() == ADDON_STATUS_OK;
 }
 
