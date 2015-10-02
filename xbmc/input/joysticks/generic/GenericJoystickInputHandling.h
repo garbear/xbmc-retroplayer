@@ -50,7 +50,7 @@ public:
 private:
   bool ProcessHatDirection(int index, HatDirection oldDir, HatDirection newDir, HatDirection targetDir);
 
-  void OnPress(const std::string& feature);
+  bool OnPress(const std::string& feature);
   void OnRelease(const std::string& feature);
 
   void StartDigitalRepeating(const std::string& feature);

@@ -57,13 +57,16 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
     char& wasPressed = m_buttonStates[buttonIndex];
 
     if (!wasPressed && pressed)
-      OnPress(feature);
+    {
+      bHandled = OnPress(feature);
+    }
     else if (wasPressed && !pressed)
+    {
       OnRelease(feature);
+      bHandled = true;
+    }
 
     wasPressed = pressed;
-
-    bHandled = true;
   }
   else if (bPressed)
   {
@@ -221,14 +224,23 @@ void CGenericJoystickInputHandling::ProcessAxisMotions(void)
     m_handler->OnButtonPress(*it, true);
 }
 
-void CGenericJoystickInputHandling::OnPress(const std::string& feature)
+bool CGenericJoystickInputHandling::OnPress(const std::string& feature)
 {
+  bool bHandled = false;
+
   const InputType inputType = m_handler->GetInputType(feature);
 
   if (inputType == INPUT_TYPE_DIGITAL)
-    m_handler->OnButtonPress(feature, true);
+  {
+    bHandled = m_handler->OnButtonPress(feature, true);
+  }
   else if (inputType == INPUT_TYPE_ANALOG)
+  {
     StartDigitalRepeating(feature); // Analog actions repeat every frame
+    bHandled = true;
+  }
+
+  return bHandled;
 }
 
 void CGenericJoystickInputHandling::OnRelease(const std::string& feature)
