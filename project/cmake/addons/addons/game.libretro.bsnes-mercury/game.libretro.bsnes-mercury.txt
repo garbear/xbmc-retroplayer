@@ -1,1 +1,1 @@
-game.libretro.bsnes-mercury https://github.com/kodi-game/ggame.libretro.bsnes-mercury master
+game.libretro.bsnes-mercury https://github.com/kodi-game/game.libretro.bsnes-mercury master
