@@ -691,7 +691,12 @@ bool CGameClient::OpenPort(unsigned int port)
 
     m_controllers[port] = new CControllerInput(this, port, controllers[0]);
 
-    CPortManager::Get().OpenPort(m_controllers[port], port);
+    // If keyboard input is being captured by this add-on, force the port type to PERIPHERAL_JOYSTICK
+    PERIPHERALS::PeripheralType device = PERIPHERALS::PERIPHERAL_UNKNOWN;
+    if (m_bSupportsKeyboard)
+      device = PERIPHERALS::PERIPHERAL_JOYSTICK;
+
+    CPortManager::Get().OpenPort(m_controllers[port], port, device);
 
     UpdatePort(port, controllers[0]);
 
