@@ -51,9 +51,6 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
   std::string feature;
   if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(buttonIndex), feature))
   {
-    CLog::Log(LOGDEBUG, "CGenericJoystickInputHandling: %s feature [ %s ] %s",
-              m_handler->ControllerID().c_str(), feature.c_str(), bPressed ? "pressed" : "released");
-
     char& wasPressed = m_buttonStates[buttonIndex];
 
     if (!wasPressed && pressed)
@@ -108,9 +105,6 @@ bool CGenericJoystickInputHandling::ProcessHatDirection(int index,
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
       bHandled = true;
-
-      CLog::Log(LOGDEBUG, "CGenericJoystickInputHandling: %s feature [ %s ] %s from hat",
-                m_handler->ControllerID().c_str(), feature.c_str(), bActivated ? "activated" : "deactivated");
 
       if (bActivated)
         OnPress(feature);
@@ -228,6 +222,9 @@ bool CGenericJoystickInputHandling::OnPress(const std::string& feature)
 {
   bool bHandled = false;
 
+  CLog::Log(LOGDEBUG, "CGenericJoystickInputHandling: %s feature [ %s ] pressed",
+            m_handler->ControllerID().c_str(), feature.c_str());
+
   const InputType inputType = m_handler->GetInputType(feature);
 
   if (inputType == INPUT_TYPE_DIGITAL)
@@ -245,6 +242,9 @@ bool CGenericJoystickInputHandling::OnPress(const std::string& feature)
 
 void CGenericJoystickInputHandling::OnRelease(const std::string& feature)
 {
+  CLog::Log(LOGDEBUG, "CGenericJoystickInputHandling: %s feature [ %s ] released",
+            m_handler->ControllerID().c_str(), feature.c_str());
+
   m_handler->OnButtonPress(feature, false);
   StopDigitalRepeating(feature);
 }
