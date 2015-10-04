@@ -104,12 +104,15 @@ bool CGenericJoystickInputHandling::ProcessHatDirection(int index,
     std::string feature;
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
     {
-      bHandled = true;
-
       if (bActivated)
-        OnPress(feature);
+      {
+        bHandled = OnPress(feature);
+      }
       else
+      {
         OnRelease(feature);
+        bHandled = true;
+      }
     }
   }
 
