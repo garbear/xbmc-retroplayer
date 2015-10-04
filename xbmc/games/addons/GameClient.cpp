@@ -965,7 +965,7 @@ GAME_KEY_MOD CGameClient::GetModifiers(CKey::Modifier modifier)
   if (modifier & CKey::MODIFIER_CTRL)  mods = mods | GAME_KEY_MOD_CTRL;
   if (modifier & CKey::MODIFIER_SHIFT) mods = mods | GAME_KEY_MOD_SHIFT;
   if (modifier & CKey::MODIFIER_ALT)   mods = mods | GAME_KEY_MOD_ALT;
-  if (modifier & CKey::MODIFIER_RALT)  mods = mods | GAME_KEY_MOD_ALT;
+  if (modifier & CKey::MODIFIER_RALT)  mods = mods | GAME_KEY_MOD_RALT;
   if (modifier & CKey::MODIFIER_META)  mods = mods | GAME_KEY_MOD_META;
 
   return static_cast<GAME_KEY_MOD>(mods);

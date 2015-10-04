@@ -21,10 +21,10 @@
 #define KODI_GAME_TYPES_H_
 
 /* current game API version */
-#define GAME_API_VERSION                "1.0.12"
+#define GAME_API_VERSION                "1.0.13"
 
 /* min. game API version */
-#define GAME_MIN_API_VERSION            "1.0.12"
+#define GAME_MIN_API_VERSION            "1.0.13"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -161,11 +161,12 @@ typedef enum GAME_KEY_MOD
   GAME_KEY_MOD_SHIFT                 = 0x01,
   GAME_KEY_MOD_CTRL                  = 0x02,
   GAME_KEY_MOD_ALT                   = 0x04,
-  GAME_KEY_MOD_META                  = 0x08,
+  GAME_KEY_MOD_RALT                  = 0x08,
+  GAME_KEY_MOD_META                  = 0x10,
 
-  GAME_KEY_MOD_NUMLOCK               = 0x10,
-  GAME_KEY_MOD_CAPSLOCK              = 0x20,
-  GAME_KEY_MOD_SCROLLOCK             = 0x40,
+  GAME_KEY_MOD_NUMLOCK               = 0x20,
+  GAME_KEY_MOD_CAPSLOCK              = 0x40,
+  GAME_KEY_MOD_SCROLLOCK             = 0x80,
 } GAME_KEY_MOD;
 
 /*! ID values for SIMD CPU features */
