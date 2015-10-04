@@ -882,20 +882,23 @@ bool CGameClient::OnKeyPress(const CKey& key)
 {
   bool bHandled = false;
 
-  game_input_event event;
-
-  event.type            = GAME_INPUT_EVENT_KEY;
-  event.port            = 0;
-  event.controller_id   = ""; // TODO
-  event.feature_name    = ""; // TODO
-  event.key.pressed     = true;
-  event.key.character   = key.GetButtonCode() & BUTTON_INDEX_MASK;
-  event.key.modifiers   = GetModifiers(static_cast<CKey::Modifier>(key.GetModifiers()));
-
-  if (event.key.character != 0)
+  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
   {
-    try { bHandled = m_pStruct->InputEvent(0, &event); }
-    catch (...) { LogException("InputEvent()"); }
+    game_input_event event;
+
+    event.type            = GAME_INPUT_EVENT_KEY;
+    event.port            = 0;
+    event.controller_id   = ""; // TODO
+    event.feature_name    = ""; // TODO
+    event.key.pressed     = true;
+    event.key.character   = key.GetButtonCode() & BUTTON_INDEX_MASK;
+    event.key.modifiers   = GetModifiers(static_cast<CKey::Modifier>(key.GetModifiers()));
+
+    if (event.key.character != 0)
+    {
+      try { bHandled = m_pStruct->InputEvent(0, &event); }
+      catch (...) { LogException("InputEvent()"); }
+    }
   }
 
   return bHandled;
