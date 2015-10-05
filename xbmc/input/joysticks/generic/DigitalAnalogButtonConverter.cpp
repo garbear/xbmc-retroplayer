@@ -65,10 +65,8 @@ bool CDigitalAnalogButtonConverter::OnButtonMotion(const JoystickFeature& featur
       Deactivate(feature);
       return m_handler->OnButtonPress(feature, false);
     }
-    else
-    {
-      return true;
-    }
+
+    return true;
   }
 
   return m_handler->OnButtonMotion(feature, magnitude);
