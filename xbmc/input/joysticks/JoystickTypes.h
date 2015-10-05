@@ -25,6 +25,11 @@
 #define DEFAULT_GAME_CONTROLLER    "game.controller.default"
 
 /*!
+ * \brief Physical feature of the joystick - button, analog stick, etc
+ */
+typedef std::string JoystickFeature;
+
+/*!
  * \ingroup joysticks
  * \brief Cardinal directions
  */

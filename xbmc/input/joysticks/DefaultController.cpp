@@ -48,12 +48,12 @@ std::string CDefaultController::ControllerID(void) const
   return DEFAULT_GAME_CONTROLLER;
 }
 
-InputType CDefaultController::GetInputType(const std::string& feature) const
+InputType CDefaultController::GetInputType(const JoystickFeature& feature) const
 {
   return m_handler->GetInputType(GetButtonKeyID(feature));
 }
 
-bool CDefaultController::OnButtonPress(const std::string& feature, bool bPressed)
+bool CDefaultController::OnButtonPress(const JoystickFeature& feature, bool bPressed)
 {
   const unsigned int buttonKeyId = GetButtonKeyID(feature);
 
@@ -66,7 +66,7 @@ bool CDefaultController::OnButtonPress(const std::string& feature, bool bPressed
   return false;
 }
 
-bool CDefaultController::OnButtonMotion(const std::string& feature, float magnitude)
+bool CDefaultController::OnButtonMotion(const JoystickFeature& feature, float magnitude)
 {
   const unsigned int buttonKeyId = GetButtonKeyID(feature);
 
@@ -79,7 +79,7 @@ bool CDefaultController::OnButtonMotion(const std::string& feature, float magnit
   return false;
 }
 
-bool CDefaultController::OnAnalogStickMotion(const std::string& feature, float x, float y)
+bool CDefaultController::OnAnalogStickMotion(const JoystickFeature& feature, float x, float y)
 {
   // Calculate the direction of the stick's position
   const CardinalDirection analogStickDir = CJoystickTranslator::VectorToCardinalDirection(x, y);
@@ -124,12 +124,12 @@ bool CDefaultController::OnAnalogStickMotion(const std::string& feature, float x
   return false;
 }
 
-bool CDefaultController::OnAccelerometerMotion(const std::string& feature, float x, float y, float z)
+bool CDefaultController::OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z)
 {
   return false; // TODO
 }
 
-unsigned int CDefaultController::GetButtonKeyID(const std::string& feature, CardinalDirection dir /* = DirectionUnknown */)
+unsigned int CDefaultController::GetButtonKeyID(const JoystickFeature& feature, CardinalDirection dir /* = DirectionUnknown */)
 {
   if      (feature == "a")             return KEY_BUTTON_A;
   else if (feature == "b")             return KEY_BUTTON_B;

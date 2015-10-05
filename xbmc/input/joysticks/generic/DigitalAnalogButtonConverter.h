@@ -41,17 +41,17 @@ public:
 
   // implementation of IJoystickInputHandler
   virtual std::string ControllerID(void) const;
-  virtual InputType GetInputType(const std::string& feature) const;
-  virtual bool OnButtonPress(const std::string& feature, bool bPressed);
-  virtual bool OnButtonMotion(const std::string& feature, float magnitude);
-  virtual bool OnAnalogStickMotion(const std::string& feature, float x, float y);
-  virtual bool OnAccelerometerMotion(const std::string& feature, float x, float y, float z);
+  virtual InputType GetInputType(const JoystickFeature& feature) const;
+  virtual bool OnButtonPress(const JoystickFeature& feature, bool bPressed);
+  virtual bool OnButtonMotion(const JoystickFeature& feature, float magnitude);
+  virtual bool OnAnalogStickMotion(const JoystickFeature& feature, float x, float y);
+  virtual bool OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z);
 
 private:
-  bool IsActivated(const std::string& feature) const;
-  void Activate(const std::string& feature);
-  void Deactivate(const std::string& feature);
+  bool IsActivated(const JoystickFeature& feature) const;
+  void Activate(const JoystickFeature& feature);
+  void Deactivate(const JoystickFeature& feature);
 
-  IJoystickInputHandler* const m_handler;
-  std::vector<std::string>     m_activatedFeatures; // for tracking analog features mapped to digital input
+  IJoystickInputHandler* const  m_handler;
+  std::vector<JoystickFeature>  m_activatedFeatures; // for tracking analog features mapped to digital input
 };

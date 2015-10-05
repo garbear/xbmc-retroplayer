@@ -36,12 +36,12 @@ std::string CDigitalAnalogButtonConverter::ControllerID(void) const
   return m_handler->ControllerID();
 }
 
-InputType CDigitalAnalogButtonConverter::GetInputType(const std::string& feature) const
+InputType CDigitalAnalogButtonConverter::GetInputType(const JoystickFeature& feature) const
 {
   return m_handler->GetInputType(feature);
 }
 
-bool CDigitalAnalogButtonConverter::OnButtonPress(const std::string& feature, bool bPressed)
+bool CDigitalAnalogButtonConverter::OnButtonPress(const JoystickFeature& feature, bool bPressed)
 {
   if (GetInputType(feature) == INPUT_TYPE_ANALOG)
     return m_handler->OnButtonMotion(feature, bPressed ? 1.0f : 0.0f);
@@ -49,7 +49,7 @@ bool CDigitalAnalogButtonConverter::OnButtonPress(const std::string& feature, bo
   return m_handler->OnButtonPress(feature, bPressed);
 }
 
-bool CDigitalAnalogButtonConverter::OnButtonMotion(const std::string& feature, float magnitude)
+bool CDigitalAnalogButtonConverter::OnButtonMotion(const JoystickFeature& feature, float magnitude)
 {
   if (GetInputType(feature) == INPUT_TYPE_DIGITAL)
   {
@@ -74,27 +74,27 @@ bool CDigitalAnalogButtonConverter::OnButtonMotion(const std::string& feature, f
   return m_handler->OnButtonMotion(feature, magnitude);
 }
 
-bool CDigitalAnalogButtonConverter::OnAnalogStickMotion(const std::string& feature, float x, float y)
+bool CDigitalAnalogButtonConverter::OnAnalogStickMotion(const JoystickFeature& feature, float x, float y)
 {
   return m_handler->OnAnalogStickMotion(feature, x, y);
 }
 
-bool CDigitalAnalogButtonConverter::OnAccelerometerMotion(const std::string& feature, float x, float y, float z)
+bool CDigitalAnalogButtonConverter::OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z)
 {
   return m_handler->OnAccelerometerMotion(feature, x, y, z);
 }
 
-bool CDigitalAnalogButtonConverter::IsActivated(const std::string& feature) const
+bool CDigitalAnalogButtonConverter::IsActivated(const JoystickFeature& feature) const
 {
   return std::find(m_activatedFeatures.begin(), m_activatedFeatures.end(), feature) != m_activatedFeatures.end();
 }
 
-void CDigitalAnalogButtonConverter::Activate(const std::string& feature)
+void CDigitalAnalogButtonConverter::Activate(const JoystickFeature& feature)
 {
   m_activatedFeatures.push_back(feature);
 }
 
-void CDigitalAnalogButtonConverter::Deactivate(const std::string& feature)
+void CDigitalAnalogButtonConverter::Deactivate(const JoystickFeature& feature)
 {
   m_activatedFeatures.erase(std::remove(m_activatedFeatures.begin(), m_activatedFeatures.end(), feature), m_activatedFeatures.end());
 }

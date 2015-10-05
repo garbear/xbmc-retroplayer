@@ -42,11 +42,11 @@ public:
 
   // implementation of IJoystickInputHandler
   virtual std::string ControllerID(void) const;
-  virtual InputType GetInputType(const std::string& feature) const;
-  virtual bool OnButtonPress(const std::string& feature, bool bPressed);
-  virtual bool OnButtonMotion(const std::string& feature, float magnitude);
-  virtual bool OnAnalogStickMotion(const std::string& feature, float x, float y);
-  virtual bool OnAccelerometerMotion(const std::string& feature, float x, float y, float z);
+  virtual InputType GetInputType(const JoystickFeature& feature) const;
+  virtual bool OnButtonPress(const JoystickFeature& feature, bool bPressed);
+  virtual bool OnButtonMotion(const JoystickFeature& feature, float magnitude);
+  virtual bool OnAnalogStickMotion(const JoystickFeature& feature, float x, float y);
+  virtual bool OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z);
 
 private:
   /*!
@@ -55,7 +55,7 @@ private:
    *
    * \return The button key ID
    */
-  static unsigned int GetButtonKeyID(const std::string& feature, CardinalDirection dir = DirectionUnknown);
+  static unsigned int GetButtonKeyID(const JoystickFeature& feature, CardinalDirection dir = DirectionUnknown);
 
   /*!
    * \brief Return a vector of the four cardinal directions

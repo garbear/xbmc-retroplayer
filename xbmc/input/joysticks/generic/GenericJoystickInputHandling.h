@@ -50,11 +50,11 @@ public:
 private:
   bool ProcessHatDirection(int index, HatDirection oldDir, HatDirection newDir, HatDirection targetDir);
 
-  bool OnPress(const std::string& feature);
-  void OnRelease(const std::string& feature);
+  bool OnPress(const JoystickFeature& feature);
+  void OnRelease(const JoystickFeature& feature);
 
-  void StartDigitalRepeating(const std::string& feature);
-  void StopDigitalRepeating(const std::string& feature);
+  void StartDigitalRepeating(const JoystickFeature& feature);
+  void StopDigitalRepeating(const JoystickFeature& feature);
 
   float GetAxisState(int axisIndex) const;
 
@@ -63,6 +63,6 @@ private:
   std::vector<char>            m_buttonStates; // std::vector is specialized for <bool>
   std::vector<HatDirection>    m_hatStates;
   std::vector<float>           m_axisStates;
-  std::vector<std::string>     m_featuresWithMotion;
-  std::vector<std::string>     m_repeatingFeatures;
+  std::vector<JoystickFeature> m_featuresWithMotion;
+  std::vector<JoystickFeature> m_repeatingFeatures;
 };

@@ -43,22 +43,22 @@ bool CAddonJoystickButtonMap::Load(void)
   return m_buttonMapRO.Load() && m_buttonMapWO.Load();
 }
 
-bool CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& primitive, std::string& feature)
+bool CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& primitive, JoystickFeature& feature)
 {
   return m_buttonMapRO.GetFeature(primitive, feature);
 }
 
-bool CAddonJoystickButtonMap::GetButton(const std::string& feature, CJoystickDriverPrimitive& button)
+bool CAddonJoystickButtonMap::GetButton(const JoystickFeature& feature, CJoystickDriverPrimitive& button)
 {
   return m_buttonMapRO.GetButton(feature, button);
 }
 
-bool CAddonJoystickButtonMap::MapButton(const std::string& feature, const CJoystickDriverPrimitive& primitive)
+bool CAddonJoystickButtonMap::MapButton(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive)
 {
   return m_buttonMapWO.MapButton(feature, primitive);
 }
 
-bool CAddonJoystickButtonMap::GetAnalogStick(const std::string& feature,
+bool CAddonJoystickButtonMap::GetAnalogStick(const JoystickFeature& feature,
                                              int& horizIndex, bool& horizInverted,
                                              int& vertIndex,  bool& vertInverted)
 {
@@ -66,7 +66,7 @@ bool CAddonJoystickButtonMap::GetAnalogStick(const std::string& feature,
                                                vertIndex, vertInverted);
 }
 
-bool CAddonJoystickButtonMap::MapAnalogStick(const std::string& feature,
+bool CAddonJoystickButtonMap::MapAnalogStick(const JoystickFeature& feature,
                                              int horizIndex, bool horizInverted,
                                              int vertIndex,  bool vertInverted)
 {
@@ -74,7 +74,7 @@ bool CAddonJoystickButtonMap::MapAnalogStick(const std::string& feature,
                                                vertIndex, vertInverted);
 }
 
-bool CAddonJoystickButtonMap::GetAccelerometer(const std::string& feature,
+bool CAddonJoystickButtonMap::GetAccelerometer(const JoystickFeature& feature,
                                                int& xIndex, bool& xInverted,
                                                int& yIndex, bool& yInverted,
                                                int& zIndex, bool& zInverted)
@@ -84,7 +84,7 @@ bool CAddonJoystickButtonMap::GetAccelerometer(const std::string& feature,
                                                  zIndex, zInverted);
 }
 
-bool CAddonJoystickButtonMap::MapAccelerometer(const std::string& feature,
+bool CAddonJoystickButtonMap::MapAccelerometer(const JoystickFeature& feature,
                                                int xIndex, bool xInverted,
                                                int yIndex, bool yInverted,
                                                int zIndex, bool zInverted)

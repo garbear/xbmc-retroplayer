@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include "JoystickTypes.h"
+
 #include <string>
 
 enum InputType
@@ -51,7 +53,7 @@ public:
    * \return INPUT_TYPE_DIGITAL for digital buttons, INPUT_TYPE_ANALOG for analog
    *         buttons, or INPUT_TYPE_UNKNOWN otherwise
    */
-  virtual InputType GetInputType(const std::string& feature) const = 0;
+  virtual InputType GetInputType(const JoystickFeature& feature) const = 0;
 
   /*!
    * \brief A digital button has been pressed or released
@@ -61,7 +63,7 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnButtonPress(const std::string& feature, bool bPressed) = 0;
+  virtual bool OnButtonPress(const JoystickFeature& feature, bool bPressed) = 0;
 
   /*!
    * \brief An analog button (trigger or a pressure-sensitive button) has changed state
@@ -72,7 +74,7 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnButtonMotion(const std::string& feature, float magnitude) = 0;
+  virtual bool OnButtonMotion(const JoystickFeature& feature, float magnitude) = 0;
 
   /*!
    * \brief An analog stick has moved
@@ -83,7 +85,7 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnAnalogStickMotion(const std::string& feature, float x, float y) = 0;
+  virtual bool OnAnalogStickMotion(const JoystickFeature& feature, float x, float y) = 0;
 
   /*!
    * \brief An accelerometer's state has changed
@@ -95,5 +97,5 @@ public:
    *
    * \return True if the event was handled otherwise false
    */
-  virtual bool OnAccelerometerMotion(const std::string& feature, float x, float y, float z) { return false; }
+  virtual bool OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z) { return false; }
 };
