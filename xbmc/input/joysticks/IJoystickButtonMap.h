@@ -58,7 +58,8 @@ public:
    * \brief Get the feature associated with a driver primitive
    *
    * \param button       The driver primitive (a button, hat direction or semi-axis)
-   * \param feature      The resolved feature index, or unmodified if GetFeature() returns false
+   * \param feature      The name of the resolved joystick feature, or
+   *                         unmodified if GetFeature() returns false
    *
    * \return True if the driver primitive is associated with a feature, false otherwise
    */

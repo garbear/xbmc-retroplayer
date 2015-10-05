@@ -43,6 +43,7 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
 {
   const char pressed = bPressed ? 1 : 0;
 
+  // Ensure buttonIndex will fit in vector
   if (m_buttonStates.size() <= buttonIndex)
     m_buttonStates.resize(buttonIndex + 1);
 
@@ -75,6 +76,7 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
 
 bool CGenericJoystickInputHandling::OnHatMotion(unsigned int hatIndex, HatDirection newDirection)
 {
+  // Ensure hatIndex will fit in vector
   if (m_hatStates.size() <= hatIndex)
     m_hatStates.resize(hatIndex + 1);
 
@@ -121,6 +123,7 @@ bool CGenericJoystickInputHandling::ProcessHatDirection(int index,
 
 bool CGenericJoystickInputHandling::OnAxisMotion(unsigned int axisIndex, float newPosition)
 {
+  // Ensure axisIndex will fit in vector
   if (m_axisStates.size() <= axisIndex)
     m_axisStates.resize(axisIndex + 1);
 
