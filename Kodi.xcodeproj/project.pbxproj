@@ -294,6 +294,9 @@
 		6842F75C1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75D1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
 		6842F75E1B8C4744007A231D /* PeripheralBusAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */; };
+		685EE1911BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */; };
+		685EE1921BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */; };
+		685EE1931BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */; };
 		687AAF391B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
 		687AAF3A1B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
 		687AAF3B1B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
@@ -3778,6 +3781,8 @@
 		6826413D1B9EED4700EEB2C2 /* ControllerTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControllerTypes.h; path = games/ControllerTypes.h; sourceTree = "<group>"; };
 		6842F75A1B8C4744007A231D /* PeripheralBusAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PeripheralBusAddon.cpp; sourceTree = "<group>"; };
 		6842F75B1B8C4744007A231D /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
+		685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JoystickEasterEgg.cpp; path = joysticks/JoystickEasterEgg.cpp; sourceTree = "<group>"; };
+		685EE1901BC35D3F00797F53 /* JoystickEasterEgg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JoystickEasterEgg.h; path = joysticks/JoystickEasterEgg.h; sourceTree = "<group>"; };
 		687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksGame.cpp; sourceTree = "<group>"; };
 		687AAF371B2CA4D700C16152 /* AddonCallbacksGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksGame.h; sourceTree = "<group>"; };
 		687AAF381B2CA4D700C16152 /* DllGameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DllGameClient.h; sourceTree = "<group>"; };
@@ -7204,6 +7209,8 @@
 				68AFC99E1ACC5E2000DD5173 /* IJoystickInputHandler.h */,
 				68AFC99F1ACC5E2000DD5173 /* JoystickDriverPrimitive.cpp */,
 				68AFC9A01ACC5E2000DD5173 /* JoystickDriverPrimitive.h */,
+				685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */,
+				685EE1901BC35D3F00797F53 /* JoystickEasterEgg.h */,
 				68AFC9A11ACC5E2000DD5173 /* JoystickTranslator.cpp */,
 				68AFC9A21ACC5E2000DD5173 /* JoystickTranslator.h */,
 				68AFC9A31ACC5E2000DD5173 /* JoystickTypes.h */,
@@ -10756,6 +10763,7 @@
 				E38E22540D25F9FE00618676 /* recvol.cpp in Sources */,
 				E38E22550D25F9FE00618676 /* resource.cpp in Sources */,
 				E38E22560D25F9FE00618676 /* rijndael.cpp in Sources */,
+				685EE1911BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */,
 				E38E22570D25F9FE00618676 /* rs.cpp in Sources */,
 				E38E22580D25F9FE00618676 /* savepos.cpp in Sources */,
 				E38E22590D25F9FE00618676 /* scantree.cpp in Sources */,
@@ -11955,6 +11963,7 @@
 				DFF0F27417528350002DA3A4 /* DDSImage.cpp in Sources */,
 				DFF0F27517528350002DA3A4 /* DirectXGraphics.cpp in Sources */,
 				DFF0F27617528350002DA3A4 /* DirtyRegionSolvers.cpp in Sources */,
+				685EE1931BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */,
 				DFF0F27717528350002DA3A4 /* DirtyRegionTracker.cpp in Sources */,
 				DFF0F27817528350002DA3A4 /* FrameBufferObject.cpp in Sources */,
 				DFF0F27917528350002DA3A4 /* GraphicContext.cpp in Sources */,
@@ -13719,6 +13728,7 @@
 				7CCDA864192756250074CF51 /* NptXml.cpp in Sources */,
 				7CCDA86D192756250074CF51 /* NptZip.cpp in Sources */,
 				B5011E4219AF3B56005ADF89 /* PosixFile.cpp in Sources */,
+				685EE1921BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */,
 				7CCDAA83192756250074CF51 /* NptPosixDynamicLibraries.cpp in Sources */,
 				7CCDAA86192756250074CF51 /* NptPosixEnvironment.cpp in Sources */,
 				7CCDAA8C192756250074CF51 /* NptPosixNetwork.cpp in Sources */,
