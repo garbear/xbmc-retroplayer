@@ -297,6 +297,9 @@
 		685EE1911BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */; };
 		685EE1921BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */; };
 		685EE1931BC35D3F00797F53 /* JoystickEasterEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */; };
+		685EE1961BC389B200797F53 /* JoystickMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE1941BC389B200797F53 /* JoystickMonitor.cpp */; };
+		685EE1971BC389B200797F53 /* JoystickMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE1941BC389B200797F53 /* JoystickMonitor.cpp */; };
+		685EE1981BC389B200797F53 /* JoystickMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 685EE1941BC389B200797F53 /* JoystickMonitor.cpp */; };
 		687AAF391B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
 		687AAF3A1B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
 		687AAF3B1B2CA4D700C16152 /* AddonCallbacksGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */; };
@@ -3783,6 +3786,8 @@
 		6842F75B1B8C4744007A231D /* PeripheralBusAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeripheralBusAddon.h; sourceTree = "<group>"; };
 		685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JoystickEasterEgg.cpp; path = joysticks/JoystickEasterEgg.cpp; sourceTree = "<group>"; };
 		685EE1901BC35D3F00797F53 /* JoystickEasterEgg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JoystickEasterEgg.h; path = joysticks/JoystickEasterEgg.h; sourceTree = "<group>"; };
+		685EE1941BC389B200797F53 /* JoystickMonitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JoystickMonitor.cpp; path = joysticks/JoystickMonitor.cpp; sourceTree = "<group>"; };
+		685EE1951BC389B200797F53 /* JoystickMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JoystickMonitor.h; path = joysticks/JoystickMonitor.h; sourceTree = "<group>"; };
 		687AAF361B2CA4D700C16152 /* AddonCallbacksGame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonCallbacksGame.cpp; sourceTree = "<group>"; };
 		687AAF371B2CA4D700C16152 /* AddonCallbacksGame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddonCallbacksGame.h; sourceTree = "<group>"; };
 		687AAF381B2CA4D700C16152 /* DllGameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DllGameClient.h; sourceTree = "<group>"; };
@@ -7211,6 +7216,8 @@
 				68AFC9A01ACC5E2000DD5173 /* JoystickDriverPrimitive.h */,
 				685EE18F1BC35D3F00797F53 /* JoystickEasterEgg.cpp */,
 				685EE1901BC35D3F00797F53 /* JoystickEasterEgg.h */,
+				685EE1941BC389B200797F53 /* JoystickMonitor.cpp */,
+				685EE1951BC389B200797F53 /* JoystickMonitor.h */,
 				68AFC9A11ACC5E2000DD5173 /* JoystickTranslator.cpp */,
 				68AFC9A21ACC5E2000DD5173 /* JoystickTranslator.h */,
 				68AFC9A31ACC5E2000DD5173 /* JoystickTypes.h */,
@@ -10632,6 +10639,7 @@
 				E38E20490D25F9FD00618676 /* QueryParams.cpp in Sources */,
 				E38E204A0D25F9FD00618676 /* MusicDatabaseDirectory.cpp in Sources */,
 				E38E204B0D25F9FD00618676 /* MusicSearchDirectory.cpp in Sources */,
+				685EE1961BC389B200797F53 /* JoystickMonitor.cpp in Sources */,
 				E38E204F0D25F9FD00618676 /* PlaylistDirectory.cpp in Sources */,
 				E38E20500D25F9FD00618676 /* PlaylistFileDirectory.cpp in Sources */,
 				E38E20510D25F9FD00618676 /* PluginDirectory.cpp in Sources */,
@@ -12283,6 +12291,7 @@
 				DFF0F39D17528350002DA3A4 /* MediaSettings.cpp in Sources */,
 				DFF0F39E17528350002DA3A4 /* MediaSourceSettings.cpp in Sources */,
 				DFF0F3A017528350002DA3A4 /* SettingAddon.cpp in Sources */,
+				685EE1981BC389B200797F53 /* JoystickMonitor.cpp in Sources */,
 				DFF0F3A317528350002DA3A4 /* SettingControl.cpp in Sources */,
 				DFF0F3A517528350002DA3A4 /* SettingPath.cpp in Sources */,
 				DFF0F3A617528350002DA3A4 /* Settings.cpp in Sources */,
@@ -13029,6 +13038,7 @@
 				E49912C4174E5DA000741B6D /* DirectoryNodeMoviesOverview.cpp in Sources */,
 				E49912C5174E5DA000741B6D /* DirectoryNodeMusicVideosOverview.cpp in Sources */,
 				E49912C6174E5DA000741B6D /* DirectoryNodeOverview.cpp in Sources */,
+				685EE1971BC389B200797F53 /* JoystickMonitor.cpp in Sources */,
 				DFED5AC71AB23388001F080D /* ReplayGain.cpp in Sources */,
 				E49912C7174E5DA000741B6D /* DirectoryNodeRecentlyAddedEpisodes.cpp in Sources */,
 				E49912C8174E5DA000741B6D /* DirectoryNodeRecentlyAddedMovies.cpp in Sources */,
