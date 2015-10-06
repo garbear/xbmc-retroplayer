@@ -22,8 +22,6 @@
 #include "addons/AddonManager.h"
 #include "addons/include/kodi_peripheral_utils.hpp"
 
-#include <assert.h>
-
 using namespace ADDON;
 using namespace PERIPHERALS;
 
