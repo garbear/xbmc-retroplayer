@@ -104,18 +104,20 @@ void CPortManager::MapDevices(const std::vector<CPeripheral*>& devices,
   std::vector<PERIPHERALS::CPeripheral*> newDevices;
   for (std::vector<CPeripheral*>::const_iterator itDevice = devices.begin(); itDevice != devices.end(); ++itDevice)
   {
+    const CPeripheral* device = *itDevice;
+
     bool bFound = false;
 
     for (std::vector<SPort>::const_iterator itPort = m_ports.begin(); itPort != m_ports.end(); ++itPort)
     {
-      for (std::vector<SDevice>::const_iterator itPortDevice = itPort->devices.begin(); itPortDevice != itPort->devices.end(); ++itPortDevice)
-      {
-        if (*itDevice == itPortDevice->device)
+      bFound = std::count_if(itPort->devices.begin(), itPort->devices.end(),
+        [device](const SDevice& portDevice)
         {
-          bFound = true;
-          break;
-        }
-      }
+          return portDevice.device == device;
+        }) > 0;
+
+      if (bFound)
+        break;
     }
 
     if (!bFound)
