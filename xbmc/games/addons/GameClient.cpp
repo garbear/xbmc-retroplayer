@@ -121,34 +121,22 @@ InputType CControllerInput::GetInputType(const std::string& feature) const
 
 bool CControllerInput::OnButtonPress(const std::string& feature, bool bPressed)
 {
-  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
-    return m_addon->OnButtonPress(m_port, feature, bPressed);
-
-  return false;
+  return m_addon->OnButtonPress(m_port, feature, bPressed);
 }
 
 bool CControllerInput::OnButtonMotion(const std::string& feature, float magnitude)
 {
-  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
-    return m_addon->OnButtonMotion(m_port, feature, magnitude);
-
-  return false;
+  return m_addon->OnButtonMotion(m_port, feature, magnitude);
 }
 
 bool CControllerInput::OnAnalogStickMotion(const std::string& feature, float x, float y)
 {
-  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
-    return m_addon->OnAnalogStickMotion(m_port, feature, x, y);
-
-  return false;
+  return m_addon->OnAnalogStickMotion(m_port, feature, x, y);
 }
 
 bool CControllerInput::OnAccelerometerMotion(const std::string& feature, float x, float y, float z)
 {
-  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
-    return m_addon->OnAccelerometerMotion(m_port, feature, x, y, z);
-
-  return false;
+  return m_addon->OnAccelerometerMotion(m_port, feature, x, y, z);
 }
 
 // --- CGameClient -------------------------------------------------------------
@@ -797,6 +785,10 @@ GameControllerVector CGameClient::GetControllers(void) const
 
 bool CGameClient::OnButtonPress(int port, const std::string& feature, bool bPressed)
 {
+  // Only allow activated input in fullscreen game
+  if (bPressed && g_windowManager.GetActiveWindowID() != WINDOW_FULLSCREEN_GAME)
+    return false;
+
   std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
@@ -817,6 +809,10 @@ bool CGameClient::OnButtonPress(int port, const std::string& feature, bool bPres
 
 bool CGameClient::OnButtonMotion(int port, const std::string& feature, float magnitude)
 {
+  // Only allow activated input in fullscreen game
+  if (magnitude && g_windowManager.GetActiveWindowID() != WINDOW_FULLSCREEN_GAME)
+    return false;
+
   std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
@@ -837,6 +833,10 @@ bool CGameClient::OnButtonMotion(int port, const std::string& feature, float mag
 
 bool CGameClient::OnAnalogStickMotion(int port, const std::string& feature, float x, float y)
 {
+  // Only allow activated input in fullscreen game
+  if ((x || y) && g_windowManager.GetActiveWindowID() != WINDOW_FULLSCREEN_GAME)
+    return false;
+
   std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
@@ -858,6 +858,10 @@ bool CGameClient::OnAnalogStickMotion(int port, const std::string& feature, floa
 
 bool CGameClient::OnAccelerometerMotion(int port, const std::string& feature, float x, float y, float z)
 {
+  // Only allow activated input in fullscreen game
+  if ((x || y || z) && g_windowManager.GetActiveWindowID() != WINDOW_FULLSCREEN_GAME)
+    return false;
+
   std::string strControllerId = m_controllers[port]->Controller()->ID();
 
   bool bHandled = false;
@@ -880,25 +884,26 @@ bool CGameClient::OnAccelerometerMotion(int port, const std::string& feature, fl
 
 bool CGameClient::OnKeyPress(const CKey& key)
 {
+  // Only allow activated input in fullscreen game
+  if (g_windowManager.GetActiveWindowID() != WINDOW_FULLSCREEN_GAME)
+    return false;
+
   bool bHandled = false;
 
-  if (g_windowManager.GetActiveWindowID() == WINDOW_FULLSCREEN_GAME)
+  game_input_event event;
+
+  event.type            = GAME_INPUT_EVENT_KEY;
+  event.port            = 0;
+  event.controller_id   = ""; // TODO
+  event.feature_name    = ""; // TODO
+  event.key.pressed     = true;
+  event.key.character   = key.GetButtonCode() & BUTTON_INDEX_MASK;
+  event.key.modifiers   = GetModifiers(static_cast<CKey::Modifier>(key.GetModifiers()));
+
+  if (event.key.character != 0)
   {
-    game_input_event event;
-
-    event.type            = GAME_INPUT_EVENT_KEY;
-    event.port            = 0;
-    event.controller_id   = ""; // TODO
-    event.feature_name    = ""; // TODO
-    event.key.pressed     = true;
-    event.key.character   = key.GetButtonCode() & BUTTON_INDEX_MASK;
-    event.key.modifiers   = GetModifiers(static_cast<CKey::Modifier>(key.GetModifiers()));
-
-    if (event.key.character != 0)
-    {
-      try { bHandled = m_pStruct->InputEvent(0, &event); }
-      catch (...) { LogException("InputEvent()"); }
-    }
+    try { bHandled = m_pStruct->InputEvent(0, &event); }
+    catch (...) { LogException("InputEvent()"); }
   }
 
   return bHandled;
