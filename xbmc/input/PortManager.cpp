@@ -134,12 +134,16 @@ void CPortManager::MapDevices(const std::vector<CPeripheral*>& devices,
       SPort& port = m_ports[targetPort];
 
       // Clear the port of all disconnected devices before adding this device
-      port.devices.erase(std::remove_if(port.devices.begin(), port.devices.end(),
-        [](const SDevice& portDevice)
-          {
-            return !portDevice.bConnected; 
-          }), port.devices.end());
-      
+      // except for keyboard (we expect the keyboard to hop around)
+      if ((*itDevice)->Type() != PERIPHERAL_KEYBOARD)
+      {
+        port.devices.erase(std::remove_if(port.devices.begin(), port.devices.end(),
+          [](const SDevice& portDevice)
+            {
+              return !portDevice.bConnected; 
+            }), port.devices.end());
+      }
+
       SDevice portDevice = { *itDevice, true };
       port.devices.push_back(portDevice);
       deviceToPortMap[*itDevice] = m_ports[targetPort].handler;
