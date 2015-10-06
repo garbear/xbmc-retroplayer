@@ -19,6 +19,8 @@
  */
 #pragma once
 
+#include <string>
+
 /*!
  * \brief Add-on ID of the default game controller
  */
