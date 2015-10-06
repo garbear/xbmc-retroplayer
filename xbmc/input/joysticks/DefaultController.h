@@ -25,6 +25,7 @@
 #include <vector>
 
 class IButtonKeyHandler;
+class IButtonSequence;
 
 /*!
  * \ingroup joysticks
@@ -63,4 +64,5 @@ private:
   static const std::vector<CardinalDirection>& GetDirections(void);
 
   IButtonKeyHandler* const m_handler;
+  IButtonSequence*         m_easterEgg;
 };

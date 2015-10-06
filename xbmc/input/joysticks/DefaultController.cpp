@@ -20,6 +20,7 @@
 
 #include "DefaultController.h"
 #include "ButtonKeyHandler.h"
+#include "JoystickEasterEgg.h"
 #include "JoystickTranslator.h"
 #include "input/Key.h"
 
@@ -34,7 +35,8 @@
 #endif
 
 CDefaultController::CDefaultController(void)
-  : m_handler(new CButtonKeyHandler)
+  : m_handler(new CButtonKeyHandler),
+    m_easterEgg(new CJoystickEasterEgg)
 {
 }
 
@@ -55,6 +57,9 @@ InputType CDefaultController::GetInputType(const JoystickFeature& feature) const
 
 bool CDefaultController::OnButtonPress(const JoystickFeature& feature, bool bPressed)
 {
+  if (bPressed && m_easterEgg->OnButtonPress(feature))
+    return true;
+
   const unsigned int buttonKeyId = GetButtonKeyID(feature);
 
   if (m_handler->GetInputType(buttonKeyId) == INPUT_TYPE_DIGITAL)

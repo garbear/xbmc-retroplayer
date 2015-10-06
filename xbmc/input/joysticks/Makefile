@@ -1,6 +1,7 @@
 SRCS=ButtonKeyHandler.cpp \
      DefaultController.cpp \
      JoystickDriverPrimitive.cpp \
+     JoystickEasterEgg.cpp \
      JoystickTranslator.cpp \
 
 LIB=input_joysticks.a
