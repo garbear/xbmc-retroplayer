@@ -21,8 +21,9 @@
 
 #include "Peripheral.h"
 #include "input/joysticks/DefaultController.h"
-#include "input/joysticks/JoystickTypes.h"
 #include "input/joysticks/IJoystickDriverHandler.h"
+#include "input/joysticks/JoystickMonitor.h"
+#include "input/joysticks/JoystickTypes.h"
 #include "threads/CriticalSection.h"
 
 #include <string>
@@ -96,6 +97,7 @@ namespace PERIPHERALS
     unsigned int                         m_hatCount;
     unsigned int                         m_axisCount;
     CDefaultController                   m_defaultInputHandler;
+    CJoystickMonitor                     m_joystickMonitor;
     std::vector<DriverHandler>           m_driverHandlers;
     CCriticalSection                     m_handlerMutex;
   };
