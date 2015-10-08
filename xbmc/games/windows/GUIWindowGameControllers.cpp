@@ -28,16 +28,10 @@
 #include "guilib/GUIMessage.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
-#include "input/joysticks/JoystickTypes.h"
 #include "input/Key.h"
 #include "peripherals/bus/virtual/PeripheralBusAddon.h"
-#include "peripherals/devices/PeripheralJoystick.h"
 #include "peripherals/Peripherals.h"
 #include "utils/log.h"
-
-#include <assert.h>
-#include <set>
-#include <string>
 
 using namespace ADDON;
 using namespace GAME;
@@ -46,46 +40,6 @@ using namespace PERIPHERALS;
 #define CONTROL_PERIPHERAL_LIST     1
 #define CONTROL_FOCUS_PLANE         2
 #define CONTROL_GAME_CONTROLLER     3
-
-// --- CGUIJoystickInputHandler ------------------------------------------------
-
-CGUIJoystickInputHandler::CGUIJoystickInputHandler(CGUIWindowGameControllers* window, CPeripheral* device, const std::string& strDeviceId)
-  : m_window(window),
-    m_device(device),
-    m_strDeviceId(strDeviceId)
-{
-  assert(m_window);
-  assert(m_device);
-
-  m_device->RegisterJoystickInputHandler(this);
-}
-
-CGUIJoystickInputHandler::~CGUIJoystickInputHandler(void)
-{
-  m_device->UnregisterJoystickInputHandler(this); // TODO: segfaults if device is deleted
-}
-
-bool CGUIJoystickInputHandler::OnButtonPress(unsigned int featureIndex, bool bPressed)
-{
-  return m_window->OnButtonPress(m_device, featureIndex, bPressed);
-}
-
-bool CGUIJoystickInputHandler::OnButtonMotion(unsigned int featureIndex, float magnitude)
-{
-  return m_window->OnButtonMotion(m_device, featureIndex, magnitude);
-}
-
-bool CGUIJoystickInputHandler::OnAnalogStickMotion(unsigned int featureIndex, float x, float y)
-{
-  return m_window->OnAnalogStickMotion(m_device, featureIndex, x, y);
-}
-
-bool CGUIJoystickInputHandler::OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z)
-{
-  return m_window->OnAccelerometerMotion(m_device, featureIndex, x, y, z);
-}
-
-// --- CGUIWindowGameControllers -----------------------------------------------
 
 CGUIWindowGameControllers::CGUIWindowGameControllers(void) :
   CGUIWindow(WINDOW_GAME_CONTROLLERS, "GameControllers.xml"),
@@ -131,12 +85,6 @@ void CGUIWindowGameControllers::OnInitWindow()
 {
   CGUIWindow::OnInitWindow();
 
-  /* TODO
-  std::vector<CPeripheral*> devices = ScanPeripherals();
-  for (std::vector<CPeripheral*>::iterator it = devices.begin(); it != devices.end(); ++it)
-    m_inputHandlers.push_back(new CGUIJoystickInputHandler(this, *it, "game.controller.default")); // TODO
-  */
-
   m_items.Clear();
 
   VECADDONS controllers;
@@ -176,35 +124,6 @@ void CGUIWindowGameControllers::OnInitWindow()
   }
 }
 
-void CGUIWindowGameControllers::OnDeinitWindow(int nextWindowID)
-{
-  for (std::vector<CGUIJoystickInputHandler*>::iterator it = m_inputHandlers.begin(); it != m_inputHandlers.end(); ++it)
-    delete *it;
-  m_inputHandlers.clear();
-
-  CGUIWindow::OnDeinitWindow(nextWindowID);
-}
-
-bool CGUIWindowGameControllers::OnButtonPress(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, bool bPressed)
-{
-  return false; // TODO
-}
-
-bool CGUIWindowGameControllers::OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float magnitude)
-{
-  return false; // TODO
-}
-
-bool CGUIWindowGameControllers::OnAnalogStickMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y)
-{
-  return false; // TODO
-}
-
-bool CGUIWindowGameControllers::OnAccelerometerMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y, float z)
-{
-  return false; // TODO
-}
-
 bool CGUIWindowGameControllers::LoadController(const GameControllerPtr& controller)
 {
   if (controller)
@@ -227,16 +146,6 @@ bool CGUIWindowGameControllers::LoadController(const GameControllerPtr& controll
   }
 
   return false;
-}
-
-std::vector<CPeripheral*> CGUIWindowGameControllers::ScanPeripherals(void)
-{
-  std::vector<CPeripheral*> peripherals;
-
-  g_peripherals.GetPeripheralsWithFeature(peripherals, FEATURE_JOYSTICK);
-  g_peripherals.GetPeripheralsWithFeature(peripherals, FEATURE_KEYBOARD);
-
-  return peripherals;
 }
 
 bool CGUIWindowGameControllers::OnClick(int iItem)

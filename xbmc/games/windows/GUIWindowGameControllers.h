@@ -19,40 +19,9 @@
  */
 #pragma once
 
-#include "addons/Addon.h"
 #include "games/ControllerTypes.h"
 #include "guilib/GUIWindow.h"
-#include "input/joysticks/IJoystickInputHandler.h"
 #include "FileItem.h"
-
-#include <map>
-
-namespace PERIPHERALS
-{
-  class CPeripheral;
-}
-
-class CGUIWindowGameControllers;
-
-class CGUIJoystickInputHandler : public IJoystickInputHandler
-{
-public:
-  CGUIJoystickInputHandler(CGUIWindowGameControllers* window, PERIPHERALS::CPeripheral* device, const std::string& strDeviceId);
-
-  virtual ~CGUIJoystickInputHandler(void);
-
-  // Implementation of IJoystickInputHandler
-  virtual std::string DeviceID(void) const { return m_strDeviceId; }
-  virtual bool OnButtonPress(unsigned int featureIndex, bool bPressed);
-  virtual bool OnButtonMotion(unsigned int featureIndex, float magnitude);
-  virtual bool OnAnalogStickMotion(unsigned int featureIndex, float x, float y);
-  virtual bool OnAccelerometerMotion(unsigned int featureIndex, float x, float y, float z);
-
-private:
-  CGUIWindowGameControllers* const m_window;
-  PERIPHERALS::CPeripheral* const  m_device;
-  std::string                      m_strDeviceId;
-};
 
 class CGUIWindowGameControllers : public CGUIWindow
 {
@@ -64,14 +33,6 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction& action);
 
-  // implementation of CGUIWindow
-  virtual void OnDeinitWindow(int nextWindowID);
-
-  bool OnButtonPress(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, bool bPressed);
-  bool OnButtonMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float magnitude);
-  bool OnAnalogStickMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y);
-  bool OnAccelerometerMotion(PERIPHERALS::CPeripheral* device, unsigned int featureIndex, float x, float y, float z);
-
 protected:
   bool LoadController(const GAME::GameControllerPtr& controller);
 
@@ -79,14 +40,11 @@ protected:
   virtual void OnInitWindow(void);
 
 private:
-  std::vector<PERIPHERALS::CPeripheral*> ScanPeripherals(void);
-
   bool OnClick(int iItem);
   bool OnSelect(int iItem);
 
   int GetSelectedItem(void);
 
-  std::vector<CGUIJoystickInputHandler*> m_inputHandlers;
   GAME::GameControllerVector m_controllers;
   CFileItemList              m_items;
   int                        m_selectedItem;
