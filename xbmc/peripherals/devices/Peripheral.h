@@ -68,6 +68,12 @@ namespace PERIPHERALS
     const std::string &GetVersionInfo(void) const   { return m_strVersionInfo; }
 
     /*!
+     * @brief Allow the device name (specified in peripherals.xml) to be overridden
+     * @param strDeviceName The new device name
+     */
+    void SetDeviceName(const std::string& strDeviceName) { m_strDeviceName = strDeviceName; }
+
+    /*!
      * @brief Check whether this device has the given feature.
      * @param feature The feature to check for.
      * @return True when the device has the feature, false otherwise.
