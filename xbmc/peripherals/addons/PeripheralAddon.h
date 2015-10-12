@@ -103,7 +103,7 @@ namespace PERIPHERALS
      * @brief Helper functions
      */
     static void GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo);
-    //static void SetPeripheralInfo(CPeripheral* device, const ADDON::Peripheral& peripheralInfo); // TODO
+    static void SetPeripheralInfo(CPeripheral& device, const ADDON::Peripheral& peripheralInfo);
 
     static void GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
     static void SetJoystickInfo(CPeripheralJoystick& joystick, const ADDON::Joystick& joystickInfo);

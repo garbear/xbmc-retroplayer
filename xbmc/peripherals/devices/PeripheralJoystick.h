@@ -75,9 +75,6 @@ namespace PERIPHERALS
     unsigned int HatCount(void) const    { return m_hatCount; }
     unsigned int AxisCount(void) const   { return m_axisCount; }
 
-    // TODO: Move to CPeripheral
-    void SetDeviceName(const std::string& strName) { m_strDeviceName = strName; } // Override value in peripherals.xml
-
     void SetProvider(const std::string& provider) { m_strProvider   = provider; }
     void SetRequestedPort(int port)               { m_requestedPort = port; }
     void SetButtonCount(unsigned int buttonCount) { m_buttonCount   = buttonCount; }

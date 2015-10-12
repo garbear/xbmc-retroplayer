@@ -578,6 +578,13 @@ void CPeripheralAddon::GetPeripheralInfo(const CPeripheral* device, ADDON::Perip
   peripheralInfo.SetProductID(device->ProductId());
 }
 
+void CPeripheralAddon::SetPeripheralInfo(CPeripheral& device, const ADDON::Peripheral& peripheralInfo)
+{
+  std::string strDeviceName = peripheralInfo.Name();
+  StringUtils::Trim(strDeviceName);
+  device.SetDeviceName(strDeviceName);
+}
+
 void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo)
 {
   GetPeripheralInfo(device, joystickInfo);
@@ -598,10 +605,7 @@ void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystic
 
 void CPeripheralAddon::SetJoystickInfo(CPeripheralJoystick& joystick, const ADDON::Joystick& joystickInfo)
 {
-  // TODO: Name should be set in SetPeripheralInfo()
-  std::string strDeviceName = joystickInfo.Name();
-  StringUtils::Trim(strDeviceName);
-  joystick.SetDeviceName(strDeviceName);
+  SetPeripheralInfo(joystick, joystickInfo);
 
   joystick.SetProvider(joystickInfo.Provider());
   joystick.SetRequestedPort(joystickInfo.RequestedPort());
