@@ -19,8 +19,11 @@
  */
 
 #include "PeripheralBusApplication.h"
+#include "guilib/LocalizeStrings.h"
 
 using namespace PERIPHERALS;
+
+#define KEYBOARD_LOCATION  "keyboard"
 
 CPeripheralBusApplication::CPeripheralBusApplication(CPeripherals* manager) :
     CPeripheralBus("PeripBusApplication", manager, PERIPHERAL_BUS_APPLICATION)
@@ -32,8 +35,8 @@ bool CPeripheralBusApplication::PerformDeviceScan(PeripheralScanResults& results
 {
   PeripheralScanResult result(Type());
   result.m_type = PERIPHERAL_KEYBOARD;
-  result.m_strDeviceName = "Keyboard"; // TODO
-  result.m_strLocation   = "keyboard"; // TODO
+  result.m_strDeviceName = g_localizeStrings.Get(35013); // "Keyboard"
+  result.m_strLocation   = KEYBOARD_LOCATION;
   result.m_iVendorId     = 0;
   result.m_iProductId    = 0;
   result.m_mappedType    = PERIPHERAL_KEYBOARD;

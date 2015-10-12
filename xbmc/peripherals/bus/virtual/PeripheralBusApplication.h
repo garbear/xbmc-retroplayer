@@ -25,6 +25,7 @@ namespace PERIPHERALS
 {
   /*!
    * @class CPeripheralBusApplication
+   *
    * This exposes peripherals that exist logically at the application level,
    * such as keyboards.
    */

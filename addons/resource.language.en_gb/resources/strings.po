@@ -13999,7 +13999,12 @@ msgctxt "#35012"
 msgid "Controller configuration is disabled. Install the proper joystick support add-on."
 msgstr ""
 
-#empty strings from id 35013 to 35049
+#: xbmc/peripherals/bus/virtual/PeripheralBusApplication.cpp
+msgctxt "#35013"
+msgid "Keyboard"
+msgstr ""
+
+#empty strings from id 35014 to 35049
 
 #: xbmc/addons/Addon.cpp
 msgctxt "#35050"
