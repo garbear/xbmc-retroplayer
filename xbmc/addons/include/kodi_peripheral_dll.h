@@ -33,7 +33,7 @@ extern "C"
   ///{
   /*!
    * @brief  Get the PERIPHERAL_API_VERSION used to compile this peripheral add-on
-   * @return KODI_PERIPHERAL_API_VERSION from kodi_peripheral_types
+   * @return KODI_PERIPHERAL_API_VERSION from kodi_peripheral_types.h
    * @remarks Valid implementation required
    *
    * Used to check if the implementation is compatible with the frontend.
@@ -42,7 +42,7 @@ extern "C"
 
   /*!
    * @brief Get the KODI_PERIPHERAL_MIN_API_VERSION used to compile this peripheral add-on
-   * @return KODI_PERIPHERAL_MIN_API_VERSION from kodi_peripheral_types
+   * @return KODI_PERIPHERAL_MIN_API_VERSION from kodi_peripheral_types.h
    * @remarks Valid implementation required
    *
    * Used to check if the implementation is compatible with the frontend.

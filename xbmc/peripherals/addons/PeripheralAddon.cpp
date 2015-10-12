@@ -73,15 +73,16 @@ CPeripheralAddon::~CPeripheralAddon(void)
 
 void CPeripheralAddon::ResetProperties(void)
 {
-  /* initialise members */
-  SAFE_DELETE(m_pInfo);
-  m_pInfo = new PERIPHERAL_PROPERTIES;
+  // Initialise members
   m_strUserPath        = CSpecialProtocol::TranslatePath(Profile());
-  m_pInfo->user_path   = m_strUserPath.c_str();
   m_strClientPath      = CSpecialProtocol::TranslatePath(Path());
+
+  SAFE_DELETE(m_pInfo);
+  m_pInfo              = new PERIPHERAL_PROPERTIES;
+  m_pInfo->user_path   = m_strUserPath.c_str();
   m_pInfo->addon_path  = m_strClientPath.c_str();
+
   m_apiVersion = ADDON::AddonVersion("0.0.0");
-  // TODO
 }
 
 ADDON::AddonPtr CPeripheralAddon::GetRunningInstance(void) const
@@ -100,17 +101,17 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 {
   ADDON_STATUS status(ADDON_STATUS_UNKNOWN);
 
-  /* reset all properties to defaults */
+  // Reset all properties to defaults
   ResetProperties();
 
-  /* create directory for user data */
+  // Create directory for user data
   if (!CDirectory::Exists(m_strUserPath))
     CDirectory::Create(m_strUserPath);
 
-  /* initialise the add-on */
+  // Initialise the add-on
   CLog::Log(LOGDEBUG, "PERIPHERAL - %s - creating peripheral add-on instance '%s'", __FUNCTION__, Name().c_str());
   try { status = CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::Create(); }
-  catch (const std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (const std::exception& e) { LogException(e, __FUNCTION__); }
 
   if (status == ADDON_STATUS_OK)
   {
@@ -128,7 +129,7 @@ bool CPeripheralAddon::GetAddonProperties(void)
 {
   PERIPHERAL_CAPABILITIES addonCapabilities = { };
 
-  /* get the capabilities */
+  // Get the capabilities
   try
   {
     PERIPHERAL_ERROR retVal = m_pStruct->GetAddonCapabilities(&addonCapabilities);
@@ -139,7 +140,7 @@ bool CPeripheralAddon::GetAddonProperties(void)
       return false;
     }
   }
-  catch (std::exception &e) { LogException(e, "GetAddonCapabilities()"); return false; }
+  catch (std::exception& e) { LogException(e, "GetAddonCapabilities()"); return false; }
 
   // Verify capabilities against addon.xml
   if (m_bProvidesJoysticks != addonCapabilities.provides_joysticks)
@@ -155,7 +156,7 @@ bool CPeripheralAddon::GetAddonProperties(void)
 
 bool CPeripheralAddon::CheckAPIVersion(void)
 {
-  /* check the API version */
+  // Check the API version
   ADDON::AddonVersion minVersion = ADDON::AddonVersion(PERIPHERAL_MIN_API_VERSION);
   try { m_apiVersion = ADDON::AddonVersion(m_pStruct->GetPeripheralAPIVersion()); }
   catch (std::exception &e) { LogException(e, "GetPeripheralAPIVersion()"); return false; }
@@ -211,7 +212,7 @@ void CPeripheralAddon::UnregisterRemovedDevices(const PeripheralScanResults &res
     if (!results.GetDeviceOnLocation(peripheral->Location(), &updatedDevice) ||
       *peripheral != updatedDevice)
     {
-      /* device removed */
+      // Device removed
       removedIndexes.push_back(it->first);
       //m_peripherals.erase(m_peripherals.begin() + iDevicePtr);
     }
@@ -322,9 +323,9 @@ void CPeripheralAddon::GetDirectory(const std::string &strPath, CFileItemList &i
 
 bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
 {
-  unsigned int            peripheralCount;
-  PERIPHERAL_INFO*        pScanResults;
-  PERIPHERAL_ERROR        retVal;
+  unsigned int      peripheralCount;
+  PERIPHERAL_INFO*  pScanResults;
+  PERIPHERAL_ERROR  retVal;
 
   try { LogError(retVal = m_pStruct->PerformDeviceScan(&peripheralCount, &pScanResults), "PerformDeviceScan()"); }
   catch (std::exception &e) { LogException(e, "PerformDeviceScan()"); return false;  }

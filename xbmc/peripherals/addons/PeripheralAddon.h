@@ -49,9 +49,10 @@ namespace PERIPHERALS
   {
   public:
     CPeripheralAddon(const ADDON::AddonProps& props);
-    CPeripheralAddon(const cp_extension_t *ext);
+    CPeripheralAddon(const cp_extension_t* ext);
     virtual ~CPeripheralAddon(void);
 
+    // implementation of IAddon
     virtual ADDON::AddonPtr GetRunningInstance(void) const;
 
     /*!
@@ -93,10 +94,14 @@ namespace PERIPHERALS
     /*!
      * @brief Request the API version from the add-on, and check if it's compatible
      * @return True when compatible, false otherwise.
+     * @remark Implementation of CAddonDll
      */
     virtual bool CheckAPIVersion(void);
 
   private:
+    /*!
+     * @brief Helper functions
+     */
     static void GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo);
     //static void SetPeripheralInfo(CPeripheral* device, const ADDON::Peripheral& peripheralInfo); // TODO
 
@@ -106,10 +111,13 @@ namespace PERIPHERALS
     static HatDirection ToHatDirection(JOYSTICK_STATE_HAT state);
 
     /*!
-     * @brief Resets all class members to their defaults. Called by the constructors
+     * @brief Reset all class members to their defaults. Called by the constructors
      */
     void ResetProperties(void);
 
+    /*!
+     * @brief Retrieve add-on properties from the add-on
+     */
     bool GetAddonProperties(void);
 
     /*!
@@ -123,22 +131,21 @@ namespace PERIPHERALS
     bool LogError(const PERIPHERAL_ERROR error, const char *strMethod) const;
     void LogException(const std::exception &e, const char *strFunctionName) const;
 
-    /* stored strings to make sure const char* members in PERIPHERAL_PROPERTIES stay valid */
+    /* @brief Cache for const char* members in PERIPHERAL_PROPERTIES */
     std::string         m_strUserPath;    /*!< @brief translated path to the user profile */
     std::string         m_strClientPath;  /*!< @brief translated path to this add-on */
 
-    /* add-on properties */
+    /* @brief Add-on properties */
     ADDON::AddonVersion m_apiVersion;
     bool                m_bProvidesJoysticks;
 
-    /* peripherals */
+    /* @brief Map of peripherals belonging to the add-on */
     std::map<unsigned int, CPeripheral*>  m_peripherals;
 
-    std::vector<std::pair<CPeripheral*, IJoystickButtonMap*> > m_buttonMaps; // Button map observers
+    /* @brief Button map observers */
+    std::vector<std::pair<CPeripheral*, IJoystickButtonMap*> > m_buttonMaps;
 
-    typedef std::string ControllerID;
-
-    /* synchronization */
+    /* @brief Thread synchronization */
     CCriticalSection    m_critSection;
   };
 }
