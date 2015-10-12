@@ -20,11 +20,15 @@
 
 #include "JoystickMonitor.h"
 #include "Application.h"
+#include "input/InputManager.h"
 
 bool CJoystickMonitor::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   if (bPressed)
+  {
+    CInputManager::Get().SetMouseActive(false);
     return ResetTimers();
+  }
 
   return false;
 }
@@ -32,7 +36,10 @@ bool CJoystickMonitor::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 bool CJoystickMonitor::OnHatMotion(unsigned int hatIndex, HatDirection direction)
 {
   if (direction != HatDirectionNone)
+  {
+    CInputManager::Get().SetMouseActive(false);
     return ResetTimers();
+  }
 
   return false;
 }
@@ -40,7 +47,10 @@ bool CJoystickMonitor::OnHatMotion(unsigned int hatIndex, HatDirection direction
 bool CJoystickMonitor::OnAxisMotion(unsigned int axisIndex, float position)
 {
   if (position)
+  {
+    CInputManager::Get().SetMouseActive(false);
     return ResetTimers();
+  }
 
   return false;
 }
