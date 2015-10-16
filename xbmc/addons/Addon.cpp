@@ -641,15 +641,14 @@ const std::string CAddon::LibPath() const
 {
   std::string strLibPath = URIUtils::AddFileToFolder(m_props.path, m_strLibName);
 
-  if (!CFile::Exists(strLibPath))
+  // Check if add-on library has been installed to the binaries path instead of
+  // share path (e.g. for cross-compiled add-ons)
+  std::string strSharePath = CSpecialProtocol::TranslatePath("special://xbmc/");
+  const bool bIsInSharePath = StringUtils::StartsWith(strLibPath, strSharePath);
+  if (bIsInSharePath && !CFile::Exists(strLibPath))
   {
-    // Check for the library in the binaries path
-    std::string strSharePath = CSpecialProtocol::TranslatePath("special://xbmc/");
     std::string strBinPath = CSpecialProtocol::TranslatePath("special://xbmcbin/");
-  
-    size_t pos = strLibPath.find(strSharePath);
-    if (pos != std::string::npos)
-      strLibPath.replace(pos, strSharePath.length(), strBinPath);
+    strLibPath.replace(0, strSharePath.length(), strBinPath);
   }
 
   return strLibPath;
