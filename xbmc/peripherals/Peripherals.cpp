@@ -746,6 +746,8 @@ PeripheralAddonPtr CPeripherals::GetAddon(const CPeripheral* device)
 
 void CPeripherals::RegisterJoystickButtonMapper(IJoystickButtonMapper* mapper)
 {
+  CSingleLock lock(m_critSection);
+
   std::vector<CPeripheral*> peripherals;
 
   GetPeripheralsWithFeature(peripherals, FEATURE_JOYSTICK);
@@ -757,6 +759,8 @@ void CPeripherals::RegisterJoystickButtonMapper(IJoystickButtonMapper* mapper)
 
 void CPeripherals::UnregisterJoystickButtonMapper(IJoystickButtonMapper* mapper)
 {
+  CSingleLock lock(m_critSection);
+
   std::vector<CPeripheral*> peripherals;
 
   GetPeripheralsWithFeature(peripherals, FEATURE_JOYSTICK);
