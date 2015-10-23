@@ -37,15 +37,18 @@ namespace PERIPHERALS
 
     std::string ControllerID(void) const { return m_strControllerId; }
     bool Load(void);
-    bool MapButton(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive);
-    bool MapAnalogStick(const JoystickFeature& feature, int horizIndex, bool horizInverted,
-                                                        int vertIndex,  bool vertInverted);
-    bool MapAccelerometer(const JoystickFeature& feature, int xIndex, bool xInverted,
-                                                          int yIndex, bool yInverted,
-                                                          int zIndex, bool zInverted);
+    bool AddPrimitiveFeature(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive);
+    bool AddAnalogStick(const JoystickFeature& feature, const CJoystickDriverPrimitive& up,
+                                                        const CJoystickDriverPrimitive& down,
+                                                        const CJoystickDriverPrimitive& right,
+                                                        const CJoystickDriverPrimitive& left);
+    bool AddAccelerometer(const JoystickFeature& feature, const CJoystickDriverPrimitive& positiveX,
+                                                          const CJoystickDriverPrimitive& positiveY,
+                                                          const CJoystickDriverPrimitive& positiveZ);
 
   private:
     // Utility functions
+    static ADDON::DriverPrimitive             ToPrimitive(const CJoystickDriverPrimitive& primitive);
     static JOYSTICK_DRIVER_HAT_DIRECTION      ToHatDirection(HatDirection dir);
     static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION ToSemiAxisDirection(SemiAxisDirection dir);
 

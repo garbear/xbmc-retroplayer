@@ -50,10 +50,10 @@
 #endif
 
 /* current Peripheral API version */
-#define PERIPHERAL_API_VERSION "1.0.9"
+#define PERIPHERAL_API_VERSION "1.0.10"
 
 /* min. Peripheral API version */
-#define PERIPHERAL_MIN_API_VERSION "1.0.9"
+#define PERIPHERAL_MIN_API_VERSION "1.0.10"
 
 /* indicates a joystick has no preference for port number */
 #define NO_PORT_REQUESTED     (-1)
@@ -175,15 +175,13 @@ extern "C"
     unsigned int    axis_count;         /*!< @brief number of axes reported by the driver */
   } ATTRIBUTE_PACKED JOYSTICK_INFO;
 
-  typedef enum JOYSTICK_DRIVER_TYPE
+  typedef enum JOYSTICK_DRIVER_PRIMITIVE_TYPE
   {
-    JOYSTICK_DRIVER_TYPE_UNKNOWN,
-    JOYSTICK_DRIVER_TYPE_BUTTON,
-    JOYSTICK_DRIVER_TYPE_HAT_DIRECTION,
-    JOYSTICK_DRIVER_TYPE_SEMIAXIS,
-    JOYSTICK_DRIVER_TYPE_ANALOG_STICK,
-    JOYSTICK_DRIVER_TYPE_ACCELEROMETER,
-  } JOYSTICK_DRIVER_TYPE;
+    JOYSTICK_DRIVER_PRIMITIVE_TYPE_UNKNOWN,
+    JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON,
+    JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION,
+    JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS,
+  } JOYSTICK_DRIVER_PRIMITIVE_TYPE;
 
   typedef struct JOYSTICK_DRIVER_BUTTON
   {
@@ -218,35 +216,54 @@ extern "C"
     JOYSTICK_DRIVER_SEMIAXIS_DIRECTION direction;
   } ATTRIBUTE_PACKED JOYSTICK_DRIVER_SEMIAXIS;
 
-  typedef struct JOYSTICK_DRIVER_ANALOG_STICK
+  typedef struct JOYSTICK_DRIVER_PRIMITIVE
   {
-    int  x_index;
-    bool x_inverted;
-    int  y_index;
-    bool y_inverted;
-  } ATTRIBUTE_PACKED JOYSTICK_DRIVER_ANALOG_STICK;
+    JOYSTICK_DRIVER_PRIMITIVE_TYPE    type;
+    union
+    {
+      struct JOYSTICK_DRIVER_BUTTON   button;
+      struct JOYSTICK_DRIVER_HAT      hat;
+      struct JOYSTICK_DRIVER_SEMIAXIS semiaxis;
+    };
+  } ATTRIBUTE_PACKED JOYSTICK_DRIVER_PRIMITIVE;
 
-  typedef struct JOYSTICK_DRIVER_ACCELEROMETER
+  typedef enum JOYSTICK_FEATURE_TYPE
   {
-    int  x_index;
-    bool x_inverted;
-    int  y_index;
-    bool y_inverted;
-    int  z_index;
-    bool z_inverted;
-  } ATTRIBUTE_PACKED JOYSTICK_DRIVER_ACCELEROMETER;
+    JOYSTICK_FEATURE_TYPE_UNKNOWN,
+    JOYSTICK_FEATURE_TYPE_PRIMITIVE,
+    JOYSTICK_FEATURE_TYPE_ANALOG_STICK,
+    JOYSTICK_FEATURE_TYPE_ACCELEROMETER,
+  } JOYSTICK_FEATURE_TYPE;
+
+  typedef struct JOYSTICK_FEATURE_PRIMITIVE
+  {
+    struct JOYSTICK_DRIVER_PRIMITIVE primitive;
+  } ATTRIBUTE_PACKED JOYSTICK_FEATURE_PRIMITIVE;
+
+  typedef struct JOYSTICK_FEATURE_ANALOG_STICK
+  {
+    struct JOYSTICK_DRIVER_PRIMITIVE up;
+    struct JOYSTICK_DRIVER_PRIMITIVE down;
+    struct JOYSTICK_DRIVER_PRIMITIVE right;
+    struct JOYSTICK_DRIVER_PRIMITIVE left;
+  } ATTRIBUTE_PACKED JOYSTICK_FEATURE_ANALOG_STICK;
+
+  typedef struct JOYSTICK_FEATURE_ACCELEROMETER
+  {
+    struct JOYSTICK_DRIVER_PRIMITIVE positive_x;
+    struct JOYSTICK_DRIVER_PRIMITIVE positive_y;
+    struct JOYSTICK_DRIVER_PRIMITIVE positive_z;
+  } ATTRIBUTE_PACKED JOYSTICK_FEATURE_ACCELEROMETER;
 
   typedef struct JOYSTICK_FEATURE
   {
-    char*                                  feature_name;
-    JOYSTICK_DRIVER_TYPE                   driver_type;
+    char*                                   name;
+    JOYSTICK_FEATURE_TYPE                   type;
     union
     {
-      struct JOYSTICK_DRIVER_BUTTON        driver_button;
-      struct JOYSTICK_DRIVER_HAT           driver_hat;
-      struct JOYSTICK_DRIVER_SEMIAXIS      driver_semiaxis;
-      struct JOYSTICK_DRIVER_ANALOG_STICK  driver_analog_stick;
-      struct JOYSTICK_DRIVER_ACCELEROMETER driver_accelerometer;
+      struct JOYSTICK_FEATURE_PRIMITIVE     primitive;
+      struct JOYSTICK_FEATURE_ANALOG_STICK  analog_stick;
+      struct JOYSTICK_FEATURE_ACCELEROMETER accelerometer;
     };
   } ATTRIBUTE_PACKED JOYSTICK_FEATURE;
   ///}
