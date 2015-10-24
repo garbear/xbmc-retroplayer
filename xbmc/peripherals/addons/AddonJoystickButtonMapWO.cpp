@@ -37,7 +37,7 @@ bool CAddonJoystickButtonMapWO::Load(void)
   return m_addon.get() != NULL;
 }
 
-bool CAddonJoystickButtonMapWO::MapButton(const std::string& feature, const CJoystickDriverPrimitive& primitive)
+bool CAddonJoystickButtonMapWO::MapButton(const ::JoystickFeature& feature, const CJoystickDriverPrimitive& primitive)
 {
   bool retVal(false);
 
@@ -68,7 +68,7 @@ bool CAddonJoystickButtonMapWO::MapButton(const std::string& feature, const CJoy
   return retVal;
 }
 
-bool CAddonJoystickButtonMapWO::MapAnalogStick(const std::string& feature,
+bool CAddonJoystickButtonMapWO::MapAnalogStick(const ::JoystickFeature& feature,
                                                int horizIndex, bool horizInverted,
                                                int vertIndex,  bool vertInverted)
 {
@@ -79,7 +79,7 @@ bool CAddonJoystickButtonMapWO::MapAnalogStick(const std::string& feature,
   return m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAnalogStick);
 }
 
-bool CAddonJoystickButtonMapWO::MapAccelerometer(const std::string& feature,
+bool CAddonJoystickButtonMapWO::MapAccelerometer(const ::JoystickFeature& feature,
                                                   int xIndex, bool xInverted,
                                                   int yIndex, bool yInverted,
                                                   int zIndex, bool zInverted)

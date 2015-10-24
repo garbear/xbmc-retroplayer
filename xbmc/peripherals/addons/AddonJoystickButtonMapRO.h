@@ -21,6 +21,7 @@
 
 #include "addons/include/kodi_peripheral_types.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
+#include "input/joysticks/JoystickTypes.h"
 #include "peripherals/addons/PeripheralAddon.h"
 
 #include <map>
@@ -34,13 +35,13 @@ namespace PERIPHERALS
 
     std::string ControllerID(void) const { return m_strControllerId; }
     bool Load(void);
-    bool GetFeature(const CJoystickDriverPrimitive& primitive, std::string& feature);
-    bool GetButton(const std::string& feature, CJoystickDriverPrimitive& button);
-    bool GetAnalogStick(const std::string& feature, int& horizIndex, bool& horizInverted,
-                                                    int& vertIndex,  bool& vertInverted);
-    bool GetAccelerometer(const std::string& feature, int& xIndex, bool& xInverted,
-                                                      int& yIndex, bool& yInverted,
-                                                      int& zIndex, bool& zInverted);
+    bool GetFeature(const CJoystickDriverPrimitive& primitive, JoystickFeature& feature);
+    bool GetButton(const JoystickFeature& feature, CJoystickDriverPrimitive& button);
+    bool GetAnalogStick(const JoystickFeature& feature, int& horizIndex, bool& horizInverted,
+                                                        int& vertIndex,  bool& vertInverted);
+    bool GetAccelerometer(const JoystickFeature& feature, int& xIndex, bool& xInverted,
+                                                          int& yIndex, bool& yInverted,
+                                                          int& zIndex, bool& zInverted);
 
   private:
     typedef std::string Feature;

@@ -114,7 +114,7 @@ CAddonJoystickButtonMapRO::DriverMap CAddonJoystickButtonMapRO::ToDriverMap(cons
   return driverMap;
 }
 
-bool CAddonJoystickButtonMapRO::GetFeature(const CJoystickDriverPrimitive& primitive, std::string& feature)
+bool CAddonJoystickButtonMapRO::GetFeature(const CJoystickDriverPrimitive& primitive, ::JoystickFeature& feature)
 {
   DriverMap::const_iterator it = m_driverMap.find(primitive);
   if (it != m_driverMap.end())
@@ -126,7 +126,7 @@ bool CAddonJoystickButtonMapRO::GetFeature(const CJoystickDriverPrimitive& primi
   return false;
 }
 
-bool CAddonJoystickButtonMapRO::GetButton(const std::string& feature, CJoystickDriverPrimitive& button)
+bool CAddonJoystickButtonMapRO::GetButton(const ::JoystickFeature& feature, CJoystickDriverPrimitive& button)
 {
   bool retVal(false);
 
@@ -171,7 +171,7 @@ bool CAddonJoystickButtonMapRO::GetButton(const std::string& feature, CJoystickD
   return retVal;
 }
 
-bool CAddonJoystickButtonMapRO::GetAnalogStick(const std::string& feature,
+bool CAddonJoystickButtonMapRO::GetAnalogStick(const ::JoystickFeature& feature,
                                                int& horizIndex, bool& horizInverted,
                                                int& vertIndex,  bool& vertInverted)
 {
@@ -196,7 +196,7 @@ bool CAddonJoystickButtonMapRO::GetAnalogStick(const std::string& feature,
   return retVal;
 }
 
-bool CAddonJoystickButtonMapRO::GetAccelerometer(const std::string& feature,
+bool CAddonJoystickButtonMapRO::GetAccelerometer(const ::JoystickFeature& feature,
                                                  int& xIndex, bool& xInverted,
                                                  int& yIndex, bool& yInverted,
                                                  int& zIndex, bool& zInverted)

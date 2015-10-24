@@ -21,6 +21,7 @@
 
 #include "addons/include/kodi_peripheral_types.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
+#include "input/joysticks/JoystickTypes.h"
 #include "peripherals/addons/PeripheralAddon.h"
 
 #include <string>
@@ -36,12 +37,12 @@ namespace PERIPHERALS
 
     std::string ControllerID(void) const { return m_strControllerId; }
     bool Load(void);
-    bool MapButton(const std::string& feature, const CJoystickDriverPrimitive& primitive);
-    bool MapAnalogStick(const std::string& feature, int horizIndex, bool horizInverted,
-                                                    int vertIndex,  bool vertInverted);
-    bool MapAccelerometer(const std::string& feature, int xIndex, bool xInverted,
-                                                      int yIndex, bool yInverted,
-                                                      int zIndex, bool zInverted);
+    bool MapButton(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive);
+    bool MapAnalogStick(const JoystickFeature& feature, int horizIndex, bool horizInverted,
+                                                        int vertIndex,  bool vertInverted);
+    bool MapAccelerometer(const JoystickFeature& feature, int xIndex, bool xInverted,
+                                                          int yIndex, bool yInverted,
+                                                          int zIndex, bool zInverted);
 
   private:
     // Utility functions
