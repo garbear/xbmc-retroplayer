@@ -471,8 +471,8 @@ bool CPeripheralAddon::GetJoystickProperties(unsigned int index, CPeripheralJoys
   return false;
 }
 
-bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string& strControllerId,
-                                    JoystickFeatureMap& features)
+bool CPeripheralAddon::GetFeatures(const CPeripheral* device, const std::string& strControllerId,
+                                   JoystickFeatureMap& features)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
@@ -488,8 +488,8 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
   unsigned int      featureCount = 0;
   JOYSTICK_FEATURE* pFeatures = NULL;
 
-  try { LogError(retVal = m_pStruct->GetButtonMap(&joystickStruct, strControllerId.c_str(),
-                                                  &featureCount, &pFeatures), "GetButtonMap()"); }
+  try { LogError(retVal = m_pStruct->GetFeatures(&joystickStruct, strControllerId.c_str(),
+                                                 &featureCount, &pFeatures), "GetFeatures()"); }
   catch (std::exception &e) { LogException(e, "GetButtonMap()"); return false;  }
 
   if (retVal == PERIPHERAL_NO_ERROR)
@@ -501,8 +501,8 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
         features[feature->Name()] = feature;
     }
 
-    try { m_pStruct->FreeButtonMap(featureCount, pFeatures); }
-    catch (std::exception &e) { LogException(e, "FreeButtonMap()"); }
+    try { m_pStruct->FreeFeatures(featureCount, pFeatures); }
+    catch (std::exception &e) { LogException(e, "FreeFeatures()"); }
 
     return true;
   }
@@ -510,8 +510,8 @@ bool CPeripheralAddon::GetButtonMap(const CPeripheral* device, const std::string
   return false;
 }
 
-bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::string& strControllerId,
-                                          const ADDON::JoystickFeature* feature)
+bool CPeripheralAddon::AddFeature(const CPeripheral* device, const std::string& strControllerId,
+                                  const ADDON::JoystickFeature* feature)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
@@ -527,9 +527,9 @@ bool CPeripheralAddon::MapJoystickFeature(const CPeripheral* device, const std::
   JOYSTICK_FEATURE featureStruct;
   feature->ToStruct(featureStruct);
 
-  try { LogError(retVal = m_pStruct->MapJoystickFeature(&joystickStruct, strControllerId.c_str(),
-                                                        &featureStruct), "MapJoystickFeature()"); }
-  catch (std::exception &e) { LogException(e, "MapJoystickFeature()"); return false;  }
+  try { LogError(retVal = m_pStruct->AddFeature(&joystickStruct, strControllerId.c_str(),
+                                                &featureStruct), "AddFeature()"); }
+  catch (std::exception &e) { LogException(e, "AddFeature()"); return false;  }
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {

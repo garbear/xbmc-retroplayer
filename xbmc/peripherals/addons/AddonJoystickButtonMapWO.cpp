@@ -46,19 +46,19 @@ bool CAddonJoystickButtonMapWO::MapButton(const ::JoystickFeature& feature, cons
     case DriverPrimitiveTypeButton:
     {
       ADDON::DriverButton driverButton(feature, primitive.Index());
-      retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverButton);
+      retVal = m_addon->AddFeature(m_device, m_strControllerId, &driverButton);
       break;
     }
     case DriverPrimitiveTypeHatDirection:
     {
       ADDON::DriverHat driverHat(feature, primitive.Index(), ToHatDirection(primitive.HatDir()));
-      retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverHat);
+      retVal = m_addon->AddFeature(m_device, m_strControllerId, &driverHat);
       break;
     }
     case DriverPrimitiveTypeSemiAxis:
     {
       ADDON::DriverSemiAxis driverSemiAxis(feature, primitive.Index(), ToSemiAxisDirection(primitive.SemiAxisDir()));
-      retVal = m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverSemiAxis);
+      retVal = m_addon->AddFeature(m_device, m_strControllerId, &driverSemiAxis);
       break;
     }
     default:
@@ -76,7 +76,7 @@ bool CAddonJoystickButtonMapWO::MapAnalogStick(const ::JoystickFeature& feature,
                                              horizIndex, horizInverted,
                                              vertIndex,  vertInverted);
 
-  return m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAnalogStick);
+  return m_addon->AddFeature(m_device, m_strControllerId, &driverAnalogStick);
 }
 
 bool CAddonJoystickButtonMapWO::MapAccelerometer(const ::JoystickFeature& feature,
@@ -89,7 +89,7 @@ bool CAddonJoystickButtonMapWO::MapAccelerometer(const ::JoystickFeature& featur
                                                  yIndex, yInverted,
                                                  zIndex, zInverted);
 
-  return m_addon->MapJoystickFeature(m_device, m_strControllerId, &driverAccelerometer);
+  return m_addon->AddFeature(m_device, m_strControllerId, &driverAccelerometer);
 }
 
 JOYSTICK_DRIVER_HAT_DIRECTION CAddonJoystickButtonMapWO::ToHatDirection(HatDirection dir)

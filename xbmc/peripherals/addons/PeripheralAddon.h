@@ -80,8 +80,8 @@ namespace PERIPHERALS
     /** @name Joystick methods */
     //@{
     bool GetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick);
-    bool GetButtonMap(const CPeripheral* device, const std::string& strControllerId, JoystickFeatureMap& features);
-    bool MapJoystickFeature(const CPeripheral* device, const std::string& strControllerId, const ADDON::JoystickFeature* feature);
+    bool GetFeatures(const CPeripheral* device, const std::string& strControllerId, JoystickFeatureMap& features);
+    bool AddFeature(const CPeripheral* device, const std::string& strControllerId, const ADDON::JoystickFeature* feature);
     //@}
 
     void RegisterButtonMap(CPeripheral* device, IJoystickButtonMap* buttonMap);

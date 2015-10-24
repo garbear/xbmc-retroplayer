@@ -36,7 +36,7 @@ bool CAddonJoystickButtonMapRO::Load(void)
   m_features.clear();
   m_driverMap.clear();
 
-  if (m_addon && m_addon->GetButtonMap(m_device, m_strControllerId, m_features))
+  if (m_addon && m_addon->GetFeatures(m_device, m_strControllerId, m_features))
   {
     CLog::Log(LOGDEBUG, "Loaded button map with %lu features for controller %s",
               m_features.size(), m_strControllerId.c_str());
