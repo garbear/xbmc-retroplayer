@@ -60,7 +60,7 @@ bool CPeripheralJoystick::InitialiseFeature(const PeripheralFeature feature)
           PeripheralAddonPtr addon;
           unsigned int index;
           if (addonBus->SplitLocation(m_strLocation, addon, index))
-            bSuccess = addon->SetJoystickProperties(index, *this);
+            bSuccess = addon->GetJoystickProperties(index, *this);
           else
             CLog::Log(LOGERROR, "CPeripheralJoystick: Invalid location (%s)", m_strLocation.c_str());
         }

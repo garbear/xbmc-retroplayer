@@ -445,7 +445,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   return false;
 }
 
-bool CPeripheralAddon::SetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick)
+bool CPeripheralAddon::GetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick)
 {
   if (!HasFeature(FEATURE_JOYSTICK))
     return false;
