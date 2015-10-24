@@ -52,9 +52,9 @@ bool CGenericJoystickButtonMapping::OnHatMotion(unsigned int hatIndex, HatDirect
 {
   if (direction != HatDirectionNone)
   {
-    CJoystickDriverPrimitive hatPrimtive(hatIndex, direction);
-    if (hatPrimtive.IsValid())
-      return m_buttonMapper->MapPrimitive(m_buttonMap, hatPrimtive);
+    CJoystickDriverPrimitive hatPrimitive(hatIndex, direction);
+    if (hatPrimitive.IsValid())
+      return m_buttonMapper->MapPrimitive(m_buttonMap, hatPrimitive);
 
     return m_buttonMapper->IsMapping();
   }
