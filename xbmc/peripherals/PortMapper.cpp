@@ -22,6 +22,7 @@
 #include "peripherals/devices/Peripheral.h"
 #include "peripherals/Peripherals.h"
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 CPortMapper::CPortMapper(void)

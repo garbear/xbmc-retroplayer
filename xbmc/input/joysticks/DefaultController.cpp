@@ -34,6 +34,8 @@
 #define MAX(x, y)  ((x) >= (y) ? (x) : (y))
 #endif
 
+using namespace JOYSTICK;
+
 CDefaultController::CDefaultController(void)
   : m_handler(new CButtonKeyHandler),
     m_easterEgg(new CJoystickEasterEgg)

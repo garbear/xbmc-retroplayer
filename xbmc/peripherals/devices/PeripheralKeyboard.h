@@ -38,8 +38,8 @@ namespace PERIPHERALS
 
     // implementation of CPeripheral
     virtual bool InitialiseFeature(const PeripheralFeature feature);
-    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler, bool bPromiscuous);
-    virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler);
+    virtual void RegisterJoystickDriverHandler(JOYSTICK::IJoystickDriverHandler* handler, bool bPromiscuous);
+    virtual void UnregisterJoystickDriverHandler(JOYSTICK::IJoystickDriverHandler* handler);
 
     // implementation of IKeyboardHandler
     virtual bool OnKeyPress(const CKey& key);
@@ -52,8 +52,8 @@ namespace PERIPHERALS
       bool              bPromiscuous;
     };
 
-    typedef std::pair<IJoystickDriverHandler*, KeyboardHandler> KeyboardHandlerHandle;
-    typedef std::vector<KeyboardHandlerHandle>                  KeyboardHandlerVector;
+    typedef std::pair<JOYSTICK::IJoystickDriverHandler*, KeyboardHandler> KeyboardHandlerHandle;
+    typedef std::vector<KeyboardHandlerHandle> KeyboardHandlerVector;
 
     KeyboardHandlerVector m_keyboardHandlers;
     CCriticalSection      m_handlerMutex;

@@ -53,6 +53,7 @@
 #include "input/Key.h"
 #include "settings/lib/Setting.h"
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 using namespace XFILE;
 using namespace std;

@@ -43,6 +43,7 @@
 
 using namespace ADDON;
 using namespace GAME;
+using namespace JOYSTICK;
 using namespace XFILE;
 
 #define EXTENSION_SEPARATOR          "|"

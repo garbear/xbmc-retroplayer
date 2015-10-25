@@ -21,27 +21,28 @@
 
 #include "input/IKeyboardHandler.h"
 
-class IJoystickDriverHandler;
-
-/*!
- * \ingroup joysticks_generic
- *
- * \brief Generic implementation of IKeyboardHandler to handle a keyboard as a
- *        joystick with many buttons.
- */
-class CGenericJoystickKeyboardHandler : public IKeyboardHandler
+namespace JOYSTICK
 {
-public:
-  CGenericJoystickKeyboardHandler(IJoystickDriverHandler* handler);
+  class IJoystickDriverHandler;
 
-  virtual ~CGenericJoystickKeyboardHandler(void) { }
+  /*!
+   * \brief Generic implementation of IKeyboardHandler to handle a keyboard as a
+   *        joystick with many buttons.
+   */
+  class CGenericJoystickKeyboardHandler : public IKeyboardHandler
+  {
+  public:
+    CGenericJoystickKeyboardHandler(IJoystickDriverHandler* handler);
 
-  // implementation of IKeyboardHandler
-  virtual bool OnKeyPress(const CKey& key);
-  virtual void OnKeyRelease(const CKey& key);
+    virtual ~CGenericJoystickKeyboardHandler(void) { }
 
-private:
-  static unsigned int GetButtonIndex(const CKey& key);
+    // implementation of IKeyboardHandler
+    virtual bool OnKeyPress(const CKey& key);
+    virtual void OnKeyRelease(const CKey& key);
 
-  IJoystickDriverHandler* const m_handler;
-};
+  private:
+    static unsigned int GetButtonIndex(const CKey& key);
+
+    IJoystickDriverHandler* const m_handler;
+  };
+}

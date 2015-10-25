@@ -29,6 +29,7 @@
 #include "utils/XMLUtils.h"
 #include "guilib/LocalizeStrings.h"
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 using namespace std;
 

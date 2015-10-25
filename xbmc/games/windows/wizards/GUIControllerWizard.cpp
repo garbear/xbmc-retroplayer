@@ -29,6 +29,7 @@
 #include <assert.h>
 
 using namespace GAME;
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 #define ESC_KEY_CODE  27

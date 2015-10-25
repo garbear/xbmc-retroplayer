@@ -26,7 +26,7 @@
 
 namespace PERIPHERALS
 {
-  class CAddonJoystickButtonMap : public IJoystickButtonMap
+  class CAddonJoystickButtonMap : public JOYSTICK::IJoystickButtonMap
   {
   public:
     CAddonJoystickButtonMap(CPeripheral* device, const std::string& strControllerId);
@@ -36,24 +36,31 @@ namespace PERIPHERALS
     // Implementation of IJoystickButtonMap
     virtual std::string ControllerID(void) const { return m_buttonMapRO.ControllerID(); }
     virtual bool Load(void);
-    virtual bool GetFeature(const CDriverPrimitive& primitive, JoystickFeature& feature);
-    virtual bool GetPrimitiveFeature(const JoystickFeature& feature, CDriverPrimitive& primitive);
-    virtual bool AddPrimitiveFeature(const JoystickFeature& feature, const CDriverPrimitive& primitive);
-    virtual bool GetAnalogStick(const JoystickFeature& feature, CDriverPrimitive& up,
-                                                                CDriverPrimitive& down,
-                                                                CDriverPrimitive& right,
-                                                                CDriverPrimitive& left);
-    virtual bool AddAnalogStick(const JoystickFeature& feature, const CDriverPrimitive& up,
-                                                                const CDriverPrimitive& down,
-                                                                const CDriverPrimitive& right,
-                                                                const CDriverPrimitive& left);
-    virtual bool GetAccelerometer(const JoystickFeature& feature, CDriverPrimitive& positiveX,
-                                                                  CDriverPrimitive& positiveY,
-                                                                  CDriverPrimitive& positiveZ);
-    virtual bool AddAccelerometer(const JoystickFeature& feature, const CDriverPrimitive& positiveX,
-                                                                  const CDriverPrimitive& positiveY,
-                                                                  const CDriverPrimitive& positiveZ);
-
+    bool GetFeature(const JOYSTICK::CDriverPrimitive& primitive,
+                    JOYSTICK::JoystickFeature& feature);
+    bool GetPrimitiveFeature(const JOYSTICK::JoystickFeature& feature,
+                             JOYSTICK::CDriverPrimitive& primitive);
+    bool AddPrimitiveFeature(const JOYSTICK::JoystickFeature& feature,
+                             const JOYSTICK::CDriverPrimitive& primitive);
+    bool GetAnalogStick(const JOYSTICK::JoystickFeature& feature,
+                        JOYSTICK::CDriverPrimitive& up,
+                        JOYSTICK::CDriverPrimitive& down,
+                        JOYSTICK::CDriverPrimitive& right,
+                        JOYSTICK::CDriverPrimitive& left);
+    bool AddAnalogStick(const JOYSTICK::JoystickFeature& feature,
+                        const JOYSTICK::CDriverPrimitive& up,
+                        const JOYSTICK::CDriverPrimitive& down,
+                        const JOYSTICK::CDriverPrimitive& right,
+                        const JOYSTICK::CDriverPrimitive& left);
+    bool GetAccelerometer(const JOYSTICK::JoystickFeature& feature,
+                          JOYSTICK::CDriverPrimitive& positiveX,
+                          JOYSTICK::CDriverPrimitive& positiveY,
+                          JOYSTICK::CDriverPrimitive& positiveZ);
+    bool AddAccelerometer(const JOYSTICK::JoystickFeature& feature,
+                          const JOYSTICK::CDriverPrimitive& positiveX,
+                          const JOYSTICK::CDriverPrimitive& positiveY,
+                          const JOYSTICK::CDriverPrimitive& positiveZ);
+    
   private:
     PeripheralAddonPtr        m_addon;
     CAddonJoystickButtonMapRO m_buttonMapRO;

@@ -29,6 +29,8 @@
 #define HOLD_TIMEOUT_MS     500
 #define REPEAT_TIMEOUT_MS   50
 
+using namespace JOYSTICK;
+
 CButtonKeyHandler::CButtonKeyHandler(void)
   : CThread("ButtonKeyHandler"),
     m_state(STATE_UNPRESSED),

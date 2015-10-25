@@ -23,6 +23,7 @@
 
 #include <algorithm>
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 CPortManager& CPortManager::Get(void)

@@ -21,6 +21,7 @@
 #include "AddonJoystickButtonMap.h"
 #include "peripherals/Peripherals.h"
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 CAddonJoystickButtonMap::CAddonJoystickButtonMap(CPeripheral* device, const std::string& strControllerId)

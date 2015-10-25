@@ -26,7 +26,7 @@
 #include <map>
 #include <vector>
 
-class IJoystickInputHandler;
+namespace JOYSTICK { class IJoystickInputHandler; }
 
 namespace PERIPHERALS { class CPeripheral; }
 
@@ -50,7 +50,7 @@ public:
    * \param handler  The instance accepting all input delivered to the port
    * \param port     The port number belonging to the game client
    */
-  void OpenPort(IJoystickInputHandler* handler, unsigned int port,
+  void OpenPort(JOYSTICK::IJoystickInputHandler* handler, unsigned int port,
                 PERIPHERALS::PeripheralType device = PERIPHERALS::PERIPHERAL_UNKNOWN);
 
   /*!
@@ -58,7 +58,7 @@ public:
    *
    * \param handler  The handler used to open the port
    */
-  void ClosePort(IJoystickInputHandler* handler);
+  void ClosePort(JOYSTICK::IJoystickInputHandler* handler);
 
   /*!
    * \brief Map a list of devices to the available ports
@@ -71,7 +71,8 @@ public:
    * attempt to honor that request.
    */
   void MapDevices(const std::vector<PERIPHERALS::CPeripheral*>& devices,
-                  std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>& deviceToPortMap);
+                  std::map<PERIPHERALS::CPeripheral*,
+                  JOYSTICK::IJoystickInputHandler*>& deviceToPortMap);
 
 private:
   struct SDevice
@@ -82,10 +83,10 @@ private:
 
   struct SPort
   {
-    IJoystickInputHandler*      handler;     // Input handler for this port
-    unsigned int                port;        // Port number belonging to the game client
-    PERIPHERALS::PeripheralType type;
-    std::vector<SDevice>        devices;
+    JOYSTICK::IJoystickInputHandler* handler; // Input handler for this port
+    unsigned int                     port;    // Port number belonging to the game client
+    PERIPHERALS::PeripheralType      type;
+    std::vector<SDevice>             devices;
 
   };
 
@@ -94,11 +95,11 @@ private:
    */
   struct PortInputHandlerEqual
   {
-    PortInputHandlerEqual(IJoystickInputHandler* handler) : handler(handler) { }
+    PortInputHandlerEqual(JOYSTICK::IJoystickInputHandler* handler) : handler(handler) { }
 
     bool operator()(const SPort& port) { return port.handler == handler; }
 
-    IJoystickInputHandler* const handler;
+    JOYSTICK::IJoystickInputHandler* const handler;
   };
 
   /*!

@@ -37,20 +37,22 @@ namespace PERIPHERALS
 
     std::string ControllerID(void) const { return m_strControllerId; }
     bool Load(void);
-    bool AddPrimitiveFeature(const JoystickFeature& feature, const CDriverPrimitive& primitive);
-    bool AddAnalogStick(const JoystickFeature& feature, const CDriverPrimitive& up,
-                                                        const CDriverPrimitive& down,
-                                                        const CDriverPrimitive& right,
-                                                        const CDriverPrimitive& left);
-    bool AddAccelerometer(const JoystickFeature& feature, const CDriverPrimitive& positiveX,
-                                                          const CDriverPrimitive& positiveY,
-                                                          const CDriverPrimitive& positiveZ);
+    bool AddPrimitiveFeature(const JOYSTICK::JoystickFeature& feature, const JOYSTICK::CDriverPrimitive& primitive);
+    bool AddAnalogStick(const JOYSTICK::JoystickFeature& feature,
+                        const JOYSTICK::CDriverPrimitive& up,
+                        const JOYSTICK::CDriverPrimitive& down,
+                        const JOYSTICK::CDriverPrimitive& right,
+                        const JOYSTICK::CDriverPrimitive& left);
+    bool AddAccelerometer(const JOYSTICK::JoystickFeature& feature,
+                          const JOYSTICK::CDriverPrimitive& positiveX,
+                          const JOYSTICK::CDriverPrimitive& positiveY,
+                          const JOYSTICK::CDriverPrimitive& positiveZ);
 
   private:
     // Utility functions
-    static ADDON::DriverPrimitive             ToPrimitive(const CDriverPrimitive& primitive);
-    static JOYSTICK_DRIVER_HAT_DIRECTION      ToHatDirection(HAT_DIRECTION dir);
-    static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION ToSemiAxisDirection(SEMIAXIS_DIRECTION dir);
+    static ADDON::DriverPrimitive             ToPrimitive(const JOYSTICK::CDriverPrimitive& primitive);
+    static JOYSTICK_DRIVER_HAT_DIRECTION      ToHatDirection(JOYSTICK::HAT_DIRECTION dir);
+    static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION ToSemiAxisDirection(JOYSTICK::SEMIAXIS_DIRECTION dir);
 
     CPeripheral* const m_device;
     PeripheralAddonPtr m_addon;

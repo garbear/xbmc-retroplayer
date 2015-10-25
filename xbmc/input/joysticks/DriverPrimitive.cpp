@@ -20,6 +20,8 @@
 
 #include "DriverPrimitive.h"
 
+using namespace JOYSTICK;
+
 CDriverPrimitive::CDriverPrimitive(void)
   : m_type(),
     m_driverIndex(0),

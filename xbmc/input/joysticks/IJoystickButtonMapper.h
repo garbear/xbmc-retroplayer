@@ -21,43 +21,46 @@
 
 #include <string>
 
-class CDriverPrimitive;
-class IJoystickButtonMap;
-
-/*!
- * \ingroup joysticks
- *
- * \brief Button mapper interface to assign the driver's raw button/hat/axis
- *        elements to physical joystick features.
- *
- * \sa IJoystickButtonMap
- */
-class IJoystickButtonMapper
+namespace JOYSTICK
 {
-public:
-  virtual ~IJoystickButtonMapper(void) { }
+  class CDriverPrimitive;
+  class IJoystickButtonMap;
 
   /*!
-   * \brief The add-on ID of the game controller associated with this button mapper
+   * \ingroup joysticks
    *
-   * \return The ID of the add-on extending kodi.game.controller
+   * \brief Button mapper interface to assign the driver's raw button/hat/axis
+   *        elements to physical joystick features.
+   *
+   * \sa IJoystickButtonMap
    */
-  virtual std::string ControllerID(void) const = 0;
+  class IJoystickButtonMapper
+  {
+  public:
+    virtual ~IJoystickButtonMapper(void) { }
 
-  /*!
-   * \brief Check if the button mapper is waiting for button input
-   *
-   * \return True if the button mapper is expecting input, false otherwise
-   */
-  virtual bool IsMapping(void) const = 0;
+    /*!
+     * \brief The add-on ID of the game controller associated with this button mapper
+     *
+     * \return The ID of the add-on extending kodi.game.controller
+     */
+    virtual std::string ControllerID(void) const = 0;
 
-  /*!
-   * \brief Handle button/hat press or axis threshold
-   *
-   * \param buttonMap  The button map being manipulated
-   * \param primitive  The source of the action
-   *
-   * \return True if action was mapped to a feature
-   */
-  virtual bool MapPrimitive(IJoystickButtonMap* buttonMap, const CDriverPrimitive& primitive) = 0;
-};
+    /*!
+     * \brief Check if the button mapper is waiting for button input
+     *
+     * \return True if the button mapper is expecting input, false otherwise
+     */
+    virtual bool IsMapping(void) const = 0;
+
+    /*!
+     * \brief Handle button/hat press or axis threshold
+     *
+     * \param buttonMap  The button map being manipulated
+     * \param primitive  The source of the action
+     *
+     * \return True if action was mapped to a feature
+     */
+    virtual bool MapPrimitive(IJoystickButtonMap* buttonMap, const CDriverPrimitive& primitive) = 0;
+  };
+}

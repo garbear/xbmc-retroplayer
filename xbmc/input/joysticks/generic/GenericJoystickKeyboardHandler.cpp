@@ -26,6 +26,8 @@
 
 #define BUTTON_INDEX_MASK  0x01ff
 
+using namespace JOYSTICK;
+
 CGenericJoystickKeyboardHandler::CGenericJoystickKeyboardHandler(IJoystickDriverHandler* handler)
  : m_handler(handler)
 {

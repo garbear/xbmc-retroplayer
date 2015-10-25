@@ -84,14 +84,14 @@ namespace GAME
 
 class CGameClient;
 
-class CControllerInput : public IJoystickInputHandler
+class CControllerInput : public JOYSTICK::IJoystickInputHandler
 {
 public:
   CControllerInput(CGameClient* addon, int port, const GameControllerPtr& controller);
 
   // Implementation of IJoystickInputHandler
   virtual std::string ControllerID(void) const;
-  virtual InputType GetInputType(const std::string& feature) const;
+  virtual JOYSTICK::InputType GetInputType(const std::string& feature) const;
   virtual bool OnButtonPress(const std::string& feature, bool bPressed);
   virtual bool OnButtonMotion(const std::string& feature, float magnitude);
   virtual bool OnAnalogStickMotion(const std::string& feature, float x, float y);

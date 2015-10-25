@@ -23,6 +23,7 @@
 #include "addons/include/kodi_peripheral_utils.hpp"
 
 using namespace ADDON;
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 CAddonJoystickButtonMapWO::CAddonJoystickButtonMapWO(CPeripheral* device, const PeripheralAddonPtr& addon, const std::string& strControllerId)
@@ -37,7 +38,7 @@ bool CAddonJoystickButtonMapWO::Load(void)
   return m_addon.get() != NULL;
 }
 
-bool CAddonJoystickButtonMapWO::AddPrimitiveFeature(const ::JoystickFeature& feature, const CDriverPrimitive& primitive)
+bool CAddonJoystickButtonMapWO::AddPrimitiveFeature(const JOYSTICK::JoystickFeature& feature, const CDriverPrimitive& primitive)
 {
   ADDON::PrimitiveFeature primitiveFeature(feature, ToPrimitive(primitive));
 
@@ -72,7 +73,7 @@ ADDON::DriverPrimitive CAddonJoystickButtonMapWO::ToPrimitive(const CDriverPrimi
   return retVal;
 }
 
-bool CAddonJoystickButtonMapWO::AddAnalogStick(const ::JoystickFeature& feature,
+bool CAddonJoystickButtonMapWO::AddAnalogStick(const JOYSTICK::JoystickFeature& feature,
                                                const CDriverPrimitive& up,
                                                const CDriverPrimitive& down,
                                                const CDriverPrimitive& right,
@@ -84,14 +85,14 @@ bool CAddonJoystickButtonMapWO::AddAnalogStick(const ::JoystickFeature& feature,
   return m_addon->AddFeature(m_device, m_strControllerId, &analogStick);
 }
 
-bool CAddonJoystickButtonMapWO::AddAccelerometer(const ::JoystickFeature& feature,
+bool CAddonJoystickButtonMapWO::AddAccelerometer(const JOYSTICK::JoystickFeature& feature,
                                                  const CDriverPrimitive& positiveX,
                                                  const CDriverPrimitive& positiveY,
                                                  const CDriverPrimitive& positiveZ)
 {
   ADDON::Accelerometer accelerometer(feature, ToPrimitive(positiveX),
-                                     ToPrimitive(positiveY),
-                                     ToPrimitive(positiveZ));
+                                              ToPrimitive(positiveY),
+                                              ToPrimitive(positiveZ));
 
   return m_addon->AddFeature(m_device, m_strControllerId, &accelerometer);
 }

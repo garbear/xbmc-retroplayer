@@ -24,142 +24,145 @@
 
 #include <string>
 
-/*!
- * \brief Button map interface to translate between the driver's raw
- *        button/hat/axis elements and physical joystick features.
- *
- * \sa IJoystickButtonMapper
- */
-class IJoystickButtonMap
+namespace JOYSTICK
 {
-public:
-  virtual ~IJoystickButtonMap(void) { }
-
   /*!
-   * \brief The add-on ID of the game controller associated with this button map
+   * \brief Button map interface to translate between the driver's raw
+   *        button/hat/axis elements and physical joystick features.
    *
-   * The controller ID provided by the implementation serves as the context
-   * for the feature indices below.
-   *
-   * \return The ID of this button map's game controller add-on
+   * \sa IJoystickButtonMapper
    */
-  virtual std::string ControllerID(void) const = 0;
+  class IJoystickButtonMap
+  {
+  public:
+    virtual ~IJoystickButtonMap(void) { }
 
-  /*!
-   * \brief Load the button map into memory
-   *
-   * \return True if button map is ready to start translating buttons, false otherwise
-   */
-  virtual bool Load(void) = 0;
+    /*!
+     * \brief The add-on ID of the game controller associated with this button map
+     *
+     * The controller ID provided by the implementation serves as the context
+     * for the feature indices below.
+     *
+     * \return The ID of this button map's game controller add-on
+     */
+    virtual std::string ControllerID(void) const = 0;
 
-  /*!
-   * \brief Get the feature associated with a driver primitive
-   *
-   * Multiple primitives can be mapped to the same feature. For example,
-   * analog sticks use one primitive for each direction.
-   *
-   * \param primitive    The driver primitive (a button, hat direction or semi-axis)
-   * \param feature      The name of the resolved joystick feature, or
-   *                         unmodified if GetFeature() returns false
-   *
-   * \return True if the driver primitive is associated with a feature, false otherwise
-   */
-   virtual bool GetFeature(const CDriverPrimitive& primitive, JoystickFeature& feature) = 0;
+    /*!
+     * \brief Load the button map into memory
+     *
+     * \return True if button map is ready to start translating buttons, false otherwise
+     */
+    virtual bool Load(void) = 0;
 
-  /*!
-   * \brief Get the driver primitive for a primitive feature
-   *
-   * When a feature can be represented by a single driver primitive, it is
-   * called a primitive feature.
-   *
-   *   - This includes buttons and triggers, because they can be mapped to a
-   *     single button/hat/semiaxis
-   *
-   *   - This does not include analog sticks, because they require two axes
-   *     and four driver primitives (one for each semiaxis)
-   *
-   * \param feature        Must be a primitive feature (a feature that only
-   *                       requires a single driver primitive)
-   * \param primitive      The resolved driver primitive
-   *
-   * \return True if the feature resolved to a driver primitive, false if the
-   *         feature didn't resolve or isn't a primitive feature
-   */
-  virtual bool GetPrimitiveFeature(const JoystickFeature& feature, CDriverPrimitive& primitive) = 0;
+    /*!
+     * \brief Get the feature associated with a driver primitive
+     *
+     * Multiple primitives can be mapped to the same feature. For example,
+     * analog sticks use one primitive for each direction.
+     *
+     * \param primitive    The driver primitive (a button, hat direction or semi-axis)
+     * \param feature      The name of the resolved joystick feature, or
+     *                         unmodified if GetFeature() returns false
+     *
+     * \return True if the driver primitive is associated with a feature, false otherwise
+     */
+     virtual bool GetFeature(const CDriverPrimitive& primitive, JoystickFeature& feature) = 0;
 
-  /*!
-   * \brief Add or update a primitive feature
-   *
-   * \param feature        Must be a primitive feature
-   * \param primitive      The feature's driver primitive
-   *
-   * \return True if the feature was updated, false if the feature is unchanged or failure occurs
-   */
-  virtual bool AddPrimitiveFeature(const JoystickFeature& feature, const CDriverPrimitive& primitive) = 0;
+    /*!
+     * \brief Get the driver primitive for a primitive feature
+     *
+     * When a feature can be represented by a single driver primitive, it is
+     * called a primitive feature.
+     *
+     *   - This includes buttons and triggers, because they can be mapped to a
+     *     single button/hat/semiaxis
+     *
+     *   - This does not include analog sticks, because they require two axes
+     *     and four driver primitives (one for each semiaxis)
+     *
+     * \param feature        Must be a primitive feature (a feature that only
+     *                       requires a single driver primitive)
+     * \param primitive      The resolved driver primitive
+     *
+     * \return True if the feature resolved to a driver primitive, false if the
+     *         feature didn't resolve or isn't a primitive feature
+     */
+    virtual bool GetPrimitiveFeature(const JoystickFeature& feature, CDriverPrimitive& primitive) = 0;
 
-  /*!
-   * \brief Get an analog stick from the button map
-   *
-   * \param feature  Must be an analog stick or this will return false
-   * \param up       The primitive mapped to the up direction (possibly unknown)
-   * \param down     The primitive mapped to the down direction (possibly unknown)
-   * \param right    The primitive mapped to the right direction (possibly unknown)
-   * \param left     The primitive mapped to the left direction (possibly unknown)
-   *
-   * \return True if the feature resolved to an analog stick with at least 1 known direction
-   */
-  virtual bool GetAnalogStick(const JoystickFeature& feature, CDriverPrimitive& up,
-                                                              CDriverPrimitive& down,
-                                                              CDriverPrimitive& right,
-                                                              CDriverPrimitive& left) = 0;
+    /*!
+     * \brief Add or update a primitive feature
+     *
+     * \param feature        Must be a primitive feature
+     * \param primitive      The feature's driver primitive
+     *
+     * \return True if the feature was updated, false if the feature is unchanged or failure occurs
+     */
+    virtual bool AddPrimitiveFeature(const JoystickFeature& feature, const CDriverPrimitive& primitive) = 0;
 
-  /*!
-   * \brief Add or update an analog stick
-   *
-   * \param feature  Must be an analog stick or this will return false
-   * \param up       The driver primitive for the up direction
-   * \param down     The driver primitive for the down direction
-   * \param right    The driver primitive for the right direction
-   * \param left     The driver primitive for the left direction
-   *
-   * It is not required that these primitives be axes. If a primitive is a
-   * semiaxis, its opposite should point to the same axis index but with
-   * opposite direction.
-   *
-   * \return True if the analog stick was updated, false otherwise
-   */
-  virtual bool AddAnalogStick(const JoystickFeature& feature, const CDriverPrimitive& up,
-                                                              const CDriverPrimitive& down,
-                                                              const CDriverPrimitive& right,
-                                                              const CDriverPrimitive& left) = 0;
+    /*!
+     * \brief Get an analog stick from the button map
+     *
+     * \param feature  Must be an analog stick or this will return false
+     * \param up       The primitive mapped to the up direction (possibly unknown)
+     * \param down     The primitive mapped to the down direction (possibly unknown)
+     * \param right    The primitive mapped to the right direction (possibly unknown)
+     * \param left     The primitive mapped to the left direction (possibly unknown)
+     *
+     * \return True if the feature resolved to an analog stick with at least 1 known direction
+     */
+    virtual bool GetAnalogStick(const JoystickFeature& feature, CDriverPrimitive& up,
+                                                                CDriverPrimitive& down,
+                                                                CDriverPrimitive& right,
+                                                                CDriverPrimitive& left) = 0;
 
-  /*!
-   * \brief Get an accelerometer from the button map
-   *
-   * \param feature       Must be an accelerometer or this will return false
-   * \param positiveX     The semiaxis mapped to the positive X direction (possibly unknown)
-   * \param positiveY     The semiaxis mapped to the positive Y direction (possibly unknown)
-   * \param positiveZ     The semiaxis mapped to the positive Z direction (possibly unknown)
-   *
-   * \return True if the feature resolved to an accelerometer with at least 1 known axis
-   */
-  virtual bool GetAccelerometer(const JoystickFeature& feature, CDriverPrimitive& positiveX,
-                                                                CDriverPrimitive& positiveY,
-                                                                CDriverPrimitive& positiveZ) = 0;
+    /*!
+     * \brief Add or update an analog stick
+     *
+     * \param feature  Must be an analog stick or this will return false
+     * \param up       The driver primitive for the up direction
+     * \param down     The driver primitive for the down direction
+     * \param right    The driver primitive for the right direction
+     * \param left     The driver primitive for the left direction
+     *
+     * It is not required that these primitives be axes. If a primitive is a
+     * semiaxis, its opposite should point to the same axis index but with
+     * opposite direction.
+     *
+     * \return True if the analog stick was updated, false otherwise
+     */
+    virtual bool AddAnalogStick(const JoystickFeature& feature, const CDriverPrimitive& up,
+                                                                const CDriverPrimitive& down,
+                                                                const CDriverPrimitive& right,
+                                                                const CDriverPrimitive& left) = 0;
 
-  /*!
-   * \brief Get or update an accelerometer
-   *
-   * \param feature       Must be an accelerometer or this will return false
-   * \param positiveX     The semiaxis corresponding to the positive X direction
-   * \param positiveY     The semiaxis corresponding to the positive Y direction
-   * \param positiveZ     The semiaxis corresponding to the positive Z direction
-   *
-   * The driver primitives must be mapped to a semiaxis or this function will fail.
-   *
-   * \return True if the accelerometer was updated, false if unchanged or failure occurred
-   */
-  virtual bool AddAccelerometer(const JoystickFeature& feature, const CDriverPrimitive& positiveX,
-                                                                const CDriverPrimitive& positiveY,
-                                                                const CDriverPrimitive& positiveZ) = 0;
-};
+    /*!
+     * \brief Get an accelerometer from the button map
+     *
+     * \param feature       Must be an accelerometer or this will return false
+     * \param positiveX     The semiaxis mapped to the positive X direction (possibly unknown)
+     * \param positiveY     The semiaxis mapped to the positive Y direction (possibly unknown)
+     * \param positiveZ     The semiaxis mapped to the positive Z direction (possibly unknown)
+     *
+     * \return True if the feature resolved to an accelerometer with at least 1 known axis
+     */
+    virtual bool GetAccelerometer(const JoystickFeature& feature, CDriverPrimitive& positiveX,
+                                                                  CDriverPrimitive& positiveY,
+                                                                  CDriverPrimitive& positiveZ) = 0;
+
+    /*!
+     * \brief Get or update an accelerometer
+     *
+     * \param feature       Must be an accelerometer or this will return false
+     * \param positiveX     The semiaxis corresponding to the positive X direction
+     * \param positiveY     The semiaxis corresponding to the positive Y direction
+     * \param positiveZ     The semiaxis corresponding to the positive Z direction
+     *
+     * The driver primitives must be mapped to a semiaxis or this function will fail.
+     *
+     * \return True if the accelerometer was updated, false if unchanged or failure occurred
+     */
+    virtual bool AddAccelerometer(const JoystickFeature& feature, const CDriverPrimitive& positiveX,
+                                                                  const CDriverPrimitive& positiveY,
+                                                                  const CDriverPrimitive& positiveZ) = 0;
+  };
+}

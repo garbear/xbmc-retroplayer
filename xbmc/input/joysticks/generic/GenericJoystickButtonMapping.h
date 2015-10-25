@@ -24,35 +24,38 @@
 
 #include <vector>
 
-class IJoystickButtonMap;
-class IJoystickButtonMapper;
-
-/*!
- * \ingroup joysticks_generic
- *
- * \brief Generic implementation of IJoystickDriverHandler to translate raw
- *        actions into physical joystick features using the provided button map
- */
-class CGenericJoystickButtonMapping : public IJoystickDriverHandler
+namespace JOYSTICK
 {
-public:
-  CGenericJoystickButtonMapping(IJoystickButtonMapper* buttonMapper, IJoystickButtonMap* buttonMap);
+  class IJoystickButtonMap;
+  class IJoystickButtonMapper;
 
-  virtual ~CGenericJoystickButtonMapping(void) { }
+  /*!
+   * \ingroup joysticks_generic
+   *
+   * \brief Generic implementation of IJoystickDriverHandler to translate raw
+   *        actions into physical joystick features using the provided button map
+   */
+  class CGenericJoystickButtonMapping : public IJoystickDriverHandler
+  {
+  public:
+    CGenericJoystickButtonMapping(IJoystickButtonMapper* buttonMapper, IJoystickButtonMap* buttonMap);
 
-  // implementation of IJoystickDriverHandler
-  virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-  virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
-  virtual bool OnAxisMotion(unsigned int axisIndex, float position);
-  virtual void ProcessAxisMotions(void) { }
+    virtual ~CGenericJoystickButtonMapping(void) { }
 
-private:
-  void Activate(const CDriverPrimitive& semiAxis);
-  void Deactivate(const CDriverPrimitive& semiAxis);
-  bool IsActive(const CDriverPrimitive& semiAxis);
+    // implementation of IJoystickDriverHandler
+    virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
+    virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
+    virtual bool OnAxisMotion(unsigned int axisIndex, float position);
+    virtual void ProcessAxisMotions(void) { }
 
-  IJoystickButtonMapper* const m_buttonMapper;
-  IJoystickButtonMap* const    m_buttonMap;
+  private:
+    void Activate(const CDriverPrimitive& semiAxis);
+    void Deactivate(const CDriverPrimitive& semiAxis);
+    bool IsActive(const CDriverPrimitive& semiAxis);
 
-  std::vector<CDriverPrimitive> m_activatedAxes;
-};
+    IJoystickButtonMapper* const m_buttonMapper;
+    IJoystickButtonMap* const    m_buttonMap;
+
+    std::vector<CDriverPrimitive> m_activatedAxes;
+  };
+}

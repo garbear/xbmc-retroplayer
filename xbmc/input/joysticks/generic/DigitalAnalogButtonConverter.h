@@ -23,35 +23,36 @@
 
 #include <vector>
 
-/*!
- * \ingroup joysticks_generic
- *
- * \brief Convert between digital and analog button events
- *
- * If the input type is digital, driver axes are converted to digital buttons by
- * thresholding around 0.5.
- *
- * If the input type is analog, driver buttons/hats are converted to analog
- * events with magnitude 0.0 or 1.0.
- */
-class CDigitalAnalogButtonConverter : public IJoystickInputHandler
+namespace JOYSTICK
 {
-public:
-  CDigitalAnalogButtonConverter(IJoystickInputHandler* handler);
+  /*!
+   * \brief Convert between digital and analog button events
+   *
+   * If the input type is digital, driver axes are converted to digital buttons by
+   * thresholding around 0.5.
+   *
+   * If the input type is analog, driver buttons/hats are converted to analog
+   * events with magnitude 0.0 or 1.0.
+   */
+  class CDigitalAnalogButtonConverter : public IJoystickInputHandler
+  {
+  public:
+    CDigitalAnalogButtonConverter(IJoystickInputHandler* handler);
 
-  // implementation of IJoystickInputHandler
-  virtual std::string ControllerID(void) const;
-  virtual InputType GetInputType(const JoystickFeature& feature) const;
-  virtual bool OnButtonPress(const JoystickFeature& feature, bool bPressed);
-  virtual bool OnButtonMotion(const JoystickFeature& feature, float magnitude);
-  virtual bool OnAnalogStickMotion(const JoystickFeature& feature, float x, float y);
-  virtual bool OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z);
+    // implementation of IJoystickInputHandler
+    virtual std::string ControllerID(void) const;
+    virtual InputType GetInputType(const JoystickFeature& feature) const;
+    virtual bool OnButtonPress(const JoystickFeature& feature, bool bPressed);
+    virtual bool OnButtonMotion(const JoystickFeature& feature, float magnitude);
+    virtual bool OnAnalogStickMotion(const JoystickFeature& feature, float x, float y);
+    virtual bool OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z);
 
-private:
-  bool IsActivated(const JoystickFeature& feature) const;
-  void Activate(const JoystickFeature& feature);
-  void Deactivate(const JoystickFeature& feature);
+  private:
+    bool IsActivated(const JoystickFeature& feature) const;
+    void Activate(const JoystickFeature& feature);
+    void Deactivate(const JoystickFeature& feature);
 
-  IJoystickInputHandler* const  m_handler;
-  std::vector<JoystickFeature>  m_activatedFeatures; // for tracking analog features mapped to digital input
-};
+    IJoystickInputHandler* const  m_handler;
+    std::vector<JoystickFeature>  m_activatedFeatures; // for tracking analog features mapped to digital input
+  };
+}

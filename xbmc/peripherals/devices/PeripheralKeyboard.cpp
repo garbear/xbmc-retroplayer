@@ -24,6 +24,7 @@
 #include "input/Key.h"
 #include "threads/SingleLock.h"
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 CPeripheralKeyboard::CPeripheralKeyboard(const PeripheralScanResult& scanResult) :

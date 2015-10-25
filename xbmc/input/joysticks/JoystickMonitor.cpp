@@ -22,6 +22,8 @@
 #include "Application.h"
 #include "input/InputManager.h"
 
+using namespace JOYSTICK;
+
 bool CJoystickMonitor::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
 {
   if (bPressed)

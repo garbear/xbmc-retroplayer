@@ -25,52 +25,53 @@
 #include <string>
 #include <vector>
 
-class IJoystickInputHandler;
-class IJoystickButtonMap;
-
-/*!
- * \ingroup joysticks_generic
- *
- * \brief Class to translate input from the driver into higher-level features
- *
- * Raw driver input arrives for three elements: buttons, hats and axes. When
- * driver input is handled by this class, it translates the raw driver elements
- * into physical joystick features, such as buttons, analog sticks, etc.
- *
- * The provided button map instructs this class on how driver input should be
- * mapped to higher-level features. The button map has been abstracted away
- * behind the IJoystickButtonMap interface so that it can be provided by an
- * add-on.
- */
-class CGenericJoystickInputHandling : public IJoystickDriverHandler
+namespace JOYSTICK
 {
-public:
-  CGenericJoystickInputHandling(IJoystickInputHandler* handler, IJoystickButtonMap* buttonMap);
+  class IJoystickInputHandler;
+  class IJoystickButtonMap;
 
-  virtual ~CGenericJoystickInputHandling(void);
+  /*!
+   * \brief Class to translate input from the driver into higher-level features
+   *
+   * Raw driver input arrives for three elements: buttons, hats and axes. When
+   * driver input is handled by this class, it translates the raw driver elements
+   * into physical joystick features, such as buttons, analog sticks, etc.
+   *
+   * The provided button map instructs this class on how driver input should be
+   * mapped to higher-level features. The button map has been abstracted away
+   * behind the IJoystickButtonMap interface so that it can be provided by an
+   * add-on.
+   */
+  class CGenericJoystickInputHandling : public IJoystickDriverHandler
+  {
+  public:
+    CGenericJoystickInputHandling(IJoystickInputHandler* handler, IJoystickButtonMap* buttonMap);
 
-  // implementation of IJoystickDriverHandler
-  virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-  virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
-  virtual bool OnAxisMotion(unsigned int axisIndex, float position);
-  virtual void ProcessAxisMotions(void);
+    virtual ~CGenericJoystickInputHandling(void);
 
-private:
-  bool ProcessHatDirection(int index, HAT_STATE oldState, HAT_STATE newState, HAT_DIRECTION targetDir);
+    // implementation of IJoystickDriverHandler
+    virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
+    virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
+    virtual bool OnAxisMotion(unsigned int axisIndex, float position);
+    virtual void ProcessAxisMotions(void);
 
-  bool OnPress(const JoystickFeature& feature);
-  void OnRelease(const JoystickFeature& feature);
+  private:
+    bool ProcessHatDirection(int index, HAT_STATE oldState, HAT_STATE newState, HAT_DIRECTION targetDir);
 
-  void StartDigitalRepeating(const JoystickFeature& feature);
-  void StopDigitalRepeating(const JoystickFeature& feature);
+    bool OnPress(const JoystickFeature& feature);
+    void OnRelease(const JoystickFeature& feature);
 
-  float GetAxisState(int axisIndex) const;
+    void StartDigitalRepeating(const JoystickFeature& feature);
+    void StopDigitalRepeating(const JoystickFeature& feature);
 
-  IJoystickInputHandler* const m_handler;
-  IJoystickButtonMap* const    m_buttonMap;
-  std::vector<char>            m_buttonStates; // std::vector is specialized for <bool>
-  std::vector<HAT_STATE>       m_hatStates;
-  std::vector<float>           m_axisStates;
-  std::vector<JoystickFeature> m_featuresWithMotion;
-  std::vector<JoystickFeature> m_repeatingFeatures;
-};
+    float GetAxisState(int axisIndex) const;
+
+    IJoystickInputHandler* const m_handler;
+    IJoystickButtonMap* const    m_buttonMap;
+    std::vector<char>            m_buttonStates; // std::vector is specialized for <bool>
+    std::vector<HAT_STATE>       m_hatStates;
+    std::vector<float>           m_axisStates;
+    std::vector<JoystickFeature> m_featuresWithMotion;
+    std::vector<JoystickFeature> m_repeatingFeatures;
+  };
+}

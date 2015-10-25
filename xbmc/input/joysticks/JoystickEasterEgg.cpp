@@ -27,6 +27,8 @@
 #define ARRAY_SIZE(x)  (sizeof(x) / sizeof(x[0]))
 #endif
 
+using namespace JOYSTICK;
+
 const char* CJoystickEasterEgg::m_sequence[] = {
   "up",
   "up",

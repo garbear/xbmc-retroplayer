@@ -25,6 +25,8 @@
 
 #define ANALOG_DIGITAL_THRESHOLD  0.5f
 
+using namespace JOYSTICK;
+
 CDigitalAnalogButtonConverter::CDigitalAnalogButtonConverter(IJoystickInputHandler* handler)
   : m_handler(handler)
 {

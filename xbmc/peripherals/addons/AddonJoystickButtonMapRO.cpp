@@ -23,6 +23,7 @@
 #include "input/joysticks/JoystickUtils.h"
 #include "utils/log.h"
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 CAddonJoystickButtonMapRO::CAddonJoystickButtonMapRO(CPeripheral* device, const PeripheralAddonPtr& addon, const std::string& strControllerId)

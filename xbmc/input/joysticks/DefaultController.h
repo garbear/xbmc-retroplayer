@@ -24,45 +24,46 @@
 
 #include <vector>
 
-class IButtonKeyHandler;
-class IButtonSequence;
-
-/*!
- * \ingroup joysticks
- *
- * \brief Implementation of IJoystickInputHandler for the default controller
- *
- * \sa IJoystickInputHandler
- */
-class CDefaultController : public IJoystickInputHandler
+namespace JOYSTICK
 {
-public:
-  CDefaultController(void);
+  class IButtonKeyHandler;
+  class IButtonSequence;
 
-  virtual ~CDefaultController(void);
-
-  // implementation of IJoystickInputHandler
-  virtual std::string ControllerID(void) const;
-  virtual InputType GetInputType(const JoystickFeature& feature) const;
-  virtual bool OnButtonPress(const JoystickFeature& feature, bool bPressed);
-  virtual bool OnButtonMotion(const JoystickFeature& feature, float magnitude);
-  virtual bool OnAnalogStickMotion(const JoystickFeature& feature, float x, float y);
-  virtual bool OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z);
-
-private:
   /*!
-   * \brief Get the button key, as defined in guilib/Key.h, for the specified
-   *        joystick feature/direction
+   * \brief Implementation of IJoystickInputHandler for the default controller
    *
-   * \return The button key ID
+   * \sa IJoystickInputHandler
    */
-  static unsigned int GetButtonKeyID(const JoystickFeature& feature, CARDINAL_DIRECTION dir = CARDINAL_DIRECTION::UNKNOWN);
+  class CDefaultController : public IJoystickInputHandler
+  {
+  public:
+    CDefaultController(void);
 
-  /*!
-   * \brief Return a vector of the four cardinal directions
-   */
-  static const std::vector<CARDINAL_DIRECTION>& GetDirections(void);
+    virtual ~CDefaultController(void);
 
-  IButtonKeyHandler* const m_handler;
-  IButtonSequence*         m_easterEgg;
-};
+    // implementation of IJoystickInputHandler
+    virtual std::string ControllerID(void) const;
+    virtual InputType GetInputType(const JoystickFeature& feature) const;
+    virtual bool OnButtonPress(const JoystickFeature& feature, bool bPressed);
+    virtual bool OnButtonMotion(const JoystickFeature& feature, float magnitude);
+    virtual bool OnAnalogStickMotion(const JoystickFeature& feature, float x, float y);
+    virtual bool OnAccelerometerMotion(const JoystickFeature& feature, float x, float y, float z);
+
+  private:
+    /*!
+     * \brief Get the button key, as defined in guilib/Key.h, for the specified
+     *        joystick feature/direction
+     *
+     * \return The button key ID
+     */
+    static unsigned int GetButtonKeyID(const JoystickFeature& feature, CARDINAL_DIRECTION dir = CARDINAL_DIRECTION::UNKNOWN);
+
+    /*!
+     * \brief Return a vector of the four cardinal directions
+     */
+    static const std::vector<CARDINAL_DIRECTION>& GetDirections(void);
+
+    IButtonKeyHandler* const m_handler;
+    IButtonSequence*         m_easterEgg;
+  };
+}

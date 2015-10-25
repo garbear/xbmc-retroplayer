@@ -30,8 +30,11 @@
 #include <memory>
 #include <vector>
 
-class IJoystickButtonMap;
-class IJoystickDriverHandler;
+namespace JOYSTICK
+{
+  class IJoystickButtonMap;
+  class IJoystickDriverHandler;
+}
 
 namespace PERIPHERALS
 {
@@ -84,8 +87,8 @@ namespace PERIPHERALS
     bool AddFeature(const CPeripheral* device, const std::string& strControllerId, const ADDON::JoystickFeature* feature);
     //@}
 
-    void RegisterButtonMap(CPeripheral* device, IJoystickButtonMap* buttonMap);
-    void UnregisterButtonMap(IJoystickButtonMap* buttonMap);
+    void RegisterButtonMap(CPeripheral* device, JOYSTICK::IJoystickButtonMap* buttonMap);
+    void UnregisterButtonMap(JOYSTICK::IJoystickButtonMap* buttonMap);
     void RefreshButtonMaps(const std::string& strDeviceName = "", const std::string& strControllerId = "");
 
     static const char* ToString(PERIPHERAL_ERROR error);
@@ -108,7 +111,7 @@ namespace PERIPHERALS
     static void GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
     static void SetJoystickInfo(CPeripheralJoystick& joystick, const ADDON::Joystick& joystickInfo);
 
-    static HAT_STATE ToHatState(JOYSTICK_STATE_HAT state);
+    static JOYSTICK::HAT_STATE ToHatState(JOYSTICK_STATE_HAT state);
 
     /*!
      * @brief Reset all class members to their defaults. Called by the constructors
@@ -143,7 +146,7 @@ namespace PERIPHERALS
     std::map<unsigned int, CPeripheral*>  m_peripherals;
 
     /* @brief Button map observers */
-    std::vector<std::pair<CPeripheral*, IJoystickButtonMap*> > m_buttonMaps;
+    std::vector<std::pair<CPeripheral*, JOYSTICK::IJoystickButtonMap*> > m_buttonMaps;
 
     /* @brief Thread synchronization */
     CCriticalSection    m_critSection;

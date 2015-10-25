@@ -23,6 +23,7 @@
 #include "input/joysticks/IJoystickInputHandler.h"
 #include "peripherals/addons/AddonJoystickButtonMap.h"
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 #ifndef SAFE_DELETE

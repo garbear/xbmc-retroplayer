@@ -34,7 +34,7 @@
 namespace PERIPHERALS
 {
   class CPeripheralJoystick : public CPeripheral, // TODO: extend CPeripheralHID
-                              public IJoystickDriverHandler
+                              public JOYSTICK::IJoystickDriverHandler
   {
   public:
     CPeripheralJoystick(const PeripheralScanResult& scanResult);
@@ -48,7 +48,7 @@ namespace PERIPHERALS
 
     // implementation of IJoystickDriverHandler
     virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-    virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
+    virtual bool OnHatMotion(unsigned int hatIndex, JOYSTICK::HAT_STATE state);
     virtual bool OnAxisMotion(unsigned int axisIndex, float position);
     virtual void ProcessAxisMotions(void);
 
@@ -84,18 +84,18 @@ namespace PERIPHERALS
   protected:
     struct DriverHandler
     {
-      IJoystickDriverHandler* handler;
-      bool                    bPromiscuous;
+      JOYSTICK::IJoystickDriverHandler* handler;
+      bool                              bPromiscuous;
     };
 
-    std::string                          m_strProvider;
-    int                                  m_requestedPort;
-    unsigned int                         m_buttonCount;
-    unsigned int                         m_hatCount;
-    unsigned int                         m_axisCount;
-    CDefaultController                   m_defaultInputHandler;
-    CJoystickMonitor                     m_joystickMonitor;
-    std::vector<DriverHandler>           m_driverHandlers;
-    CCriticalSection                     m_handlerMutex;
+    std::string                         m_strProvider;
+    int                                 m_requestedPort;
+    unsigned int                        m_buttonCount;
+    unsigned int                        m_hatCount;
+    unsigned int                        m_axisCount;
+    JOYSTICK::CDefaultController        m_defaultInputHandler;
+    JOYSTICK::CJoystickMonitor          m_joystickMonitor;
+    std::vector<DriverHandler>          m_driverHandlers;
+    CCriticalSection                    m_handlerMutex;
   };
 }

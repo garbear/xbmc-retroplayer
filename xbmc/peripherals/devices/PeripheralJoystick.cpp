@@ -26,6 +26,7 @@
 
 #include <algorithm>
 
+using namespace JOYSTICK;
 using namespace PERIPHERALS;
 
 CPeripheralJoystick::CPeripheralJoystick(const PeripheralScanResult& scanResult) :

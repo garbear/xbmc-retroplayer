@@ -26,9 +26,13 @@
 
 class TiXmlDocument;
 class CSetting;
-class IJoystickButtonMapper;
-class IJoystickDriverHandler;
-class IJoystickInputHandler;
+
+namespace JOYSTICK
+{
+  class IJoystickButtonMapper;
+  class IJoystickDriverHandler;
+  class IJoystickInputHandler;
+}
 
 namespace PERIPHERALS
 {
@@ -172,14 +176,14 @@ namespace PERIPHERALS
 
     virtual bool ErrorOccured(void) const { return m_bError; }
 
-    virtual void RegisterJoystickDriverHandler(IJoystickDriverHandler* handler, bool bPromiscuous) { }
-    virtual void UnregisterJoystickDriverHandler(IJoystickDriverHandler* handler) { }
+    virtual void RegisterJoystickDriverHandler(JOYSTICK::IJoystickDriverHandler* handler, bool bPromiscuous) { }
+    virtual void UnregisterJoystickDriverHandler(JOYSTICK::IJoystickDriverHandler* handler) { }
 
-    virtual void RegisterJoystickInputHandler(IJoystickInputHandler* handler);
-    virtual void UnregisterJoystickInputHandler(IJoystickInputHandler* handler);
+    virtual void RegisterJoystickInputHandler(JOYSTICK::IJoystickInputHandler* handler);
+    virtual void UnregisterJoystickInputHandler(JOYSTICK::IJoystickInputHandler* handler);
 
-    virtual void RegisterJoystickButtonMapper(IJoystickButtonMapper* mapper);
-    virtual void UnregisterJoystickButtonMapper(IJoystickButtonMapper* mapper);
+    virtual void RegisterJoystickButtonMapper(JOYSTICK::IJoystickButtonMapper* mapper);
+    virtual void UnregisterJoystickButtonMapper(JOYSTICK::IJoystickButtonMapper* mapper);
 
   protected:
     virtual void ClearSettings(void);
@@ -203,7 +207,7 @@ namespace PERIPHERALS
     std::vector<CPeripheral *>       m_subDevices;
     std::map<std::string, PeripheralDeviceSetting> m_settings;
     std::set<std::string>             m_changedSettings;
-    std::map<IJoystickInputHandler*, IJoystickDriverHandler*> m_inputHandlers;
-    std::map<IJoystickButtonMapper*, IJoystickDriverHandler*> m_buttonMappers;
+    std::map<JOYSTICK::IJoystickInputHandler*, JOYSTICK::IJoystickDriverHandler*> m_inputHandlers;
+    std::map<JOYSTICK::IJoystickButtonMapper*, JOYSTICK::IJoystickDriverHandler*> m_buttonMappers;
   };
 }

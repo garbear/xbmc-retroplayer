@@ -21,29 +21,32 @@
 
 #include "IJoystickInputHandler.h"
 
-class IButtonSequence
+namespace JOYSTICK
 {
-public:
-  ~IButtonSequence(void) { }
+  class IButtonSequence
+  {
+  public:
+    ~IButtonSequence(void) { }
 
-  virtual bool OnButtonPress(const JoystickFeature& feature) = 0;
-};
+    virtual bool OnButtonPress(const JoystickFeature& feature) = 0;
+  };
 
-/*!
- * \brief Hush!!!
- */
-class CJoystickEasterEgg : public IButtonSequence
-{
-public:
-  CJoystickEasterEgg(void);
+  /*!
+   * \brief Hush!!!
+   */
+  class CJoystickEasterEgg : public IButtonSequence
+  {
+  public:
+    CJoystickEasterEgg(void);
 
-  // implementation of IButtonSequence
-  virtual bool OnButtonPress(const JoystickFeature& feature) override;
+    // implementation of IButtonSequence
+    virtual bool OnButtonPress(const JoystickFeature& feature) override;
 
-private:
-  void OnFinish(void);
+  private:
+    void OnFinish(void);
 
-  static const char* m_sequence[];
+    static const char* m_sequence[];
 
-  unsigned int m_state;
-};
+    unsigned int m_state;
+  };
+}

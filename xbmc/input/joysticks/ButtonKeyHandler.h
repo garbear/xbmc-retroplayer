@@ -26,40 +26,43 @@
 
 #include <vector>
 
-class CButtonKeyHandler : public IButtonKeyHandler, protected CThread
+namespace JOYSTICK
 {
-public:
-  CButtonKeyHandler(void);
-
-  virtual ~CButtonKeyHandler(void);
-
-  // implementation of IButtonKeyHandler
-  virtual InputType GetInputType(unsigned int buttonKeyId) const;
-  virtual void OnDigitalButtonKey(unsigned int buttonKeyId, bool bPressed);
-  virtual void OnAnalogButtonKey(unsigned int buttonKeyId, float magnitude);
-
-protected:
-  // implementation of CThread
-  virtual void Process(void);
-
-private:
-  enum BUTTON_STATE
+  class CButtonKeyHandler : public IButtonKeyHandler, protected CThread
   {
-    STATE_UNPRESSED,
-    STATE_BUTTON_PRESSED,
-    STATE_BUTTON_HELD,
+  public:
+    CButtonKeyHandler(void);
+
+    virtual ~CButtonKeyHandler(void);
+
+    // implementation of IButtonKeyHandler
+    virtual InputType GetInputType(unsigned int buttonKeyId) const;
+    virtual void OnDigitalButtonKey(unsigned int buttonKeyId, bool bPressed);
+    virtual void OnAnalogButtonKey(unsigned int buttonKeyId, float magnitude);
+
+  protected:
+    // implementation of CThread
+    virtual void Process(void);
+
+  private:
+    enum BUTTON_STATE
+    {
+      STATE_UNPRESSED,
+      STATE_BUTTON_PRESSED,
+      STATE_BUTTON_HELD,
+    };
+
+    bool ProcessButtonPress(unsigned int buttonKeyId);
+    void ProcessButtonRelease(unsigned int buttonKeyId);
+    bool IsHeld(unsigned int buttonKeyId) const;
+
+    static bool SendDigitalAction(unsigned int buttonKeyId, unsigned int holdTimeMs = 0);
+    static bool SendAnalogAction(unsigned int buttonKeyId, float magnitude);
+
+    BUTTON_STATE              m_state;
+    unsigned int              m_lastButtonPress;
+    std::vector<unsigned int> m_pressedButtons;
+    CEvent                    m_pressEvent;
+    CCriticalSection          m_digitalMutex;
   };
-
-  bool ProcessButtonPress(unsigned int buttonKeyId);
-  void ProcessButtonRelease(unsigned int buttonKeyId);
-  bool IsHeld(unsigned int buttonKeyId) const;
-
-  static bool SendDigitalAction(unsigned int buttonKeyId, unsigned int holdTimeMs = 0);
-  static bool SendAnalogAction(unsigned int buttonKeyId, float magnitude);
-
-  BUTTON_STATE              m_state;
-  unsigned int              m_lastButtonPress;
-  std::vector<unsigned int> m_pressedButtons;
-  CEvent                    m_pressEvent;
-  CCriticalSection          m_digitalMutex;
-};
+}

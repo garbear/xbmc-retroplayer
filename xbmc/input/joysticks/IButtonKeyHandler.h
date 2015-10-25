@@ -21,44 +21,45 @@
 
 #include "IJoystickInputHandler.h"
 
-/*!
- * \ingroup joysticks
- *
- * \brief Interface for handling joystick.xml button keys
- *
- * Keys can be mapped to analog actions (e.g. "AnalogSeekForward") or digital
- * actions (e.g. "Up").
- */
-class IButtonKeyHandler
+namespace JOYSTICK
 {
-public:
-  virtual ~IButtonKeyHandler(void) { }
-
   /*!
-   * \brief Get the type of action mapped to the specified button key ID
+   * \brief Interface for handling joystick.xml button keys
    *
-   * \param buttonKeyId  The button key ID from Key.h
-   *
-   * \return The type of action mapped to buttonKeyId, or INPUT_TYPE_UNKNOWN if
-   *         no action is mapped to the specified key
+   * Keys can be mapped to analog actions (e.g. "AnalogSeekForward") or digital
+   * actions (e.g. "Up").
    */
-  virtual InputType GetInputType(unsigned int buttonKeyId) const = 0;
+  class IButtonKeyHandler
+  {
+  public:
+    virtual ~IButtonKeyHandler(void) { }
 
-  /*!
-   * \brief A button mapped to a digital action has been pressed or released
-   *
-   * \param buttonKeyId  The button key ID from Key.h
-   * \param bPressed     true if the button is activated, false if deactivated
-   */
-  virtual void OnDigitalButtonKey(unsigned int buttonKeyId, bool bPressed) = 0;
+    /*!
+     * \brief Get the type of action mapped to the specified button key ID
+     *
+     * \param buttonKeyId  The button key ID from Key.h
+     *
+     * \return The type of action mapped to buttonKeyId, or INPUT_TYPE_UNKNOWN if
+     *         no action is mapped to the specified key
+     */
+    virtual InputType GetInputType(unsigned int buttonKeyId) const = 0;
 
-  /*!
-   * \brief Callback for keys mapped to analog actions
-   *
-   * \param buttonKeyId  The button key ID from Key.h
-   * \param magnitude    The amount of the analog action
-   *
-   * If buttonKeyId is not mapped to an analog action, no action need be taken
-   */
-  virtual void OnAnalogButtonKey(unsigned int buttonKeyId, float magnitude) = 0;
-};
+    /*!
+     * \brief A button mapped to a digital action has been pressed or released
+     *
+     * \param buttonKeyId  The button key ID from Key.h
+     * \param bPressed     true if the button is activated, false if deactivated
+     */
+    virtual void OnDigitalButtonKey(unsigned int buttonKeyId, bool bPressed) = 0;
+
+    /*!
+     * \brief Callback for keys mapped to analog actions
+     *
+     * \param buttonKeyId  The button key ID from Key.h
+     * \param magnitude    The amount of the analog action
+     *
+     * If buttonKeyId is not mapped to an analog action, no action need be taken
+     */
+    virtual void OnAnalogButtonKey(unsigned int buttonKeyId, float magnitude) = 0;
+  };
+}

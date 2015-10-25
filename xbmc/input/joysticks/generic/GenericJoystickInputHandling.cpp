@@ -28,6 +28,8 @@
 
 #include <algorithm>
 
+using namespace JOYSTICK;
+
 CGenericJoystickInputHandling::CGenericJoystickInputHandling(IJoystickInputHandler* handler, IJoystickButtonMap* buttonMap)
  : m_handler(new CDigitalAnalogButtonConverter(handler)),
    m_buttonMap(buttonMap)

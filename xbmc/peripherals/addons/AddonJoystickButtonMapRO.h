@@ -36,25 +36,28 @@ namespace PERIPHERALS
 
     std::string ControllerID(void) const { return m_strControllerId; }
     bool Load(void);
-    bool GetFeature(const CDriverPrimitive& primitive, JoystickFeature& feature);
-    bool GetPrimitiveFeature(const JoystickFeature& feature, CDriverPrimitive& primitive);
-    bool GetAnalogStick(const JoystickFeature& feature, CDriverPrimitive& up,
-                                                        CDriverPrimitive& down,
-                                                        CDriverPrimitive& right,
-                                                        CDriverPrimitive& left);
-    bool GetAccelerometer(const JoystickFeature& feature, CDriverPrimitive& positiveX,
-                                                          CDriverPrimitive& positiveY,
-                                                          CDriverPrimitive& positiveZ);
+    bool GetFeature(const JOYSTICK::CDriverPrimitive& primitive, JOYSTICK::JoystickFeature& feature);
+    bool GetPrimitiveFeature(const JOYSTICK::JoystickFeature& feature,
+                             JOYSTICK::CDriverPrimitive& primitive);
+    bool GetAnalogStick(const JOYSTICK::JoystickFeature& feature,
+                        JOYSTICK::CDriverPrimitive& up,
+                        JOYSTICK::CDriverPrimitive& down,
+                        JOYSTICK::CDriverPrimitive& right,
+                        JOYSTICK::CDriverPrimitive& left);
+    bool GetAccelerometer(const JOYSTICK::JoystickFeature& feature,
+                          JOYSTICK::CDriverPrimitive& positiveX,
+                          JOYSTICK::CDriverPrimitive& positiveY,
+                          JOYSTICK::CDriverPrimitive& positiveZ);
 
   private:
     typedef std::string Feature;
-    typedef std::map<CDriverPrimitive, Feature> DriverMap;
+    typedef std::map<JOYSTICK::CDriverPrimitive, Feature> DriverMap;
 
     // Utility functions
-    static DriverMap          CreateLookupTable(const JoystickFeatureMap& features);
-    static CDriverPrimitive   ToPrimitive(const ADDON::DriverPrimitive& primitive);
-    static HAT_DIRECTION      ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
-    static SEMIAXIS_DIRECTION ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
+    static DriverMap                    CreateLookupTable(const JoystickFeatureMap& features);
+    static JOYSTICK::CDriverPrimitive   ToPrimitive(const ADDON::DriverPrimitive& primitive);
+    static JOYSTICK::HAT_DIRECTION      ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
+    static JOYSTICK::SEMIAXIS_DIRECTION ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
 
     CPeripheral* const  m_device;
     PeripheralAddonPtr  m_addon;

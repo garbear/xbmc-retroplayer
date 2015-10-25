@@ -23,7 +23,10 @@
 
 #include <map>
 
-class IJoystickInputHandler;
+namespace JOYSTICK
+{
+  class IJoystickInputHandler;
+}
 
 namespace PERIPHERALS
 {
@@ -43,6 +46,6 @@ namespace PERIPHERALS
 
     static std::vector<CPeripheral*> GetDevices(void);
 
-    std::map<PERIPHERALS::CPeripheral*, IJoystickInputHandler*>  m_portMap;
+    std::map<PERIPHERALS::CPeripheral*, JOYSTICK::IJoystickInputHandler*>  m_portMap;
   };
 }

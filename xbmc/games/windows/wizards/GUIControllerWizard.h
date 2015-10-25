@@ -34,7 +34,7 @@ namespace GAME
  *        from beginning to end
  */
 class CGUIControllerWizard : public IGUIControllerWizard,
-                             public IJoystickButtonMapper,
+                             public JOYSTICK::IJoystickButtonMapper,
                              public Observer
 {
 public:
@@ -51,7 +51,8 @@ public:
   // implementation of IJoystickButtonMapper
   virtual std::string ControllerID(void) const;
   virtual bool IsMapping(void) const;
-  virtual bool MapPrimitive(IJoystickButtonMap* buttonMap, const CDriverPrimitive& primitive);
+  virtual bool MapPrimitive(JOYSTICK::IJoystickButtonMap* buttonMap,
+                            const JOYSTICK::CDriverPrimitive& primitive);
 
   // implementation of Observer
   virtual void Notify(const Observable& obs, const ObservableMessage msg);
@@ -80,7 +81,7 @@ private:
   WizardState                          m_state;
   unsigned int                         m_featureIndex;
   bool                                 m_bAutoClose;
-  CDriverPrimitive             m_lastAnalogStickDir;
+  JOYSTICK::CDriverPrimitive           m_lastAnalogStickDir;
   CCriticalSection                     m_mutex;
 };
 

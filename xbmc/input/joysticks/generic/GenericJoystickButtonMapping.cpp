@@ -28,6 +28,8 @@
 
 #define AXIS_THRESHOLD  0.75f
 
+using namespace JOYSTICK;
+
 CGenericJoystickButtonMapping::CGenericJoystickButtonMapping(IJoystickButtonMapper* buttonMapper, IJoystickButtonMap* buttonMap)
   : m_buttonMapper(buttonMapper),
     m_buttonMap(buttonMap)
