@@ -85,17 +85,17 @@ CAddonJoystickButtonMapRO::DriverMap CAddonJoystickButtonMapRO::CreateLookupTabl
     {
       const ADDON::Accelerometer* accelerometer = static_cast<const ADDON::Accelerometer*>(feature);
 
-      CJoystickDriverPrimitive x_axis(ToPrimitive(accelerometer->PositiveX()));
-      CJoystickDriverPrimitive y_axis(ToPrimitive(accelerometer->PositiveY()));
-      CJoystickDriverPrimitive z_axis(ToPrimitive(accelerometer->PositiveZ()));
+      CDriverPrimitive x_axis(ToPrimitive(accelerometer->PositiveX()));
+      CDriverPrimitive y_axis(ToPrimitive(accelerometer->PositiveY()));
+      CDriverPrimitive z_axis(ToPrimitive(accelerometer->PositiveZ()));
 
       driverMap[x_axis] = it->first;
       driverMap[y_axis] = it->first;
       driverMap[z_axis] = it->first;
 
-      CJoystickDriverPrimitive x_axis_opposite(x_axis.Index(), x_axis.SemiAxisDir() * -1);
-      CJoystickDriverPrimitive y_axis_opposite(y_axis.Index(), y_axis.SemiAxisDir() * -1);
-      CJoystickDriverPrimitive z_axis_opposite(z_axis.Index(), z_axis.SemiAxisDir() * -1);
+      CDriverPrimitive x_axis_opposite(x_axis.Index(), x_axis.SemiAxisDirection() * -1);
+      CDriverPrimitive y_axis_opposite(y_axis.Index(), y_axis.SemiAxisDirection() * -1);
+      CDriverPrimitive z_axis_opposite(z_axis.Index(), z_axis.SemiAxisDirection() * -1);
 
       driverMap[x_axis_opposite] = it->first;
       driverMap[y_axis_opposite] = it->first;
@@ -111,7 +111,7 @@ CAddonJoystickButtonMapRO::DriverMap CAddonJoystickButtonMapRO::CreateLookupTabl
   return driverMap;
 }
 
-bool CAddonJoystickButtonMapRO::GetFeature(const CJoystickDriverPrimitive& primitive, ::JoystickFeature& feature)
+bool CAddonJoystickButtonMapRO::GetFeature(const CDriverPrimitive& primitive, ::JoystickFeature& feature)
 {
   DriverMap::const_iterator it = m_driverMap.find(primitive);
   if (it != m_driverMap.end())
@@ -123,7 +123,7 @@ bool CAddonJoystickButtonMapRO::GetFeature(const CJoystickDriverPrimitive& primi
   return false;
 }
 
-bool CAddonJoystickButtonMapRO::GetPrimitiveFeature(const ::JoystickFeature& feature, CJoystickDriverPrimitive& primitive)
+bool CAddonJoystickButtonMapRO::GetPrimitiveFeature(const ::JoystickFeature& feature, CDriverPrimitive& primitive)
 {
   bool retVal(false);
 
@@ -143,10 +143,10 @@ bool CAddonJoystickButtonMapRO::GetPrimitiveFeature(const ::JoystickFeature& fea
 }
 
 bool CAddonJoystickButtonMapRO::GetAnalogStick(const ::JoystickFeature& feature,
-                                               CJoystickDriverPrimitive& up,
-                                               CJoystickDriverPrimitive& down,
-                                               CJoystickDriverPrimitive& right,
-                                               CJoystickDriverPrimitive& left)
+                                               CDriverPrimitive& up,
+                                               CDriverPrimitive& down,
+                                               CDriverPrimitive& right,
+                                               CDriverPrimitive& left)
 {
   bool retVal(false);
 
@@ -170,9 +170,9 @@ bool CAddonJoystickButtonMapRO::GetAnalogStick(const ::JoystickFeature& feature,
 }
 
 bool CAddonJoystickButtonMapRO::GetAccelerometer(const ::JoystickFeature& feature,
-                                                 CJoystickDriverPrimitive& positiveX,
-                                                 CJoystickDriverPrimitive& positiveY,
-                                                 CJoystickDriverPrimitive& positiveZ)
+                                                 CDriverPrimitive& positiveX,
+                                                 CDriverPrimitive& positiveY,
+                                                 CDriverPrimitive& positiveZ)
 {
   bool retVal(false);
 
@@ -194,25 +194,25 @@ bool CAddonJoystickButtonMapRO::GetAccelerometer(const ::JoystickFeature& featur
   return retVal;
 }
 
-CJoystickDriverPrimitive CAddonJoystickButtonMapRO::ToPrimitive(const ADDON::DriverPrimitive& primitive)
+CDriverPrimitive CAddonJoystickButtonMapRO::ToPrimitive(const ADDON::DriverPrimitive& primitive)
 {
-  CJoystickDriverPrimitive retVal;
+  CDriverPrimitive retVal;
 
   switch (primitive.Type())
   {
     case JOYSTICK_DRIVER_PRIMITIVE_TYPE_BUTTON:
     {
-      retVal = CJoystickDriverPrimitive(primitive.DriverIndex());
+      retVal = CDriverPrimitive(primitive.DriverIndex());
       break;
     }
     case JOYSTICK_DRIVER_PRIMITIVE_TYPE_HAT_DIRECTION:
     {
-      retVal = CJoystickDriverPrimitive(primitive.DriverIndex(), ToHatDirection(primitive.HatDirection()));
+      retVal = CDriverPrimitive(primitive.DriverIndex(), ToHatDirection(primitive.HatDirection()));
       break;
     }
     case JOYSTICK_DRIVER_PRIMITIVE_TYPE_SEMIAXIS:
     {
-      retVal = CJoystickDriverPrimitive(primitive.DriverIndex(), ToSemiAxisDirection(primitive.SemiAxisDirection()));
+      retVal = CDriverPrimitive(primitive.DriverIndex(), ToSemiAxisDirection(primitive.SemiAxisDirection()));
       break;
     }
     default:

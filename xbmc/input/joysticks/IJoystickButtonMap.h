@@ -63,7 +63,7 @@ public:
    *
    * \return True if the driver primitive is associated with a feature, false otherwise
    */
-   virtual bool GetFeature(const CJoystickDriverPrimitive& primitive, JoystickFeature& feature) = 0;
+   virtual bool GetFeature(const CDriverPrimitive& primitive, JoystickFeature& feature) = 0;
 
   /*!
    * \brief Get the driver primitive associated with a digital or analog button
@@ -74,7 +74,7 @@ public:
    * \return True if the index resolved to a driver primitive, false if the feature
    *         didn't resolve or isn't a digital or analog button
    */
-  virtual bool GetPrimitiveFeature(const JoystickFeature& feature, CJoystickDriverPrimitive& primitive) = 0;
+  virtual bool GetPrimitiveFeature(const JoystickFeature& feature, CDriverPrimitive& primitive) = 0;
 
   /*!
    * \brief Add or update a digital or analog button
@@ -84,7 +84,7 @@ public:
    *
    * \return True if the feature was updated, false otherwise
    */
-  virtual bool AddPrimitiveFeature(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive) = 0;
+  virtual bool AddPrimitiveFeature(const JoystickFeature& feature, const CDriverPrimitive& primitive) = 0;
 
   /*!
    * \brief Get an analog stick from the button map
@@ -101,10 +101,10 @@ public:
    *
    * \return True if the feature resolved to an analog stick with at least 1 known direction
    */
-  virtual bool GetAnalogStick(const JoystickFeature& feature, CJoystickDriverPrimitive& up,
-                                                              CJoystickDriverPrimitive& down,
-                                                              CJoystickDriverPrimitive& right,
-                                                              CJoystickDriverPrimitive& left) = 0;
+  virtual bool GetAnalogStick(const JoystickFeature& feature, CDriverPrimitive& up,
+                                                              CDriverPrimitive& down,
+                                                              CDriverPrimitive& right,
+                                                              CDriverPrimitive& left) = 0;
 
   /*!
    * \brief Add or update an analog stick
@@ -117,10 +117,10 @@ public:
    *
    * \return True if the analog stick was updated, false otherwise
    */
-  virtual bool AddAnalogStick(const JoystickFeature& feature, const CJoystickDriverPrimitive& up,
-                                                              const CJoystickDriverPrimitive& down,
-                                                              const CJoystickDriverPrimitive& right,
-                                                              const CJoystickDriverPrimitive& left) = 0;
+  virtual bool AddAnalogStick(const JoystickFeature& feature, const CDriverPrimitive& up,
+                                                              const CDriverPrimitive& down,
+                                                              const CDriverPrimitive& right,
+                                                              const CDriverPrimitive& left) = 0;
 
   /*!
    * \brief Get an accelerometer from the button map
@@ -132,9 +132,9 @@ public:
    *
    * \return True if the feature resolved to an accelerometer with at least 1 known axis
    */
-  virtual bool GetAccelerometer(const JoystickFeature& feature, CJoystickDriverPrimitive& positiveX,
-                                                                CJoystickDriverPrimitive& positiveY,
-                                                                CJoystickDriverPrimitive& positiveZ) = 0;
+  virtual bool GetAccelerometer(const JoystickFeature& feature, CDriverPrimitive& positiveX,
+                                                                CDriverPrimitive& positiveY,
+                                                                CDriverPrimitive& positiveZ) = 0;
 
   /*!
    * \brief Get or update an accelerometer
@@ -148,7 +148,7 @@ public:
    *
    * \return True if the accelerometer was updated, false otherwise
    */
-  virtual bool AddAccelerometer(const JoystickFeature& feature, const CJoystickDriverPrimitive& positiveX,
-                                                                const CJoystickDriverPrimitive& positiveY,
-                                                                const CJoystickDriverPrimitive& positiveZ) = 0;
+  virtual bool AddAccelerometer(const JoystickFeature& feature, const CDriverPrimitive& positiveX,
+                                                                const CDriverPrimitive& positiveY,
+                                                                const CDriverPrimitive& positiveZ) = 0;
 };

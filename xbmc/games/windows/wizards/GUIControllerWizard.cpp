@@ -97,7 +97,7 @@ void CGUIControllerWizard::Step()
         m_state = STATE_NEXT_FEATURE;
         break;
       case STATE_PROMPT_ANALOG_STICK_UP:
-        if (m_lastAnalogStickDir.Type() == DriverPrimitiveTypeSemiAxis)
+        if (m_lastAnalogStickDir.Type() == CDriverPrimitive::SemiAxis)
           m_state = STATE_PROMPT_ANALOG_STICK_RIGHT;
         else
           m_state = STATE_PROMPT_ANALOG_STICK_DOWN;
@@ -106,7 +106,7 @@ void CGUIControllerWizard::Step()
         m_state = STATE_PROMPT_ANALOG_STICK_RIGHT;
         break;
       case STATE_PROMPT_ANALOG_STICK_RIGHT:
-        if (m_lastAnalogStickDir.Type() == DriverPrimitiveTypeSemiAxis)
+        if (m_lastAnalogStickDir.Type() == CDriverPrimitive::SemiAxis)
           m_state = STATE_NEXT_FEATURE;
         else
           m_state = STATE_PROMPT_ANALOG_STICK_LEFT;
@@ -241,14 +241,14 @@ bool CGUIControllerWizard::IsMapping(void) const
   return false;
 }
 
-bool CGUIControllerWizard::MapPrimitive(IJoystickButtonMap* buttonMap, const CJoystickDriverPrimitive& primitive)
+bool CGUIControllerWizard::MapPrimitive(IJoystickButtonMap* buttonMap, const CDriverPrimitive& primitive)
 {
   CSingleLock lock(m_mutex);
 
   bool bHandled = false;
 
   // Handle esc key separately
-  if (primitive.Type() == DriverPrimitiveTypeButton && primitive.Index() == ESC_KEY_CODE)
+  if (primitive.Type() == CDriverPrimitive::Button && primitive.Index() == ESC_KEY_CODE)
   {
     bHandled = Abort();
   }
@@ -265,12 +265,12 @@ bool CGUIControllerWizard::MapPrimitive(IJoystickButtonMap* buttonMap, const CJo
       }
       case STATE_PROMPT_ANALOG_STICK_UP:
       {
-        if (primitive.Type() == DriverPrimitiveTypeSemiAxis)
+        if (primitive.Type() == CDriverPrimitive::SemiAxis)
         {
-          CJoystickDriverPrimitive up;
-          CJoystickDriverPrimitive down;
-          CJoystickDriverPrimitive right;
-          CJoystickDriverPrimitive left;
+          CDriverPrimitive up;
+          CDriverPrimitive down;
+          CDriverPrimitive right;
+          CDriverPrimitive left;
 
           buttonMap->GetAnalogStick(features[m_featureIndex].Name(), up, down, right, left);
 
@@ -282,12 +282,12 @@ bool CGUIControllerWizard::MapPrimitive(IJoystickButtonMap* buttonMap, const CJo
       }
       case STATE_PROMPT_ANALOG_STICK_DOWN:
       {
-        if (primitive.Type() == DriverPrimitiveTypeSemiAxis)
+        if (primitive.Type() == CDriverPrimitive::SemiAxis)
         {
-          CJoystickDriverPrimitive up;
-          CJoystickDriverPrimitive down;
-          CJoystickDriverPrimitive right;
-          CJoystickDriverPrimitive left;
+          CDriverPrimitive up;
+          CDriverPrimitive down;
+          CDriverPrimitive right;
+          CDriverPrimitive left;
 
           buttonMap->GetAnalogStick(features[m_featureIndex].Name(), up, down, right, left);
 
@@ -299,12 +299,12 @@ bool CGUIControllerWizard::MapPrimitive(IJoystickButtonMap* buttonMap, const CJo
       }
       case STATE_PROMPT_ANALOG_STICK_RIGHT:
       {
-        if (primitive.Type() == DriverPrimitiveTypeSemiAxis)
+        if (primitive.Type() == CDriverPrimitive::SemiAxis)
         {
-          CJoystickDriverPrimitive up;
-          CJoystickDriverPrimitive down;
-          CJoystickDriverPrimitive right;
-          CJoystickDriverPrimitive left;
+          CDriverPrimitive up;
+          CDriverPrimitive down;
+          CDriverPrimitive right;
+          CDriverPrimitive left;
 
           buttonMap->GetAnalogStick(features[m_featureIndex].Name(), up, down, right, left);
 
@@ -316,12 +316,12 @@ bool CGUIControllerWizard::MapPrimitive(IJoystickButtonMap* buttonMap, const CJo
       }
       case STATE_PROMPT_ANALOG_STICK_LEFT:
       {
-        if (primitive.Type() == DriverPrimitiveTypeSemiAxis)
+        if (primitive.Type() == CDriverPrimitive::SemiAxis)
         {
-          CJoystickDriverPrimitive up;
-          CJoystickDriverPrimitive down;
-          CJoystickDriverPrimitive right;
-          CJoystickDriverPrimitive left;
+          CDriverPrimitive up;
+          CDriverPrimitive down;
+          CDriverPrimitive right;
+          CDriverPrimitive left;
 
           buttonMap->GetAnalogStick(features[m_featureIndex].Name(), up, down, right, left);
 

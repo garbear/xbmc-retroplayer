@@ -47,12 +47,12 @@ public:
   virtual void ProcessAxisMotions(void) { }
 
 private:
-  void Activate(const CJoystickDriverPrimitive& semiAxis);
-  void Deactivate(const CJoystickDriverPrimitive& semiAxis);
-  bool IsActive(const CJoystickDriverPrimitive& semiAxis);
+  void Activate(const CDriverPrimitive& semiAxis);
+  void Deactivate(const CDriverPrimitive& semiAxis);
+  bool IsActive(const CDriverPrimitive& semiAxis);
 
   IJoystickButtonMapper* const m_buttonMapper;
   IJoystickButtonMap* const    m_buttonMap;
 
-  std::vector<CJoystickDriverPrimitive> m_activatedAxes;
+  std::vector<CDriverPrimitive> m_activatedAxes;
 };

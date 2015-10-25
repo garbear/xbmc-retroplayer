@@ -51,7 +51,7 @@ public:
   // implementation of IJoystickButtonMapper
   virtual std::string ControllerID(void) const;
   virtual bool IsMapping(void) const;
-  virtual bool MapPrimitive(IJoystickButtonMap* buttonMap, const CJoystickDriverPrimitive& primitive);
+  virtual bool MapPrimitive(IJoystickButtonMap* buttonMap, const CDriverPrimitive& primitive);
 
   // implementation of Observer
   virtual void Notify(const Observable& obs, const ObservableMessage msg);
@@ -80,7 +80,7 @@ private:
   WizardState                          m_state;
   unsigned int                         m_featureIndex;
   bool                                 m_bAutoClose;
-  CJoystickDriverPrimitive             m_lastAnalogStickDir;
+  CDriverPrimitive             m_lastAnalogStickDir;
   CCriticalSection                     m_mutex;
 };
 

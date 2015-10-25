@@ -21,7 +21,7 @@
 
 #include <string>
 
-class CJoystickDriverPrimitive;
+class CDriverPrimitive;
 class IJoystickButtonMap;
 
 /*!
@@ -59,5 +59,5 @@ public:
    *
    * \return True if action was mapped to a feature
    */
-  virtual bool MapPrimitive(IJoystickButtonMap* buttonMap, const CJoystickDriverPrimitive& primitive) = 0;
+  virtual bool MapPrimitive(IJoystickButtonMap* buttonMap, const CDriverPrimitive& primitive) = 0;
 };

@@ -50,7 +50,7 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
   bool bHandled = false;
 
   JoystickFeature feature;
-  if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(buttonIndex), feature))
+  if (m_buttonMap->GetFeature(CDriverPrimitive(buttonIndex), feature))
   {
     char& wasPressed = m_buttonStates[buttonIndex];
 
@@ -104,7 +104,7 @@ bool CGenericJoystickInputHandling::ProcessHatDirection(int index,
     const bool bActivated = ((int)newState & (int)targetDir) != (int)HAT_STATE::UNPRESSED;
 
     JoystickFeature feature;
-    if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
+    if (m_buttonMap->GetFeature(CDriverPrimitive(index, targetDir), feature))
     {
       if (bActivated)
       {
@@ -133,8 +133,8 @@ bool CGenericJoystickInputHandling::OnAxisMotion(unsigned int axisIndex, float n
   float oldPosition = m_axisStates[axisIndex];
   m_axisStates[axisIndex] = newPosition;
 
-  CJoystickDriverPrimitive positiveAxis(axisIndex, SEMIAXIS_DIRECTION::POSITIVE);
-  CJoystickDriverPrimitive negativeAxis(axisIndex, SEMIAXIS_DIRECTION::NEGATIVE);
+  CDriverPrimitive positiveAxis(axisIndex, SEMIAXIS_DIRECTION::POSITIVE);
+  CDriverPrimitive negativeAxis(axisIndex, SEMIAXIS_DIRECTION::NEGATIVE);
 
   JoystickFeature positiveFeature;
   JoystickFeature negativeFeature;
@@ -197,25 +197,25 @@ void CGenericJoystickInputHandling::ProcessAxisMotions(void)
   {
     const JoystickFeature& feature = *it;
 
-    CJoystickDriverPrimitive up;
-    CJoystickDriverPrimitive down;
-    CJoystickDriverPrimitive right;
-    CJoystickDriverPrimitive left;
+    CDriverPrimitive up;
+    CDriverPrimitive down;
+    CDriverPrimitive right;
+    CDriverPrimitive left;
 
-    CJoystickDriverPrimitive positiveX;
-    CJoystickDriverPrimitive positiveY;
-    CJoystickDriverPrimitive positiveZ;
+    CDriverPrimitive positiveX;
+    CDriverPrimitive positiveY;
+    CDriverPrimitive positiveZ;
 
     if (m_buttonMap->GetAnalogStick(feature, up, down, right,  left))
     {
       float horizPos = 0.0f;
       float vertPos = 0.0f;
 
-      if (right.Type() == DriverPrimitiveTypeSemiAxis)
-        horizPos = GetAxisState(right.Index()) * static_cast<int>(right.SemiAxisDir());
+      if (right.Type() == CDriverPrimitive::SemiAxis)
+        horizPos = GetAxisState(right.Index()) * static_cast<int>(right.SemiAxisDirection());
 
-      if (up.Type() == DriverPrimitiveTypeSemiAxis)
-        vertPos  = GetAxisState(up.Index())  * static_cast<int>(up.SemiAxisDir());
+      if (up.Type() == CDriverPrimitive::SemiAxis)
+        vertPos  = GetAxisState(up.Index())  * static_cast<int>(up.SemiAxisDirection());
 
       m_handler->OnAnalogStickMotion(feature, horizPos, vertPos);
     }
@@ -225,14 +225,14 @@ void CGenericJoystickInputHandling::ProcessAxisMotions(void)
       float yPos = 0.0f;
       float zPos = 0.0f;
 
-      if (positiveX.Type() == DriverPrimitiveTypeSemiAxis)
-        xPos = GetAxisState(positiveX.Index()) * static_cast<int>(positiveX.SemiAxisDir());
+      if (positiveX.Type() == CDriverPrimitive::SemiAxis)
+        xPos = GetAxisState(positiveX.Index()) * static_cast<int>(positiveX.SemiAxisDirection());
 
-      if (positiveY.Type() == DriverPrimitiveTypeSemiAxis)
-        yPos = GetAxisState(positiveY.Index()) * static_cast<int>(positiveY.SemiAxisDir());
+      if (positiveY.Type() == CDriverPrimitive::SemiAxis)
+        yPos = GetAxisState(positiveY.Index()) * static_cast<int>(positiveY.SemiAxisDirection());
 
-      if (positiveZ.Type() == DriverPrimitiveTypeSemiAxis)
-        zPos = GetAxisState(positiveZ.Index()) * static_cast<int>(positiveZ.SemiAxisDir());
+      if (positiveZ.Type() == CDriverPrimitive::SemiAxis)
+        zPos = GetAxisState(positiveZ.Index()) * static_cast<int>(positiveZ.SemiAxisDirection());
 
       m_handler->OnAccelerometerMotion(feature, xPos, yPos, zPos);
     }

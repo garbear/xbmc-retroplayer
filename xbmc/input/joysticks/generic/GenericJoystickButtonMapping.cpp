@@ -40,7 +40,7 @@ bool CGenericJoystickButtonMapping::OnButtonMotion(unsigned int buttonIndex, boo
 {
   if (bPressed)
   {
-    CJoystickDriverPrimitive buttonPrimitive(buttonIndex);
+    CDriverPrimitive buttonPrimitive(buttonIndex);
     if (buttonPrimitive.IsValid())
       return m_buttonMapper->MapPrimitive(m_buttonMap, buttonPrimitive);
   }
@@ -52,7 +52,7 @@ bool CGenericJoystickButtonMapping::OnHatMotion(unsigned int hatIndex, HAT_STATE
 {
   if (state != HAT_STATE::UNPRESSED)
   {
-    CJoystickDriverPrimitive hatPrimitive(hatIndex, static_cast<HAT_DIRECTION>(state));
+    CDriverPrimitive hatPrimitive(hatIndex, static_cast<HAT_DIRECTION>(state));
     if (hatPrimitive.IsValid())
       return m_buttonMapper->MapPrimitive(m_buttonMap, hatPrimitive);
 
@@ -67,10 +67,10 @@ bool CGenericJoystickButtonMapping::OnAxisMotion(unsigned int axisIndex, float p
   if (position != 0.0f)
   {
     // Deactivate axis in the opposite direction
-    CJoystickDriverPrimitive oppositeAxis(axisIndex, CJoystickTranslator::PositionToSemiAxisDirection(-position));
+    CDriverPrimitive oppositeAxis(axisIndex, CJoystickTranslator::PositionToSemiAxisDirection(-position));
     Deactivate(oppositeAxis);
 
-    CJoystickDriverPrimitive semiAxisPrimitive(axisIndex, CJoystickTranslator::PositionToSemiAxisDirection(position));
+    CDriverPrimitive semiAxisPrimitive(axisIndex, CJoystickTranslator::PositionToSemiAxisDirection(position));
     if (semiAxisPrimitive.IsValid())
     {
       const bool bActive = (std::abs(position) >= AXIS_THRESHOLD);
@@ -92,17 +92,17 @@ bool CGenericJoystickButtonMapping::OnAxisMotion(unsigned int axisIndex, float p
   return false;
 }
 
-void CGenericJoystickButtonMapping::Activate(const CJoystickDriverPrimitive& semiAxis)
+void CGenericJoystickButtonMapping::Activate(const CDriverPrimitive& semiAxis)
 {
   m_activatedAxes.push_back(semiAxis);
 }
 
-void CGenericJoystickButtonMapping::Deactivate(const CJoystickDriverPrimitive& semiAxis)
+void CGenericJoystickButtonMapping::Deactivate(const CDriverPrimitive& semiAxis)
 {
   m_activatedAxes.erase(std::remove(m_activatedAxes.begin(), m_activatedAxes.end(), semiAxis), m_activatedAxes.end());
 }
 
-bool CGenericJoystickButtonMapping::IsActive(const CJoystickDriverPrimitive& semiAxis)
+bool CGenericJoystickButtonMapping::IsActive(const CDriverPrimitive& semiAxis)
 {
   return std::find(m_activatedAxes.begin(), m_activatedAxes.end(), semiAxis) != m_activatedAxes.end();
 }

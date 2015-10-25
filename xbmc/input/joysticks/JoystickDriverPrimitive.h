@@ -23,14 +23,6 @@
 
 #include <stdint.h>
 
-enum DriverPrimitiveType
-{
-  DriverPrimitiveTypeUnknown = 0,
-  DriverPrimitiveTypeButton,
-  DriverPrimitiveTypeHatDirection,
-  DriverPrimitiveTypeSemiAxis,
-};
-
 /*!
  * \ingroup joysticks
  *
@@ -39,54 +31,84 @@ enum DriverPrimitiveType
  * A driver primitive can be a button, one of the four direction arrows on a
  * dpad, or the positive or negative half of an axis.
  */
-class CJoystickDriverPrimitive
+class CDriverPrimitive
 {
 public:
   /*!
+   * \brief Type of driver primitive
+   */
+  enum PrimitiveType
+  {
+    Unknown = 0,
+    Button,
+    Hat,       // one of the four direction arrows on a dpad
+    SemiAxis,  // the positive or negative half of an axis
+  };
+
+  /*!
    * \brief Construct an invalid driver primitive
    */
-  CJoystickDriverPrimitive(void);
+  CDriverPrimitive(void);
 
   /*!
    * \brief Construct a driver primitive representing a button
    */
-  CJoystickDriverPrimitive(unsigned int buttonIndex);
+  CDriverPrimitive(unsigned int buttonIndex);
 
   /*!
    * \brief Construct a driver primitive representing one of the four direction
    *        arrows on a dpad
    */
-  CJoystickDriverPrimitive(unsigned int hatIndex, HAT_DIRECTION direction);
+  CDriverPrimitive(unsigned int hatIndex, HAT_DIRECTION direction);
 
   /*!
    * \brief Construct a driver primitive representing the positive or negative
    *        half of an axis
    */
-  CJoystickDriverPrimitive(unsigned int axisIndex, SEMIAXIS_DIRECTION direction);
+  CDriverPrimitive(unsigned int axisIndex, SEMIAXIS_DIRECTION direction);
 
-  bool operator==(const CJoystickDriverPrimitive& rhs) const;
-  bool operator<(const CJoystickDriverPrimitive& rhs) const;
+  bool operator==(const CDriverPrimitive& rhs) const;
+  bool operator<(const CDriverPrimitive& rhs) const;
 
-  bool operator!=(const CJoystickDriverPrimitive& rhs) const { return !operator==(rhs); }
-  bool operator>(const CJoystickDriverPrimitive& rhs) const  { return !(operator<(rhs) || operator==(rhs)); }
-  bool operator<=(const CJoystickDriverPrimitive& rhs) const { return   operator<(rhs) || operator==(rhs); }
-  bool operator>=(const CJoystickDriverPrimitive& rhs) const { return  !operator<(rhs); }
-
-  DriverPrimitiveType Type(void) const        { return m_type; }
-  unsigned int        Index(void) const       { return m_driverIndex; }
-  HAT_DIRECTION       HatDir(void) const      { return m_hatDirection; }
-  SEMIAXIS_DIRECTION  SemiAxisDir(void) const { return m_semiAxisDirection; }
+  bool operator!=(const CDriverPrimitive& rhs) const { return !operator==(rhs); }
+  bool operator>(const CDriverPrimitive& rhs) const  { return !(operator<(rhs) || operator==(rhs)); }
+  bool operator<=(const CDriverPrimitive& rhs) const { return   operator<(rhs) || operator==(rhs); }
+  bool operator>=(const CDriverPrimitive& rhs) const { return  !operator<(rhs); }
 
   /*!
-   * \brief An input primitive is valid if has a known type and:
-   *        - for hats, is a cardinal direction
-   *        - for semi-axes, is a positive or negative direction
+   * \brief Type of element represented by the driver primitive
+   *
+   * The type determines the fields in use:
+   *
+   *    Button:
+   *       - driver index
+   *
+   *    Hat direction:
+   *       - driver index
+   *       - hat direction
+   *
+   *    Semiaxis:
+   *       - driver index
+   *       - semiaxis direction
+   */
+  PrimitiveType      Type(void) const              { return m_type; }
+  unsigned int       Index(void) const             { return m_driverIndex; }
+  HAT_DIRECTION      HatDirection(void) const      { return m_hatDirection; }
+  SEMIAXIS_DIRECTION SemiAxisDirection(void) const { return m_semiAxisDirection; }
+
+  /*!
+   * \brief Test if an driver primitive is valid
+   *
+   * A driver primitive is valid if has a known type and:
+   *
+   *   1) for hats, is a cardinal direction
+   *   2) for semi-axes, is a positive or negative direction
    */
   bool IsValid(void) const;
 
 private:
-  DriverPrimitiveType m_type;
-  unsigned int        m_driverIndex;
-  HAT_DIRECTION       m_hatDirection;
-  SEMIAXIS_DIRECTION  m_semiAxisDirection;
+  PrimitiveType      m_type;
+  unsigned int       m_driverIndex;
+  HAT_DIRECTION      m_hatDirection;
+  SEMIAXIS_DIRECTION m_semiAxisDirection;
 };

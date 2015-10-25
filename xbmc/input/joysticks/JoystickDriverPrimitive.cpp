@@ -20,7 +20,7 @@
 
 #include "JoystickDriverPrimitive.h"
 
-CJoystickDriverPrimitive::CJoystickDriverPrimitive(void)
+CDriverPrimitive::CDriverPrimitive(void)
   : m_type(),
     m_driverIndex(0),
     m_hatDirection(),
@@ -28,41 +28,41 @@ CJoystickDriverPrimitive::CJoystickDriverPrimitive(void)
 {
 }
 
-CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int buttonIndex)
-  : m_type(DriverPrimitiveTypeButton),
+CDriverPrimitive::CDriverPrimitive(unsigned int buttonIndex)
+  : m_type(CDriverPrimitive::Button),
     m_driverIndex(buttonIndex),
     m_hatDirection(),
     m_semiAxisDirection()
 {
 }
 
-CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int hatIndex, HAT_DIRECTION direction)
-  : m_type(DriverPrimitiveTypeHatDirection),
+CDriverPrimitive::CDriverPrimitive(unsigned int hatIndex, HAT_DIRECTION direction)
+  : m_type(CDriverPrimitive::Hat),
     m_driverIndex(hatIndex),
     m_hatDirection(direction),
     m_semiAxisDirection()
 {
 }
 
-CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int axisIndex, SEMIAXIS_DIRECTION direction)
-  : m_type(DriverPrimitiveTypeSemiAxis),
+CDriverPrimitive::CDriverPrimitive(unsigned int axisIndex, SEMIAXIS_DIRECTION direction)
+  : m_type(CDriverPrimitive::SemiAxis),
     m_driverIndex(axisIndex),
     m_hatDirection(),
     m_semiAxisDirection(direction)
 {
 }
 
-bool CJoystickDriverPrimitive::operator==(const CJoystickDriverPrimitive& rhs) const
+bool CDriverPrimitive::operator==(const CDriverPrimitive& rhs) const
 {
   if (m_type == rhs.m_type)
   {
     switch (m_type)
     {
-    case DriverPrimitiveTypeButton:
+    case CDriverPrimitive::Button:
       return m_driverIndex == rhs.m_driverIndex;
-    case DriverPrimitiveTypeHatDirection:
+    case CDriverPrimitive::Hat:
       return m_driverIndex == rhs.m_driverIndex && m_hatDirection == rhs.m_hatDirection;
-    case DriverPrimitiveTypeSemiAxis:
+    case CDriverPrimitive::SemiAxis:
       return m_driverIndex == rhs.m_driverIndex && m_semiAxisDirection == rhs.m_semiAxisDirection;
     default:
       return true;
@@ -71,24 +71,24 @@ bool CJoystickDriverPrimitive::operator==(const CJoystickDriverPrimitive& rhs) c
   return false;
 }
 
-bool CJoystickDriverPrimitive::operator<(const CJoystickDriverPrimitive& rhs) const
+bool CDriverPrimitive::operator<(const CDriverPrimitive& rhs) const
 {
   if (m_type < rhs.m_type) return true;
   if (m_type > rhs.m_type) return false;
 
-  if (m_type != DriverPrimitiveTypeUnknown)
+  if (m_type != CDriverPrimitive::Unknown)
   {
     if (m_driverIndex < rhs.m_driverIndex) return true;
     if (m_driverIndex > rhs.m_driverIndex) return false;
   }
 
-  if (m_type == DriverPrimitiveTypeHatDirection)
+  if (m_type == CDriverPrimitive::Hat)
   {
     if (m_hatDirection < rhs.m_hatDirection) return true;
     if (m_hatDirection > rhs.m_hatDirection) return false;
   }
 
-  if (m_type == DriverPrimitiveTypeSemiAxis)
+  if (m_type == CDriverPrimitive::SemiAxis)
   {
     if (m_semiAxisDirection < rhs.m_semiAxisDirection) return true;
     if (m_semiAxisDirection > rhs.m_semiAxisDirection) return false;
@@ -97,15 +97,15 @@ bool CJoystickDriverPrimitive::operator<(const CJoystickDriverPrimitive& rhs) co
   return false;
 }
 
-bool CJoystickDriverPrimitive::IsValid(void) const
+bool CDriverPrimitive::IsValid(void) const
 {
-  return m_type == DriverPrimitiveTypeButton ||
+  return m_type == CDriverPrimitive::Button ||
 
-        (m_type == DriverPrimitiveTypeHatDirection && (m_hatDirection == HAT_DIRECTION::UP     ||
-                                                       m_hatDirection == HAT_DIRECTION::DOWN   ||
-                                                       m_hatDirection == HAT_DIRECTION::RIGHT  ||
-                                                       m_hatDirection == HAT_DIRECTION::LEFT)) ||
+        (m_type == CDriverPrimitive::Hat && (m_hatDirection == HAT_DIRECTION::UP     ||
+                                             m_hatDirection == HAT_DIRECTION::DOWN   ||
+                                             m_hatDirection == HAT_DIRECTION::RIGHT  ||
+                                             m_hatDirection == HAT_DIRECTION::LEFT)) ||
 
-        (m_type == DriverPrimitiveTypeSemiAxis && (m_semiAxisDirection == SEMIAXIS_DIRECTION::POSITIVE ||
-                                                   m_semiAxisDirection == SEMIAXIS_DIRECTION::NEGATIVE));
+        (m_type == CDriverPrimitive::SemiAxis && (m_semiAxisDirection == SEMIAXIS_DIRECTION::POSITIVE ||
+                                                  m_semiAxisDirection == SEMIAXIS_DIRECTION::NEGATIVE));
 }
