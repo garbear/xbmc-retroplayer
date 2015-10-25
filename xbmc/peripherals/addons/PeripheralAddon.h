@@ -108,7 +108,7 @@ namespace PERIPHERALS
     static void GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
     static void SetJoystickInfo(CPeripheralJoystick& joystick, const ADDON::Joystick& joystickInfo);
 
-    static HatDirection ToHatDirection(JOYSTICK_STATE_HAT state);
+    static HAT_STATE ToHatState(JOYSTICK_STATE_HAT state);
 
     /*!
      * @brief Reset all class members to their defaults. Called by the constructors

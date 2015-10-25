@@ -36,7 +36,7 @@ CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int buttonIndex)
 {
 }
 
-CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int hatIndex, HatDirection direction)
+CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int hatIndex, HAT_DIRECTION direction)
   : m_type(DriverPrimitiveTypeHatDirection),
     m_driverIndex(hatIndex),
     m_hatDirection(direction),
@@ -44,7 +44,7 @@ CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int hatIndex, HatDir
 {
 }
 
-CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int axisIndex, SemiAxisDirection direction)
+CJoystickDriverPrimitive::CJoystickDriverPrimitive(unsigned int axisIndex, SEMIAXIS_DIRECTION direction)
   : m_type(DriverPrimitiveTypeSemiAxis),
     m_driverIndex(axisIndex),
     m_hatDirection(),
@@ -100,10 +100,12 @@ bool CJoystickDriverPrimitive::operator<(const CJoystickDriverPrimitive& rhs) co
 bool CJoystickDriverPrimitive::IsValid(void) const
 {
   return m_type == DriverPrimitiveTypeButton ||
-        (m_type == DriverPrimitiveTypeHatDirection && (m_hatDirection == HatDirectionLeft  ||
-                                                       m_hatDirection == HatDirectionRight ||
-                                                       m_hatDirection == HatDirectionUp    ||
-                                                       m_hatDirection == HatDirectionDown))  ||
-        (m_type == DriverPrimitiveTypeSemiAxis && (m_semiAxisDirection == SemiAxisDirectionPositive ||
-                                                   m_semiAxisDirection == SemiAxisDirectionNegative));
+
+        (m_type == DriverPrimitiveTypeHatDirection && (m_hatDirection == HAT_DIRECTION::UP     ||
+                                                       m_hatDirection == HAT_DIRECTION::DOWN   ||
+                                                       m_hatDirection == HAT_DIRECTION::RIGHT  ||
+                                                       m_hatDirection == HAT_DIRECTION::LEFT)) ||
+
+        (m_type == DriverPrimitiveTypeSemiAxis && (m_semiAxisDirection == SEMIAXIS_DIRECTION::POSITIVE ||
+                                                   m_semiAxisDirection == SEMIAXIS_DIRECTION::NEGATIVE));
 }

@@ -87,10 +87,10 @@ bool CDefaultController::OnButtonMotion(const JoystickFeature& feature, float ma
 bool CDefaultController::OnAnalogStickMotion(const JoystickFeature& feature, float x, float y)
 {
   // Calculate the direction of the stick's position
-  const CardinalDirection analogStickDir = CJoystickTranslator::VectorToCardinalDirection(x, y);
+  const CARDINAL_DIRECTION analogStickDir = CJoystickTranslator::VectorToCardinalDirection(x, y);
 
   // Process directions in which the stick is not pointing first
-  for (std::vector<CardinalDirection>::const_iterator it = GetDirections().begin(); it != GetDirections().end(); ++it)
+  for (std::vector<CARDINAL_DIRECTION>::const_iterator it = GetDirections().begin(); it != GetDirections().end(); ++it)
   {
     if (*it == analogStickDir)
       continue;
@@ -134,7 +134,7 @@ bool CDefaultController::OnAccelerometerMotion(const JoystickFeature& feature, f
   return false; // TODO
 }
 
-unsigned int CDefaultController::GetButtonKeyID(const JoystickFeature& feature, CardinalDirection dir /* = DirectionUnknown */)
+unsigned int CDefaultController::GetButtonKeyID(const JoystickFeature& feature, CARDINAL_DIRECTION dir /* = DirectionUnknown */)
 {
   if      (feature == "a")             return KEY_BUTTON_A;
   else if (feature == "b")             return KEY_BUTTON_B;
@@ -157,24 +157,24 @@ unsigned int CDefaultController::GetButtonKeyID(const JoystickFeature& feature, 
   {
     switch (dir)
     {
-    case DirectionUp:     return KEY_BUTTON_LEFT_THUMB_STICK_UP;
-    case DirectionDown:   return KEY_BUTTON_LEFT_THUMB_STICK_DOWN;
-    case DirectionRight:  return KEY_BUTTON_LEFT_THUMB_STICK_RIGHT;
-    case DirectionLeft:   return KEY_BUTTON_LEFT_THUMB_STICK_LEFT;
-    default:
-      break;
+      case CARDINAL_DIRECTION::UP:     return KEY_BUTTON_LEFT_THUMB_STICK_UP;
+      case CARDINAL_DIRECTION::DOWN:   return KEY_BUTTON_LEFT_THUMB_STICK_DOWN;
+      case CARDINAL_DIRECTION::RIGHT:  return KEY_BUTTON_LEFT_THUMB_STICK_RIGHT;
+      case CARDINAL_DIRECTION::LEFT:   return KEY_BUTTON_LEFT_THUMB_STICK_LEFT;
+      default:
+        break;
     }
   }
   else if (feature == "rightstick")
   {
     switch (dir)
     {
-    case DirectionUp:     return KEY_BUTTON_RIGHT_THUMB_STICK_UP;
-    case DirectionDown:   return KEY_BUTTON_RIGHT_THUMB_STICK_DOWN;
-    case DirectionRight:  return KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT;
-    case DirectionLeft:   return KEY_BUTTON_RIGHT_THUMB_STICK_LEFT;
-    default:
-      break;
+      case CARDINAL_DIRECTION::UP:     return KEY_BUTTON_RIGHT_THUMB_STICK_UP;
+      case CARDINAL_DIRECTION::DOWN:   return KEY_BUTTON_RIGHT_THUMB_STICK_DOWN;
+      case CARDINAL_DIRECTION::RIGHT:  return KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT;
+      case CARDINAL_DIRECTION::LEFT:   return KEY_BUTTON_RIGHT_THUMB_STICK_LEFT;
+      default:
+        break;
     }
   }
   else if (feature == "accelerometer") return 0; // TODO
@@ -182,15 +182,15 @@ unsigned int CDefaultController::GetButtonKeyID(const JoystickFeature& feature, 
   return 0;
 }
 
-const std::vector<CardinalDirection>& CDefaultController::GetDirections(void)
+const std::vector<CARDINAL_DIRECTION>& CDefaultController::GetDirections(void)
 {
-  static std::vector<CardinalDirection> directions;
+  static std::vector<CARDINAL_DIRECTION> directions;
   if (directions.empty())
   {
-    directions.push_back(DirectionUp);
-    directions.push_back(DirectionDown);
-    directions.push_back(DirectionRight);
-    directions.push_back(DirectionLeft);
+    directions.push_back(CARDINAL_DIRECTION::UP);
+    directions.push_back(CARDINAL_DIRECTION::DOWN);
+    directions.push_back(CARDINAL_DIRECTION::RIGHT);
+    directions.push_back(CARDINAL_DIRECTION::LEFT);
   }
   return directions;
 }

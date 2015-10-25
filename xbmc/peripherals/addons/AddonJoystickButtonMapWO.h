@@ -49,8 +49,8 @@ namespace PERIPHERALS
   private:
     // Utility functions
     static ADDON::DriverPrimitive             ToPrimitive(const CJoystickDriverPrimitive& primitive);
-    static JOYSTICK_DRIVER_HAT_DIRECTION      ToHatDirection(HatDirection dir);
-    static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION ToSemiAxisDirection(SemiAxisDirection dir);
+    static JOYSTICK_DRIVER_HAT_DIRECTION      ToHatDirection(HAT_DIRECTION dir);
+    static JOYSTICK_DRIVER_SEMIAXIS_DIRECTION ToSemiAxisDirection(SEMIAXIS_DIRECTION dir);
 
     CPeripheral* const m_device;
     PeripheralAddonPtr m_addon;

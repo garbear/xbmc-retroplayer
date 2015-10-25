@@ -48,7 +48,7 @@ namespace PERIPHERALS
 
     // implementation of IJoystickDriverHandler
     virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-    virtual bool OnHatMotion(unsigned int hatIndex, HatDirection direction);
+    virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
     virtual bool OnAxisMotion(unsigned int axisIndex, float position);
     virtual void ProcessAxisMotions(void);
 

@@ -51,12 +51,12 @@ public:
 
   // implementation of IJoystickDriverHandler
   virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-  virtual bool OnHatMotion(unsigned int hatIndex, HatDirection direction);
+  virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
   virtual bool OnAxisMotion(unsigned int axisIndex, float position);
   virtual void ProcessAxisMotions(void);
 
 private:
-  bool ProcessHatDirection(int index, HatDirection oldDir, HatDirection newDir, HatDirection targetDir);
+  bool ProcessHatDirection(int index, HAT_STATE oldState, HAT_STATE newState, HAT_DIRECTION targetDir);
 
   bool OnPress(const JoystickFeature& feature);
   void OnRelease(const JoystickFeature& feature);
@@ -69,7 +69,7 @@ private:
   IJoystickInputHandler* const m_handler;
   IJoystickButtonMap* const    m_buttonMap;
   std::vector<char>            m_buttonStates; // std::vector is specialized for <bool>
-  std::vector<HatDirection>    m_hatStates;
+  std::vector<HAT_STATE>       m_hatStates;
   std::vector<float>           m_axisStates;
   std::vector<JoystickFeature> m_featuresWithMotion;
   std::vector<JoystickFeature> m_repeatingFeatures;

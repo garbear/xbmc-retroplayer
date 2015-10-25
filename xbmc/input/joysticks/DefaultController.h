@@ -56,12 +56,12 @@ private:
    *
    * \return The button key ID
    */
-  static unsigned int GetButtonKeyID(const JoystickFeature& feature, CardinalDirection dir = DirectionUnknown);
+  static unsigned int GetButtonKeyID(const JoystickFeature& feature, CARDINAL_DIRECTION dir = CARDINAL_DIRECTION::UNKNOWN);
 
   /*!
    * \brief Return a vector of the four cardinal directions
    */
-  static const std::vector<CardinalDirection>& GetDirections(void);
+  static const std::vector<CARDINAL_DIRECTION>& GetDirections(void);
 
   IButtonKeyHandler* const m_handler;
   IButtonSequence*         m_easterEgg;

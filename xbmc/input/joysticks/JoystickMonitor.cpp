@@ -33,9 +33,9 @@ bool CJoystickMonitor::OnButtonMotion(unsigned int buttonIndex, bool bPressed)
   return false;
 }
 
-bool CJoystickMonitor::OnHatMotion(unsigned int hatIndex, HatDirection direction)
+bool CJoystickMonitor::OnHatMotion(unsigned int hatIndex, HAT_STATE state)
 {
-  if (direction != HatDirectionNone)
+  if (state != HAT_STATE::UNPRESSED)
   {
     CInputManager::Get().SetMouseActive(false);
     return ResetTimers();

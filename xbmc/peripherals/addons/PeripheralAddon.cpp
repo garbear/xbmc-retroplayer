@@ -27,6 +27,7 @@
 #include "input/joysticks/IJoystickDriverHandler.h"
 #include "input/joysticks/JoystickDriverPrimitive.h"
 #include "input/joysticks/JoystickTranslator.h"
+#include "input/joysticks/JoystickUtils.h"
 #include "peripherals/Peripherals.h"
 #include "peripherals/bus/virtual/PeripheralBusAddon.h"
 #include "peripherals/devices/PeripheralJoystick.h"
@@ -408,10 +409,10 @@ bool CPeripheralAddon::ProcessEvents(void)
           }
           case PERIPHERAL_EVENT_TYPE_DRIVER_HAT:
           {
-            const HatDirection dir = ToHatDirection(event.HatState());
+            const HAT_STATE state = ToHatState(event.HatState());
             CLog::Log(LOGDEBUG, "Joystick %s: Hat %u %s", joystickDevice->DeviceName().c_str(),
-                      event.DriverIndex(), CJoystickTranslator::HatDirectionToString(dir));
-            if (joystickDevice->OnHatMotion(event.DriverIndex(), dir))
+                      event.DriverIndex(), CJoystickTranslator::HatStateToString(state));
+            if (joystickDevice->OnHatMotion(event.DriverIndex(), state))
               CLog::Log(LOGDEBUG, "Event handled");
             break;
           }
@@ -636,16 +637,16 @@ const char* CPeripheralAddon::ToString(const PERIPHERAL_ERROR error)
   }
 }
 
-HatDirection CPeripheralAddon::ToHatDirection(JOYSTICK_STATE_HAT state)
+HAT_STATE CPeripheralAddon::ToHatState(JOYSTICK_STATE_HAT state)
 {
-  switch (state)
-  {
-  case JOYSTICK_STATE_HAT_LEFT:   return HatDirectionLeft;
-  case JOYSTICK_STATE_HAT_RIGHT:  return HatDirectionRight;
-  case JOYSTICK_STATE_HAT_UP:     return HatDirectionUp;
-  case JOYSTICK_STATE_HAT_DOWN:   return HatDirectionDown;
-  default:                        return HatDirectionNone;
-  }
+  HAT_STATE translatedState = HAT_STATE::UNPRESSED;
+
+  if (state & JOYSTICK_STATE_HAT_UP)    translatedState |= HAT_STATE::UP;
+  if (state & JOYSTICK_STATE_HAT_DOWN)  translatedState |= HAT_STATE::DOWN;
+  if (state & JOYSTICK_STATE_HAT_RIGHT) translatedState |= HAT_STATE::RIGHT;
+  if (state & JOYSTICK_STATE_HAT_LEFT)  translatedState |= HAT_STATE::LEFT;
+
+  return translatedState;
 }
 
 bool CPeripheralAddon::LogError(const PERIPHERAL_ERROR error, const char *strMethod) const

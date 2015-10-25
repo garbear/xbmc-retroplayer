@@ -46,11 +46,11 @@ public:
    * \brief Handle hat motion
    *
    * \param hatIndex     The index of the hat as reported by the driver
-   * \param direction    The direction the hat is now being pressed
+   * \param state        The direction the hat is now being pressed
    *
    * \return True if the new direction was handled, false otherwise
    */
-  virtual bool OnHatMotion(unsigned int hatIndex, HatDirection direction) = 0;
+  virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state) = 0;
 
   /*!
    * \brief Handle axis motion

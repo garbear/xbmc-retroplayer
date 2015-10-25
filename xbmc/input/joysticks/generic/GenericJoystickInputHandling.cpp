@@ -74,34 +74,34 @@ bool CGenericJoystickInputHandling::OnButtonMotion(unsigned int buttonIndex, boo
   return bHandled;
 }
 
-bool CGenericJoystickInputHandling::OnHatMotion(unsigned int hatIndex, HatDirection newDirection)
+bool CGenericJoystickInputHandling::OnHatMotion(unsigned int hatIndex, HAT_STATE newState)
 {
   // Ensure hatIndex will fit in vector
   if (m_hatStates.size() <= hatIndex)
     m_hatStates.resize(hatIndex + 1);
 
-  HatDirection& oldDirection = m_hatStates[hatIndex];
+  HAT_STATE& oldState = m_hatStates[hatIndex];
 
   bool bHandled = false;
 
-  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionUp);
-  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionRight);
-  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionDown);
-  bHandled |= ProcessHatDirection(hatIndex, oldDirection, newDirection, HatDirectionLeft);
+  bHandled |= ProcessHatDirection(hatIndex, oldState, newState, HAT_DIRECTION::UP);
+  bHandled |= ProcessHatDirection(hatIndex, oldState, newState, HAT_DIRECTION::RIGHT);
+  bHandled |= ProcessHatDirection(hatIndex, oldState, newState, HAT_DIRECTION::DOWN);
+  bHandled |= ProcessHatDirection(hatIndex, oldState, newState, HAT_DIRECTION::LEFT);
 
-  oldDirection = newDirection;
+  oldState = newState;
 
   return bHandled;
 }
 
 bool CGenericJoystickInputHandling::ProcessHatDirection(int index,
-    HatDirection oldDir, HatDirection newDir, HatDirection targetDir)
+    HAT_STATE oldState, HAT_STATE newState, HAT_DIRECTION targetDir)
 {
   bool bHandled = false;
 
-  if ((oldDir & targetDir) != (newDir & targetDir))
+  if (((int)oldState & (int)targetDir) != ((int)newState & (int)targetDir))
   {
-    const bool bActivated = (newDir & targetDir) != HatDirectionNone;
+    const bool bActivated = ((int)newState & (int)targetDir) != (int)HAT_STATE::UNPRESSED;
 
     JoystickFeature feature;
     if (m_buttonMap->GetFeature(CJoystickDriverPrimitive(index, targetDir), feature))
@@ -133,8 +133,8 @@ bool CGenericJoystickInputHandling::OnAxisMotion(unsigned int axisIndex, float n
   float oldPosition = m_axisStates[axisIndex];
   m_axisStates[axisIndex] = newPosition;
 
-  CJoystickDriverPrimitive positiveAxis(axisIndex, SemiAxisDirectionPositive);
-  CJoystickDriverPrimitive negativeAxis(axisIndex, SemiAxisDirectionNegative);
+  CJoystickDriverPrimitive positiveAxis(axisIndex, SEMIAXIS_DIRECTION::POSITIVE);
+  CJoystickDriverPrimitive negativeAxis(axisIndex, SEMIAXIS_DIRECTION::NEGATIVE);
 
   JoystickFeature positiveFeature;
   JoystickFeature negativeFeature;

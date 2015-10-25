@@ -124,7 +124,7 @@ bool CPeripheralJoystick::OnButtonMotion(unsigned int buttonIndex, bool bPressed
   return bHandled;
 }
 
-bool CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direction)
+bool CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HAT_STATE state)
 {
   CSingleLock lock(m_handlerMutex);
 
@@ -132,7 +132,7 @@ bool CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direct
   for (std::vector<DriverHandler>::iterator it = m_driverHandlers.begin(); it != m_driverHandlers.end(); ++it)
   {
     if (it->bPromiscuous)
-      it->handler->OnHatMotion(hatIndex, direction);
+      it->handler->OnHatMotion(hatIndex, state);
   }
 
   bool bHandled = false;
@@ -143,8 +143,8 @@ bool CPeripheralJoystick::OnHatMotion(unsigned int hatIndex, HatDirection direct
     if (!it->bPromiscuous)
     {
       // If hat is centered, notify all handlers to avoid "sticking"
-      if (!bHandled || direction == HatDirectionNone)
-        bHandled |= it->handler->OnHatMotion(hatIndex, direction);
+      if (!bHandled || state == HAT_STATE::UNPRESSED)
+        bHandled |= it->handler->OnHatMotion(hatIndex, state);
     }
   }
 

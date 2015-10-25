@@ -53,8 +53,8 @@ namespace PERIPHERALS
     // Utility functions
     static DriverMap                CreateLookupTable(const JoystickFeatureMap& features);
     static CJoystickDriverPrimitive ToPrimitive(const ADDON::DriverPrimitive& primitive);
-    static HatDirection             ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
-    static SemiAxisDirection        ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
+    static HAT_DIRECTION            ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection);
+    static SEMIAXIS_DIRECTION       ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir);
 
     CPeripheral* const  m_device;
     PeripheralAddonPtr  m_addon;

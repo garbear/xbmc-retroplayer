@@ -53,10 +53,10 @@ bool CAddonJoystickButtonMapping::OnButtonMotion(unsigned int buttonIndex, bool 
   return false;
 }
 
-bool CAddonJoystickButtonMapping::OnHatMotion(unsigned int hatIndex, HatDirection direction)
+bool CAddonJoystickButtonMapping::OnHatMotion(unsigned int hatIndex, HAT_STATE state)
 {
   if (m_driverHandler)
-    return m_driverHandler->OnHatMotion(hatIndex, direction);
+    return m_driverHandler->OnHatMotion(hatIndex, state);
 
   return false;
 }

@@ -56,13 +56,13 @@ public:
    * \brief Construct a driver primitive representing one of the four direction
    *        arrows on a dpad
    */
-  CJoystickDriverPrimitive(unsigned int hatIndex, HatDirection direction);
+  CJoystickDriverPrimitive(unsigned int hatIndex, HAT_DIRECTION direction);
 
   /*!
    * \brief Construct a driver primitive representing the positive or negative
    *        half of an axis
    */
-  CJoystickDriverPrimitive(unsigned int axisIndex, SemiAxisDirection direction);
+  CJoystickDriverPrimitive(unsigned int axisIndex, SEMIAXIS_DIRECTION direction);
 
   bool operator==(const CJoystickDriverPrimitive& rhs) const;
   bool operator<(const CJoystickDriverPrimitive& rhs) const;
@@ -74,8 +74,8 @@ public:
 
   DriverPrimitiveType Type(void) const        { return m_type; }
   unsigned int        Index(void) const       { return m_driverIndex; }
-  HatDirection        HatDir(void) const      { return m_hatDirection; }
-  SemiAxisDirection   SemiAxisDir(void) const { return m_semiAxisDirection; }
+  HAT_DIRECTION       HatDir(void) const      { return m_hatDirection; }
+  SEMIAXIS_DIRECTION  SemiAxisDir(void) const { return m_semiAxisDirection; }
 
   /*!
    * \brief An input primitive is valid if has a known type and:
@@ -87,6 +87,6 @@ public:
 private:
   DriverPrimitiveType m_type;
   unsigned int        m_driverIndex;
-  HatDirection        m_hatDirection;
-  SemiAxisDirection   m_semiAxisDirection;
+  HAT_DIRECTION       m_hatDirection;
+  SEMIAXIS_DIRECTION  m_semiAxisDirection;
 };

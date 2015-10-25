@@ -96,26 +96,28 @@ bool CAddonJoystickButtonMapWO::AddAccelerometer(const ::JoystickFeature& featur
   return m_addon->AddFeature(m_device, m_strControllerId, &accelerometer);
 }
 
-JOYSTICK_DRIVER_HAT_DIRECTION CAddonJoystickButtonMapWO::ToHatDirection(HatDirection dir)
+JOYSTICK_DRIVER_HAT_DIRECTION CAddonJoystickButtonMapWO::ToHatDirection(HAT_DIRECTION dir)
 {
   switch (dir)
   {
-    case HatDirectionLeft:   return JOYSTICK_DRIVER_HAT_LEFT;
-    case HatDirectionRight:  return JOYSTICK_DRIVER_HAT_RIGHT;
-    case HatDirectionUp:     return JOYSTICK_DRIVER_HAT_UP;
-    case HatDirectionDown:   return JOYSTICK_DRIVER_HAT_DOWN;
-    default:                 break;
+    case HAT_DIRECTION::UP:     return JOYSTICK_DRIVER_HAT_UP;
+    case HAT_DIRECTION::DOWN:   return JOYSTICK_DRIVER_HAT_DOWN;
+    case HAT_DIRECTION::RIGHT:  return JOYSTICK_DRIVER_HAT_RIGHT;
+    case HAT_DIRECTION::LEFT:   return JOYSTICK_DRIVER_HAT_LEFT;
+    default:
+      break;
   }
   return JOYSTICK_DRIVER_HAT_UNKNOWN;
 }
 
-JOYSTICK_DRIVER_SEMIAXIS_DIRECTION CAddonJoystickButtonMapWO::ToSemiAxisDirection(SemiAxisDirection dir)
+JOYSTICK_DRIVER_SEMIAXIS_DIRECTION CAddonJoystickButtonMapWO::ToSemiAxisDirection(SEMIAXIS_DIRECTION dir)
 {
   switch (dir)
   {
-    case SemiAxisDirectionNegative: return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE;
-    case SemiAxisDirectionPositive: return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE;
-    default:                        break;
+    case SEMIAXIS_DIRECTION::POSITIVE: return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE;
+    case SEMIAXIS_DIRECTION::NEGATIVE: return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE;
+    default:
+      break;
   }
   return JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_UNKNOWN;
 }

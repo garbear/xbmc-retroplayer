@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2015 Team XBMC
+ *      Copyright (C) 2014-2015 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,25 +19,19 @@
  */
 #pragma once
 
-#include "IJoystickDriverHandler.h"
+#include "JoystickTypes.h"
 
-/*!
- * Monitors joystick input and resets screensaver/shutdown timers whenever
- * motion occurs.
- */
-class CJoystickMonitor : public IJoystickDriverHandler
+inline HAT_DIRECTION& operator|=(HAT_DIRECTION& lhs, HAT_DIRECTION rhs)
 {
-public:
-  // implementation of IJoystickDriverHandler
-  virtual bool OnButtonMotion(unsigned int buttonIndex, bool bPressed);
-  virtual bool OnHatMotion(unsigned int hatIndex, HAT_STATE state);
-  virtual bool OnAxisMotion(unsigned int axisIndex, float position);
-  virtual void ProcessAxisMotions(void) { }
+  return lhs = static_cast<HAT_DIRECTION>(static_cast<int>(lhs) | static_cast<int>(rhs));
+}
 
-private:
-  /*!
-   * \brief Reset screensaver and shutdown timers
-   * \return True if the application was woken from screensaver
-   */
-  bool ResetTimers(void);
-};
+inline HAT_STATE& operator|=(HAT_STATE& lhs, HAT_STATE rhs)
+{
+  return lhs = static_cast<HAT_STATE>(static_cast<int>(lhs) | static_cast<int>(rhs));
+}
+
+inline SEMIAXIS_DIRECTION operator*(SEMIAXIS_DIRECTION lhs, int rhs)
+{
+  return static_cast<SEMIAXIS_DIRECTION>(static_cast<int>(lhs) * rhs);
+}

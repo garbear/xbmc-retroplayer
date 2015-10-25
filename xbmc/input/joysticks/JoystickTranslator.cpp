@@ -20,39 +20,40 @@
 
 #include "JoystickTranslator.h"
 
-const char* CJoystickTranslator::HatDirectionToString(HatDirection dir)
+const char* CJoystickTranslator::HatStateToString(HAT_STATE state)
 {
-  switch (dir)
+  switch (state)
   {
-    case HatDirectionLeft:      return "LEFT";
-    case HatDirectionRight:     return "RIGHT";
-    case HatDirectionUp:        return "UP";
-    case HatDirectionDown:      return "DOWN";
-    case HatDirectionLeftUp:    return "UP LEFT";
-    case HatDirectionLeftDown:  return "DOWN LEFT";
-    case HatDirectionRightUp:   return "UP RIGHT";
-    case HatDirectionRightDown: return "DOWN RIGHT";
-    case HatDirectionNone:
+    case HAT_STATE::UP:        return "UP";
+    case HAT_STATE::DOWN:      return "DOWN";
+    case HAT_STATE::RIGHT:     return "RIGHT";
+    case HAT_STATE::LEFT:      return "LEFT";
+    case HAT_STATE::RIGHTUP:   return "UP RIGHT";
+    case HAT_STATE::RIGHTDOWN: return "DOWN RIGHT";
+    case HAT_STATE::LEFTUP:    return "UP LEFT";
+    case HAT_STATE::LEFTDOWN:  return "DOWN LEFT";
+    case HAT_STATE::UNPRESSED:
     default:
       break;
   }
+
   return "RELEASED";
 }
 
-SemiAxisDirection CJoystickTranslator::PositionToSemiAxisDirection(float position)
+SEMIAXIS_DIRECTION CJoystickTranslator::PositionToSemiAxisDirection(float position)
 {
-  if      (position > 0) return SemiAxisDirectionPositive;
-  else if (position < 0) return SemiAxisDirectionNegative;
+  if      (position > 0) return SEMIAXIS_DIRECTION::POSITIVE;
+  else if (position < 0) return SEMIAXIS_DIRECTION::NEGATIVE;
 
-  return SemiAxisDirectionUnknown;
+  return SEMIAXIS_DIRECTION::UNKNOWN;
 }
 
-CardinalDirection CJoystickTranslator::VectorToCardinalDirection(float x, float y)
+CARDINAL_DIRECTION CJoystickTranslator::VectorToCardinalDirection(float x, float y)
 {
-  if      (y >= x && y >  -x) return DirectionUp;
-  else if (y <  x && y >= -x) return DirectionRight;
-  else if (y <= x && y <  -x) return DirectionDown;
-  else if (y >  x && y <= -x) return DirectionLeft;
+  if      (y >= x && y >  -x) return CARDINAL_DIRECTION::UP;
+  else if (y <  x && y >= -x) return CARDINAL_DIRECTION::RIGHT;
+  else if (y <= x && y <  -x) return CARDINAL_DIRECTION::DOWN;
+  else if (y >  x && y <= -x) return CARDINAL_DIRECTION::LEFT;
 
-  return DirectionUnknown;
+  return CARDINAL_DIRECTION::UNKNOWN;
 }

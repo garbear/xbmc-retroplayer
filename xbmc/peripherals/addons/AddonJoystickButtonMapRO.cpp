@@ -20,6 +20,7 @@
 
 #include "AddonJoystickButtonMapRO.h"
 #include "addons/include/kodi_peripheral_utils.hpp"
+#include "input/joysticks/JoystickUtils.h"
 #include "utils/log.h"
 
 using namespace PERIPHERALS;
@@ -92,14 +93,9 @@ CAddonJoystickButtonMapRO::DriverMap CAddonJoystickButtonMapRO::CreateLookupTabl
       driverMap[y_axis] = it->first;
       driverMap[z_axis] = it->first;
 
-      CJoystickDriverPrimitive x_axis_opposite(x_axis.Index(),
-          static_cast<SemiAxisDirection>(x_axis.SemiAxisDir() * -1));
-
-      CJoystickDriverPrimitive y_axis_opposite(y_axis.Index(),
-          static_cast<SemiAxisDirection>(y_axis.SemiAxisDir() * -1));
-
-      CJoystickDriverPrimitive z_axis_opposite(z_axis.Index(),
-          static_cast<SemiAxisDirection>(z_axis.SemiAxisDir() * -1));
+      CJoystickDriverPrimitive x_axis_opposite(x_axis.Index(), x_axis.SemiAxisDir() * -1);
+      CJoystickDriverPrimitive y_axis_opposite(y_axis.Index(), y_axis.SemiAxisDir() * -1);
+      CJoystickDriverPrimitive z_axis_opposite(z_axis.Index(), z_axis.SemiAxisDir() * -1);
 
       driverMap[x_axis_opposite] = it->first;
       driverMap[y_axis_opposite] = it->first;
@@ -226,24 +222,28 @@ CJoystickDriverPrimitive CAddonJoystickButtonMapRO::ToPrimitive(const ADDON::Dri
   return retVal;
 }
 
-HatDirection CAddonJoystickButtonMapRO::ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection)
+HAT_DIRECTION CAddonJoystickButtonMapRO::ToHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION driverDirection)
 {
   switch (driverDirection)
   {
-    case JOYSTICK_DRIVER_HAT_LEFT:   return HatDirectionLeft;
-    case JOYSTICK_DRIVER_HAT_RIGHT:  return HatDirectionRight;
-    case JOYSTICK_DRIVER_HAT_UP:     return HatDirectionUp;
-    case JOYSTICK_DRIVER_HAT_DOWN:   return HatDirectionDown;
-    default:                         return HatDirectionNone;
+    case JOYSTICK_DRIVER_HAT_LEFT:   return HAT_DIRECTION::LEFT;
+    case JOYSTICK_DRIVER_HAT_RIGHT:  return HAT_DIRECTION::RIGHT;
+    case JOYSTICK_DRIVER_HAT_UP:     return HAT_DIRECTION::UP;
+    case JOYSTICK_DRIVER_HAT_DOWN:   return HAT_DIRECTION::DOWN;
+    default:
+      break;
   }
+  return HAT_DIRECTION::UNKNOWN;
 }
 
-SemiAxisDirection CAddonJoystickButtonMapRO::ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir)
+SEMIAXIS_DIRECTION CAddonJoystickButtonMapRO::ToSemiAxisDirection(JOYSTICK_DRIVER_SEMIAXIS_DIRECTION dir)
 {
   switch (dir)
   {
-    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE: return SemiAxisDirectionNegative;
-    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE: return SemiAxisDirectionPositive;
-    default:                                          return SemiAxisDirectionUnknown;
+    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_POSITIVE: return SEMIAXIS_DIRECTION::POSITIVE;
+    case JOYSTICK_DRIVER_SEMIAXIS_DIRECTION_NEGATIVE: return SEMIAXIS_DIRECTION::NEGATIVE;
+    default:
+      break;
   }
+  return SEMIAXIS_DIRECTION::UNKNOWN;
 }

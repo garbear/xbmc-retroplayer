@@ -25,28 +25,28 @@ class CJoystickTranslator
 {
 public:
   /*!
-   * \brief Translate a hat direction to a string representation
+   * \brief Translate a hat state to a string representation
    *
-   * \param dir The hat direction
+   * \param state The hat state
    *
    * \return A capitalized string representation, or "RELEASED" if the hat is centered.
    */
-  static const char* HatDirectionToString(HatDirection dir);
+  static const char* HatStateToString(HAT_STATE state);
 
   /*!
    * \brief Get the semi-axis direction containing the specified position
    *
-   * \param position The position
+   * \param position The position of the axis
    *
-   * \return Positive, negative, or unknown if position is 0
+   * \return POSITIVE, NEGATIVE, or UNKNOWN if position is 0
    */
-  static SemiAxisDirection PositionToSemiAxisDirection(float position);
+  static SEMIAXIS_DIRECTION PositionToSemiAxisDirection(float position);
 
   /*!
    * \brief Get the closest cardinal direction to the given vector
    *
    * Ties are resolved in the clockwise direction: (0.5, 0.5) will resolve to
-   * Right.
+   * RIGHT.
    *
    * \param x  The x component of the vector
    * \param y  The y component of the vector
@@ -54,5 +54,5 @@ public:
    * \return The closest cardinal directon (up, down, right or left), or unknown
    *         if x and y are both 0.
    */
-  static CardinalDirection VectorToCardinalDirection(float x, float y);
+  static CARDINAL_DIRECTION VectorToCardinalDirection(float x, float y);
 };
