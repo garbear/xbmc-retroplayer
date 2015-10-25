@@ -147,7 +147,6 @@ void CFocusRendererGL::RenderEnd(void)
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_TEXTURE_2D);
   VerifyGLState();
-#endif
 
   CPoint pos(m_control->GetXPosition(), m_control->GetYPosition());
   g_graphicsContext.SetOrigin(pos.x, pos.y);
@@ -191,6 +190,7 @@ void CFocusRendererGL::RenderEnd(void)
   VerifyGLState();
 
   g_graphicsContext.RestoreOrigin();
+#endif
 }
 
 #endif
