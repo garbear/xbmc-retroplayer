@@ -18,7 +18,7 @@
  *
  */
 
-#include "JoystickDriverPrimitive.h"
+#include "DriverPrimitive.h"
 
 CDriverPrimitive::CDriverPrimitive(void)
   : m_type(),

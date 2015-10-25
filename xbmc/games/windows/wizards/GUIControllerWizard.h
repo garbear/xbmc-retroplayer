@@ -21,8 +21,8 @@
 
 #include "IGUIControllerWizard.h"
 #include "games/ControllerTypes.h"
+#include "input/joysticks/DriverPrimitive.h"
 #include "input/joysticks/IJoystickButtonMapper.h"
-#include "input/joysticks/JoystickDriverPrimitive.h"
 #include "threads/CriticalSection.h"
 #include "utils/Observer.h"
 

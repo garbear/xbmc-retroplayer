@@ -19,8 +19,8 @@
  */
 #pragma once
 
+#include "input/joysticks/DriverPrimitive.h"
 #include "input/joysticks/IJoystickDriverHandler.h"
-#include "input/joysticks/JoystickDriverPrimitive.h"
 
 #include <vector>
 

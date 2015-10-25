@@ -20,7 +20,7 @@
 #pragma once
 
 #include "addons/include/kodi_peripheral_types.h"
-#include "input/joysticks/JoystickDriverPrimitive.h"
+#include "input/joysticks/DriverPrimitive.h"
 #include "input/joysticks/JoystickTypes.h"
 #include "peripherals/addons/PeripheralAddon.h"
 

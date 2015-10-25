@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "JoystickDriverPrimitive.h"
+#include "DriverPrimitive.h"
 #include "JoystickTypes.h"
 
 #include <string>

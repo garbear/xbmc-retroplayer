@@ -20,9 +20,9 @@
 
 #include "GenericJoystickInputHandling.h"
 #include "DigitalAnalogButtonConverter.h"
+#include "input/joysticks/DriverPrimitive.h"
 #include "input/joysticks/IJoystickButtonMap.h"
 #include "input/joysticks/IJoystickInputHandler.h"
-#include "input/joysticks/JoystickDriverPrimitive.h"
 #include "input/joysticks/JoystickTranslator.h"
 #include "utils/log.h"
 

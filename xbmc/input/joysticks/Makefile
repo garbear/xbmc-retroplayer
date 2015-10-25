@@ -1,6 +1,6 @@
 SRCS=ButtonKeyHandler.cpp \
      DefaultController.cpp \
-     JoystickDriverPrimitive.cpp \
+     DriverPrimitive.cpp \
      JoystickEasterEgg.cpp \
      JoystickMonitor.cpp \
      JoystickTranslator.cpp \
