@@ -37,18 +37,22 @@ namespace PERIPHERALS
     virtual std::string ControllerID(void) const { return m_buttonMapRO.ControllerID(); }
     virtual bool Load(void);
     virtual bool GetFeature(const CJoystickDriverPrimitive& primitive, JoystickFeature& feature);
-    virtual bool GetButton(const JoystickFeature& feature, CJoystickDriverPrimitive& button);
-    virtual bool MapButton(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive);
-    virtual bool GetAnalogStick(const JoystickFeature& feature, int& horizIndex, bool& horizInverted,
-                                                                int& vertIndex,  bool& vertInverted);
-    virtual bool MapAnalogStick(const JoystickFeature& feature, int horizIndex, bool horizInverted,
-                                                                int vertIndex,  bool vertInverted);
-    virtual bool GetAccelerometer(const JoystickFeature& feature, int& xIndex, bool& xInverted,
-                                                                  int& yIndex, bool& yInverted,
-                                                                  int& zIndex, bool& zInverted);
-    virtual bool MapAccelerometer(const JoystickFeature& feature, int xIndex, bool xInverted,
-                                                                  int yIndex, bool yInverted,
-                                                                  int zIndex, bool zInverted);
+    virtual bool GetPrimitiveFeature(const JoystickFeature& feature, CJoystickDriverPrimitive& primitive);
+    virtual bool AddPrimitiveFeature(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive);
+    virtual bool GetAnalogStick(const JoystickFeature& feature, CJoystickDriverPrimitive& up,
+                                                                CJoystickDriverPrimitive& down,
+                                                                CJoystickDriverPrimitive& right,
+                                                                CJoystickDriverPrimitive& left);
+    virtual bool AddAnalogStick(const JoystickFeature& feature, const CJoystickDriverPrimitive& up,
+                                                                const CJoystickDriverPrimitive& down,
+                                                                const CJoystickDriverPrimitive& right,
+                                                                const CJoystickDriverPrimitive& left);
+    virtual bool GetAccelerometer(const JoystickFeature& feature, CJoystickDriverPrimitive& positiveX,
+                                                                  CJoystickDriverPrimitive& positiveY,
+                                                                  CJoystickDriverPrimitive& positiveZ);
+    virtual bool AddAccelerometer(const JoystickFeature& feature, const CJoystickDriverPrimitive& positiveX,
+                                                                  const CJoystickDriverPrimitive& positiveY,
+                                                                  const CJoystickDriverPrimitive& positiveZ);
 
   private:
     PeripheralAddonPtr        m_addon;

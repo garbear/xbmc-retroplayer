@@ -48,48 +48,46 @@ bool CAddonJoystickButtonMap::GetFeature(const CJoystickDriverPrimitive& primiti
   return m_buttonMapRO.GetFeature(primitive, feature);
 }
 
-bool CAddonJoystickButtonMap::GetButton(const JoystickFeature& feature, CJoystickDriverPrimitive& button)
+bool CAddonJoystickButtonMap::GetPrimitiveFeature(const JoystickFeature& feature, CJoystickDriverPrimitive& primitive)
 {
-  return m_buttonMapRO.GetButton(feature, button);
+  return m_buttonMapRO.GetPrimitiveFeature(feature, primitive);
 }
 
-bool CAddonJoystickButtonMap::MapButton(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive)
+bool CAddonJoystickButtonMap::AddPrimitiveFeature(const JoystickFeature& feature, const CJoystickDriverPrimitive& primitive)
 {
-  return m_buttonMapWO.MapButton(feature, primitive);
+  return m_buttonMapWO.AddPrimitiveFeature(feature, primitive);
 }
 
 bool CAddonJoystickButtonMap::GetAnalogStick(const JoystickFeature& feature,
-                                             int& horizIndex, bool& horizInverted,
-                                             int& vertIndex,  bool& vertInverted)
+                                             CJoystickDriverPrimitive& up,
+                                             CJoystickDriverPrimitive& down,
+                                             CJoystickDriverPrimitive& right,
+                                             CJoystickDriverPrimitive& left)
 {
-  return m_buttonMapRO.GetAnalogStick(feature, horizIndex, horizInverted,
-                                               vertIndex, vertInverted);
+  return m_buttonMapRO.GetAnalogStick(feature, up, down, right, left);
 }
 
-bool CAddonJoystickButtonMap::MapAnalogStick(const JoystickFeature& feature,
-                                             int horizIndex, bool horizInverted,
-                                             int vertIndex,  bool vertInverted)
+bool CAddonJoystickButtonMap::AddAnalogStick(const JoystickFeature& feature,
+                                             const CJoystickDriverPrimitive& up,
+                                             const CJoystickDriverPrimitive& down,
+                                             const CJoystickDriverPrimitive& right,
+                                             const CJoystickDriverPrimitive& left)
 {
-  return m_buttonMapWO.MapAnalogStick(feature, horizIndex, horizInverted,
-                                               vertIndex, vertInverted);
+  return m_buttonMapWO.AddAnalogStick(feature, up, down, right, left);
 }
 
 bool CAddonJoystickButtonMap::GetAccelerometer(const JoystickFeature& feature,
-                                               int& xIndex, bool& xInverted,
-                                               int& yIndex, bool& yInverted,
-                                               int& zIndex, bool& zInverted)
+                                               CJoystickDriverPrimitive& positiveX,
+                                               CJoystickDriverPrimitive& positiveY,
+                                               CJoystickDriverPrimitive& positiveZ)
 {
-  return m_buttonMapRO.GetAccelerometer(feature, xIndex, xInverted,
-                                                 yIndex, yInverted,
-                                                 zIndex, zInverted);
+  return m_buttonMapRO.GetAccelerometer(feature, positiveX, positiveY, positiveZ);
 }
 
-bool CAddonJoystickButtonMap::MapAccelerometer(const JoystickFeature& feature,
-                                               int xIndex, bool xInverted,
-                                               int yIndex, bool yInverted,
-                                               int zIndex, bool zInverted)
+bool CAddonJoystickButtonMap::AddAccelerometer(const JoystickFeature& feature,
+                                               const CJoystickDriverPrimitive& positiveX,
+                                               const CJoystickDriverPrimitive& positiveY,
+                                               const CJoystickDriverPrimitive& positiveZ)
 {
-  return m_buttonMapWO.MapAccelerometer(feature, xIndex, xInverted,
-                                                 yIndex, yInverted,
-                                                 zIndex, zInverted);
+  return m_buttonMapWO.AddAccelerometer(feature, positiveX, positiveY, positiveZ);
 }

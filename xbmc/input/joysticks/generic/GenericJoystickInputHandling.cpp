@@ -197,24 +197,43 @@ void CGenericJoystickInputHandling::ProcessAxisMotions(void)
   {
     const JoystickFeature& feature = *it;
 
-    int  xIndex;
-    bool xInverted;
-    int  yIndex;
-    bool yInverted;
-    int  zIndex;
-    bool zInverted;
+    CJoystickDriverPrimitive up;
+    CJoystickDriverPrimitive down;
+    CJoystickDriverPrimitive right;
+    CJoystickDriverPrimitive left;
 
-    if (m_buttonMap->GetAnalogStick(feature, xIndex, xInverted, yIndex,  yInverted))
+    CJoystickDriverPrimitive positiveX;
+    CJoystickDriverPrimitive positiveY;
+    CJoystickDriverPrimitive positiveZ;
+
+    if (m_buttonMap->GetAnalogStick(feature, up, down, right,  left))
     {
-      const float horizPos = GetAxisState(xIndex) * (xInverted ? -1.0f : 1.0f);
-      const float vertPos  = GetAxisState(yIndex)  * (yInverted  ? -1.0f : 1.0f);
+      float horizPos = 0.0f;
+      float vertPos = 0.0f;
+
+      if (right.Type() == DriverPrimitiveTypeSemiAxis)
+        horizPos = GetAxisState(right.Index()) * static_cast<int>(right.SemiAxisDir());
+
+      if (up.Type() == DriverPrimitiveTypeSemiAxis)
+        vertPos  = GetAxisState(up.Index())  * static_cast<int>(up.SemiAxisDir());
+
       m_handler->OnAnalogStickMotion(feature, horizPos, vertPos);
     }
-    else if (m_buttonMap->GetAccelerometer(feature, xIndex, xInverted, yIndex, yInverted, zIndex, zInverted))
+    else if (m_buttonMap->GetAccelerometer(feature, positiveX, positiveY, positiveZ))
     {
-      const float xPos = GetAxisState(xIndex) * (xInverted ? -1.0f : 1.0f);
-      const float yPos = GetAxisState(yIndex) * (yInverted ? -1.0f : 1.0f);
-      const float zPos = GetAxisState(zIndex) * (zInverted ? -1.0f : 1.0f);
+      float xPos = 0.0f;
+      float yPos = 0.0f;
+      float zPos = 0.0f;
+
+      if (positiveX.Type() == DriverPrimitiveTypeSemiAxis)
+        xPos = GetAxisState(positiveX.Index()) * static_cast<int>(positiveX.SemiAxisDir());
+
+      if (positiveY.Type() == DriverPrimitiveTypeSemiAxis)
+        yPos = GetAxisState(positiveY.Index()) * static_cast<int>(positiveY.SemiAxisDir());
+
+      if (positiveZ.Type() == DriverPrimitiveTypeSemiAxis)
+        zPos = GetAxisState(positiveZ.Index()) * static_cast<int>(positiveZ.SemiAxisDir());
+
       m_handler->OnAccelerometerMotion(feature, xPos, yPos, zPos);
     }
   }
