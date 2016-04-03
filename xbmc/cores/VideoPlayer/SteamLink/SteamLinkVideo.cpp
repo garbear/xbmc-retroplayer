@@ -143,10 +143,10 @@ void CSteamLinkVideo::Dispose()
 
 int CSteamLinkVideo::Decode(uint8_t *pData, int iSize, double dts, double pts)
 {
-  int ret = VC_ERROR;
-
   if (!pData || iSize == 0)
-    return ret;
+    return 0;
+
+  int ret = VC_ERROR;
 
   if (BeginFrame(iSize))
   {
