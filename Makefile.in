@@ -23,6 +23,10 @@ VideoPlayer_ARCHIVES=xbmc/cores/VideoPlayer/VideoPlayer.a \
                    xbmc/cores/VideoPlayer/DVDSubtitles/DVDSubtitles.a \
                    xbmc/cores/VideoPlayer/Process/Process.a
 
+ifeq (@USE_STEAMLINK@,1)
+VideoPlayer_ARCHIVES += xbmc/cores/VideoPlayer/overrides/SteamLink/steamlinkvideo.a
+endif
+
 DIRECTORY_ARCHIVES=$(VideoPlayer_ARCHIVES) \
                    xbmc/addons/addons.a \
                    xbmc/addons/binary/interfaces/addon-interfaces.a \

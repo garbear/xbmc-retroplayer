@@ -84,6 +84,10 @@
 #include "windowing/WindowingFactory.h"
 #include "DVDCodecs/DVDCodecUtils.h"
 
+#ifdef HAS_STEAMLINK
+#include "cores/VideoPlayer/overrides/SteamLink/SteamLinkVideo.h"
+#endif
+
 using namespace PVR;
 using namespace KODI::MESSAGING;
 

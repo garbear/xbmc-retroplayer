@@ -21,7 +21,7 @@
 
 #include "SteamLinkVideo.h"
 //#include "DVDVideoCodec.h"
-//#include "cores/VideoPlayer/DVDClock.h"
+#include "cores/VideoPlayer/DVDClock.h"
 //#include "cores/VideoPlayer/DVDStreamInfo.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
@@ -30,6 +30,8 @@
 #include "SLVideo.h"
 
 //#include <cstring>
+#include <ios>     // for std::fixed
+#include <iomanip> // for std::setprecision
 #include <sstream>
 //#include <unistd.h> // for usleep()
 

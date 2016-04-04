@@ -45,9 +45,6 @@
 #include "Video/DVDVideoCodecAndroidMediaCodec.h"
 #include "platform/android/activity/AndroidFeatures.h"
 #endif
-#if defined(HAS_STEAMLINK)
-#include "Video/SteamLinkVideo.h"
-#endif
 #include "Audio/DVDAudioCodecFFmpeg.h"
 #include "Audio/DVDAudioCodecPassthrough.h"
 #include "Overlay/DVDOverlayCodecSSA.h"
@@ -161,8 +158,6 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, CProces
     pCodec = OpenCodec(new CDVDVideoCodecOpenMax(processInfo), hint, options);
 #elif defined(HAS_MMAL)
     pCodec = OpenCodec(new CMMALVideo(processInfo), hint, options);
-#elif defined(HAS_STEAMLINK)
-    pCodec = OpenCodec(new STEAMLINK::CSteamLinkVideo(processInfo), hint, options);
 #endif
     if (pCodec)
       return pCodec;
