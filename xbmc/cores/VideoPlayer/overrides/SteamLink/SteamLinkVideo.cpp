@@ -30,9 +30,12 @@
 #include "SLVideo.h"
 
 //#include <cstring>
+#include <sstream>
 //#include <unistd.h> // for usleep()
 
 using namespace STEAMLINK;
+
+#define MESSAGE_QUEUE_TIMEOUT_MS  100 // TODO
 
 namespace
 {
@@ -81,6 +84,9 @@ CSteamLinkVideo::~CSteamLinkVideo()
 
 bool CSteamLinkVideo::OpenStream(CDVDStreamInfo &hint)
 {
+  if (m_bSteamLinkVideo)
+    CloseStream(true);
+
   m_bSteamLinkVideo = false;
 
   if (!hint.software)
@@ -97,8 +103,6 @@ bool CSteamLinkVideo::OpenStream(CDVDStreamInfo &hint)
 
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::OpenStream(hint);
-
-  CloseStream(true);
 
   bool bSuccess = false;
 
@@ -167,7 +171,7 @@ double CSteamLinkVideo::GetCurrentPts()
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::GetCurrentPts();
 
-  return false;
+  return DVD_NOPTS_VALUE;
 }
 
 double CSteamLinkVideo::GetOutputDelay()
@@ -175,7 +179,7 @@ double CSteamLinkVideo::GetOutputDelay()
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::GetOutputDelay();
 
-  return false;
+  return 0.0;
 }
 
 std::string CSteamLinkVideo::GetPlayerInfo()
@@ -183,23 +187,9 @@ std::string CSteamLinkVideo::GetPlayerInfo()
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::GetPlayerInfo();
 
-  return false;
-}
-
-int CSteamLinkVideo::GetVideoBitrate()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::GetVideoBitrate();
-
-  return false;
-}
-
-std::string CSteamLinkVideo::GetStereoMode()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::GetStereoMode();
-
-  return false;
+  std::ostringstream s;
+  s << "Mb/s: " << std::fixed << std::setprecision(2) << m_videoStats.GetBitrate() / (1024.0*1024.0);
+  return s.str();
 }
 
 void CSteamLinkVideo::SetSpeed(int iSpeed)
@@ -207,23 +197,7 @@ void CSteamLinkVideo::SetSpeed(int iSpeed)
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::SetSpeed(iSpeed);
 
-  return false;
-}
-
-int CSteamLinkVideo::GetDecoderBufferSize()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::GetDecoderBufferSize();
-
-  return false;
-}
-
-int CSteamLinkVideo::GetDecoderFreeSpace()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::GetDecoderFreeSpace();
-
-  return false;
+  // TODO
 }
 
 void CSteamLinkVideo::OnStartup()
@@ -243,7 +217,33 @@ void CSteamLinkVideo::Process()
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::Process();
 
-  // TODO
+  m_videoStats.Start();
+
+  while (!m_bStop)
+  {
+    CDVDMsg* pMsg;
+    MsgQueueReturnCode ret = m_messageQueue.Get(&pMsg, MESSAGE_QUEUE_TIMEOUT_MS);
+
+    if (MSGQ_IS_ERROR(ret))
+    {
+      CLog::Log(LOGERROR, "SteamLinkVideo: Got MSGQ_ABORT or MSGO_IS_ERROR returned true");
+      break;
+    }
+    else if (ret == MSGQ_TIMEOUT)
+    {
+      continue;
+    }
+
+    if (pMsg->IsType(CDVDMsg::DEMUXER_PACKET))
+    {
+      DemuxPacket* pPacket = ((CDVDMsgDemuxerPacket*)pMsg)->GetPacket();
+      bool bPacketDrop     = ((CDVDMsgDemuxerPacket*)pMsg)->GetPacketDrop();
+
+      // TODO
+    }
+
+    pMsg->Release();
+  }
 }
 
 void CSteamLinkVideo::GetDisplayResolution(int &iWidth, int &iHeight)
@@ -268,11 +268,7 @@ bool CSteamLinkVideo::SubmitFrame()
 
 
 
-
-
-
-
-
+/*
 int CSteamLinkVideo::Decode(uint8_t *pData, int iSize, double dts, double pts)
 {
   if (!pData || iSize == 0)
@@ -287,44 +283,6 @@ int CSteamLinkVideo::Decode(uint8_t *pData, int iSize, double dts, double pts)
       if (SubmitFrame())
       {
         ret = VC_PICTURE;
-
-        /*
-        if (pts == DVD_NOPTS_VALUE)
-        {
-          CLog::Log(LOGDEBUG, "SteamLinkVideo: No pts");
-          ret = VC_BUFFER;
-        }
-        else
-        {
-          CLog::Log(LOGDEBUG, "SteamLinkVideo: Picture!!!!!!!!!!!!!");
-        }
-
-        /*
-        if (CDVDClock::GetAbsoluteClock() < pts)
-        {
-          CDVDClock::WaitAbsoluteClock(pts * DVD_TIME_BASE);
-          ret = VC_PICTURE;
-        }
-        else
-        {
-          ret = VC_BUFFER;
-        }
-
-        /*
-        const double nowSec = CDVDClock::GetAbsoluteClock() / DVD_TIME_BASE;
-        const double ptsSec = pts;// / DVD_TIME_BASE;
-        if (nowSec <= ptsSec)
-        {
-          CLog::Log(LOGDEBUG, "SteamLinkVideo: Sleeping %u ms and showing", (unsigned int)((ptsSec - nowSec) * 1000));
-          CDVDClock::WaitAbsoluteClock(pts * DVD_TIME_BASE);
-          ret = VC_PICTURE;
-        }
-        else
-        {
-          CLog::Log(LOGDEBUG, "SteamLinkVideo: Buffering");
-          ret = VC_BUFFER;
-        }
-        */
       }
       else
         CLog::Log(LOGERROR, "SteamLinkVideo Error submitting frame", GetName());
@@ -360,3 +318,4 @@ bool CSteamLinkVideo::GetPicture(DVDVideoPicture *pDvdVideoPicture)
 
   return true;
 }
+*/

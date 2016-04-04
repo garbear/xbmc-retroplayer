@@ -44,11 +44,7 @@ public:
   virtual double GetCurrentPts() override;
   virtual double GetOutputDelay() override;
   virtual std::string GetPlayerInfo() override;
-  virtual int GetVideoBitrate() override;
-  virtual std::string GetStereoMode() override;
   virtual void SetSpeed(int iSpeed) override;
-  virtual int  GetDecoderBufferSize() override;
-  virtual int  GetDecoderFreeSpace() override;
 
 protected:
   // implementation of CTread via CVideoPlayerVideo
