@@ -38,25 +38,9 @@ public:
   // implementation of IDVDStreamPlayer via CVideoPlayerVideo
   virtual bool OpenStream(CDVDStreamInfo &hint) override;
   virtual void CloseStream(bool bWaitForBuffers) override;
-  virtual void SendMessage(CDVDMsg* pMsg, int priority = 0) override;
-  virtual void FlushMessages() override;
-  virtual bool IsInited() const override;
-  virtual bool AcceptsData() const override;
-  virtual bool IsStalled() const override;
 
   // implementation of IDVDStreamPlayerVideo via CVideoPlayerVideo
-  virtual bool StepFrame() override;
   virtual void Flush(bool sync) override;
-  virtual void WaitForBuffers() override;
-  virtual bool HasData() const override;
-  virtual int  GetLevel() const override;
-  virtual void EnableSubtitle(bool bEnable) override;
-  virtual bool IsSubtitleEnabled() override;
-  virtual void EnableFullscreen(bool bEnable) override;
-  virtual double GetDelay() override;
-  virtual void SetDelay(double delay) override;
-  virtual double GetSubtitleDelay() override;
-  virtual void SetSubtitleDelay(double delay) override;
   virtual double GetCurrentPts() override;
   virtual double GetOutputDelay() override;
   virtual std::string GetPlayerInfo() override;
@@ -65,8 +49,12 @@ public:
   virtual void SetSpeed(int iSpeed) override;
   virtual int  GetDecoderBufferSize() override;
   virtual int  GetDecoderFreeSpace() override;
-  virtual bool IsEOS() override;
-  virtual bool SubmittedEOS() const override;
+
+protected:
+  // implementation of CTread via CVideoPlayerVideo
+  virtual void OnStartup() override;
+  virtual void OnExit() override;
+  virtual void Process() override;
 
 private:
   /*!
@@ -74,6 +62,16 @@ private:
    * to bypass CVideoPlayerVideo.
    */
   bool m_bSteamLinkVideo;
+
+  // Steam Link functions
+  void GetDisplayResolution(int &iWidth, int &iHeight);
+  bool BeginFrame(int nFrameSize);
+  bool WriteFrameData(void *pData, int nDataSize);
+  bool SubmitFrame();
+
+  // Steam Link data
+  void* m_context;
+  void* m_stream;
 };
 
 }

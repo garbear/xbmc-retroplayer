@@ -65,7 +65,9 @@ CSteamLinkVideo::CSteamLinkVideo(CDVDClock* pClock,
                                  CRenderManager& renderManager,
                                  CProcessInfo &processInfo) :
   CVideoPlayerVideo(pClock, pOverlayContainer, parent, renderManager, processInfo),
-  m_bSteamLinkVideo(false)
+  m_bSteamLinkVideo(false),
+  m_context(nullptr),
+  m_stream(nullptr)
 {
   // TODO: Refcount to allow logging with multiple instances
   SLVideo_SetLogLevel(g_advancedSettings.CanLogComponent(LOGVIDEO) ? k_ESLVideoLogDebug : k_ESLVideoLogError);
@@ -79,12 +81,57 @@ CSteamLinkVideo::~CSteamLinkVideo()
 
 bool CSteamLinkVideo::OpenStream(CDVDStreamInfo &hint)
 {
-  m_bSteamLinkVideo = false; // TODO
+  m_bSteamLinkVideo = false;
+
+  if (!hint.software)
+  {
+    switch (hint.codec)
+    {
+      case AV_CODEC_ID_H264:
+        m_bSteamLinkVideo = true;
+        break;
+      default:
+        break;
+    }
+  }
 
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::OpenStream(hint);
 
-  return false;
+  CloseStream(true);
+
+  bool bSuccess = false;
+
+  CSLVideoContext* context = SLVideo_CreateContext();
+  if (context)
+  {
+    CSLVideoStream* stream = SLVideo_CreateStream(context, k_ESLVideoFormatH264);
+    if (stream)
+    {
+      bSuccess = true;
+      m_context = context;
+      m_stream = stream;
+
+      if (g_advancedSettings.CanLogComponent(LOGVIDEO))
+      {
+        int width = 0;
+        int height = 0;
+        GetDisplayResolution(width, height);
+        CLog::Log(LOGDEBUG, "SteamLinkVideo Display resolution = %d x %d", width, height);
+      }
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "SteamLinkVideo Failed to create stream");
+      SLVideo_FreeContext(context);
+    }
+  }
+  else
+  {
+    CLog::Log(LOGERROR, "SteamLinkVideo Failed to create context");
+  }
+
+  return bSuccess;
 }
 
 void CSteamLinkVideo::CloseStream(bool bWaitForBuffers)
@@ -92,55 +139,16 @@ void CSteamLinkVideo::CloseStream(bool bWaitForBuffers)
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::CloseStream(bWaitForBuffers);
 
-  return false;
-}
-
-void CSteamLinkVideo::SendMessage(CDVDMsg* pMsg, int priority = 0)
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::SendMessage(pMsg, priority);
-
-  return false;
-}
-
-void CSteamLinkVideo::FlushMessages()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::FlushMessages();
-
-  return false;
-}
-
-bool CSteamLinkVideo::IsInited() const
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::IsInited();
-
-  return false;
-}
-
-bool CSteamLinkVideo::AcceptsData() const
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::AcceptsData();
-
-  return false;
-}
-
-bool CSteamLinkVideo::IsStalled() const
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::IsStalled();
-
-  return false;
-}
-
-bool CSteamLinkVideo::StepFrame()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::StepFrame();
-
-  return false;
+  if (m_stream)
+  {
+    SLVideo_FreeStream(static_cast<CSLVideoStream*>(m_stream));
+    m_stream = nullptr;
+  }
+  if (m_context)
+  {
+    SLVideo_FreeContext(static_cast<CSLVideoContext*>(m_context));
+    m_context = nullptr;
+  }
 }
 
 void CSteamLinkVideo::Flush(bool sync)
@@ -148,87 +156,10 @@ void CSteamLinkVideo::Flush(bool sync)
   if (!m_bSteamLinkVideo)
     return CVideoPlayerVideo::Flush(sync);
 
-  return false;
-}
-
-void CSteamLinkVideo::WaitForBuffers()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::WaitForBuffers();
-
-  return false;
-}
-
-bool CSteamLinkVideo::HasData() const
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::HasData();
-
-  return false;
-}
-
-int CSteamLinkVideo::GetLevel() const
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::GetLevel();
-
-  return false;
-}
-
-void CSteamLinkVideo::EnableSubtitle(bool bEnable)
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::EnableSubtitle(bEnable);
-
-  return false;
-}
-
-bool CSteamLinkVideo::IsSubtitleEnabled()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::IsSubtitleEnabled();
-
-  return false;
-}
-
-void CSteamLinkVideo::EnableFullscreen(bool bEnable)
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::EnableFullscreen(bEnable);
-
-  return false;
-}
-
-double CSteamLinkVideo::GetDelay()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::GetDelay();
-
-  return false;
-}
-
-void CSteamLinkVideo::SetDelay(double delay)
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::SetDelay(delay);
-
-  return false;
-}
-
-double CSteamLinkVideo::GetSubtitleDelay()
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::GetSubtitleDelay();
-
-  return false;
-}
-
-void CSteamLinkVideo::SetSubtitleDelay(double delay)
-{
-  if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::SetSubtitleDelay(delay);
-
-  return false;
+  // TODO
+  m_messageQueue.Flush();
+  //m_messageQueue.Put(new CDVDMsgBool(CDVDMsg::GENERAL_FLUSH, sync), 1);
+  //m_bAbortOutput = true;
 }
 
 double CSteamLinkVideo::GetCurrentPts()
@@ -295,95 +226,52 @@ int CSteamLinkVideo::GetDecoderFreeSpace()
   return false;
 }
 
-bool CSteamLinkVideo::IsEOS()
+void CSteamLinkVideo::OnStartup()
 {
   if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::IsEOS();
-
-  return false;
+    return CVideoPlayerVideo::OnStartup();
 }
 
-bool CSteamLinkVideo::SubmittedEOS() const
+void CSteamLinkVideo::OnExit()
 {
   if (!m_bSteamLinkVideo)
-    return CVideoPlayerVideo::SubmittedEOS();
-
-  return false;
+    return CVideoPlayerVideo::OnExit();
 }
 
-
-
-
-
-
-
-
-
-bool CSteamLinkVideo::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
+void CSteamLinkVideo::Process()
 {
-  if (hints.software)
-    return false;
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::Process();
 
-  Dispose();
-
-  CSLVideoContext* context = SLVideo_CreateContext();
-  if (context)
-  {
-    CSLVideoStream* stream = nullptr;
-
-    switch (hints.codec)
-    {
-      case AV_CODEC_ID_H264:
-        stream = SLVideo_CreateStream(context, k_ESLVideoFormatH264);
-        break;
-      default:
-        if (g_advancedSettings.CanLogComponent(LOGVIDEO))
-          CLog::Log(LOGDEBUG, "%s: Codec not supported", GetName());
-        break;
-    }
-
-    if (stream)
-    {
-      // Success
-      m_context = context;
-      m_stream = stream;
-
-      if (g_advancedSettings.CanLogComponent(LOGVIDEO))
-      {
-        int width = 0;
-        int height = 0;
-        GetDisplayResolution(width, height);
-
-        CLog::Log(LOGDEBUG, "%s: Display resolution = %d x %d", GetName(), width, height);
-      }
-    }
-    else
-    {
-      CLog::Log(LOGERROR, "%s: Failed to create stream", GetName());
-      SLVideo_FreeContext(context);
-    }
-  }
-  else
-  {
-    CLog::Log(LOGERROR, "%s: Failed to create context", GetName());
-  }
-
-  return m_context != nullptr;
+  // TODO
 }
 
-void CSteamLinkVideo::Dispose()
+void CSteamLinkVideo::GetDisplayResolution(int &iWidth, int &iHeight)
 {
-  if (m_stream)
-  {
-    SLVideo_FreeStream(static_cast<CSLVideoStream*>(m_stream));
-    m_stream = nullptr;
-  }
-  if (m_context)
-  {
-    SLVideo_FreeContext(static_cast<CSLVideoContext*>(m_context));
-    m_context = nullptr;
-  }
+  SLVideo_GetDisplayResolution(static_cast<CSLVideoContext*>(m_context), &iWidth, &iHeight);
 }
+
+bool CSteamLinkVideo::BeginFrame(int nFrameSize)
+{
+  return SLVideo_BeginFrame(static_cast<CSLVideoStream*>(m_stream), nFrameSize) == 0;
+}
+
+bool CSteamLinkVideo::WriteFrameData(void *pData, int nDataSize)
+{
+  return SLVideo_WriteFrameData(static_cast<CSLVideoStream*>(m_stream), pData, nDataSize) == 0;
+}
+
+bool CSteamLinkVideo::SubmitFrame()
+{
+  return SLVideo_SubmitFrame(static_cast<CSLVideoStream*>(m_stream)) == 0;
+}
+
+
+
+
+
+
+
 
 int CSteamLinkVideo::Decode(uint8_t *pData, int iSize, double dts, double pts)
 {
@@ -439,24 +327,19 @@ int CSteamLinkVideo::Decode(uint8_t *pData, int iSize, double dts, double pts)
         */
       }
       else
-        CLog::Log(LOGERROR, "%s: Error submitting frame", GetName());
+        CLog::Log(LOGERROR, "SteamLinkVideo Error submitting frame", GetName());
     }
     else
     {
-      CLog::Log(LOGERROR, "%s: Tried to write more data than expected", GetName()); // TODO
+      CLog::Log(LOGERROR, "SteamLinkVideo Tried to write more data than expected", GetName()); // TODO
     }
   }
   else
   {
-    CLog::Log(LOGERROR, "%s: Failed to begin frame", GetName());
+    CLog::Log(LOGERROR, "SteamLinkVideo Failed to begin frame", GetName());
   }
 
   return ret;
-}
-
-void CSteamLinkVideo::Reset(void)
-{
-  // TODO
 }
 
 bool CSteamLinkVideo::GetPicture(DVDVideoPicture *pDvdVideoPicture)
@@ -476,24 +359,4 @@ bool CSteamLinkVideo::GetPicture(DVDVideoPicture *pDvdVideoPicture)
   pDvdVideoPicture->format = RENDER_FMT_BYPASS;
 
   return true;
-}
-
-void CSteamLinkVideo::GetDisplayResolution(int &iWidth, int &iHeight)
-{
-  SLVideo_GetDisplayResolution(static_cast<CSLVideoContext*>(m_context), &iWidth, &iHeight);
-}
-
-bool CSteamLinkVideo::BeginFrame(int nFrameSize)
-{
-  return SLVideo_BeginFrame(static_cast<CSLVideoStream*>(m_stream), nFrameSize) == 0;
-}
-
-bool CSteamLinkVideo::WriteFrameData(void *pData, int nDataSize)
-{
-  return SLVideo_WriteFrameData(static_cast<CSLVideoStream*>(m_stream), pData, nDataSize) == 0;
-}
-
-bool CSteamLinkVideo::SubmitFrame()
-{
-  return SLVideo_SubmitFrame(static_cast<CSLVideoStream*>(m_stream)) == 0;
 }
