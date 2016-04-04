@@ -20,17 +20,17 @@
  */
 
 #include "SteamLinkVideo.h"
-#include "DVDVideoCodec.h"
-#include "cores/VideoPlayer/DVDClock.h"
-#include "cores/VideoPlayer/DVDStreamInfo.h"
+//#include "DVDVideoCodec.h"
+//#include "cores/VideoPlayer/DVDClock.h"
+//#include "cores/VideoPlayer/DVDStreamInfo.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 
 // Steam Link video API
 #include "SLVideo.h"
 
-#include <cstring>
-#include <unistd.h> // for usleep()
+//#include <cstring>
+//#include <unistd.h> // for usleep()
 
 using namespace STEAMLINK;
 
@@ -59,10 +59,13 @@ namespace
   }
 }
 
-CSteamLinkVideo::CSteamLinkVideo(CProcessInfo &processInfo) :
-  CDVDVideoCodec(processInfo),
-  m_context(nullptr),
-  m_stream(nullptr)
+CSteamLinkVideo::CSteamLinkVideo(CDVDClock* pClock,
+                                 CDVDOverlayContainer* pOverlayContainer,
+                                 CDVDMessageQueue& parent,
+                                 CRenderManager& renderManager,
+                                 CProcessInfo &processInfo) :
+  CVideoPlayerVideo(pClock, pOverlayContainer, parent, renderManager, processInfo),
+  m_bSteamLinkVideo(false)
 {
   // TODO: Refcount to allow logging with multiple instances
   SLVideo_SetLogLevel(g_advancedSettings.CanLogComponent(LOGVIDEO) ? k_ESLVideoLogDebug : k_ESLVideoLogError);
@@ -71,9 +74,250 @@ CSteamLinkVideo::CSteamLinkVideo(CProcessInfo &processInfo) :
 
 CSteamLinkVideo::~CSteamLinkVideo()
 {
-  Dispose();
   SLVideo_SetLogFunction(nullptr, nullptr);
 }
+
+bool CSteamLinkVideo::OpenStream(CDVDStreamInfo &hint)
+{
+  m_bSteamLinkVideo = false; // TODO
+
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::OpenStream(hint);
+
+  return false;
+}
+
+void CSteamLinkVideo::CloseStream(bool bWaitForBuffers)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::CloseStream(bWaitForBuffers);
+
+  return false;
+}
+
+void CSteamLinkVideo::SendMessage(CDVDMsg* pMsg, int priority = 0)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::SendMessage(pMsg, priority);
+
+  return false;
+}
+
+void CSteamLinkVideo::FlushMessages()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::FlushMessages();
+
+  return false;
+}
+
+bool CSteamLinkVideo::IsInited() const
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::IsInited();
+
+  return false;
+}
+
+bool CSteamLinkVideo::AcceptsData() const
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::AcceptsData();
+
+  return false;
+}
+
+bool CSteamLinkVideo::IsStalled() const
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::IsStalled();
+
+  return false;
+}
+
+bool CSteamLinkVideo::StepFrame()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::StepFrame();
+
+  return false;
+}
+
+void CSteamLinkVideo::Flush(bool sync)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::Flush(sync);
+
+  return false;
+}
+
+void CSteamLinkVideo::WaitForBuffers()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::WaitForBuffers();
+
+  return false;
+}
+
+bool CSteamLinkVideo::HasData() const
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::HasData();
+
+  return false;
+}
+
+int CSteamLinkVideo::GetLevel() const
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetLevel();
+
+  return false;
+}
+
+void CSteamLinkVideo::EnableSubtitle(bool bEnable)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::EnableSubtitle(bEnable);
+
+  return false;
+}
+
+bool CSteamLinkVideo::IsSubtitleEnabled()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::IsSubtitleEnabled();
+
+  return false;
+}
+
+void CSteamLinkVideo::EnableFullscreen(bool bEnable)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::EnableFullscreen(bEnable);
+
+  return false;
+}
+
+double CSteamLinkVideo::GetDelay()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetDelay();
+
+  return false;
+}
+
+void CSteamLinkVideo::SetDelay(double delay)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::SetDelay(delay);
+
+  return false;
+}
+
+double CSteamLinkVideo::GetSubtitleDelay()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetSubtitleDelay();
+
+  return false;
+}
+
+void CSteamLinkVideo::SetSubtitleDelay(double delay)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::SetSubtitleDelay(delay);
+
+  return false;
+}
+
+double CSteamLinkVideo::GetCurrentPts()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetCurrentPts();
+
+  return false;
+}
+
+double CSteamLinkVideo::GetOutputDelay()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetOutputDelay();
+
+  return false;
+}
+
+std::string CSteamLinkVideo::GetPlayerInfo()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetPlayerInfo();
+
+  return false;
+}
+
+int CSteamLinkVideo::GetVideoBitrate()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetVideoBitrate();
+
+  return false;
+}
+
+std::string CSteamLinkVideo::GetStereoMode()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetStereoMode();
+
+  return false;
+}
+
+void CSteamLinkVideo::SetSpeed(int iSpeed)
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::SetSpeed(iSpeed);
+
+  return false;
+}
+
+int CSteamLinkVideo::GetDecoderBufferSize()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetDecoderBufferSize();
+
+  return false;
+}
+
+int CSteamLinkVideo::GetDecoderFreeSpace()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::GetDecoderFreeSpace();
+
+  return false;
+}
+
+bool CSteamLinkVideo::IsEOS()
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::IsEOS();
+
+  return false;
+}
+
+bool CSteamLinkVideo::SubmittedEOS() const
+{
+  if (!m_bSteamLinkVideo)
+    return CVideoPlayerVideo::SubmittedEOS();
+
+  return false;
+}
+
+
+
+
+
+
+
+
 
 bool CSteamLinkVideo::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
 {
