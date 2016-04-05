@@ -72,6 +72,10 @@
 #include "linux/XTimeUtils.h"
 #endif
 
+#if defined(HAS_STEAMLINK)
+#include "HwDecRender/RendererSteamLink.h"
+#endif
+
 #include "RenderCapture.h"
 
 /* to use the same as player */
@@ -110,6 +114,7 @@ static std::string GetRenderFormatName(ERenderFormat format)
     case RENDER_FMT_IMXMAP:    return "IMXMAP";
     case RENDER_FMT_MMAL:      return "MMAL";
     case RENDER_FMT_AML:       return "AMLCODEC";
+    case RENDER_FMT_STEAMLINK: return "STEAMLINK";
     case RENDER_FMT_NONE:      return "NONE";
   }
   return "UNKNOWN";
@@ -579,6 +584,12 @@ void CRenderManager::CreateRenderer()
     {
 #if defined(HAS_LIBAMCODEC)
       m_pRenderer = new CRendererAML;
+#endif
+    }
+    else if (m_format == RENDER_FMT_STEAMLINK)
+    {
+#if defined(HAS_STEAMLINK)
+      m_pRenderer = new STEAMLINK::CRendererSteamLink;
 #endif
     }
     else if (m_format != RENDER_FMT_NONE)
@@ -1149,6 +1160,7 @@ int CRenderManager::AddVideoPicture(DVDVideoPicture& pic)
   || pic.format == RENDER_FMT_MEDIACODEC
   || pic.format == RENDER_FMT_MEDIACODECSURFACE
   || pic.format == RENDER_FMT_AML
+  || pic.format == RENDER_FMT_STEAMLINK
   || pic.format == RENDER_FMT_IMXMAP
   || pic.format == RENDER_FMT_MMAL
   || m_pRenderer->IsPictureHW(pic))
