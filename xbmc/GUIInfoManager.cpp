@@ -7978,7 +7978,7 @@ std::string CGUIInfoManager::GetDuration(TIME_FORMAT format) const
   }
   if (g_application.m_pPlayer->IsPlayingVideo() && !m_currentMovieDuration.empty())
     return m_currentMovieDuration;
-  unsigned int iTotal = (unsigned int)g_application.GetTotalTime();
+  unsigned int iTotal = static_cast<unsigned int>(g_application.GetTotalTime() + 0.5);
   if (iTotal > 0)
     return StringUtils::SecondsToTimeString(iTotal, format);
   return "";
