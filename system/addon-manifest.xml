@@ -44,4 +44,5 @@
   <addon>xbmc.webinterface</addon>
   <addon optional="true">peripheral.joystick</addon>
   <addon optional="true">repository.zachmorris</addon>
+  <addon optional="true">repository.retroplayer.libreelec.addons</addon>
 </addons>
