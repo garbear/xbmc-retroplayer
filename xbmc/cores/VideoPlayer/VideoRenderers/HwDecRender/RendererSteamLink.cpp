@@ -36,7 +36,7 @@ bool CRendererSteamLink::LoadShadersHook()
 
 bool CRendererSteamLink::RenderUpdateVideoHook(bool clear, DWORD flags, DWORD alpha)
 {
-  ManageDisplay();
+  ManageRenderArea();
   return true;
 }
 
