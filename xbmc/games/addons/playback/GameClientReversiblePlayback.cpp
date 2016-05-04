@@ -97,12 +97,17 @@ void CGameClientReversiblePlayback::SeekTimeMs(unsigned int timeMs)
   }
 }
 
-void CGameClientReversiblePlayback::SetSpeed(float speedFactor)
+double CGameClientReversiblePlayback::GetSpeed() const
 {
-  if (speedFactor >= 0.0f)
-    m_gameLoop.SetSpeed(static_cast<double>(speedFactor));
+  return m_gameLoop.GetSpeed();
+}
+
+void CGameClientReversiblePlayback::SetSpeed(double speedFactor)
+{
+  if (speedFactor >= 0.0)
+    m_gameLoop.SetSpeed(speedFactor);
   else
-    m_gameLoop.SetSpeed(static_cast<double>(speedFactor * REWIND_FACTOR));
+    m_gameLoop.SetSpeed(speedFactor * REWIND_FACTOR);
 }
 
 void CGameClientReversiblePlayback::FrameEvent()

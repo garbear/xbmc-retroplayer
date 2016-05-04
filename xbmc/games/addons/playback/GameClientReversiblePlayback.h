@@ -48,7 +48,8 @@ namespace GAME
     virtual unsigned int GetTotalTimeMs() const override { return m_totalTimeMs; }
     virtual unsigned int GetCacheTimeMs() const override { return m_cacheTimeMs; }
     virtual void SeekTimeMs(unsigned int timeMs) override;
-    virtual void SetSpeed(float speedFactor) override;
+    virtual double GetSpeed() const;
+    virtual void SetSpeed(double speedFactor) override;
 
     // implementation of IGameLoopCallback
     virtual void FrameEvent() override;

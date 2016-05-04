@@ -41,7 +41,8 @@ namespace GAME
     virtual unsigned int GetTotalTimeMs() const = 0;
     virtual unsigned int GetCacheTimeMs() const = 0;
     virtual void SeekTimeMs(unsigned int timeMs) = 0;
-    virtual void SetSpeed(float speedFactor) = 0;
+    virtual double GetSpeed() const = 0;
+    virtual void SetSpeed(double speedFactor) = 0;
   };
 
   class CGameClientDummyPlayback : public IGameClientPlayback
@@ -58,6 +59,7 @@ namespace GAME
     virtual unsigned int GetTotalTimeMs() const { return 0; }
     virtual unsigned int GetCacheTimeMs() const { return 0; }
     virtual void SeekTimeMs(unsigned int timeMs) { }
-    virtual void SetSpeed(float speedFactor) { }
+    virtual double GetSpeed() const { return 1.0; }
+    virtual void SetSpeed(double speedFactor) { }
   };
 }
