@@ -24,6 +24,7 @@
 #include "games/addons/savestates/DeltaPairMemoryStream.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
+#include "utils/MathUtils.h"
 
 #include <algorithm>
 
@@ -45,7 +46,7 @@ CGameClientReversiblePlayback::CGameClientReversiblePlayback(CGameClient* gameCl
   unsigned int rewindBufferSec = CSettings::GetInstance().GetInt(CSettings::SETTING_GAMES_REWINDTIME);
   if (rewindBufferSec < 10)
     rewindBufferSec = 10; // Sanity check
-  unsigned int frameCount = static_cast<unsigned int>(rewindBufferSec * m_gameLoop.FPS() + 0.5);
+  unsigned int frameCount = MathUtils::round_int(rewindBufferSec * m_gameLoop.FPS());
 
   m_memoryStream->Init(serializeSize, frameCount);
 
@@ -73,7 +74,7 @@ void CGameClientReversiblePlayback::PauseUnpause()
 void CGameClientReversiblePlayback::SeekTimeMs(unsigned int timeMs)
 {
   const int offsetTimeMs = timeMs - GetTimeMs();
-  const int offsetFrames = static_cast<int>(offsetTimeMs / 1000.0 * m_gameLoop.FPS() + 0.5);
+  const int offsetFrames = MathUtils::round_int(offsetTimeMs / 1000.0 * m_gameLoop.FPS());
 
   if (offsetFrames > 0)
   {
@@ -159,7 +160,7 @@ void CGameClientReversiblePlayback::UpdatePlaybackStats()
   const unsigned int total = m_memoryStream->MaxFrameCount();
   const unsigned int cached = m_futureFrameCount;
 
-  m_playTimeMs = static_cast<unsigned int>(1000.0 * played / m_gameLoop.FPS() + 0.5);
-  m_totalTimeMs = static_cast<unsigned int>(1000.0 * total / m_gameLoop.FPS() + 0.5);
-  m_cacheTimeMs = static_cast<unsigned int>(1000.0 * cached / m_gameLoop.FPS() + 0.5);
+  m_playTimeMs = MathUtils::round_int(1000.0 * played / m_gameLoop.FPS());
+  m_totalTimeMs = MathUtils::round_int(1000.0 * total / m_gameLoop.FPS());
+  m_cacheTimeMs = MathUtils::round_int(1000.0 * cached / m_gameLoop.FPS());
 }
