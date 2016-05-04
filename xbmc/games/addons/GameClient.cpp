@@ -24,8 +24,6 @@
 #include "GameClientTranslator.h"
 #include "addons/AddonManager.h"
 #include "cores/AudioEngine/Utils/AEChannelInfo.h"
-#include "cores/VideoPlayer/DVDDemuxers/DVDDemuxPacket.h"
-#include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "dialogs/GUIDialogOK.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
