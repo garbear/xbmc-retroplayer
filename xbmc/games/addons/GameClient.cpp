@@ -387,47 +387,6 @@ void CGameClient::ResetPlayback()
   m_playback.reset(new CGameClientDummyPlayback);
 }
 
-/*
-bool CGameClient::InitSerialization()
-{
-  // Check if serialization is supported so savestates and rewind can be used
-  unsigned int serializeSize;
-  try { serializeSize = m_pStruct->SerializeSize(); }
-  catch (...) { LogException("SerializeSize()"); return false; }
-
-  if (serializeSize == 0)
-  {
-    CLog::Log(LOGINFO, "GAME: Serialization not supported, continuing without save or rewind");
-    return false;
-  }
-
-  m_serializeSize = serializeSize;
-  m_bRewindEnabled = CSettings::GetInstance().GetBool("gamesgeneral.enablerewind");
-
-  // Set up rewind functionality
-  if (m_bRewindEnabled)
-  {
-    m_serialState.Init(m_serializeSize, (size_t)(CSettings::GetInstance().GetInt("gamesgeneral.rewindtime") * m_frameRate));
-
-    bool bSuccess = false;
-    try { bSuccess = LogError(m_pStruct->Serialize(m_serialState.GetState(), m_serialState.GetFrameSize()), "Serialize()"); }
-    catch (...) { LogException("Serialize()"); }
-
-    if (!bSuccess)
-    {
-      m_serializeSize = 0;
-      m_bRewindEnabled = false;
-      m_serialState.Reset();
-      CLog::Log(LOGERROR, "GAME: Unable to serialize state, proceeding without save or rewind");
-      return false;
-    }
-  }
-
-  m_bSerializationInited = true;
-
-  return true;
-}
-*/
 void CGameClient::Reset()
 {
   ResetPlayback();
