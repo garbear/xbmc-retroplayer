@@ -22,7 +22,6 @@
 #include "games/addons/GameClient.h"
 #include "threads/SingleLock.h"
 #include "threads/SystemClock.h"
-#include "utils/log.h"
 
 #include <cmath>
 
@@ -63,7 +62,7 @@ void CGameLoop::SetSpeed(double speedFactor)
 
 void CGameLoop::Process(void)
 {
-  double nextFrameMs = static_cast<double>(XbmcThreads::SystemClockMillis());
+  double nextFrameMs = NowMs();
 
   CSingleLock lock(m_mutex);
 
