@@ -133,6 +133,7 @@ void CRetroPlayer::Pause()
   if (m_gameClient)
   {
     m_gameClient->GetPlayback()->PauseUnpause();
+    m_audio->Enable(m_gameClient->GetPlayback()->GetSpeed() == 1.0);
 
     if (IsPaused())
       m_callback.OnPlayBackPaused();
@@ -202,8 +203,8 @@ float CRetroPlayer::GetPercentage()
 {
   if (m_gameClient)
   {
-    const float timeMs = m_gameClient->GetPlayback()->GetTimeMs();
-    const float totalMs = m_gameClient->GetPlayback()->GetTotalTimeMs();
+    const float timeMs = static_cast<float>(m_gameClient->GetPlayback()->GetTimeMs());
+    const float totalMs = static_cast<float>(m_gameClient->GetPlayback()->GetTotalTimeMs());
 
     if (totalMs != 0.0f)
       return timeMs / totalMs * 100.0f;
@@ -216,8 +217,8 @@ float CRetroPlayer::GetCachePercentage()
 {
   if (m_gameClient)
   {
-    const float cacheMs = m_gameClient->GetPlayback()->GetCacheTimeMs();
-    const float totalMs = m_gameClient->GetPlayback()->GetTotalTimeMs();
+    const float cacheMs = static_cast<float>(m_gameClient->GetPlayback()->GetCacheTimeMs());
+    const float totalMs = static_cast<float>(m_gameClient->GetPlayback()->GetTotalTimeMs());
 
     if (totalMs != 0.0f)
       return cacheMs / totalMs * 100.0f;
@@ -231,7 +232,10 @@ void CRetroPlayer::SeekTime(int64_t iTime /* = 0 */)
     return;
 
   if (m_gameClient)
-    m_gameClient->GetPlayback()->SeekTimeMs(iTime);
+  {
+    m_gameClient->GetPlayback()->SeekTimeMs(static_cast<unsigned int>(iTime));
+    m_audio->Enable(m_gameClient->GetPlayback()->GetSpeed() == 1.0);
+  }
 }
 
 bool CRetroPlayer::SeekTimeRelative(int64_t iTime)
@@ -267,7 +271,10 @@ bool CRetroPlayer::GetStreamDetails(CStreamDetails &details)
 void CRetroPlayer::ToFFRW(int iSpeed /* = 0 */)
 {
   if (m_gameClient)
-    m_gameClient->GetPlayback()->SetSpeed(iSpeed);
+  {
+    m_gameClient->GetPlayback()->SetSpeed(static_cast<double>(iSpeed));
+    m_audio->Enable(m_gameClient->GetPlayback()->GetSpeed() == 1.0);
+  }
 }
 
 void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
