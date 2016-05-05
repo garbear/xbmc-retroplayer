@@ -30,6 +30,7 @@
 #include "FileItem.h"
 #include "games/tags/GameInfoTag.h"
 #include "games/addons/GameClient.h"
+#include "games/addons/savestates/SavestateDatabase.h"
 #include "games/GameManager.h"
 #include "games/GameTypes.h"
 #include "guilib/GUIWindowManager.h"
@@ -172,7 +173,22 @@ void CGUIWindowGames::GetContextButtons(int itemNumber, CContextButtons &buttons
     else
     {
       if (item->IsGame())
+      {
         buttons.Add(CONTEXT_BUTTON_PLAY_ITEM, 208); // Play
+
+        bool bHasSavestates = false;
+
+        CSavestateDatabase db;
+        if (db.Open())
+        {
+          CFileItemList items;
+          if (db.GetSavestatesNav(items, item->GetPath()))
+            bHasSavestates = items.Size() > 0;
+        }
+
+        if (bHasSavestates)
+          buttons.Add(CONTEXT_BUTTON_MANAGE_SAVESTATES, 35273); // Manage saves
+      }
 
       if (!m_vecItems->IsPlugin() && item->HasAddonInfo())
         buttons.Add(CONTEXT_BUTTON_INFO, 24003); // Add-on information
@@ -214,6 +230,9 @@ bool CGUIWindowGames::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       return true;
     case CONTEXT_BUTTON_RENAME:
       OnRenameItem(itemNumber);
+      return true;
+    case CONTEXT_BUTTON_MANAGE_SAVESTATES:
+      g_windowManager.ActivateWindow(WINDOW_DIALOG_SAVESTATES, item->GetPath());
       return true;
     default:
       break;
