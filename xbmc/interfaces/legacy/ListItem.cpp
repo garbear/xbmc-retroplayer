@@ -28,6 +28,7 @@
 #include "music/tags/MusicInfoTag.h"
 #include "pictures/PictureInfoTag.h"
 #include "games/tags/GameInfoTag.h"
+#include "games/GameTypes.h"
 #include "utils/log.h"
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
@@ -570,7 +571,7 @@ namespace XBMCAddon
           else if (key == "publisher")
             item->GetGameInfoTag()->SetPublisher(value);
           else if (key == "gameclient")
-            item->SetProperty("Addon.ID", value);
+            item->SetProperty(FILEITEM_PROPERTY_GAME_CLIENT, value);
         }
       }
     } // end ListItem::setInfo
