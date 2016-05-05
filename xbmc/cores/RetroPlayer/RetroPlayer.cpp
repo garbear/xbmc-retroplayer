@@ -83,6 +83,8 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
 
   if (bSuccess)
   {
+    if (file.m_lStartOffset == STARTOFFSET_RESUME)
+      SetPlayerState(file.GetGameInfoTag()->GetSavestate());
     m_callback.OnPlayBackStarted();
   }
   else
@@ -226,6 +228,11 @@ float CRetroPlayer::GetCachePercentage()
   return 0.0f;
 }
 
+void CRetroPlayer::SetMute(bool bOnOff)
+{
+  m_audio->Enable(!bOnOff);
+}
+
 void CRetroPlayer::SeekTime(int64_t iTime /* = 0 */)
 {
   if (!CanSeek())
@@ -275,6 +282,20 @@ void CRetroPlayer::ToFFRW(int iSpeed /* = 0 */)
     m_gameClient->GetPlayback()->SetSpeed(static_cast<double>(iSpeed));
     m_audio->Enable(m_gameClient->GetPlayback()->GetSpeed() == 1.0);
   }
+}
+
+std::string CRetroPlayer::GetPlayerState()
+{
+  if (m_gameClient)
+    return m_gameClient->GetPlayback()->CreateManualSavestate();
+  return "";
+}
+
+bool CRetroPlayer::SetPlayerState(const std::string& state)
+{
+  if (m_gameClient)
+    return m_gameClient->GetPlayback()->LoadSavestate(state);
+  return "";
 }
 
 void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
