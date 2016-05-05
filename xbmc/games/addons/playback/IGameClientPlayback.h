@@ -20,6 +20,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string>
 
 namespace GAME
 {
@@ -43,6 +44,10 @@ namespace GAME
     virtual void SeekTimeMs(unsigned int timeMs) = 0;
     virtual double GetSpeed() const = 0;
     virtual void SetSpeed(double speedFactor) = 0;
+
+    // Savestates
+    virtual std::string CreateManualSavestate() = 0; // Returns the path of savestate on success
+    virtual bool LoadSavestate(const std::string& path) = 0;
   };
 
   class CGameClientDummyPlayback : public IGameClientPlayback
@@ -55,11 +60,13 @@ namespace GAME
     virtual bool CanSeek() const override { return false; }
     virtual bool IsPaused() const override { return false; }
     virtual void PauseUnpause() override { }
-    virtual unsigned int GetTimeMs() const { return 0; }
-    virtual unsigned int GetTotalTimeMs() const { return 0; }
-    virtual unsigned int GetCacheTimeMs() const { return 0; }
-    virtual void SeekTimeMs(unsigned int timeMs) { }
-    virtual double GetSpeed() const { return 1.0; }
-    virtual void SetSpeed(double speedFactor) { }
+    virtual unsigned int GetTimeMs() const override { return 0; }
+    virtual unsigned int GetTotalTimeMs() const override { return 0; }
+    virtual unsigned int GetCacheTimeMs() const override { return 0; }
+    virtual void SeekTimeMs(unsigned int timeMs) override { }
+    virtual double GetSpeed() const override { return 1.0; }
+    virtual void SetSpeed(double speedFactor) override { }
+    virtual std::string CreateManualSavestate() override { return ""; }
+    virtual bool LoadSavestate(const std::string& path) override { return false; }
   };
 }
