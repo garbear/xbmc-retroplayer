@@ -34,7 +34,9 @@
 #include "guilib/GUIButtonControl.h"
 #include "guilib/GUIControlGroupList.h"
 #include "guilib/GUIWindow.h"
+#include "guilib/WindowIDs.h"
 #include "input/joysticks/DefaultJoystick.h" // for DEFAULT_CONTROLLER_ID
+#include "messaging/ApplicationMessenger.h"
 #include "peripherals/Peripherals.h"
 
 using namespace ADDON;
@@ -143,8 +145,13 @@ void CGUIControllerList::ResetController(void)
 
 void CGUIControllerList::Notify(const Observable& obs, const ObservableMessage msg)
 {
+  using namespace KODI::MESSAGING;
+
   if (msg == ObservableMessageAddons)
-    Refresh();
+  {
+    CGUIMessage msg(GUI_MSG_REFRESH_LIST, WINDOW_INVALID, CONTROL_CONTROLLER_LIST);
+    CApplicationMessenger::GetInstance().SendGUIMessage(msg);
+  }
 }
 
 bool CGUIControllerList::RefreshControllers(void)
