@@ -39,6 +39,7 @@
 #include "input/joysticks/DefaultJoystick.h" // for DEFAULT_CONTROLLER_ID
 #include "input/joysticks/JoystickTypes.h"
 #include "peripherals/Peripherals.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
@@ -212,6 +213,11 @@ bool CGameClient::Initialize(void)
   // Ensure user profile directory exists for add-on
   if (!CDirectory::Exists(Profile()))
     CDirectory::Create(Profile());
+
+  // Ensure directory exists for savestates
+  std::string savestatesDir = URIUtils::AddFileToFolder(CProfilesManager::GetInstance().GetSavestatesFolder(), ID());
+  if (!CDirectory::Exists(savestatesDir))
+    CDirectory::Create(savestatesDir);
 
   m_libraryProps.InitializeProperties();
 
