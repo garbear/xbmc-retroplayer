@@ -45,7 +45,7 @@ namespace GAME
   class CGameClientTiming
   {
   public:
-    static const unsigned int MAX_CORRECTION_FACTOR_PERCENT = 5;
+    static const unsigned int MAX_CORRECTION_FACTOR_PERCENT = 7;
 
     CGameClientTiming();
 
