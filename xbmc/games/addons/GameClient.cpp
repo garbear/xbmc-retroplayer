@@ -260,6 +260,7 @@ bool CGameClient::OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGa
   if (bSuccess && LoadGameInfo(file.GetPath()) && NormalizeAudio(audio))
   {
     m_bIsPlaying      = true;
+    m_gamePath        = file.GetPath();
     m_audio           = audio;
     m_video           = video;
     m_inputRateHandle = PERIPHERALS::g_peripherals.SetEventScanRate(m_timing.GetFrameRate()); // TODO: Convert event scanner to double
@@ -418,6 +419,7 @@ void CGameClient::CloseFile()
     CloseKeyboard();
 
   m_bIsPlaying = false;
+  m_gamePath.clear();
   if (m_inputRateHandle)
   {
     m_inputRateHandle->Release();
