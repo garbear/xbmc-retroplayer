@@ -85,6 +85,9 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
   {
     if (file.m_lStartOffset == STARTOFFSET_RESUME)
       SetPlayerState(file.GetGameInfoTag()->GetSavestate());
+
+    ToFFRW(1);
+
     m_callback.OnPlayBackStarted();
   }
   else
