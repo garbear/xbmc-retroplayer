@@ -581,6 +581,9 @@ size_t CGameClient::SerializeSize()
 
 bool CGameClient::Serialize(uint8_t* data, size_t size)
 {
+  if (data == nullptr || size == 0)
+    return false;
+
   CSingleLock lock(m_critSection);
 
   bool bSuccess = false;
@@ -595,6 +598,9 @@ bool CGameClient::Serialize(uint8_t* data, size_t size)
 
 bool CGameClient::Deserialize(const uint8_t* data, size_t size)
 {
+  if (data == nullptr || size == 0)
+    return false;
+
   CSingleLock lock(m_critSection);
 
   bool bSuccess = false;
