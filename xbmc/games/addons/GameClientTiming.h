@@ -47,7 +47,9 @@ namespace GAME
   public:
     static const unsigned int MAX_CORRECTION_FACTOR_PERCENT = 7;
 
-    CGameClientTiming();
+    CGameClientTiming() { Reset(); }
+
+    void Reset();
 
     /*!
     * \brief Calculate normalization factor to avoid audio resampling

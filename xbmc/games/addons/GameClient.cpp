@@ -291,7 +291,7 @@ bool CGameClient::NormalizeAudio(IGameAudioCallback* audioCallback)
     }
     else
     {
-      CLog::Log(LOGDEBUG, "GAME: Audio sample is supported, no scaling or resampling needed");
+      CLog::Log(LOGDEBUG, "GAME: Audio sample rate is supported, no scaling or resampling needed");
     }
   }
   else
@@ -426,6 +426,7 @@ void CGameClient::CloseFile()
 
   m_audio = nullptr;
   m_video = nullptr;
+  m_timing.Reset();
 }
 
 void CGameClient::RunFrame()

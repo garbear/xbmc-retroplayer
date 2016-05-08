@@ -26,11 +26,11 @@
 
 using namespace GAME;
 
-CGameClientTiming::CGameClientTiming() :
-  m_framerate(0.0),
-  m_samplerate(0.0),
-  m_audioCorrectionFactor(1.0)
+void CGameClientTiming::Reset()
 {
+  m_framerate = 0.0;
+  m_samplerate = 0.0;
+  m_audioCorrectionFactor = 1.0;
 }
 
 bool CGameClientTiming::NormalizeAudio(IGameAudioCallback* audio)
