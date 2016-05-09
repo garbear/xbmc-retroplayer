@@ -478,6 +478,9 @@
     <Filter Include="games\windows">
       <UniqueIdentifier>{413ce90f-853a-4986-90a4-e841c83e96e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="games\dialogs">
+      <UniqueIdentifier>{0c85d751-c493-414a-9784-55e29ac1448d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -3584,6 +3587,27 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\games\windows\GUIWindowGames.cpp">
       <Filter>games\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\savestates\SavestateDatabase.cpp">
+      <Filter>games\addons\savestates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\savestates\SavestateUtils.cpp">
+      <Filter>games\addons\savestates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\savestates\Savestate.cpp">
+      <Filter>games\addons\savestates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\dialogs\GUIDialogSavestates.cpp">
+      <Filter>games\dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\savestates\SavestateWriter.cpp">
+      <Filter>games\addons\savestates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\addons\savestates\SavestateReader.cpp">
+      <Filter>games\addons\savestates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\dbwrappers\DynamicDatabase.cpp">
+      <Filter>dbwrappers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -6974,6 +6998,33 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\windows\GUIWindowGames.h">
       <Filter>games\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\utils\IDeserializable.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateDatabase.h">
+      <Filter>games\addons\savestates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateDefines.h">
+      <Filter>games\addons\savestates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateUtils.h">
+      <Filter>games\addons\savestates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\savestates\Savestate.h">
+      <Filter>games\addons\savestates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\dialogs\GUIDialogSavestates.h">
+      <Filter>games\dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateWriter.h">
+      <Filter>games\addons\savestates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateReader.h">
+      <Filter>games\addons\savestates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\dbwrappers\DynamicDatabase.h">
+      <Filter>dbwrappers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

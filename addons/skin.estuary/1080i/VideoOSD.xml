@@ -16,7 +16,7 @@
 			<onclick>Action(close)</onclick>
 		</control>
 		<control type="group">
-			<visible>![Window.IsVisible(SliderDialog) | Window.IsVisible(OSDVideoSettings) | Window.IsVisible(OSDAudioSettings) | Window.IsVisible(OSDAudioDSPSettings) | Window.IsVisible(VideoBookmarks)]</visible>
+			<visible>![Window.IsVisible(SliderDialog) | Window.IsVisible(OSDVideoSettings) | Window.IsVisible(OSDAudioSettings) | Window.IsVisible(OSDAudioDSPSettings) | Window.IsVisible(VideoBookmarks) | Window.IsVisible(GameSavestates)]</visible>
 			<animation effect="fade" end="100" time="200">WindowOpen</animation>
 			<animation effect="fade" time="200">VisibleChange</animation>
 			<animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
@@ -172,7 +172,8 @@
 						<include content="OSDButton">
 							<param name="texture" value="osd/fullscreen/buttons/bookmarks.png"/>
 						</include>
-						<onclick>ActivateWindow(videobookmarks)</onclick>
+						<onclick condition="!Player.HasGame">ActivateWindow(VideoBookmarks)</onclick>
+						<onclick condition="Player.HasGame">ActivateWindow(GameSavestates)</onclick>
 						<visible>!VideoPlayer.Content(livetv)</visible>
 					</control>
 					<control type="radiobutton" id="703">
@@ -187,6 +188,7 @@
 						<include content="OSDButton">
 							<param name="texture" value="osd/fullscreen/buttons/settings-subtitle.png"/>
 						</include>
+						<visible>!Player.HasGame</visible>
 					</control>
 					<control type="radiobutton" id="255">
 						<include content="OSDButton">

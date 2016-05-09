@@ -39,6 +39,7 @@
 #include "input/joysticks/DefaultJoystick.h" // for DEFAULT_CONTROLLER_ID
 #include "input/joysticks/JoystickTypes.h"
 #include "peripherals/Peripherals.h"
+#include "profiles/ProfilesManager.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "URL.h"
@@ -213,6 +214,11 @@ bool CGameClient::Initialize(void)
   if (!CDirectory::Exists(Profile()))
     CDirectory::Create(Profile());
 
+  // Ensure directory exists for savestates
+  std::string savestatesDir = URIUtils::AddFileToFolder(CProfilesManager::GetInstance().GetSavestatesFolder(), ID());
+  if (!CDirectory::Exists(savestatesDir))
+    CDirectory::Create(savestatesDir);
+
   m_libraryProps.InitializeProperties();
 
   if (Create() == ADDON_STATUS_OK)
@@ -260,6 +266,7 @@ bool CGameClient::OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGa
   if (bSuccess && LoadGameInfo(file.GetPath()) && NormalizeAudio(audio))
   {
     m_bIsPlaying      = true;
+    m_gamePath        = file.GetPath();
     m_audio           = audio;
     m_video           = video;
     m_inputRateHandle = PERIPHERALS::g_peripherals.SetEventScanRate(m_timing.GetFrameRate()); // TODO: Convert event scanner to double
@@ -418,6 +425,7 @@ void CGameClient::CloseFile()
     CloseKeyboard();
 
   m_bIsPlaying = false;
+  m_gamePath.clear();
   if (m_inputRateHandle)
   {
     m_inputRateHandle->Release();

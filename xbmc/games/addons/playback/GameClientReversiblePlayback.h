@@ -29,6 +29,8 @@
 namespace GAME
 {
   class CGameClient;
+  class CSavestateReader;
+  class CSavestateWriter;
   class IMemoryStream;
 
   class CGameClientReversiblePlayback : public IGameClientPlayback,
@@ -50,12 +52,15 @@ namespace GAME
     virtual void SeekTimeMs(unsigned int timeMs) override;
     virtual double GetSpeed() const;
     virtual void SetSpeed(double speedFactor) override;
+    virtual std::string CreateManualSavestate() override;
+    virtual bool LoadSavestate(const std::string& path) override;
 
     // implementation of IGameLoopCallback
     virtual void FrameEvent() override;
     virtual void RewindEvent() override;
 
   private:
+    void AddFrame();
     void RewindFrames(unsigned int frames);
     void AdvanceFrames(unsigned int frames);
     void UpdatePlaybackStats();
@@ -67,6 +72,10 @@ namespace GAME
     CGameLoop                      m_gameLoop;
     std::unique_ptr<IMemoryStream> m_memoryStream;
     CCriticalSection               m_mutex;
+
+    // Savestate functionality
+    std::unique_ptr<CSavestateWriter> m_savestateWriter;
+    std::unique_ptr<CSavestateReader> m_savestateReader;
 
     // Playback stats
     unsigned int m_pastFrameCount;

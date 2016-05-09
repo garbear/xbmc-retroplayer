@@ -122,10 +122,12 @@ public:
   bool OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGameVideoCallback* video);
   void Reset();
   void CloseFile();
+  const std::string& GetGamePath() const { return m_gamePath; }
 
   // Playback control
   bool IsPlaying() const { return m_bIsPlaying; }
   IGameClientPlayback* GetPlayback() { return m_playback.get(); }
+  const CGameClientTiming& Timing() const { return m_timing; }
   void RunFrame();
 
   // Audio/video callbacks
@@ -193,6 +195,7 @@ private:
 
   // Properties of the current playing file
   std::atomic_bool      m_bIsPlaying;          // True between OpenFile() and CloseFile()
+  std::string           m_gamePath;
   IGameAudioCallback*   m_audio;               // The audio callback passed to OpenFile()
   IGameVideoCallback*   m_video;               // The video callback passed to OpenFile()
   CGameClientTiming     m_timing;              // Class to scale playback to avoid resampling audio

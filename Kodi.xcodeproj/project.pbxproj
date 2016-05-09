@@ -326,6 +326,18 @@
 		68B054CB1CD819B100726629 /* DeltaPairMemoryStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B054C31CD819B100726629 /* DeltaPairMemoryStream.cpp */; };
 		68B054CC1CD819B100726629 /* LinearMemoryStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B054C61CD819B100726629 /* LinearMemoryStream.cpp */; };
 		68B054CD1CD819B100726629 /* LinearMemoryStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68B054C61CD819B100726629 /* LinearMemoryStream.cpp */; };
+		68C1496A1CDDF0B60014ADDB /* SavestateDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1495F1CDDF0B60014ADDB /* SavestateDatabase.cpp */; };
+		68C1496B1CDDF0B60014ADDB /* SavestateDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C1495F1CDDF0B60014ADDB /* SavestateDatabase.cpp */; };
+		68C1496C1CDDF0B60014ADDB /* SavestateReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149621CDDF0B60014ADDB /* SavestateReader.cpp */; };
+		68C1496D1CDDF0B60014ADDB /* SavestateReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149621CDDF0B60014ADDB /* SavestateReader.cpp */; };
+		68C1496E1CDDF0B60014ADDB /* SavestateUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149641CDDF0B60014ADDB /* SavestateUtils.cpp */; };
+		68C1496F1CDDF0B60014ADDB /* SavestateUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149641CDDF0B60014ADDB /* SavestateUtils.cpp */; };
+		68C149701CDDF0B60014ADDB /* SavestateWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149661CDDF0B60014ADDB /* SavestateWriter.cpp */; };
+		68C149711CDDF0B60014ADDB /* SavestateWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149661CDDF0B60014ADDB /* SavestateWriter.cpp */; };
+		68C149741CDDF16F0014ADDB /* DynamicDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149721CDDF16F0014ADDB /* DynamicDatabase.cpp */; };
+		68C149751CDDF16F0014ADDB /* DynamicDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149721CDDF16F0014ADDB /* DynamicDatabase.cpp */; };
+		68C149791CDDF1DB0014ADDB /* GUIDialogSavestates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149771CDDF1DB0014ADDB /* GUIDialogSavestates.cpp */; };
+		68C1497A1CDDF1DB0014ADDB /* GUIDialogSavestates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68C149771CDDF1DB0014ADDB /* GUIDialogSavestates.cpp */; };
 		68D77CFF1CD1C5E4004C1735 /* GameSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77CFD1CD1C5E4004C1735 /* GameSettings.cpp */; };
 		68D77D001CD1C5E4004C1735 /* GameSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77CFD1CD1C5E4004C1735 /* GameSettings.cpp */; };
 		68D77D081CD1C64C004C1735 /* GenericKeyboardJoystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D041CD1C64C004C1735 /* GenericKeyboardJoystick.cpp */; };
@@ -376,6 +388,8 @@
 		68D77D761CD1C89A004C1735 /* GUIViewStateWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D711CD1C89A004C1735 /* GUIViewStateWindowGames.cpp */; };
 		68D77D771CD1C89A004C1735 /* GUIWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D731CD1C89A004C1735 /* GUIWindowGames.cpp */; };
 		68D77D781CD1C89A004C1735 /* GUIWindowGames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D731CD1C89A004C1735 /* GUIWindowGames.cpp */; };
+		68DE2BEB1CDEBAC9002EA0F7 /* Savestate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DE2BE71CDEBAC9002EA0F7 /* Savestate.cpp */; };
+		68DE2BEC1CDEBAC9002EA0F7 /* Savestate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68DE2BE71CDEBAC9002EA0F7 /* Savestate.cpp */; };
 		761170901C8B85F8006C6366 /* AddonGUIRenderingControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7611708C1C8B85F8006C6366 /* AddonGUIRenderingControl.cpp */; };
 		761170911C8B85F8006C6366 /* AddonGUIWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7611708E1C8B85F8006C6366 /* AddonGUIWindow.cpp */; };
 		76AEFB361C8F79BD00EF2EC0 /* AddonInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDED2E991C878F61000F5E80 /* AddonInterfaces.cpp */; };
@@ -2891,6 +2905,19 @@
 		68B054C51CD819B100726629 /* IMemoryStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMemoryStream.h; path = games/addons/savestates/IMemoryStream.h; sourceTree = "<group>"; };
 		68B054C61CD819B100726629 /* LinearMemoryStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LinearMemoryStream.cpp; path = games/addons/savestates/LinearMemoryStream.cpp; sourceTree = "<group>"; };
 		68B054C71CD819B100726629 /* LinearMemoryStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinearMemoryStream.h; path = games/addons/savestates/LinearMemoryStream.h; sourceTree = "<group>"; };
+		68C1495F1CDDF0B60014ADDB /* SavestateDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SavestateDatabase.cpp; path = games/addons/savestates/SavestateDatabase.cpp; sourceTree = "<group>"; };
+		68C149601CDDF0B60014ADDB /* SavestateDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SavestateDatabase.h; path = games/addons/savestates/SavestateDatabase.h; sourceTree = "<group>"; };
+		68C149611CDDF0B60014ADDB /* SavestateDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SavestateDefines.h; path = games/addons/savestates/SavestateDefines.h; sourceTree = "<group>"; };
+		68C149621CDDF0B60014ADDB /* SavestateReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SavestateReader.cpp; path = games/addons/savestates/SavestateReader.cpp; sourceTree = "<group>"; };
+		68C149631CDDF0B60014ADDB /* SavestateReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SavestateReader.h; path = games/addons/savestates/SavestateReader.h; sourceTree = "<group>"; };
+		68C149641CDDF0B60014ADDB /* SavestateUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SavestateUtils.cpp; path = games/addons/savestates/SavestateUtils.cpp; sourceTree = "<group>"; };
+		68C149651CDDF0B60014ADDB /* SavestateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SavestateUtils.h; path = games/addons/savestates/SavestateUtils.h; sourceTree = "<group>"; };
+		68C149661CDDF0B60014ADDB /* SavestateWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SavestateWriter.cpp; path = games/addons/savestates/SavestateWriter.cpp; sourceTree = "<group>"; };
+		68C149671CDDF0B60014ADDB /* SavestateWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SavestateWriter.h; path = games/addons/savestates/SavestateWriter.h; sourceTree = "<group>"; };
+		68C149721CDDF16F0014ADDB /* DynamicDatabase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicDatabase.cpp; sourceTree = "<group>"; };
+		68C149731CDDF16F0014ADDB /* DynamicDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicDatabase.h; sourceTree = "<group>"; };
+		68C149771CDDF1DB0014ADDB /* GUIDialogSavestates.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIDialogSavestates.cpp; path = games/dialogs/GUIDialogSavestates.cpp; sourceTree = "<group>"; };
+		68C149781CDDF1DB0014ADDB /* GUIDialogSavestates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIDialogSavestates.h; path = games/dialogs/GUIDialogSavestates.h; sourceTree = "<group>"; };
 		68D77CFD1CD1C5E4004C1735 /* GameSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameSettings.cpp; path = games/GameSettings.cpp; sourceTree = "<group>"; };
 		68D77CFE1CD1C5E4004C1735 /* GameSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameSettings.h; path = games/GameSettings.h; sourceTree = "<group>"; };
 		68D77D021CD1C638004C1735 /* IKeyboardHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IKeyboardHandler.h; path = keyboard/IKeyboardHandler.h; sourceTree = "<group>"; };
@@ -2950,6 +2977,8 @@
 		68D77D721CD1C89A004C1735 /* GUIViewStateWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIViewStateWindowGames.h; path = games/windows/GUIViewStateWindowGames.h; sourceTree = "<group>"; };
 		68D77D731CD1C89A004C1735 /* GUIWindowGames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIWindowGames.cpp; path = games/windows/GUIWindowGames.cpp; sourceTree = "<group>"; };
 		68D77D741CD1C89A004C1735 /* GUIWindowGames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIWindowGames.h; path = games/windows/GUIWindowGames.h; sourceTree = "<group>"; };
+		68DE2BE71CDEBAC9002EA0F7 /* Savestate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Savestate.cpp; path = games/addons/savestates/Savestate.cpp; sourceTree = "<group>"; };
+		68DE2BE81CDEBAC9002EA0F7 /* Savestate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Savestate.h; path = games/addons/savestates/Savestate.h; sourceTree = "<group>"; };
 		6E97BDBF0DA2B620003A2A89 /* EventClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventClient.h; sourceTree = "<group>"; };
 		6E97BDC00DA2B620003A2A89 /* EventPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventPacket.h; sourceTree = "<group>"; };
 		6E97BDC10DA2B620003A2A89 /* EventServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventServer.h; sourceTree = "<group>"; };
@@ -5978,6 +6007,8 @@
 				7C2612701825B6340086E04D /* DatabaseQuery.h */,
 				E38E1CD70D25F9FC00618676 /* dataset.cpp */,
 				E38E1CD80D25F9FC00618676 /* dataset.h */,
+				68C149721CDDF16F0014ADDB /* DynamicDatabase.cpp */,
+				68C149731CDDF16F0014ADDB /* DynamicDatabase.h */,
 				7C7B2B2E1134F36400713D6D /* mysqldataset.cpp */,
 				7C7B2B2F1134F36400713D6D /* mysqldataset.h */,
 				E38E1CDF0D25F9FC00618676 /* qry_dat.cpp */,
@@ -6304,6 +6335,7 @@
 			children = (
 				68D77D241CD1C7D0004C1735 /* addons */,
 				68AE5BFA1C92433900C4D527 /* controllers */,
+				68C149761CDDF1BA0014ADDB /* dialogs */,
 				68D77D251CD1C7D4004C1735 /* ports */,
 				68D77D141CD1C6C7004C1735 /* tags */,
 				68D77D701CD1C886004C1735 /* windows */,
@@ -6381,8 +6413,28 @@
 				68B054C51CD819B100726629 /* IMemoryStream.h */,
 				68B054C61CD819B100726629 /* LinearMemoryStream.cpp */,
 				68B054C71CD819B100726629 /* LinearMemoryStream.h */,
+				68DE2BE71CDEBAC9002EA0F7 /* Savestate.cpp */,
+				68DE2BE81CDEBAC9002EA0F7 /* Savestate.h */,
+				68C1495F1CDDF0B60014ADDB /* SavestateDatabase.cpp */,
+				68C149601CDDF0B60014ADDB /* SavestateDatabase.h */,
+				68C149611CDDF0B60014ADDB /* SavestateDefines.h */,
+				68C149621CDDF0B60014ADDB /* SavestateReader.cpp */,
+				68C149631CDDF0B60014ADDB /* SavestateReader.h */,
+				68C149641CDDF0B60014ADDB /* SavestateUtils.cpp */,
+				68C149651CDDF0B60014ADDB /* SavestateUtils.h */,
+				68C149661CDDF0B60014ADDB /* SavestateWriter.cpp */,
+				68C149671CDDF0B60014ADDB /* SavestateWriter.h */,
 			);
 			name = savestates;
+			sourceTree = "<group>";
+		};
+		68C149761CDDF1BA0014ADDB /* dialogs */ = {
+			isa = PBXGroup;
+			children = (
+				68C149771CDDF1DB0014ADDB /* GUIDialogSavestates.cpp */,
+				68C149781CDDF1DB0014ADDB /* GUIDialogSavestates.h */,
+			);
+			name = dialogs;
 			sourceTree = "<group>";
 		};
 		68D77D011CD1C627004C1735 /* keyboard */ = {
@@ -10380,11 +10432,13 @@
 				F599CD74108E6A7A0010EC2A /* DarwinStorageProvider.cpp in Sources */,
 				68D77D4E1CD1C7FF004C1735 /* PortManager.cpp in Sources */,
 				E4A249F71095C880003D74C6 /* AutorunMediaJob.cpp in Sources */,
+				68C149791CDDF1DB0014ADDB /* GUIDialogSavestates.cpp in Sources */,
 				F5A9D3091097C9370050490F /* AliasShortcutUtils.cpp in Sources */,
 				DF396ED11C42A25F00214C1A /* DarwinNSUserDefaults.mm in Sources */,
 				431AE5DA109C1A63007428C3 /* OverlayRendererUtil.cpp in Sources */,
 				7C45DBE910F325C400D4BBF3 /* DAVDirectory.cpp in Sources */,
 				7CAA57471C8AF6C20032A326 /* DebugRenderer.cpp in Sources */,
+				68C149701CDDF0B60014ADDB /* SavestateWriter.cpp in Sources */,
 				7C4B64A71C86F712000E1F74 /* InputStreamAddon.cpp in Sources */,
 				F592568810FBF2E100D2C91D /* ConvolutionKernels.cpp in Sources */,
 				F5DC87E2110A287400EE1B15 /* RingBuffer.cpp in Sources */,
@@ -10434,6 +10488,7 @@
 				18B7C7B11294222E009E7A26 /* GUIBaseContainer.cpp in Sources */,
 				18B7C7B21294222E009E7A26 /* GUIBorderedImage.cpp in Sources */,
 				18B7C7B31294222E009E7A26 /* GUIButtonControl.cpp in Sources */,
+				68DE2BEB1CDEBAC9002EA0F7 /* Savestate.cpp in Sources */,
 				18B7C7B51294222E009E7A26 /* GUICheckMarkControl.cpp in Sources */,
 				18B7C7B61294222E009E7A26 /* GUIColorManager.cpp in Sources */,
 				68D77D361CD1C7EB004C1735 /* GameClientProperties.cpp in Sources */,
@@ -10554,6 +10609,7 @@
 				7C84A59E12FA3C1600CD1714 /* SourcesDirectory.cpp in Sources */,
 				7C99B6A4133D342100FC2B16 /* CircularCache.cpp in Sources */,
 				7C99B7951340723F00FC2B16 /* GUIDialogPlayEject.cpp in Sources */,
+				68C149741CDDF16F0014ADDB /* DynamicDatabase.cpp in Sources */,
 				F5AE409C13415D9E0004BD79 /* AudioLibrary.cpp in Sources */,
 				F5AE409F13415D9E0004BD79 /* FileItemHandler.cpp in Sources */,
 				F5AE40A013415D9E0004BD79 /* FileOperations.cpp in Sources */,
@@ -10616,6 +10672,7 @@
 				F5BD02F6148D3A7E001B5583 /* CryptThreading.cpp in Sources */,
 				DF5276E1151BAEDA00B5B63B /* Base64.cpp in Sources */,
 				DF5276E2151BAEDA00B5B63B /* HttpResponse.cpp in Sources */,
+				68C1496E1CDDF0B60014ADDB /* SavestateUtils.cpp in Sources */,
 				68D77D381CD1C7EB004C1735 /* GameClientTiming.cpp in Sources */,
 				DF527734151BAF4C00B5B63B /* WebSocket.cpp in Sources */,
 				DF527735151BAF4C00B5B63B /* WebSocketManager.cpp in Sources */,
@@ -10626,6 +10683,7 @@
 				DFCA6AC7152245CD000BFAAE /* HTTPJsonRpcHandler.cpp in Sources */,
 				DFCA6AC8152245CD000BFAAE /* HTTPVfsHandler.cpp in Sources */,
 				DFCA6AC9152245CD000BFAAE /* HTTPWebinterfaceAddonsHandler.cpp in Sources */,
+				68C1496A1CDDF0B60014ADDB /* SavestateDatabase.cpp in Sources */,
 				DFCA6ACA152245CD000BFAAE /* HTTPWebinterfaceHandler.cpp in Sources */,
 				42E2E1C91B53F74D005C7E4E /* VideoLibraryRefreshingJob.cpp in Sources */,
 				DFCA6ACB152245CD000BFAAE /* IHTTPRequestHandler.cpp in Sources */,
@@ -10917,6 +10975,7 @@
 				68B054CC1CD819B100726629 /* LinearMemoryStream.cpp in Sources */,
 				F5CC234918150277006B5E91 /* AESinkNULL.cpp in Sources */,
 				7C8AE84E189DE3CD00C33786 /* CoreAudioChannelLayout.cpp in Sources */,
+				68C1496C1CDDF0B60014ADDB /* SavestateReader.cpp in Sources */,
 				7C8AE84F189DE3CD00C33786 /* CoreAudioDevice.cpp in Sources */,
 				7C8AE850189DE3CD00C33786 /* CoreAudioHardware.cpp in Sources */,
 				DF5E699A1B28121E009A88C3 /* PVRTimerType.cpp in Sources */,
@@ -11194,6 +11253,7 @@
 				E49911D2174E5D2E00741B6D /* DVDDemux.cpp in Sources */,
 				E49911D3174E5D2E00741B6D /* DVDDemuxBXA.cpp in Sources */,
 				E49911D4174E5D2E00741B6D /* DVDDemuxCDDA.cpp in Sources */,
+				68C149751CDDF16F0014ADDB /* DynamicDatabase.cpp in Sources */,
 				E49911D5174E5D2E00741B6D /* DVDDemuxFFmpeg.cpp in Sources */,
 				E49911D9174E5D2E00741B6D /* DVDDemuxUtils.cpp in Sources */,
 				E49911DA174E5D2E00741B6D /* DVDDemuxVobsub.cpp in Sources */,
@@ -11206,6 +11266,7 @@
 				E49911E0174E5D3700741B6D /* DVDInputStreamFile.cpp in Sources */,
 				E49911E3174E5D3700741B6D /* DVDInputStreamMemory.cpp in Sources */,
 				F597B05C18A804E0005AADAE /* DVDVideoCodec.cpp in Sources */,
+				68C1496F1CDDF0B60014ADDB /* SavestateUtils.cpp in Sources */,
 				E49911E4174E5D3700741B6D /* DVDInputStreamNavigator.cpp in Sources */,
 				E49911E5174E5D3700741B6D /* DVDInputStreamPVRManager.cpp in Sources */,
 				80204F131C91CD3600E8C88B /* InputStreamMultiSource.cpp in Sources */,
@@ -11300,6 +11361,7 @@
 				E4991246174E5D7E00741B6D /* GUIDialogSeekBar.cpp in Sources */,
 				E4991247174E5D7E00741B6D /* GUIDialogSelect.cpp in Sources */,
 				E4991248174E5D7E00741B6D /* GUIDialogSlider.cpp in Sources */,
+				68C1496D1CDDF0B60014ADDB /* SavestateReader.cpp in Sources */,
 				E4991249174E5D7E00741B6D /* GUIDialogSmartPlaylistEditor.cpp in Sources */,
 				E499124A174E5D7E00741B6D /* GUIDialogSmartPlaylistRule.cpp in Sources */,
 				E499124B174E5D7E00741B6D /* GUIDialogSubMenu.cpp in Sources */,
@@ -11403,6 +11465,7 @@
 				DF0E4AD51AD5986F00A75430 /* GUIDialogPVRRadioRDSInfo.cpp in Sources */,
 				395C29C21A98A0A000EBC7AD /* Webinterface.cpp in Sources */,
 				E49912B2174E5D9900741B6D /* SmartPlaylistDirectory.cpp in Sources */,
+				68C1496B1CDDF0B60014ADDB /* SavestateDatabase.cpp in Sources */,
 				DFD7175E1C0A031B0025D964 /* IOSKeyboard.mm in Sources */,
 				E49912B3174E5D9900741B6D /* SMBDirectory.cpp in Sources */,
 				E49912B4174E5D9900741B6D /* SMBFile.cpp in Sources */,
@@ -11429,6 +11492,7 @@
 				E49912C6174E5DA000741B6D /* DirectoryNodeOverview.cpp in Sources */,
 				DFEA4B5A1B52721300562321 /* GUIDialogAudioDSPManager.cpp in Sources */,
 				DFED5AC71AB23388001F080D /* ReplayGain.cpp in Sources */,
+				68DE2BEC1CDEBAC9002EA0F7 /* Savestate.cpp in Sources */,
 				E49912C7174E5DA000741B6D /* DirectoryNodeRecentlyAddedEpisodes.cpp in Sources */,
 				E49912C8174E5DA000741B6D /* DirectoryNodeRecentlyAddedMovies.cpp in Sources */,
 				E49912C9174E5DA000741B6D /* DirectoryNodeRecentlyAddedMusicVideos.cpp in Sources */,
@@ -11542,6 +11606,7 @@
 				68D77D5A1CD1C813004C1735 /* GameFileAutoLauncher.cpp in Sources */,
 				2AC7EB5D1C2330BC00BDAA95 /* GUIWindowPVRTimersBase.cpp in Sources */,
 				E4991326174E5DAD00741B6D /* MatrixGLES.cpp in Sources */,
+				68C1497A1CDDF1DB0014ADDB /* GUIDialogSavestates.cpp in Sources */,
 				E4991327174E5DAD00741B6D /* Shader.cpp in Sources */,
 				E4991328174E5DAD00741B6D /* Texture.cpp in Sources */,
 				E4991329174E5DAD00741B6D /* TextureBundle.cpp in Sources */,
@@ -11910,6 +11975,7 @@
 				7CCA95CD1BC6E71D0091D308 /* GLSLOutput.cpp in Sources */,
 				E49914A2174E607200741B6D /* GUIMediaWindow.cpp in Sources */,
 				E49914A3174E607200741B6D /* GUIWindowDebugInfo.cpp in Sources */,
+				68C149711CDDF0B60014ADDB /* SavestateWriter.cpp in Sources */,
 				E49914A4174E607200741B6D /* GUIWindowFileManager.cpp in Sources */,
 				399442801A8DD96F006C39E9 /* VideoLibraryQueue.cpp in Sources */,
 				E49914A5174E607200741B6D /* GUIWindowHome.cpp in Sources */,

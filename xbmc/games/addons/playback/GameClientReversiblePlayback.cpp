@@ -22,6 +22,9 @@
 #include "games/addons/GameClient.h"
 #include "games/addons/savestates/BasicMemoryStream.h"
 #include "games/addons/savestates/DeltaPairMemoryStream.h"
+#include "games/addons/savestates/Savestate.h"
+#include "games/addons/savestates/SavestateReader.h"
+#include "games/addons/savestates/SavestateWriter.h"
 #include "settings/Settings.h"
 #include "threads/SingleLock.h"
 #include "utils/MathUtils.h"
@@ -35,6 +38,8 @@ using namespace GAME;
 CGameClientReversiblePlayback::CGameClientReversiblePlayback(CGameClient* gameClient, double fps, size_t serializeSize) :
   m_gameClient(gameClient),
   m_gameLoop(this, fps),
+  m_savestateWriter(new CSavestateWriter),
+  m_savestateReader(new CSavestateReader),
   m_pastFrameCount(0),
   m_futureFrameCount(0),
   m_playTimeMs(0),
@@ -111,26 +116,66 @@ void CGameClientReversiblePlayback::SetSpeed(double speedFactor)
     m_gameLoop.SetSpeed(speedFactor * REWIND_FACTOR);
 }
 
+std::string CGameClientReversiblePlayback::CreateManualSavestate()
+{
+  if (!m_savestateWriter->Initialize(m_gameClient))
+    return "";
+
+  {
+    CSingleLock lock(m_mutex);
+    if (!m_savestateWriter->WriteSave(m_memoryStream.get()))
+      return "";
+  }
+
+  m_savestateWriter->WriteThumb();
+
+  if (!m_savestateWriter->CommitToDatabase())
+  {
+    m_savestateWriter->CleanUpTransaction();
+    return "";
+  }
+
+  return m_savestateWriter->GetPath();
+}
+
+bool CGameClientReversiblePlayback::LoadSavestate(const std::string& path)
+{
+  if (!m_savestateReader->Initialize(path, m_gameClient))
+    return false;
+
+  {
+    CSingleLock lock(m_mutex);
+    if (!m_savestateReader->ReadSave(m_memoryStream.get()))
+      return false;
+    m_gameClient->Deserialize(m_memoryStream->CurrentFrame(), m_memoryStream->FrameSize());
+  }
+
+  return true;
+}
+
 void CGameClientReversiblePlayback::FrameEvent()
 {
-  CSingleLock lock(m_mutex);
+  m_gameClient->RunFrame();
+
+  AddFrame();
+}
+
+void CGameClientReversiblePlayback::RewindEvent()
+{
+  RewindFrames(1);
 
   m_gameClient->RunFrame();
+}
+
+void CGameClientReversiblePlayback::AddFrame()
+{
+  CSingleLock lock(m_mutex);
 
   if (m_gameClient->Serialize(m_memoryStream->BeginFrame(), m_memoryStream->FrameSize()))
   {
     m_memoryStream->SubmitFrame();
     UpdatePlaybackStats();
   }
-}
-
-void CGameClientReversiblePlayback::RewindEvent()
-{
-  CSingleLock lock(m_mutex);
-
-  RewindFrames(1);
-
-  m_gameClient->RunFrame();
 }
 
 void CGameClientReversiblePlayback::RewindFrames(unsigned int frames)
