@@ -96,7 +96,7 @@ std::unique_ptr<CGameClient> CGameClient::FromExtension(ADDON::AddonProps props,
   std::string strSupportsVFS = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "supports_vfs");
   bool bSupportsVFS = (strSupportsVFS == "true" || strSupportsVFS == "yes");
 
-  std::string strSupportsStandalone = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "supports_no_game");
+  std::string strSupportsStandalone = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "supports_standalone");
   bool bSupportsStandalone = (strSupportsStandalone == "true" || strSupportsStandalone == "yes");
 
   std::string strSupportsKeyboard = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "supports_keyboard");
