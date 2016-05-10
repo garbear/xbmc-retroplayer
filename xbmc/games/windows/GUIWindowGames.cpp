@@ -166,9 +166,9 @@ void CGUIWindowGames::GetContextButtons(int itemNumber, CContextButtons &buttons
       // Context buttons for a sources path, like "Add source", "Remove Source", etc.
       CGUIDialogContextMenu::GetContextButtons("games", item, buttons);
     }
-    else if (m_vecItems->IsVirtualDirectoryRoot())
+    else if (m_vecItems->IsVirtualDirectoryRoot() || m_vecItems->GetPath() == "sources://games/")
     {
-      // TODO
+      CGUIDialogContextMenu::GetContextButtons("games", item, buttons);
     }
     else
     {
