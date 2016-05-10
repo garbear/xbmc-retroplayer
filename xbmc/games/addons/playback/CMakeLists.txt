@@ -1,0 +1,9 @@
+set(SOURCES GameClientReversiblePlayback.cpp
+            GameLoop.cpp)
+
+set(HEADERS GameClientReversiblePlayback.h
+            GameLoop.h
+            IGameClientPlayback.h)
+
+core_add_library(gameplayback)
+add_dependencies(gameplayback libcpluff)
