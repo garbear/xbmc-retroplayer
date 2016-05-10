@@ -139,7 +139,7 @@ public:
   void CloseStream(GAME_STREAM_TYPE stream);
 
   // Access memory
-  size_t SerializeSize();
+  size_t SerializeSize() const { return m_serializeSize; }
   bool Serialize(uint8_t* data, size_t size);
   bool Deserialize(const uint8_t* data, size_t size);
 
@@ -176,6 +176,9 @@ private:
   ControllerVector GetControllers(void) const;
   bool AcceptsInput(void);
 
+  // Private memory stream functions
+  size_t GetSerializeSize();
+
   // Helper functions
   void LogAddonProperties(void) const;
   bool LogError(GAME_ERROR error, const char* strMethod) const;
@@ -196,6 +199,7 @@ private:
   // Properties of the current playing file
   std::atomic_bool      m_bIsPlaying;          // True between OpenFile() and CloseFile()
   std::string           m_gamePath;
+  size_t                m_serializeSize;
   IGameAudioCallback*   m_audio;               // The audio callback passed to OpenFile()
   IGameVideoCallback*   m_video;               // The video callback passed to OpenFile()
   CGameClientTiming     m_timing;              // Class to scale playback to avoid resampling audio

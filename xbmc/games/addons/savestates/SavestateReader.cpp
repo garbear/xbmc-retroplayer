@@ -25,7 +25,8 @@
 
 using namespace GAME;
 
-CSavestateReader::CSavestateReader()
+CSavestateReader::CSavestateReader() :
+  m_frameCount(0)
 {
   m_db.Open();
 }
@@ -72,8 +73,8 @@ bool CSavestateReader::ReadSave(IMemoryStream* memoryStream)
     ssize_t read = file.Read(memoryStream->BeginFrame(), memoryStream->FrameSize());
     if (read == static_cast<ssize_t>(memoryStream->FrameSize()))
     {
-      memoryStream->SetFrameCounter(m_savestate.PlaytimeFrames());
       memoryStream->SubmitFrame();
+      m_frameCount = m_savestate.PlaytimeFrames();
       bSuccess = true;
     }
   }

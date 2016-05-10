@@ -22,6 +22,7 @@
 #include "Savestate.h"
 #include "SavestateDatabase.h"
 
+#include <stdint.h>
 #include <string>
 
 namespace GAME
@@ -37,9 +38,11 @@ namespace GAME
 
     bool Initialize(const std::string& path, const CGameClient* gameClient);
     bool ReadSave(IMemoryStream* memoryStream);
+    uint64_t GetFrameCount(void) const { return m_frameCount; }
 
   private:
     CSavestate         m_savestate;
     CSavestateDatabase m_db;
+    uint64_t           m_frameCount;
   };
 }

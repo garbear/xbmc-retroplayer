@@ -118,6 +118,8 @@ CGameClient::CGameClient(ADDON::AddonProps props,
   m_bSupportsGameLoop(bSupportsGameLoop),
   m_bSupportsStandalone(bSupportsStandalone),
   m_bSupportsKeyboard(bSupportsKeyboard),
+  m_bIsPlaying(false),
+  m_serializeSize(0),
   m_audio(nullptr),
   m_video(nullptr),
   m_region(GAME_REGION_UNKNOWN)
@@ -267,6 +269,7 @@ bool CGameClient::OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGa
   {
     m_bIsPlaying      = true;
     m_gamePath        = file.GetPath();
+    m_serializeSize   = GetSerializeSize();
     m_audio           = audio;
     m_video           = video;
     m_inputRateHandle = PERIPHERALS::g_peripherals.SetEventScanRate(m_timing.GetFrameRate()); // TODO: Convert event scanner to double
@@ -374,12 +377,7 @@ void CGameClient::CreatePlayback()
 {
   if (m_bSupportsGameLoop)
   {
-    const bool bRewindEnabled = CSettings::GetInstance().GetBool(CSettings::SETTING_GAMES_ENABLEREWIND);
-    const size_t serializeSize = SerializeSize();
-    if (bRewindEnabled && serializeSize > 0)
-      m_playback.reset(new CGameClientReversiblePlayback(this, m_timing.GetFrameRate(), serializeSize));
-    else
-      m_playback.reset(new CGameClientBasicPlayback(this, m_timing.GetFrameRate()));
+    m_playback.reset(new CGameClientReversiblePlayback(this, m_timing.GetFrameRate(), m_serializeSize));
   }
   else
   {
@@ -426,6 +424,7 @@ void CGameClient::CloseFile()
 
   m_bIsPlaying = false;
   m_gamePath.clear();
+  m_serializeSize = 0;
   if (m_inputRateHandle)
   {
     m_inputRateHandle->Release();
@@ -574,7 +573,7 @@ void CGameClient::CloseStream(GAME_STREAM_TYPE stream)
   }
 }
 
-size_t CGameClient::SerializeSize()
+size_t CGameClient::GetSerializeSize()
 {
   CSingleLock lock(m_critSection);
 

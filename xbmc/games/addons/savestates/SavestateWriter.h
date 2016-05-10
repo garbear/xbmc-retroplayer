@@ -22,6 +22,7 @@
 #include "Savestate.h"
 #include "SavestateDatabase.h"
 
+#include <stdint.h>
 #include <string>
 
 namespace GAME
@@ -35,7 +36,7 @@ namespace GAME
     CSavestateWriter();
     ~CSavestateWriter();
 
-    bool Initialize(const CGameClient* gameClient);
+    bool Initialize(const CGameClient* gameClient, uint64_t frameHistoryCount);
     bool WriteSave(IMemoryStream* memoryStream);
     void WriteThumb();
     bool CommitToDatabase();

@@ -43,13 +43,15 @@ CSavestateWriter::~CSavestateWriter()
   m_db.Close();
 }
 
-bool CSavestateWriter::Initialize(const CGameClient* gameClient)
+bool CSavestateWriter::Initialize(const CGameClient* gameClient, uint64_t frameHistoryCount)
 {
   m_savestate.Reset();
   m_fps = 0.0;
 
   if (m_db.IsOpen())
   {
+    m_fps = gameClient->Timing().GetFrameRate();
+
     CDateTime now = CDateTime::GetCurrentDateTime();
     std::string label = now.GetAsLocalizedDateTime();
 
@@ -58,13 +60,13 @@ bool CSavestateWriter::Initialize(const CGameClient* gameClient)
     m_savestate.SetGameClient(gameClient->ID());
     m_savestate.SetGamePath(gameClient->GetGamePath());
     m_savestate.SetTimestamp(now);
+    m_savestate.SetPlaytimeFrames(frameHistoryCount);
+    m_savestate.SetPlaytimeWallClock(frameHistoryCount / m_fps); // TODO: Accumulate playtime instead of deriving it
 
     // TODO: Get CRC from game data instead of filename
     Crc32 crc;
     crc.Compute(gameClient->GetGamePath());
     m_savestate.SetGameCRC(StringUtils::Format("%08x", (unsigned __int32)crc));
-
-    m_fps = gameClient->Timing().GetFrameRate();
 
     m_savestate.SetPath(CSavestateUtils::MakePath(m_savestate));
     if (m_savestate.Path().empty())
@@ -83,13 +85,14 @@ bool CSavestateWriter::WriteSave(IMemoryStream* memoryStream)
 {
   using namespace XFILE;
 
-  bool bSuccess = false;
+  if (memoryStream->CurrentFrame() == nullptr)
+    return false;
 
   m_savestate.SetSize(memoryStream->FrameSize());
-  m_savestate.SetPlaytimeFrames(memoryStream->GetFrameCounter());
-  m_savestate.SetPlaytimeWallClock(memoryStream->GetFrameCounter() / m_fps); // TODO: Accumulate playtime instead of deriving it
 
   CLog::Log(LOGDEBUG, "Saving savestate to %s", m_savestate.Path().c_str());
+
+  bool bSuccess = false;
 
   CFile file;
   if (file.OpenForWrite(m_savestate.Path()))

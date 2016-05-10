@@ -22,9 +22,11 @@
 #include "IGameClientPlayback.h"
 #include "GameLoop.h"
 #include "threads/CriticalSection.h"
+#include "utils/Observer.h"
 
 #include <memory>
 #include <stddef.h>
+#include <stdint.h>
 
 namespace GAME
 {
@@ -34,7 +36,8 @@ namespace GAME
   class IMemoryStream;
 
   class CGameClientReversiblePlayback : public IGameClientPlayback,
-                                        public IGameLoopCallback
+                                        public IGameLoopCallback,
+                                        public Observer
   {
   public:
     CGameClientReversiblePlayback(CGameClient* gameClient, double fps, size_t serializeSize);
@@ -59,11 +62,15 @@ namespace GAME
     virtual void FrameEvent() override;
     virtual void RewindEvent() override;
 
+    // implementation of Observer
+    virtual void Notify(const Observable &obs, const ObservableMessage msg) override;
+
   private:
     void AddFrame();
     void RewindFrames(unsigned int frames);
     void AdvanceFrames(unsigned int frames);
     void UpdatePlaybackStats();
+    void UpdateMemoryStream();
 
     // Construction parameter
     CGameClient* const m_gameClient;
@@ -78,6 +85,7 @@ namespace GAME
     std::unique_ptr<CSavestateReader> m_savestateReader;
 
     // Playback stats
+    uint64_t     m_totalFrameCount;
     unsigned int m_pastFrameCount;
     unsigned int m_futureFrameCount;
     unsigned int m_playTimeMs;
