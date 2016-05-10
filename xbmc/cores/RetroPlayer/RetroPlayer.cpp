@@ -107,6 +107,8 @@ bool CRetroPlayer::CloseFile(bool reopen /* = false */)
   if (m_gameClient)
   {
     m_gameClient->CloseFile();
+    m_gameClient->Unload();
+    m_gameClient.reset();
     m_callback.OnPlayBackEnded();
   }
 

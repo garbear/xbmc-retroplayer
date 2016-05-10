@@ -119,6 +119,7 @@ public:
 
   // Start/stop gameplay
   bool Initialize(void);
+  void Unload();
   bool OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGameVideoCallback* video);
   void Reset();
   void CloseFile();

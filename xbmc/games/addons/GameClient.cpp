@@ -232,6 +232,11 @@ bool CGameClient::Initialize(void)
   return false;
 }
 
+void CGameClient::Unload()
+{
+  Destroy();
+}
+
 bool CGameClient::OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGameVideoCallback* video)
 {
   if (audio == nullptr || video == nullptr)
