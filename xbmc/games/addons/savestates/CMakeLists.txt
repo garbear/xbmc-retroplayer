@@ -7,7 +7,8 @@ set(SOURCES BasicMemoryStream.cpp
             SavestateUtils.cpp
             SavestateWriter.cpp)
 
-set(HEADERS DeltaPairMemoryStream.h
+set(HEADERS BasicMemoryStream.h
+            DeltaPairMemoryStream.h
             IMemoryStream.h
             LinearMemoryStream.h
             Savestate.h
