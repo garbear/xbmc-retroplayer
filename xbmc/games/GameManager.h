@@ -19,7 +19,6 @@
  */
 #pragma once
 
-#include "GameFileAutoLauncher.h"
 #include "GameTypes.h"
 #include "addons/AddonManager.h"
 #include "threads/CriticalSection.h"
@@ -72,10 +71,6 @@ namespace GAME
      */
     bool IsGame(const std::string& path) const;
 
-    // Queue a file to be launched when the next game client is installed.
-    void SetAutoLaunch(const CFileItem& file) { m_fileLauncher.SetAutoLaunch(file); }
-    void ClearAutoLaunch()                    { m_fileLauncher.ClearAutoLaunch(); }
-
   private:
     void UpdateAddons();
 
@@ -84,7 +79,6 @@ namespace GAME
 
     GameClientMap         m_gameClients;
     std::set<std::string> m_gameExtensions;
-    CGameFileAutoLauncher m_fileLauncher;
     CCriticalSection      m_critSection;
   };
 } // namespace GAME

@@ -372,8 +372,6 @@
 		68D77D4F1CD1C7FF004C1735 /* PortManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D4A1CD1C7FF004C1735 /* PortManager.cpp */; };
 		68D77D501CD1C7FF004C1735 /* PortMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D4C1CD1C7FF004C1735 /* PortMapper.cpp */; };
 		68D77D511CD1C7FF004C1735 /* PortMapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D4C1CD1C7FF004C1735 /* PortMapper.cpp */; };
-		68D77D591CD1C813004C1735 /* GameFileAutoLauncher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D521CD1C813004C1735 /* GameFileAutoLauncher.cpp */; };
-		68D77D5A1CD1C813004C1735 /* GameFileAutoLauncher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D521CD1C813004C1735 /* GameFileAutoLauncher.cpp */; };
 		68D77D5B1CD1C813004C1735 /* GameManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D541CD1C813004C1735 /* GameManager.cpp */; };
 		68D77D5C1CD1C813004C1735 /* GameManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D541CD1C813004C1735 /* GameManager.cpp */; };
 		68D77D681CD1C86B004C1735 /* PixelConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68D77D601CD1C86B004C1735 /* PixelConverter.cpp */; };
@@ -2960,8 +2958,6 @@
 		68D77D4B1CD1C7FF004C1735 /* PortManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PortManager.h; path = games/ports/PortManager.h; sourceTree = "<group>"; };
 		68D77D4C1CD1C7FF004C1735 /* PortMapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PortMapper.cpp; path = games/ports/PortMapper.cpp; sourceTree = "<group>"; };
 		68D77D4D1CD1C7FF004C1735 /* PortMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PortMapper.h; path = games/ports/PortMapper.h; sourceTree = "<group>"; };
-		68D77D521CD1C813004C1735 /* GameFileAutoLauncher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameFileAutoLauncher.cpp; path = games/GameFileAutoLauncher.cpp; sourceTree = "<group>"; };
-		68D77D531CD1C813004C1735 /* GameFileAutoLauncher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameFileAutoLauncher.h; path = games/GameFileAutoLauncher.h; sourceTree = "<group>"; };
 		68D77D541CD1C813004C1735 /* GameManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameManager.cpp; path = games/GameManager.cpp; sourceTree = "<group>"; };
 		68D77D551CD1C813004C1735 /* GameManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameManager.h; path = games/GameManager.h; sourceTree = "<group>"; };
 		68D77D561CD1C813004C1735 /* GameTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameTypes.h; path = games/GameTypes.h; sourceTree = "<group>"; };
@@ -6339,8 +6335,6 @@
 				68D77D251CD1C7D4004C1735 /* ports */,
 				68D77D141CD1C6C7004C1735 /* tags */,
 				68D77D701CD1C886004C1735 /* windows */,
-				68D77D521CD1C813004C1735 /* GameFileAutoLauncher.cpp */,
-				68D77D531CD1C813004C1735 /* GameFileAutoLauncher.h */,
 				68D77D541CD1C813004C1735 /* GameManager.cpp */,
 				68D77D551CD1C813004C1735 /* GameManager.h */,
 				68D77CFD1CD1C5E4004C1735 /* GameSettings.cpp */,
@@ -10603,7 +10597,6 @@
 				433219D912E4C6A500CD7486 /* UDFDirectory.cpp in Sources */,
 				7C4705AE12EF584C00369E51 /* AddonInstaller.cpp in Sources */,
 				18C1D22D13033F6A00CFFE59 /* GLUtils.cpp in Sources */,
-				68D77D591CD1C813004C1735 /* GameFileAutoLauncher.cpp in Sources */,
 				F56579AF13060D1E0085ED7F /* RenderCapture.cpp in Sources */,
 				6815C1411CC7BADB000DB91A /* RumbleGenerator.cpp in Sources */,
 				7C84A59E12FA3C1600CD1714 /* SourcesDirectory.cpp in Sources */,
@@ -11603,7 +11596,6 @@
 				E4991322174E5DAD00741B6D /* IWindowManagerCallback.cpp in Sources */,
 				E4991325174E5DAD00741B6D /* LocalizeStrings.cpp in Sources */,
 				7C8E024A1BA35D0B0072E8B2 /* WeatherBuiltins.cpp in Sources */,
-				68D77D5A1CD1C813004C1735 /* GameFileAutoLauncher.cpp in Sources */,
 				2AC7EB5D1C2330BC00BDAA95 /* GUIWindowPVRTimersBase.cpp in Sources */,
 				E4991326174E5DAD00741B6D /* MatrixGLES.cpp in Sources */,
 				68C1497A1CDDF1DB0014ADDB /* GUIDialogSavestates.cpp in Sources */,

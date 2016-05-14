@@ -1,9 +1,7 @@
-set(SOURCES GameFileAutoLauncher.cpp
-            GameManager.cpp
+set(SOURCES GameManager.cpp
             GameSettings.cpp)
 
-set(HEADERS GameFileAutoLauncher.h
-            GameManager.h
+set(HEADERS GameManager.h
             GameSettings.h
             GameTypes.h)
 

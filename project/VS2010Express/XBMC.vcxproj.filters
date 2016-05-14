@@ -3522,9 +3522,6 @@
     <ClCompile Include="..\..\xbmc\games\tags\GameInfoTag.cpp">
       <Filter>games\tags</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\games\GameFileAutoLauncher.cpp">
-      <Filter>games</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\games\GameManager.cpp">
       <Filter>games</Filter>
     </ClCompile>
@@ -6908,9 +6905,6 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\addons\DllGameClient.h">
       <Filter>addons</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\games\GameFileAutoLauncher.h">
-      <Filter>games</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\games\GameManager.h">
       <Filter>games</Filter>
