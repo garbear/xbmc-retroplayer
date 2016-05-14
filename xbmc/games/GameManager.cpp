@@ -114,8 +114,6 @@ void CGameManager::GetGameClients(const CFileItem& file, GameClientVector& candi
 {
   CSingleLock lock(m_critSection);
 
-  const std::string strRequestedClient = file.GetProperty(FILEITEM_PROPERTY_GAME_CLIENT).asString();
-  
   for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
     const GameClientPtr& gameClient = it->second;
