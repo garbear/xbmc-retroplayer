@@ -247,19 +247,19 @@ bool CGameClient::OpenFile(const CFileItem& file, IGameAudioCallback* audio, IGa
 
   bool bSuccess = false;
 
-  if (m_bSupportsStandalone)
-  {
-    CLog::Log(LOGDEBUG, "GameClient: Loading %s in standalone mode", ID().c_str());
-
-    try { bSuccess = LogError(m_pStruct->LoadStandalone(), "LoadStandalone()"); }
-    catch (...) { LogException("LoadStandalone()"); }
-  }
-  else
+  if (CanOpen(file))
   {
     CLog::Log(LOGDEBUG, "GameClient: Loading %s", file.GetPath().c_str());
 
     try { bSuccess = LogError(m_pStruct->LoadGame(file.GetPath().c_str()), "LoadGame()"); }
     catch (...) { LogException("LoadGame()"); }
+  }
+  else if (m_bSupportsStandalone)
+  {
+    CLog::Log(LOGDEBUG, "GameClient: Loading %s in standalone mode", ID().c_str());
+
+    try { bSuccess = LogError(m_pStruct->LoadStandalone(), "LoadStandalone()"); }
+    catch (...) { LogException("LoadStandalone()"); }
   }
 
   // If gameplay failed, check for missing optional resources
