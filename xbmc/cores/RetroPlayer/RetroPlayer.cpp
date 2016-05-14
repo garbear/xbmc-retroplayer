@@ -300,7 +300,7 @@ bool CRetroPlayer::SetPlayerState(const std::string& state)
 {
   if (m_gameClient)
     return m_gameClient->GetPlayback()->LoadSavestate(state);
-  return "";
+  return false;
 }
 
 void CRetroPlayer::PrintGameInfo(const CFileItem &file) const
