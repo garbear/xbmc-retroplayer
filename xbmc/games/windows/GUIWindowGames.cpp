@@ -19,10 +19,7 @@
  */
 
 #include "GUIWindowGames.h"
-#include "addons/AddonInstaller.h" // TODO
-#include "addons/IAddon.h" // TODO
 #include "addons/GUIDialogAddonInfo.h"
-#include "addons/GUIWindowAddonBrowser.h"
 #include "Application.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogMediaSource.h"
@@ -31,8 +28,6 @@
 #include "games/tags/GameInfoTag.h"
 #include "games/addons/GameClient.h"
 #include "games/addons/savestates/SavestateDatabase.h"
-#include "games/GameManager.h"
-#include "games/GameTypes.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
 #include "GUIPassword.h"
@@ -44,7 +39,6 @@
 #include "utils/StringUtils.h"
 
 #include <algorithm>
-#include <iterator>
 
 using namespace GAME;
 
@@ -330,152 +324,5 @@ void CGUIWindowGames::OnItemInfo(int itemNumber)
 
 bool CGUIWindowGames::PlayGame(const CFileItem &item)
 {
-  using namespace ADDON;
-
-  // Add-ons must be of game client type
-  if (item.HasAddonInfo() && item.GetAddonInfo()->Type() != ADDON_GAMEDLL)
-    return false;
-
-  // Get the game client ID from the file properties
-  std::string requestedClient = item.GetProperty(FILEITEM_PROPERTY_GAME_CLIENT).asString();
-
-  // Get the game client ID from the add-on info
-  if (requestedClient.empty())
-  {
-    if (item.HasAddonInfo())
-      requestedClient = item.GetAddonInfo()->ID();
-  }
-
-  // Ask the user for a game add-on
-  if (requestedClient.empty())
-    requestedClient = GetGameClient(item);
-
-  if (!requestedClient.empty())
-  {
-    CFileItem gameFile = item;
-
-    /* TODO
-    // Decode zip root directory (zip://%2Fpath_to_file.zip/ -> file:///path_to_file.zip)
-    CURL url(item.GetPath());
-    if (url.GetProtocol() == "zip" && url.GetFileName() == "")
-      gameFile.SetPath(url.GetHostName());
-    */
-
-    gameFile.SetProperty(FILEITEM_PROPERTY_GAME_CLIENT, requestedClient);
-
-    return g_application.PlayFile(gameFile, "") == PLAYBACK_OK;
-  }
-
-  return true;
-}
-
-std::string CGUIWindowGames::GetGameClient(const CFileItem &item)
-{
-  std::string requestedClient;
-
-  // Ask Game Manager
-  GameClientVector gameClients;
-  CGameManager::GetInstance().GetGameClients(item, gameClients);
-
-  if (gameClients.empty())
-  {
-    // Ask the user to download and install a client
-    requestedClient = InstallByChoice();
-  }
-  else if (gameClients.size() == 1)
-  {
-    // Avoid prompting the user if exactly one game client was found
-    requestedClient = gameClients[0]->ID();
-  }
-  else
-  {
-    // Ask the user to choose an emulator
-    requestedClient = ChooseGameClient(gameClients);
-  }
-
-  return requestedClient;
-}
-
-std::string CGUIWindowGames::InstallByChoice()
-{
-  using namespace ADDON;
-
-  std::string chosenClientId;
-
-  // First, ask the user if they would like to install a game client or go to
-  // the add-on manager
-  CContextButtons choices;
-  choices.Add(0, 35253); // Install emulator
-  choices.Add(1, 35254); // Manage emulators
-
-  int btnid = CGUIDialogContextMenu::ShowAndGetChoice(choices);
-  if (btnid == 0) // Install emulator
-  {
-    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_GAMEDLL, chosenClientId, false, true, false, true, false) >= 0)
-    {
-      if (!chosenClientId.empty())
-        CLog::Log(LOGDEBUG, "RetroPlayer: User installed %s", chosenClientId.c_str());
-    }
-  }
-  else if (btnid == 1) // Manage emulators
-  {
-    ActivateAddonMgr();
-  }
-  else
-  {
-    CLog::Log(LOGDEBUG, "RetroPlayer: User canceled emulator selection");
-  }
-
-  return chosenClientId;
-}
-
-std::string CGUIWindowGames::ChooseGameClient(const GameClientVector& gameClients)
-{
-  std::string chosenClientId;
-
-  // Log clients
-  std::vector<std::string> clientIds;
-  std::transform(gameClients.begin(), gameClients.end(), std::back_inserter(clientIds),
-    [](const GameClientPtr& client)
-    {
-      return client->ID();
-    });
-  CLog::Log(LOGDEBUG, "RetroPlayer: Multiple clients found: %s", StringUtils::Join(clientIds, ", ").c_str());
-
-  CContextButtons choiceButtons;
-
-  // Add emulators
-  int i = 0;
-  for (const GameClientPtr& gameClient : gameClients)
-    choiceButtons.Add(i++, gameClient->Name());
-
-  // Add button to manage emulators
-  const int iAddonMgr = i;
-  choiceButtons.Add(i++, 35254); // "Manage emulators"
-
-  // Do modal
-  int result = CGUIDialogContextMenu::ShowAndGetChoice(choiceButtons);
-
-  if (0 <= result && result < static_cast<int>(gameClients.size()))
-  {
-    chosenClientId = gameClients[result]->ID();
-  }
-  else if (result == iAddonMgr)
-  {
-    ActivateAddonMgr();
-  }
-  else
-  {
-    CLog::Log(LOGDEBUG, "RetroPlayer: User cancelled game client selection");
-  }
-
-  return chosenClientId;
-}
-
-void CGUIWindowGames::ActivateAddonMgr()
-{
-  CLog::Log(LOGDEBUG, "RetroPlayer: User chose to go to the add-on manager");
-  std::vector<std::string> params;
-  params.push_back("addons://user/category.emulators");
-  g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
+  return g_application.PlayFile(item, "") == PLAYBACK_OK;
 }

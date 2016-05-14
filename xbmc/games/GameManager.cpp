@@ -20,19 +20,19 @@
 
 #include "GameManager.h"
 #include "addons/Addon.h"
-#include "FileItem.h"
+#include "dialogs/GUIDialogOK.h"
 #include "games/addons/GameClient.h"
+#include "games/dialogs/GUIDialogSelectGameClient.h"
 #include "threads/SingleLock.h"
-#include "URL.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
-#include "utils/Variant.h"
+#include "FileItem.h"
 #include "ServiceBroker.h"
+#include "URL.h"
 
 using namespace ADDON;
 using namespace GAME;
-using namespace XFILE;
 
 CGameManager& CGameManager::GetInstance()
 {
@@ -110,19 +110,73 @@ bool CGameManager::GetAddonInstance(const std::string& strClientId, GameClientPt
   return false;
 }
 
-void CGameManager::GetGameClients(const CFileItem& file, GameClientVector& candidates) const
+GameClientPtr CGameManager::OpenGameClient(const CFileItem& file)
 {
+  GameClientPtr gameClient;
+
+  // Get the game client ID from the file properties
+  std::string gameClientId = file.GetProperty(FILEITEM_PROPERTY_GAME_CLIENT).asString();
+
+  // If the fileitem's add-on is a game client, fall back to that
+  if (gameClientId.empty())
+  {
+    if (file.HasAddonInfo() && file.GetAddonInfo()->Type() == ADDON::ADDON_GAMEDLL)
+      gameClientId = file.GetAddonInfo()->ID();
+  }
+
+  // Resolve ID to game client ptr
+  if (!gameClientId.empty())
+  {
+    ADDON::AddonPtr addon;
+    if (ADDON::CAddonMgr::GetInstance().GetAddon(gameClientId, addon, ADDON::ADDON_GAMEDLL))
+      gameClient = std::dynamic_pointer_cast<GAME::CGameClient>(addon);
+  }
+
+  // Need to prompt the user
+  if (!gameClient)
+  {
+    GameClientVector candidates;
+    GameClientVector installable;
+    GetGameClients(file, candidates, installable);
+
+    if (candidates.empty() && installable.empty())
+    {
+      // "Failed to play game"
+      // "This game isn't compatible with any available emulators."
+      CGUIDialogOK::ShowAndGetInput(CVariant{ 35210 }, CVariant{ 35212 });
+    }
+    else
+    {
+      CGUIDialogSelectGameClient::ShowAndGetGameClient(candidates, installable, gameClient);
+    }
+  }
+
+  return gameClient;
+}
+
+void CGameManager::GetGameClients(const CFileItem& file, GameClientVector& candidates, GameClientVector& installable) const
+{
+  VECADDONS addons;
+  if (CAddonMgr::GetInstance().GetInstallableAddons(addons, ADDON_GAMEDLL))
+  {
+    for (auto& addon : addons)
+    {
+      GameClientPtr gameClient = std::dynamic_pointer_cast<CGameClient>(addon);
+      if (!gameClient)
+        continue;
+
+      if (gameClient->CanOpen(file))
+        installable.push_back(gameClient);
+    }
+  }
+
   CSingleLock lock(m_critSection);
 
   for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
   {
     const GameClientPtr& gameClient = it->second;
-    CLog::Log(LOGDEBUG, "GameManager: Testing %s", gameClient->ID().c_str());
     if (it->second->CanOpen(file))
-    {
-      CLog::Log(LOGDEBUG, "GameManager: Adding client %s as a candidate", gameClient->ID().c_str());
       candidates.push_back(gameClient);
-    }
   }
 }
 

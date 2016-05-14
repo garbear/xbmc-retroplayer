@@ -49,15 +49,29 @@ namespace GAME
     // implementation of Observer
     virtual void Notify(const Observable& obs, const ObservableMessage msg) override;
 
+    /*!
+     * \brief Initialize the manager
+    */
     void Start();
+
+    /*!
+    * \brief Deinitialize the manager
+    */
     void Stop();
 
+    /*!
+    * \brief Get the instance of the specified add-on
+    */
     bool GetAddonInstance(const std::string& strClientId, GameClientPtr& addon) const;
 
-    /**
-     * Resolve a file item to a list of game clients
+    /*!
+     * \brief Select a game client, possibly via prompt, for the given game
+     *
+     * \param file The game being played
+     *
+     * \return A game client ready to be initialized for playback
      */
-    void GetGameClients(const CFileItem& file, GameClientVector& candidates) const;
+    GameClientPtr OpenGameClient(const CFileItem& file);
 
     /**
      * Get a list of valid game client extensions (as determined by the tag in
@@ -77,6 +91,11 @@ namespace GAME
 
   private:
     void UpdateAddons();
+
+    /*!
+     * \brief Resolve a file item to a list of game clients
+     */
+    void GetGameClients(const CFileItem& file, GameClientVector& candidates, GameClientVector& installable) const;
 
     typedef std::string                           GameClientID;
     typedef std::map<GameClientID, GameClientPtr> GameClientMap;

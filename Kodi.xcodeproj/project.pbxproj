@@ -256,6 +256,8 @@
 		5EF801001A97892A0035AA4D /* ReplayGain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5EF800FE1A97892A0035AA4D /* ReplayGain.cpp */; };
 		6815C1411CC7BADB000DB91A /* RumbleGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6815C13F1CC7BADB000DB91A /* RumbleGenerator.cpp */; };
 		6815C1421CC7BADB000DB91A /* RumbleGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6815C13F1CC7BADB000DB91A /* RumbleGenerator.cpp */; };
+		6818418C1CE81BC300B460E4 /* GUIDialogSelectGameClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6818418A1CE81BC300B460E4 /* GUIDialogSelectGameClient.cpp */; };
+		6818418D1CE81BC400B460E4 /* GUIDialogSelectGameClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6818418A1CE81BC300B460E4 /* GUIDialogSelectGameClient.cpp */; };
 		6861B9EA1CC248EE00F62655 /* DriverReceiving.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6861B9E81CC248EE00F62655 /* DriverReceiving.cpp */; };
 		6861B9EB1CC248EE00F62655 /* DriverReceiving.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6861B9E81CC248EE00F62655 /* DriverReceiving.cpp */; };
 		68AE5BA51C92412900C4D527 /* AddonCallbacksPeripheral.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68AE5BA31C92412900C4D527 /* AddonCallbacksPeripheral.cpp */; };
@@ -2814,6 +2816,8 @@
 		5EF800FF1A97892A0035AA4D /* ReplayGain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReplayGain.h; sourceTree = "<group>"; };
 		6815C13F1CC7BADB000DB91A /* RumbleGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RumbleGenerator.cpp; path = joysticks/RumbleGenerator.cpp; sourceTree = "<group>"; };
 		6815C1401CC7BADB000DB91A /* RumbleGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RumbleGenerator.h; path = joysticks/RumbleGenerator.h; sourceTree = "<group>"; };
+		6818418A1CE81BC300B460E4 /* GUIDialogSelectGameClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GUIDialogSelectGameClient.cpp; path = games/dialogs/GUIDialogSelectGameClient.cpp; sourceTree = "<group>"; };
+		6818418B1CE81BC300B460E4 /* GUIDialogSelectGameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GUIDialogSelectGameClient.h; path = games/dialogs/GUIDialogSelectGameClient.h; sourceTree = "<group>"; };
 		6861B9E81CC248EE00F62655 /* DriverReceiving.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DriverReceiving.cpp; path = joysticks/generic/DriverReceiving.cpp; sourceTree = "<group>"; };
 		6861B9E91CC248EE00F62655 /* DriverReceiving.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DriverReceiving.h; path = joysticks/generic/DriverReceiving.h; sourceTree = "<group>"; };
 		6861B9EC1CC248F600F62655 /* IDriverReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IDriverReceiver.h; path = joysticks/IDriverReceiver.h; sourceTree = "<group>"; };
@@ -6427,6 +6431,8 @@
 			children = (
 				68C149771CDDF1DB0014ADDB /* GUIDialogSavestates.cpp */,
 				68C149781CDDF1DB0014ADDB /* GUIDialogSavestates.h */,
+				6818418A1CE81BC300B460E4 /* GUIDialogSelectGameClient.cpp */,
+				6818418B1CE81BC300B460E4 /* GUIDialogSelectGameClient.h */,
 			);
 			name = dialogs;
 			sourceTree = "<group>";
@@ -11032,6 +11038,7 @@
 				7CCDA22F192753E30074CF51 /* PltMediaCache.cpp in Sources */,
 				7CCDA238192753E30074CF51 /* PltMediaItem.cpp in Sources */,
 				7CCDA241192753E30074CF51 /* PltMediaServer.cpp in Sources */,
+				6818418C1CE81BC300B460E4 /* GUIDialogSelectGameClient.cpp in Sources */,
 				7CCDA24A192753E30074CF51 /* PltSyncMediaBrowser.cpp in Sources */,
 				DF0E4ACF1AD5984600A75430 /* PVRRadioRDSInfoTag.cpp in Sources */,
 				7CCDA779192756250074CF51 /* Neptune.cpp in Sources */,
@@ -11161,6 +11168,7 @@
 				E499116E174E5CC300741B6D /* savepos.cpp in Sources */,
 				68D77D1D1CD1C73F004C1735 /* AddonCallbacksGame.cpp in Sources */,
 				E499116F174E5CC300741B6D /* scantree.cpp in Sources */,
+				6818418D1CE81BC400B460E4 /* GUIDialogSelectGameClient.cpp in Sources */,
 				E4991170174E5CC300741B6D /* sha1.cpp in Sources */,
 				E4991171174E5CC300741B6D /* strfn.cpp in Sources */,
 				E4991172174E5CC300741B6D /* strlist.cpp in Sources */,

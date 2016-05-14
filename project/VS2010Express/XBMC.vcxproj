@@ -426,6 +426,7 @@ copy "..\Win32BuildSetup\dependencies\python27.dll" "$(TargetDir)"</Command>
     <ClCompile Include="..\..\xbmc\games\addons\savestates\SavestateReader.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\savestates\SavestateUtils.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\savestates\SavestateWriter.cpp" />
+    <ClCompile Include="..\..\xbmc\games\dialogs\GUIDialogSelectGameClient.cpp" />
     <ClCompile Include="..\..\xbmc\games\dialogs\GUIDialogSavestates.cpp" />
     <ClCompile Include="..\..\xbmc\games\GameSettings.cpp" />
     <ClCompile Include="..\..\xbmc\games\addons\GameClient.cpp" />
@@ -1176,6 +1177,7 @@ copy "..\Win32BuildSetup\dependencies\python27.dll" "$(TargetDir)"</Command>
     <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateReader.h" />
     <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateUtils.h" />
     <ClInclude Include="..\..\xbmc\games\addons\savestates\SavestateWriter.h" />
+    <ClInclude Include="..\..\xbmc\games\dialogs\GUIDialogSelectGameClient.h" />
     <ClInclude Include="..\..\xbmc\games\dialogs\GUIDialogSavestates.h" />
     <ClInclude Include="..\..\xbmc\games\GameSettings.h" />
     <ClInclude Include="..\..\xbmc\games\addons\GameClient.h" />

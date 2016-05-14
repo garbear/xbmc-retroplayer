@@ -3606,6 +3606,9 @@
     <ClCompile Include="..\..\xbmc\dbwrappers\DynamicDatabase.cpp">
       <Filter>dbwrappers</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\games\dialogs\GUIDialogSelectGameClient.cpp">
+      <Filter>games\dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -7019,6 +7022,9 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\dbwrappers\DynamicDatabase.h">
       <Filter>dbwrappers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\games\dialogs\GUIDialogSelectGameClient.h">
+      <Filter>games\dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

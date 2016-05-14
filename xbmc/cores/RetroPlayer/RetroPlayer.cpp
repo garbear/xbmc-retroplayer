@@ -21,11 +21,11 @@
 #include "RetroPlayer.h"
 #include "RetroPlayerAudio.h"
 #include "RetroPlayerVideo.h"
-#include "addons/AddonManager.h"
 #include "cores/VideoPlayer/Process/ProcessInfo.h"
 #include "games/addons/playback/IGameClientPlayback.h"
 #include "games/addons/GameClient.h"
 #include "games/tags/GameInfoTag.h"
+#include "games/GameManager.h"
 #include "utils/log.h"
 #include "windowing/WindowingFactory.h"
 #include "FileItem.h"
@@ -56,32 +56,28 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
 
   PrintGameInfo(file);
 
-  // Get the game client ID from the file properties
-  std::string gameClientId = file.GetProperty(FILEITEM_PROPERTY_GAME_CLIENT).asString();
-
-  // If the fileitem's add-on is a game client, fall back to that
-  if (gameClientId.empty())
-  {
-    if (file.HasAddonInfo() && file.GetAddonInfo()->Type() == ADDON::ADDON_GAMEDLL)
-      gameClientId = file.GetAddonInfo()->ID();
-  }
-
-  // Resolve ID to game client ptr
-  if (!gameClientId.empty())
-  {
-    ADDON::AddonPtr addon;
-    if (ADDON::CAddonMgr::GetInstance().GetAddon(gameClientId, addon, ADDON::ADDON_GAMEDLL))
-      m_gameClient = std::dynamic_pointer_cast<GAME::CGameClient>(addon);
-  }
-
   bool bSuccess = false;
 
-  if (m_gameClient && m_gameClient->Initialize())
+  m_gameClient = CGameManager::GetInstance().OpenGameClient(file);
+  if (m_gameClient)
   {
-    m_audio.reset(new CRetroPlayerAudio);
-    m_video.reset(new CRetroPlayerVideo(m_clock, m_renderManager, *m_processInfo));
-    bSuccess = m_gameClient->OpenFile(file, m_audio.get(), m_video.get());
+    if (m_gameClient->Initialize())
+    {
+      m_audio.reset(new CRetroPlayerAudio);
+      m_video.reset(new CRetroPlayerVideo(m_clock, m_renderManager, *m_processInfo));
+      if (m_gameClient->OpenFile(file, m_audio.get(), m_video.get()))
+      {
+        CLog::Log(LOGDEBUG, "RetroPlayer: Using game client %s", m_gameClient->ID().c_str());
+        bSuccess = true;
+      }
+      else
+        CLog::Log(LOGERROR, "RetroPlayer: Failed to open file using %s", m_gameClient->ID().c_str());
+    }
+    else
+      CLog::Log(LOGERROR, "RetroPlayer: Failed to initialize %s", m_gameClient->ID().c_str());
   }
+  else
+    CLog::Log(LOGERROR, "RetroPlayer: Can't find add-on for game file");
 
   if (bSuccess)
   {
