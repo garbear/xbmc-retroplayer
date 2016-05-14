@@ -131,10 +131,6 @@ CGameClient::CGameClient(ADDON::AddonProps props,
 
 CGameClient::~CGameClient(void)
 {
-  /* TODO
-  if (m_bIsPlaying && m_demuxer)
-    m_player->CloseFile();
-  */
 }
 
 bool CGameClient::IsType(ADDON::TYPE type) const
