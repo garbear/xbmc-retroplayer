@@ -65,11 +65,15 @@ namespace GAME
      */
     void GetExtensions(std::vector<std::string>& exts) const;
 
-    /**
-     * Returns true if the file extension is supported by an add-on in an enabled
-     * repository.
+    /*!
+     * \brief Check if the file extension is supported by an add-on in
+     *        a local or remote repository
+     *
+     * \param path The path of the game file
+     *
+     * \return true if the path's extension is supported by a known game client
      */
-    bool IsGame(const std::string& path) const;
+    bool HasGameExtension(const std::string& path) const;
 
   private:
     void UpdateAddons();

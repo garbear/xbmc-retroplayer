@@ -132,7 +132,7 @@ void CGameManager::GetExtensions(std::vector<std::string> &exts) const
   exts.insert(exts.end(), m_gameExtensions.begin(), m_gameExtensions.end());
 }
 
-bool CGameManager::IsGame(const std::string &path) const
+bool CGameManager::HasGameExtension(const std::string &path) const
 {
   // Get the file extension (must use a CURL, if the string is top-level zip
   // directory it might not end in .zip)
