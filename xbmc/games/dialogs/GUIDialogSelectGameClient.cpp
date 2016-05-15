@@ -33,13 +33,13 @@ bool CGUIDialogSelectGameClient::ShowAndGetGameClient(const GameClientVector& ca
 {
   using namespace ADDON;
 
-  CLog::Log(LOGDEBUG, "Select game client dialog: Found %u candidates", candidates.size());
+  CLog::Log(LOGDEBUG, "Select game client dialog: Found %lu candidates", candidates.size());
   for (const auto& gameClient : candidates)
     CLog::Log(LOGDEBUG, "Adding %s as a candidate", gameClient->ID().c_str());
 
   if (!installable.empty())
   {
-    CLog::Log(LOGDEBUG, "Select game client dialog: Found %u installable clients", installable.size());
+    CLog::Log(LOGDEBUG, "Select game client dialog: Found %lu installable clients", installable.size());
     for (const auto& gameClient : installable)
       CLog::Log(LOGDEBUG, "Adding %s as an installable client", gameClient->ID().c_str());
   }
