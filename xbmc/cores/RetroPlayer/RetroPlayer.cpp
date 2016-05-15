@@ -29,6 +29,7 @@
 #include "utils/log.h"
 #include "windowing/WindowingFactory.h"
 #include "FileItem.h"
+#include "URL.h"
 
 using namespace GAME;
 
@@ -47,7 +48,8 @@ CRetroPlayer::~CRetroPlayer()
 
 bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options)
 {
-  CLog::Log(LOGINFO, "RetroPlayer: Opening: %s", file.GetPath().c_str());
+  std::string redactedPath = CURL::GetRedacted(file.GetPath());
+  CLog::Log(LOGINFO, "RetroPlayer: Opening: %s", redactedPath.c_str());
 
   if (IsPlaying())
     CloseFile();
@@ -83,8 +85,14 @@ bool CRetroPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& options
 
   if (bSuccess)
   {
-    if (file.m_lStartOffset == STARTOFFSET_RESUME)
-      SetPlayerState(file.GetGameInfoTag()->GetSavestate());
+    if (file.m_lStartOffset == STARTOFFSET_RESUME && file.HasGameInfoTag())
+    {
+      const std::string& savestatePath = file.GetGameInfoTag()->GetSavestate();
+      std::string redactedSavestatePath = CURL::GetRedacted(savestatePath);
+      CLog::Log(LOGDEBUG, "RetroPlayer: Loading savestate %s", redactedSavestatePath.c_str());
+      if (!SetPlayerState(savestatePath))
+        CLog::Log(LOGERROR, "RetroPlayer: Failed to load savestate from %s", redactedSavestatePath.c_str());
+    }
 
     ToFFRW(1);
 
