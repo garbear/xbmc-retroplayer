@@ -31,6 +31,8 @@
 #include "ServiceBroker.h"
 #include "URL.h"
 
+#include <algorithm>
+
 using namespace ADDON;
 using namespace GAME;
 
@@ -145,6 +147,11 @@ GameClientPtr CGameManager::OpenGameClient(const CFileItem& file)
       // "This game isn't compatible with any available emulators."
       CGUIDialogOK::ShowAndGetInput(CVariant{ 35210 }, CVariant{ 35212 });
     }
+    else if (candidates.size() == 1 && installable.empty())
+    {
+      // Only 1 option, avoid prompting the user
+      gameClient = candidates[0];
+    }
     else
     {
       CGUIDialogSelectGameClient::ShowAndGetGameClient(candidates, installable, gameClient);
@@ -156,6 +163,18 @@ GameClientPtr CGameManager::OpenGameClient(const CFileItem& file)
 
 void CGameManager::GetGameClients(const CFileItem& file, GameClientVector& candidates, GameClientVector& installable) const
 {
+  // Get local candidates
+  {
+    CSingleLock lock(m_critSection);
+    for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
+    {
+      const GameClientPtr& gameClient = it->second;
+      if (it->second->CanOpen(file))
+        candidates.push_back(gameClient);
+    }
+  }
+
+  // Get remote candidates
   VECADDONS addons;
   if (CAddonMgr::GetInstance().GetInstallableAddons(addons, ADDON_GAMEDLL))
   {
@@ -170,14 +189,20 @@ void CGameManager::GetGameClients(const CFileItem& file, GameClientVector& candi
     }
   }
 
-  CSingleLock lock(m_critSection);
+  // Sort by name (TODO: Move to presentation code)
+  auto SortByName = [](const GameClientPtr& lhs, const GameClientPtr& rhs)
+    {
+      std::string lhsName = lhs->Name();
+      std::string rhsName = rhs->Name();
 
-  for (GameClientMap::const_iterator it = m_gameClients.begin(); it != m_gameClients.end(); it++)
-  {
-    const GameClientPtr& gameClient = it->second;
-    if (it->second->CanOpen(file))
-      candidates.push_back(gameClient);
-  }
+      StringUtils::ToLower(lhsName);
+      StringUtils::ToLower(rhsName);
+
+      return lhsName < rhsName;
+    };
+
+  std::sort(candidates.begin(), candidates.end(), SortByName);
+  std::sort(installable.begin(), installable.end(), SortByName);
 }
 
 void CGameManager::GetExtensions(std::vector<std::string> &exts) const

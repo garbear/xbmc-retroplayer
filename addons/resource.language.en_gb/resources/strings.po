@@ -16179,7 +16179,12 @@ msgctxt "#35254"
 msgid "Manage emulators"
 msgstr ""
 
-#empty strings from id 35255 to 35268
+#: xbmc/games/dialogs/GUIDialogSelectGameClient.cpp
+msgctxt "#35255"
+msgid "Browse all emulators"
+msgstr ""
+
+#empty strings from id 35256 to 35268
 
 #. Title of the save states dialog
 #: addons/skin.estuary/1080i/DialogSavestates.xml

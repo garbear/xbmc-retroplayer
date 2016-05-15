@@ -29,11 +29,16 @@ namespace GAME
     static bool ShowAndGetGameClient(const GameClientVector& candidates, const GameClientVector& installable, GameClientPtr& gameClient);
 
   private:
-    static GameClientPtr InstallGameClient();
+    static GameClientPtr InstallGameClient(const GameClientVector& installable);
 
     /*!
      * \brief Utility function to load the add-on manager for installed emulators
      */
     static void ActivateAddonMgr();
+
+    /*!
+     * \brief Utility function to load the add-on manager for all emulators
+     */
+    static void ActivateAddonBrowser();
   };
 }

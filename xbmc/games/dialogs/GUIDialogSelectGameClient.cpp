@@ -19,6 +19,7 @@
  */
 
 #include "GUIDialogSelectGameClient.h"
+#include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
 #include "addons/GUIWindowAddonBrowser.h"
 #include "dialogs/GUIDialogContextMenu.h"
@@ -31,8 +32,6 @@ using namespace GAME;
 
 bool CGUIDialogSelectGameClient::ShowAndGetGameClient(const GameClientVector& candidates, const GameClientVector& installable, GameClientPtr& gameClient)
 {
-  using namespace ADDON;
-
   CLog::Log(LOGDEBUG, "Select game client dialog: Found %lu candidates", candidates.size());
   for (const auto& gameClient : candidates)
     CLog::Log(LOGDEBUG, "Adding %s as a candidate", gameClient->ID().c_str());
@@ -69,7 +68,7 @@ bool CGUIDialogSelectGameClient::ShowAndGetGameClient(const GameClientVector& ca
   }
   else if (result == iInstallEmulator)
   {
-    gameClient = InstallGameClient();
+    gameClient = InstallGameClient(installable);
   }
   else if (result == iAddonMgr)
   {
@@ -83,12 +82,13 @@ bool CGUIDialogSelectGameClient::ShowAndGetGameClient(const GameClientVector& ca
   return gameClient.get() != nullptr;
 }
 
-GameClientPtr CGUIDialogSelectGameClient::InstallGameClient()
+GameClientPtr CGUIDialogSelectGameClient::InstallGameClient(const GameClientVector& installable)
 {
   using namespace ADDON;
 
   GameClientPtr gameClient;
 
+  /* TODO: Switch to add-on browser when more emulators have icons
   std::string chosenClientId;
   if (CGUIWindowAddonBrowser::SelectAddonID(ADDON_GAMEDLL, chosenClientId, false, true, false, true, false) >= 0 && !chosenClientId.empty())
   {
@@ -100,6 +100,50 @@ GameClientPtr CGUIDialogSelectGameClient::InstallGameClient()
     if (!gameClient)
       CLog::Log(LOGERROR, "Select game client dialog: Failed to get addon %s", chosenClientId.c_str());
   }
+  */
+
+  CContextButtons choiceButtons;
+
+  // Add emulators
+  int i = 0;
+  for (const GameClientPtr& gameClient : installable)
+    choiceButtons.Add(i++, gameClient->Name());
+
+  // Add button to browser all emulators
+  const int iAddonBrowser = i++;
+  choiceButtons.Add(iAddonBrowser, 35255); // "Browse all emulators"
+
+  // Do modal
+  int result = CGUIDialogContextMenu::ShowAndGetChoice(choiceButtons);
+
+  if (0 <= result && result < static_cast<int>(installable.size()))
+  {
+    std::string gameClientId = installable[result]->ID();
+    CLog::Log(LOGDEBUG, "Select game client dialog: Installing %s", gameClientId.c_str());
+    AddonPtr installedAddon;
+    if (CAddonInstaller::GetInstance().InstallModal(gameClientId, installedAddon, false))
+    {
+      CLog::Log(LOGDEBUG, "Select game client dialog: Successfully installed %s", installedAddon->ID().c_str());
+
+      // if the addon is disabled we need to enable it
+      if (CAddonMgr::GetInstance().IsAddonDisabled(installedAddon->ID()))
+        CAddonMgr::GetInstance().EnableAddon(installedAddon->ID());
+
+      gameClient = std::dynamic_pointer_cast<CGameClient>(installedAddon);
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "Select game client dialog: Failed to install %s", gameClient->ID().c_str());
+    }
+  }
+  else if (result == iAddonBrowser)
+  {
+    ActivateAddonBrowser();
+  }
+  else
+  {
+    CLog::Log(LOGDEBUG, "Select game client dialog: User cancelled game client installation");
+  }
 
   return gameClient;
 }
@@ -109,5 +153,13 @@ void CGUIDialogSelectGameClient::ActivateAddonMgr()
   CLog::Log(LOGDEBUG, "User chose to go to the add-on manager");
   std::vector<std::string> params;
   params.push_back("addons://user/category.emulators");
+  g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
+}
+
+void CGUIDialogSelectGameClient::ActivateAddonBrowser()
+{
+  CLog::Log(LOGDEBUG, "User chose to go to the add-on browser");
+  std::vector<std::string> params;
+  params.push_back("addons://all/category.emulators");
   g_windowManager.ActivateWindow(WINDOW_ADDON_BROWSER, params);
 }

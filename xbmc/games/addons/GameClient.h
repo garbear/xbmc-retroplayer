@@ -95,12 +95,7 @@ class CGameClient : public ADDON::CAddonDll<DllGameClient, GameClient, game_clie
 public:
   static std::unique_ptr<CGameClient> FromExtension(ADDON::AddonProps props, const cp_extension_t* ext);
 
-  CGameClient(ADDON::AddonProps props, 
-              const std::vector<std::string>& extensions,
-              bool bSupportsVFS, 
-              bool bSupportsGameLoop,
-              bool bSupportsStandalone, 
-              bool bSupportsKeyboard);
+  CGameClient(ADDON::AddonProps props);
 
   virtual ~CGameClient(void);
 
