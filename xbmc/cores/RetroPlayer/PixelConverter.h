@@ -34,7 +34,7 @@ public:
   CPixelConverter();
   ~CPixelConverter() { Dispose(); }
 
-  bool Open(AVPixelFormat pixfmt, AVPixelFormat target, unsigned int width, unsigned int height);
+  bool Open(AVPixelFormat pixfmt, AVPixelFormat target, unsigned int width, unsigned int height, void *opaque);
   void Dispose();
   bool Decode(const uint8_t* pData, unsigned int size);
   void GetPicture(DVDVideoPicture& dvdVideoPicture);

@@ -37,7 +37,7 @@ CPixelConverter::CPixelConverter() :
 {
 }
 
-bool CPixelConverter::Open(AVPixelFormat pixfmt, AVPixelFormat targetfmt, unsigned int width, unsigned int height)
+bool CPixelConverter::Open(AVPixelFormat pixfmt, AVPixelFormat targetfmt, unsigned int width, unsigned int height, void *opaque)
 {
   if (pixfmt == targetfmt || width == 0 || height == 0)
     return false;

@@ -56,7 +56,8 @@ bool CRetroPlayerVideo::OpenPixelStream(AVPixelFormat pixfmt, unsigned int width
   m_bConfigured = false;
   m_droppedFrames = 0;
   m_pixelConverter.reset(new CPixelConverter);
-  if (m_pixelConverter->Open(pixfmt, AV_PIX_FMT_YUV420P, width, height))
+  CRenderInfo info = m_renderManager.GetRenderInfo();
+  if (m_pixelConverter->Open(pixfmt, AV_PIX_FMT_YUV420P, width, height, info.opaque_pointer))
     return true;
 
   m_pixelConverter.reset();
