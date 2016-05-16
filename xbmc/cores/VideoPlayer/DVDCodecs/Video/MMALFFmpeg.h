@@ -77,6 +77,7 @@ protected:
   CMMALRenderer *m_renderer;
   std::deque<CGPUMEM *> m_freeBuffers;
   bool m_closing;
+  enum AVPixelFormat m_fmt;
 };
 
 };

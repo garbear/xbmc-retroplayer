@@ -18,6 +18,8 @@
  *
  */
 
+#ifndef TARGET_RASPBERRY_PI
+
 #include "PixelConverter.h"
 #include "cores/VideoPlayer/DVDClock.h"
 #include "cores/VideoPlayer/DVDCodecs/DVDCodecUtils.h"
@@ -125,3 +127,5 @@ void CPixelConverter::GetPicture(DVDVideoPicture& dvdVideoPicture)
   dvdVideoPicture.iDisplayHeight = m_height;
   dvdVideoPicture.format         = m_renderFormat;
 }
+
+#endif

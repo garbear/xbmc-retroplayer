@@ -19,6 +19,9 @@
  */
 #pragma once
 
+#ifdef TARGET_RASPBERRY_PI
+#include "linux/RBP.h"
+#else
 #include "cores/VideoPlayer/VideoRenderers/RenderFormats.h"
 
 #include "libavutil/pixfmt.h"
@@ -46,3 +49,4 @@ private:
   SwsContext*      m_swsContext;
   DVDVideoPicture* m_buf;
 };
+#endif

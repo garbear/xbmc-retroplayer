@@ -201,7 +201,7 @@ int CDecoder::FFGetBuffer(AVCodecContext *avctx, AVFrame *frame, int flags)
   if (g_advancedSettings.CanLogComponent(LOGVIDEO))
     CLog::Log(LOGDEBUG,"%s::%s %dx%d format:%x flags:%x", CLASSNAME, __FUNCTION__, frame->width, frame->height, frame->format, flags);
 
-  if ((avctx->codec->capabilities & AV_CODEC_CAP_DR1) == 0 || frame->format != AV_PIX_FMT_YUV420P)
+  if ((avctx->codec && (avctx->codec->capabilities & AV_CODEC_CAP_DR1) == 0) || frame->format != AV_PIX_FMT_YUV420P)
   {
     assert(0);
     return avcodec_default_get_buffer2(avctx, frame, flags);
@@ -250,7 +250,7 @@ bool CDecoder::Open(AVCodecContext *avctx, AVCodecContext* mainctx, enum AVPixel
 
   m_renderer = (CMMALRenderer *)mainctx->hwaccel_context;
 
-  CLog::Log(LOGNOTICE, "%s::%s - m_renderer:%p", CLASSNAME, __FUNCTION__, m_renderer);
+  CLog::Log(LOGNOTICE, "%s::%s - m_renderer:%p fmt:%d", CLASSNAME, __FUNCTION__, m_renderer, fmt);
   assert(m_renderer);
   mainctx->hwaccel_context = nullptr;
 
@@ -263,6 +263,7 @@ bool CDecoder::Open(AVCodecContext *avctx, AVCodecContext* mainctx, enum AVPixel
   mainctx->get_buffer2 = CDecoder::FFGetBuffer;
 
   m_avctx = mainctx;
+  m_fmt = fmt;
   return true;
 }
 
