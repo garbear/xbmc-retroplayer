@@ -689,8 +689,10 @@ bool CAddonsDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   else if (endpoint == "more")
   {
     std::string type = path.GetFileName();
-    if (type == "video" || type == "audio" || type == "image" || type == "game" || type == "executable")
+    if (type == "video" || type == "audio" || type == "image" || type == "executable")
       return Browse(CURL("addons://all/xbmc.addon." + type), items);
+    else if (type == "game")
+      return Browse(CURL("addons://all/category.gameaddons"), items);
     return false;
   }
   else
