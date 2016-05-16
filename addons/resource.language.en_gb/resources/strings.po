@@ -4972,6 +4972,7 @@ msgctxt "#10139"
 msgid "Pictures / Info"
 msgstr ""
 
+#: addons/skin.estuary/1080i/MyGames.xml
 #: xbmc/guilib/WindowIDs.h
 msgctxt "#10140"
 msgid "Add-on settings"
@@ -12998,6 +12999,7 @@ msgstr ""
 #: addons/skin.estuary/1080i/MyVideoNav.xml
 #: addons/skin.estuary/1080i/MyPics.xml
 #: addons/skin.estuary/1080i/MyMusicNav.xml
+#: addons/skin.estuary/1080i/MyGames.xml
 msgctxt "#21452"
 msgid "Get more..."
 msgstr ""
