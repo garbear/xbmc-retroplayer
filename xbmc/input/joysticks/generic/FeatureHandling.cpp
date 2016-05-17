@@ -35,7 +35,8 @@ using namespace JOYSTICK;
 CJoystickFeature::CJoystickFeature(const FeatureName& name, IInputHandler* handler, IButtonMap* buttonMap) :
   m_name(name),
   m_handler(handler),
-  m_buttonMap(buttonMap)
+  m_buttonMap(buttonMap),
+  m_bEnabled(m_handler->HasFeature(name))
 {
 }
 
@@ -51,6 +52,9 @@ CScalarFeature::CScalarFeature(const FeatureName& name, IInputHandler* handler, 
 
 bool CScalarFeature::OnDigitalMotion(const CDriverPrimitive& source, bool bPressed)
 {
+  if (!m_bEnabled)
+    return false;
+
   bool bHandled = false;
 
   if (m_inputType == INPUT_TYPE::DIGITAL)
@@ -71,6 +75,9 @@ bool CScalarFeature::OnDigitalMotion(const CDriverPrimitive& source, bool bPress
 
 bool CScalarFeature::OnAnalogMotion(const CDriverPrimitive& source, float magnitude)
 {
+  if (!m_bEnabled)
+    return false;
+
   bool bHandled = false;
 
   if (m_inputType == INPUT_TYPE::DIGITAL)
@@ -160,6 +167,9 @@ bool CAnalogStick::OnDigitalMotion(const CDriverPrimitive& source, bool bPressed
 
 bool CAnalogStick::OnAnalogMotion(const CDriverPrimitive& source, float magnitude)
 {
+  if (!m_bEnabled)
+    return false;
+
   const bool bAccepted = m_handler->AcceptsInput();
 
   CDriverPrimitive up;
@@ -189,6 +199,9 @@ bool CAnalogStick::OnAnalogMotion(const CDriverPrimitive& source, float magnitud
 
 void CAnalogStick::ProcessMotions(void)
 {
+  if (!m_bEnabled)
+    return;
+
   if (!m_handler->AcceptsInput())
     return;
 
@@ -221,6 +234,9 @@ bool CAccelerometer::OnDigitalMotion(const CDriverPrimitive& source, bool bPress
 
 bool CAccelerometer::OnAnalogMotion(const CDriverPrimitive& source, float magnitude)
 {
+  if (!m_bEnabled)
+    return false;
+
   const bool bAccepted = m_handler->AcceptsInput();
 
   CDriverPrimitive positiveX;
@@ -248,6 +264,9 @@ bool CAccelerometer::OnAnalogMotion(const CDriverPrimitive& source, float magnit
 
 void CAccelerometer::ProcessMotions(void)
 {
+  if (!m_bEnabled)
+    return;
+
   if (!m_handler->AcceptsInput())
     return;
 
