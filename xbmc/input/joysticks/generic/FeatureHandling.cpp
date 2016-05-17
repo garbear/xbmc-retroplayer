@@ -46,7 +46,8 @@ CScalarFeature::CScalarFeature(const FeatureName& name, IInputHandler* handler, 
   CJoystickFeature(name, handler, buttonMap),
   m_inputType(handler->GetInputType(name)),
   m_bDigitalState(false),
-  m_analogState(0.0f)
+  m_analogState(0.0f),
+  m_bLastHandled(false)
 {
 }
 
@@ -62,7 +63,11 @@ bool CScalarFeature::OnDigitalMotion(const CDriverPrimitive& source, bool bPress
     if (m_bDigitalState != bPressed)
     {
       m_bDigitalState = bPressed;
-      bHandled = OnDigitalMotion(bPressed);
+      bHandled = m_bLastHandled = OnDigitalMotion(bPressed);
+    }
+    else
+    {
+      return m_bLastHandled;
     }
   }
   else if (m_inputType == INPUT_TYPE::ANALOG)
