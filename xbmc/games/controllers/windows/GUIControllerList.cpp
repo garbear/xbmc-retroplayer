@@ -120,10 +120,7 @@ void CGUIControllerList::OnFocus(unsigned int controllerIndex)
 
 void CGUIControllerList::OnSelect(unsigned int controllerIndex)
 {
-  if (controllerIndex < m_controllers.size())
-  {
-    // TODO
-  }
+  m_featureList->OnSelect(0);
 }
 
 void CGUIControllerList::ResetController(void)
