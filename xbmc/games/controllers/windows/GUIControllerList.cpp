@@ -20,6 +20,7 @@
 
 #include "GUIControllerList.h"
 
+#include <algorithm>
 #include <assert.h>
 #include <iterator>
 
@@ -153,69 +154,50 @@ void CGUIControllerList::Notify(const Observable& obs, const ObservableMessage m
 
 bool CGUIControllerList::RefreshControllers(void)
 {
-  bool bChanged = false;
+  auto GetControllerID = [](const ControllerPtr& addon) { return addon->ID(); };
+  auto GetAddonID = [](const AddonPtr& addon) { return addon->ID(); };
 
-  // Get controller add-ons
-  ADDON::VECADDONS addons;
-  CAddonMgr::GetInstance().GetAddons(addons, ADDON_GAME_CONTROLLER);
+  std::set<std::string> currentIds;
+  std::set<std::string> newIds;
 
-  // Convert to controllers
-  ControllerVector controllers;
-  std::transform(addons.begin(), addons.end(), std::back_inserter(controllers),
-    [](const AddonPtr& addon)
-    {
-      return std::static_pointer_cast<CController>(addon);
-    });
+  std::set<std::string> added;
+  std::set<std::string> removed;
 
-  // Look for new controllers
-  ControllerVector newControllers;
-  for (ControllerVector::const_iterator it = controllers.begin(); it != controllers.end(); ++it)
+  // Get current add-ons
+  std::transform(m_controllers.begin(), m_controllers.end(), std::inserter(currentIds, currentIds.end()), GetControllerID);
+
+  // Get new add-ons
+  VECADDONS newAddons;
+  CAddonMgr::GetInstance().GetAddons(newAddons, ADDON_GAME_CONTROLLER);
+  std::transform(newAddons.begin(), newAddons.end(), std::inserter(newIds, newIds.end()), GetAddonID);
+
+  // Get differences
+  std::set_difference(newIds.begin(), newIds.end(), currentIds.begin(), currentIds.end(), std::inserter(added, added.end()));
+  std::set_difference(currentIds.begin(), currentIds.end(), newIds.begin(), newIds.end(), std::inserter(removed, removed.end()));
+
+  // Register new controllers
+  for (const std::string& addonId : added)
   {
-    const ControllerPtr& controller = *it;
+    auto GetAddon = [addonId](const AddonPtr& addon) { return addon->ID() == addonId; };
 
-    if (std::find_if(m_controllers.begin(), m_controllers.end(),
-      [controller](const ControllerPtr& ctrl)
-      {
-        return ctrl->ID() == controller->ID();
-      }) == m_controllers.end())
+    VECADDONS::iterator it = std::find_if(newAddons.begin(), newAddons.end(), GetAddon);
+    if (it != newAddons.end())
     {
-      newControllers.push_back(controller);
+      ControllerPtr newController = std::dynamic_pointer_cast<CController>(*it);
+      if (newController && newController->LoadLayout())
+        m_controllers.push_back(newController);
     }
   }
 
-  // Remove old controllers
-  for (ControllerVector::iterator it = m_controllers.begin(); it != m_controllers.end(); /* ++it */)
+  // Erase removed controllers
+  for (const std::string& addonId : removed)
   {
-    ControllerPtr& controller = *it;
-
-    if (std::find_if(controllers.begin(), controllers.end(),
-      [controller](const ControllerPtr& ctrl)
-      {
-        return ctrl->ID() == controller->ID();
-      }) == controllers.end())
-    {
-      it = m_controllers.erase(it); // Not found, remove it
-      bChanged = true;
-    }
-    else
-    {
-      ++it;
-    }
-  }
-
-  // Add new controllers
-  for (ControllerVector::iterator it = newControllers.begin(); it != newControllers.end(); ++it)
-  {
-    ControllerPtr& newController = *it;
-
-    if (newController->LoadLayout())
-    {
-      m_controllers.push_back(newController);
-      bChanged = true;
-    }
+    auto IsController = [addonId](const ControllerPtr& controller) { return controller->ID() == addonId; };
+    m_controllers.erase(std::remove_if(m_controllers.begin(), m_controllers.end(), IsController), m_controllers.end());
   }
 
   // Sort add-ons, with default controller first
+  const bool bChanged = !added.empty() || !removed.empty();
   if (bChanged)
   {
     std::sort(m_controllers.begin(), m_controllers.end(),
@@ -224,7 +206,7 @@ bool CGUIControllerList::RefreshControllers(void)
         if (i->ID() == DEFAULT_CONTROLLER_ID && j->ID() != DEFAULT_CONTROLLER_ID) return true;
         if (i->ID() != DEFAULT_CONTROLLER_ID && j->ID() == DEFAULT_CONTROLLER_ID) return false;
 
-        return i->ID() < j->ID();
+        return i->Name() < j->Name();
       });
   }
 
