@@ -1302,6 +1302,16 @@ else
   AC_MSG_RESULT($alsa_disabled)
 fi
 
+# Steam Link
+AC_CHECK_HEADERS([SLVideo.h SLAudio.h], steamlink_found=yes,)
+if test "$steamlink_found" = "yes"; then
+  USE_STEAMLINK=1
+  use_pulse=no
+  AC_DEFINE([HAS_STEAMLINK], [], [Define if we are compiling with the Steam Link SDK])
+  LIBS="$LIBS -lSLVideo -lSLAudio"
+fi
+AC_SUBST(USE_STEAMLINK)
+
 # PulseAudio
 if test "x$use_pulse" != "xno"; then
   if test "$host_vendor" = "apple" ; then
