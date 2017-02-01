@@ -37,6 +37,7 @@
 using namespace STEAMLINK;
 
 #define MAX_AUDIO_DELAY_MS  100 // Skip packets if audio delay exceeds this value
+#define SL_INTRINSIC_DELAY_MS  250 // Observed audio delay while playing video
 
 CAESinkSteamLinkStream::CAESinkSteamLinkStream(CSLAudioContext* context, unsigned int sampleRateHz, unsigned int channels, unsigned int packetSize) :
   CThread("SteamLinkAudio"),
@@ -115,7 +116,9 @@ bool CAESinkSteamLinkStream::AddPacket(std::unique_ptr<uint8_t[]> data, unsigned
       return true; // This might have been called during a Flush()
   }
 
-  const unsigned int delayMs = CSteamLinkVideo::GetDelayMs();
+  int delayMs = CSteamLinkVideo::GetDelayMs();
+
+  delayMs -= SL_INTRINSIC_DELAY_MS;
 
   if (delayMs > 0)
     presentTimeSecs += delayMs / 1000.0;
