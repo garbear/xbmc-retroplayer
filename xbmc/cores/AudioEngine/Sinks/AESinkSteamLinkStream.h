@@ -56,6 +56,19 @@ protected:
 private:
   struct AudioPacket
   {
+    AudioPacket() :
+      size(0),
+      presentTimeSecs(0.0)
+    {
+    }
+
+    AudioPacket(std::unique_ptr<uint8_t[]> buffer, unsigned int size, double presentTimeSecs) :
+      buffer(std::move(buffer)),
+      size(size),
+      presentTimeSecs(presentTimeSecs)
+    {
+    }
+
     std::unique_ptr<uint8_t[]> buffer;
     unsigned int size;
     double presentTimeSecs;

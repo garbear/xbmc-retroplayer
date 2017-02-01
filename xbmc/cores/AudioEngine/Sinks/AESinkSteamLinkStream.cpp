@@ -123,7 +123,7 @@ bool CAESinkSteamLinkStream::AddPacket(std::unique_ptr<uint8_t[]> data, unsigned
 
   {
     CSingleLock lock(m_queueMutex);
-    m_queue.emplace_back(std::move(AudioPacket{std::move(data), size, presentTimeSecs}));
+    m_queue.emplace_back(std::move(data), size, presentTimeSecs);
   }
 
   // Notify thread that a packet is ready
