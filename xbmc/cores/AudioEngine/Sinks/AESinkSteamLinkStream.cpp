@@ -98,14 +98,35 @@ void CAESinkSteamLinkStream::Close()
 
 bool CAESinkSteamLinkStream::Flush()
 {
-  Close();
+  bool bOpen = false;
 
+  // Causes AddPacket() to return immediately
+  {
+    CSingleLock lock(m_streamMutex);
+    if (m_stream)
+    {
+      bOpen = true;
+      SLAudio_FreeStream(m_stream);
+      m_stream = nullptr;
+    }
+  }
+
+  // Clear queue
   {
     CSingleLock lock(m_queueMutex);
     m_queue.clear();
   }
 
-  return Open();
+  // Reopen stream
+  bool bSuccess = true;
+  if (bOpen)
+  {
+    CSingleLock lock(m_streamMutex);
+    m_stream = SLAudio_CreateStream(m_context, m_sampleRateHz, m_channels, m_packetSize, true);
+    bSuccess = (m_stream != nullptr);
+  }
+
+  return bSuccess;
 }
 
 bool CAESinkSteamLinkStream::AddPacket(std::unique_ptr<uint8_t[]> data, unsigned int size, double presentTimeSecs)
@@ -237,8 +258,16 @@ void CAESinkSteamLinkStream::SendPacket(AudioPacket packet)
 {
   CSingleLock lock(m_streamMutex);
 
+  if (m_stream == nullptr)
+    return;
+
   if (GetSLDelaySecs() > MAX_AUDIO_DELAY_MS)
-    Flush();
+  {
+    // Flush() grabs the queue mutex, so don't hold the stream mutex
+    CSingleExit exit(m_streamMutex);
+    if (!Flush())
+      return;
+  }
 
   if (m_stream == nullptr)
     return;
@@ -270,8 +299,6 @@ void CAESinkSteamLinkStream::SendPacket(AudioPacket packet)
 
 double CAESinkSteamLinkStream::GetSLDelaySecs()
 {
-  CSingleLock lock(m_streamMutex);
-
   uint32_t queuedFrames = 0;
 
   if (m_stream)
