@@ -45,7 +45,6 @@ CAESinkSteamLinkStream::CAESinkSteamLinkStream(CSLAudioContext* context, unsigne
   m_channels(channels),
   m_packetSize(packetSize),
   m_stream(nullptr),
-  m_bInVideo(false),
   m_steamLinkBuffer(nullptr),
   m_remainingBytes(0)
 {

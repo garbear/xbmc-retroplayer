@@ -101,7 +101,6 @@ private:
   std::deque<AudioPacket> m_queue;
   CCriticalSection m_queueMutex;
   CEvent m_queueEvent;
-  bool m_bInVideo;
   uint8_t* m_steamLinkBuffer;
   unsigned int m_remainingBytes; // Bytes remaining in the Steam Link audio buffer
   XbmcThreads::EndTime m_videoDelay;
